@@ -20,7 +20,7 @@ class evolution_parser:
         self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_name_pattern = re.compile(r'(viewtopic\.php\?pid=\d+)')
+	self.thread_name_pattern = re.compile(r'(viewtopic\.php.*id=\d+)')
         self.thread_id = None
         # main function
         self.main()
