@@ -14,7 +14,7 @@ def handle_error(template, error_folder, error_message):
 
     file_path = "{}/{}.txt".format(
         error_folder,
-        template.split('/')[-1].rsplit('.', 1)[0]
+        template
     )
     with open(file_path, 'a') as file_pointer:
         file_pointer.write(str(error_message))

@@ -2,7 +2,13 @@ import argparse
 import os
 from glob import glob
 from oday_template import oday_parser
+from bmr_template import bmr_parser
 # from blackmarket_template import blackmarket_parser
+
+PARSER_MAP = {
+    '0day': oday_parser,
+    'BMR': bmr_parser
+}
 
 
 class Parser:
@@ -32,13 +38,13 @@ class Parser:
         # -----------filter files which user want to parse --------------
         files = []
         for filee in glob(folder_path+'/*'):
-            if parser_name in filee:
+            if parser_name.lower() in filee:
                 files.append(filee)
-
-        if parser_name == '0day':
-            oday_parser(parser_name, files, output_folder, folder_path)
-        else:
+        parser = PARSER_MAP.get(parser_name)
+        if not parser:
             print('Message: your target name is wrong..!')
+            return
+        parser(parser_name, files, output_folder, folder_path)
 
 
 # -----run main ---

@@ -10,7 +10,7 @@ class BrokenPage(Exception):
     pass
 
 
-class oday_parser:
+class bmr_parser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.files = self.get_filtered_files(files)
@@ -19,7 +19,7 @@ class oday_parser:
         self.distinct_files = set()
         self.output_folder = output_folder
         self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_name_pattern = re.compile(r'(thread-\d+)')
+        self.thread_name_pattern = re.compile(r'(viewtopic\.php\?pid=\d+)')
         self.thread_id = None
         # main function
         self.main()
@@ -28,7 +28,7 @@ class oday_parser:
         final_files = list()
         for file in files:
             file_name_only = file.split('/')[-1]
-            if file_name_only.startswith('thread-'):
+            if file_name_only.startswith('viewtopic.php'):
                 final_files.append(file)
         return sorted(final_files)
 
@@ -58,7 +58,7 @@ class oday_parser:
                     # write file
                     output_file = '{}/{}.json'.format(
                         str(self.output_folder),
-                        self.thread_id.replace('thread-', '')
+                        self.thread_id.split('pid=')[-1]
                     )
                     file_pointer = open(output_file, 'w')
                     utils.write_json(file_pointer, data)
@@ -70,7 +70,7 @@ class oday_parser:
                     comments = []
             except BrokenPage as ex:
                 utils.handle_error(
-                    self.thread_id.replace('thread-', ''),
+                    self.thread_id.split('pid=')[-1],
                     self.error_folder,
                     ex
                 )
@@ -80,29 +80,31 @@ class oday_parser:
 
     def extract_comments(self, html_response):
         comments = list()
-        for comment_block in html_response.xpath(
-          '//div[@id="posts"]/table'):
-            user_block = comment_block.xpath('tr')[0].xpath('td')[0]
-            text_block = comment_block.xpath('tr')[0].xpath('td')[1]
-            date_block = comment_block.xpath('tr')[1]
+        comment_blocks = html_response.xpath(
+          '//div[contains(@class, "replypost")]'
+        )
+        for comment_block in comment_blocks[1:]:
 
-            user = user_block.xpath('strong/span/a/text()')
-            if not user:
-                user = user_block.xpath('strong/span/text()')
-            if not user:
-                user = user_block.xpath('strong/span/a/span/text()')
-            user = user[0] if user else None
+            user = comment_block.xpath(
+                'div//span[@class="post-byline"]'
+                '/em/a/text()'
+            )
+            user = user[0].strip() if user else None
+
             authorID = None
-            user_link = user_block.xpath('strong/span/a/@href')
-            if user_link:
-                pattern = re.compile(r'/user-(\d+).')
-                match = pattern.findall(user_link[0])
+            author_link = comment_block.xpath(
+                'div//span[@class="post-byline"]'
+                '/em/a/@href'
+            )
+            if author_link:
+                pattern = re.compile(r'id=(\d+)')
+                match = pattern.findall(author_link[0])
                 authorID = match[0] if match else None
 
-            commentID = text_block.xpath(
-                'table//strong[contains(text(), "Post:")]/a/text()'
+            commentID = comment_block.xpath(
+                'div//span[@class="post-num"]/text()'
             )
-            commentID = commentID[0].replace('#', '') if commentID else None
+            commentID = commentID[0].strip() if commentID else None
 
             # Exclude first comment as this is the post
             if commentID == "1":
@@ -112,21 +114,23 @@ class oday_parser:
             except:
                 pass
 
-            comment_text = text_block.xpath(
-                'table//div[@class="post_body"]/text()'
+            comment_text = None
+            comment_text_block = comment_block.xpath(
+                'div//div[@class="entry-content"]/*'
             )
-            comment_text = "\n".join(
-                [comment.strip() for comment in comment_text if comment]
-            )
-
-            comment_date = date_block.xpath(
-                'td/span[@class="smalltext"]/text()'
+            comment_text = "\n".join([
+                comment_text.xpath('string()')
+                for comment_text in comment_text_block
+            ])
+            comment_date = comment_block.xpath(
+                'div//span[@class="post-link"]'
+                '/a/text()'
             )
             comment_date = comment_date[0] if comment_date else None
             comments.append({
-                'pid': self.thread_id.replace('thread-', ''),
+                'pid': self.thread_id.split('pid=')[-1],
                 'date': comment_date,
-                'text': comment_text,
+                'text': comment_text.strip(),
                 'commentID': commentID,
                 'user': user,
                 'authorID': authorID,
@@ -135,61 +139,53 @@ class oday_parser:
 
     def header_data_extract(self, html_response, template):
         try:
-            # ---------------extract header data ------------
             title = html_response.xpath(
-                '//td[@class="thead"]/div/strong/text()'
+                '//h1[@class="main-title"]/a/text()'
             )
             title = title[0].strip() if title else None
-            date = html_response.xpath(
-                '//div[@id="posts"]//td[@style="'
-                'white-space: nowrap; text-align: '
-                'center; vertical-align: middle;"]'
-                '/span/text()'
-                )
+
+            # ---------------extract header data ------------
+            header = html_response.xpath(
+                '//div[@class="main-content main-topic"]/'
+                'div[contains(@class,"firstpost")]'
+            )
+            if not header:
+                return
+            date = header[0].xpath(
+                'div//span[@class="post-link"]'
+                '/a/text()'
+            )
             date = date[0].strip() if date else None
-            if not date:
-                text = "The specified thread does not exist"
-                if html_response.xpath(
-                  '//td[contains(text(), '
-                  '"{}")]'.format(text)):
-                    utils.handle_error(
-                        self.thread_id.replace('thread-', ''),
-                        self.error_folder,
-                        text
-                    )
-                    return
-            author = html_response.xpath(
-                '//div[@id="posts"]//table[@style="'
-                'border-top-width: 0; "]//'
-                'span[@class="largetext"]/a/text()')
+            author = header[0].xpath(
+                'div//span[@class="post-byline"]'
+                '/em/a/text()'
+            )
             author = author[0].strip() if author else None
 
-            author_link = html_response.xpath(
-                '//div[@id="posts"]//table[@style="'
-                'border-top-width: 0; "]//'
-                'span[@class="largetext"]/a/@href')
+            author_link = header[0].xpath(
+                'div//span[@class="post-byline"]'
+                '/em/a/@href'
+            )
             if author_link:
-                pattern = re.compile(r'/user-(\d+).')
+                pattern = re.compile(r'id=(\d+)')
                 match = pattern.findall(author_link[0])
                 author_link = match[0] if match else None
 
             post_text = None
-            post_text_block = html_response.xpath(
-                '//table//div[@class="post_body"]'
+            post_text_block = header[0].xpath(
+                'div//div[@class="entry-content"]/*'
             )
-            if post_text_block:
-                post_text = post_text_block[0].xpath('text()')\
+            post_text = "\n".join([
+                post_text.xpath('string()') for post_text in post_text_block
+            ])
 
-                post_text = "\n".join(
-                    [post.strip() for post in post_text if post]
-                )
             return {
-                'pid': self.thread_id.replace('thread-', ''),
+                'pid': self.thread_id.split('pid=')[-1],
                 'title': title,
                 'date': date,
                 'author': author,
                 'author_link': author_link,
-                'text': post_text,
+                'text': post_text.strip(),
                 'type': "post"
             }
         except:
