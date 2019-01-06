@@ -3,11 +3,13 @@ import os
 from glob import glob
 from oday_template import oday_parser
 from bmr_template import bmr_parser
+from evolution_template import evolution_parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
     '0day': oday_parser,
-    'BMR': bmr_parser
+    'BMR': bmr_parser,
+    'evolution': evolution_parser
 }
 
 

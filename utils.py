@@ -46,6 +46,16 @@ def write_comments(file_pointer, comments, output_file):
     comments = sorted(
         comments, key=lambda k: int(k['commentID'])
     )
+    seen = set()
+    comments = [
+        c for c in comments
+        if [(c['commentID'], c['user'], c['date'])
+            not in seen, seen.add((
+                c['commentID'],
+                c['user'],
+                c['date']
+            ))][0]
+    ]
     for comment in comments:
         write_json(file_pointer, comment)
     print('\nJson written in {}'.format(output_file))
