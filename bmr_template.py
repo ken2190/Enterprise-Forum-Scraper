@@ -85,48 +85,13 @@ class bmr_parser:
         )
         for comment_block in comment_blocks[1:]:
 
-            user = comment_block.xpath(
-                'div//span[@class="post-byline"]'
-                '/em/a/text()'
-            )
-            user = user[0].strip() if user else None
-
-            authorID = None
-            author_link = comment_block.xpath(
-                'div//span[@class="post-byline"]'
-                '/em/a/@href'
-            )
-            if author_link:
-                pattern = re.compile(r'id=(\d+)')
-                match = pattern.findall(author_link[0])
-                authorID = match[0] if match else None
-
-            commentID = comment_block.xpath(
-                'div//span[@class="post-num"]/text()'
-            )
-            commentID = commentID[0].strip() if commentID else None
-
-            # Exclude first comment as this is the post
-            if commentID == "1":
+            user = self.get_author(comment_block)
+            authorID = self.get_author_link(comment_block)
+            commentID = self.get_comment_id(comment_block)
+            if not commentID:
                 continue
-            try:
-                commentID = str(int(commentID)-1)
-            except:
-                pass
-
-            comment_text = None
-            comment_text_block = comment_block.xpath(
-                'div//div[@class="entry-content"]/*'
-            )
-            comment_text = "\n".join([
-                comment_text.xpath('string()')
-                for comment_text in comment_text_block
-            ])
-            comment_date = comment_block.xpath(
-                'div//span[@class="post-link"]'
-                '/a/text()'
-            )
-            comment_date = comment_date[0] if comment_date else None
+            comment_text = self.get_post_text(comment_block)
+            comment_date = self.get_date(comment_block)
             comments.append({
                 'pid': self.thread_id.split('pid=')[-1],
                 'date': comment_date,
@@ -139,10 +104,7 @@ class bmr_parser:
 
     def header_data_extract(self, html_response, template):
         try:
-            title = html_response.xpath(
-                '//h1[@class="main-title"]/a/text()'
-            )
-            title = title[0].strip() if title else None
+            title = self.get_title(html_response)
 
             # ---------------extract header data ------------
             header = html_response.xpath(
@@ -151,33 +113,10 @@ class bmr_parser:
             )
             if not header:
                 return
-            date = header[0].xpath(
-                'div//span[@class="post-link"]'
-                '/a/text()'
-            )
-            date = date[0].strip() if date else None
-            author = header[0].xpath(
-                'div//span[@class="post-byline"]'
-                '/em/a/text()'
-            )
-            author = author[0].strip() if author else None
-
-            author_link = header[0].xpath(
-                'div//span[@class="post-byline"]'
-                '/em/a/@href'
-            )
-            if author_link:
-                pattern = re.compile(r'id=(\d+)')
-                match = pattern.findall(author_link[0])
-                author_link = match[0] if match else None
-
-            post_text = None
-            post_text_block = header[0].xpath(
-                'div//div[@class="entry-content"]/*'
-            )
-            post_text = "\n".join([
-                post_text.xpath('string()') for post_text in post_text_block
-            ])
+            date = self.get_date(header[0])
+            author = self.get_author(header[0])
+            author_link = self.get_author_link(header[0])
+            post_text = self.get_post_text(header[0])
 
             return {
                 'pid': self.thread_id.split('pid=')[-1],
@@ -191,3 +130,62 @@ class bmr_parser:
         except:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
+
+    def get_date(self, tag):
+        date = tag.xpath(
+                'div//span[@class="post-link"]'
+                '/a/text()'
+        )
+        date = date[0].strip() if date else None
+        return date
+
+    def get_author(self, tag):
+        author = tag.xpath(
+            'div//span[@class="post-byline"]'
+            '/em/a/text()'
+        )
+        author = author[0].strip() if author else None
+        return author
+
+    def get_title(self, tag):
+        title = tag.xpath(
+            '//h1[@class="main-title"]/a/text()'
+        )
+        title = title[0].strip() if title else None
+        return title
+
+    def get_author_link(self, tag):
+        author_link = tag.xpath(
+            'div//span[@class="post-byline"]'
+            '/em/a/@href'
+        )
+        if author_link:
+            pattern = re.compile(r'id=(\d+)')
+            match = pattern.findall(author_link[0])
+            author_link = match[0] if match else None
+        return author_link
+
+    def get_post_text(self, tag):
+        post_text = None
+        post_text_block = tag.xpath(
+            'div//div[@class="entry-content"]/*'
+        )
+        post_text = "\n".join([
+            post_text.xpath('string()') for post_text in post_text_block
+        ])
+        return post_text
+
+    def get_comment_id(self, tag):
+        commentID = tag.xpath(
+            'div//span[@class="post-num"]/text()'
+        )
+        commentID = commentID[0].strip() if commentID else None
+
+        # Exclude first comment as this is the post
+        if commentID == "1":
+            return
+        try:
+            commentID = str(int(commentID)-1)
+        except:
+            pass
+        return commentID
