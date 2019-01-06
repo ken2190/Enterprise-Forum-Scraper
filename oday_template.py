@@ -3,7 +3,7 @@ import re
 from collections import OrderedDict
 import traceback
 import json
-from lxml.html import fromstring
+import utils
 
 
 class BrokenPage(Exception):
@@ -15,10 +15,10 @@ class oday_parser:
         self.parser_name = parser_name
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
-        self.counter = 1
         self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.output_folder = output_folder
+        self.error_folder = "{}/Errors".format(output_folder)
         self.thread_name_pattern = re.compile(r'(thread-\d+)')
         self.thread_id = None
         # main function
@@ -32,47 +32,22 @@ class oday_parser:
                 final_files.append(file)
         return sorted(final_files)
 
-    def file_read(self, template):
-        with open(template) as f:
-            return f.read()
-
-    def get_next_template(self, template_counter):
-        next_template = self.files[template_counter]
-        file_name_only = next_template.split('/')[-1]
-        match = self.thread_name_pattern.findall(file_name_only)
-        if not match:
-            return
-        return match[0]
-
     def main(self):
-        template_counter = 1
         comments = []
-        for template in self.files:
+        for index, template in enumerate(self.files):
             print(template)
             try:
                 # read html file
-                template_open = self.file_read(template)
-                html_response = fromstring(template_open)
+                html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
                 self.thread_id = match[0]
-
-                # ----------get next template --------
-                try:
-                    next_template = self.get_next_template(template_counter)
-                    template_counter += 1
-
-                    if next_template == self.thread_id:
-                        final = False
-                    else:
-                        final = True
-                except:
-                    final = True
-                # ------------check for new file or pagination file ------
+                final = utils.is_file_final(
+                    self.thread_id, self.thread_name_pattern, self.files, index
+                )
                 if self.thread_id not in self.distinct_files:
-                    self.counter = 1
                     self.distinct_files.add(self.thread_id)
 
                     # header data extract
@@ -86,38 +61,20 @@ class oday_parser:
                         self.thread_id.replace('thread-', '')
                     )
                     file_pointer = open(output_file, 'w')
-                    self.write_json(file_pointer, data, initial=True)
+                    utils.write_json(file_pointer, data)
                 # extract comments
-                comments.extend(self.extract_comments(template_open))
+                comments.extend(self.extract_comments(html_response))
 
                 if final:
-                    comments = sorted(
-                        comments, key=lambda k: int(k['commentID'])
-                    )
-                    for comment in comments:
-                        self.write_json(file_pointer, comment)
+                    utils.write_comments(file_pointer, comments, output_file)
                     comments = []
-                    print('\nJson written in {}'.format(output_file))
-                    print('----------------------------------------\n')
             except BrokenPage as ex:
-                self.handle_error(template, ex)
+                utils.handle_error(template, self.error_folder, ex)
             except:
+                traceback.print_exc()
                 continue
 
-    def handle_error(self, template, error_message):
-        error_folder = "{}/Errors".format(self.output_folder)
-        if not os.path.exists(error_folder):
-            os.makedirs(error_folder)
-
-        file_path = "{}/{}.txt".format(
-            error_folder,
-            template.split('/')[-1].rsplit('.', 1)[0]
-        )
-        with open(file_path, 'a') as file_pointer:
-            file_pointer.write(str(error_message))
-
-    def extract_comments(self, template_open):
-        html_response = fromstring(template_open)
+    def extract_comments(self, html_response):
         comments = list()
         for comment_block in html_response.xpath(
           '//div[@id="posts"]/table'):
@@ -195,7 +152,7 @@ class oday_parser:
                 if html_response.xpath(
                   '//td[contains(text(), '
                   '"{}")]'.format(text)):
-                    self.handle_error(template, text)
+                    utils.handle_error(template, self.error_folder, text)
                     return
             author = html_response.xpath(
                 '//div[@id="posts"]//table[@style="'
@@ -234,9 +191,3 @@ class oday_parser:
         except:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
-
-    def write_json(self, file_pointer, data, initial=False):
-        if not initial:
-            file_pointer.write(',\n')
-        json_file = json.dumps(data, indent=4)
-        file_pointer.write(json_file)
