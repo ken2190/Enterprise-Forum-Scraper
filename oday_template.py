@@ -1,23 +1,26 @@
+import os
 import re
-from bs4 import BeautifulSoup
 from collections import OrderedDict
 import traceback
 import json
 from lxml.html import fromstring
 
 
+class BrokenPage(Exception):
+    pass
+
+
 class oday_parser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.files = self.get_filtered_files(files)
-        # print(self.files)
         self.folder_path = folder_path
         self.counter = 1
-        # self.data_dic = {}
         self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(r'(thread-\d+)')
+        self.thread_id = None
         # main function
         self.main()
 
@@ -43,73 +46,75 @@ class oday_parser:
 
     def main(self):
         template_counter = 1
-        condition = True
-
+        comments = []
         for template in self.files:
             print(template)
             try:
                 # read html file
                 template_open = self.file_read(template)
-
-                # # parse file_name
-                # file_name = template.split('/')[-1]\
-                #                     .replace('.html', '')\
-                #                     .replace('.htm', '')\
-                #                     .split('-')[0]
-
+                html_response = fromstring(template_open)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
-                file_name = match[0]
-                # for css_selector
-                soup = BeautifulSoup(template_open, 'html.parser')
+                self.thread_id = match[0]
 
                 # ----------get next template --------
                 try:
                     next_template = self.get_next_template(template_counter)
                     template_counter += 1
 
-                    if next_template == file_name:
-                        condition = False
+                    if next_template == self.thread_id:
+                        final = False
                     else:
-                        condition = True
+                        final = True
                 except:
-                    condition = True
-
+                    final = True
                 # ------------check for new file or pagination file ------
-                post_id = file_name
-                comments = []
-                if file_name not in self.distinct_files:
+                if self.thread_id not in self.distinct_files:
                     self.counter = 1
-                    self.distinct_files.add(file_name)
+                    self.distinct_files.add(self.thread_id)
 
                     # header data extract
-                    title, date, author, author_link, post_text =\
-                        self.header_data_extract(soup)
+                    data = self.header_data_extract(html_response, template)
+                    if not data:
+                        continue
 
                     # write file
                     output_file = '{}/{}.json'.format(
-                        str(self.output_folder), str(file_name)
+                        str(self.output_folder),
+                        self.thread_id.replace('thread-', '')
                     )
-                    f = open(output_file, 'w')
-                    # create json file
-                    self.create_json(
-                        title,
-                        date,
-                        author,
-                        author_link,
-                        post_text,
-                        post_id
-                    )
+                    file_pointer = open(output_file, 'w')
+                    self.write_json(file_pointer, data, initial=True)
                 # extract comments
-                self.extract_comments(template_open)
+                comments.extend(self.extract_comments(template_open))
 
-                if condition:
-                    self.write_json(f, file_name)
+                if final:
+                    comments = sorted(
+                        comments, key=lambda k: int(k['commentID'])
+                    )
+                    for comment in comments:
+                        self.write_json(file_pointer, comment)
+                    comments = []
+                    print('\nJson written in {}'.format(output_file))
+                    print('----------------------------------------\n')
+            except BrokenPage as ex:
+                self.handle_error(template, ex)
             except:
-                traceback.print_exc()
                 continue
+
+    def handle_error(self, template, error_message):
+        error_folder = "{}/Errors".format(self.output_folder)
+        if not os.path.exists(error_folder):
+            os.makedirs(error_folder)
+
+        file_path = "{}/{}.txt".format(
+            error_folder,
+            template.split('/')[-1].rsplit('.', 1)[0]
+        )
+        with open(file_path, 'a') as file_pointer:
+            file_pointer.write(str(error_message))
 
     def extract_comments(self, template_open):
         html_response = fromstring(template_open)
@@ -123,96 +128,115 @@ class oday_parser:
             user = user_block.xpath('strong/span/a/text()')
             if not user:
                 user = user_block.xpath('strong/span/text()')
+            if not user:
+                user = user_block.xpath('strong/span/a/span/text()')
             user = user[0] if user else None
+            authorID = None
             user_link = user_block.xpath('strong/span/a/@href')
-            user_link = user_link[0] if user_link else None
+            if user_link:
+                pattern = re.compile(r'/user-(\d+).')
+                match = pattern.findall(user_link[0])
+                authorID = match[0] if match else None
 
             commentID = text_block.xpath(
                 'table//strong[contains(text(), "Post:")]/a/text()'
             )
-            commentID = int(commentID[0].replace('#', '')) if commentID else None
+            commentID = commentID[0].replace('#', '') if commentID else None
 
-            post_id = text_block.xpath(
-                'table//strong[contains(text(), "Post:")]/a/@href'
-            )
-            if post_id:
-                pattern = re.compile(r'.*-(\w+)\.html')
-                match = pattern.findall(post_id[0])
-                post_id = match[0]
+            # Exclude first comment as this is the post
+            if commentID == "1":
+                continue
+            try:
+                commentID = str(int(commentID)-1)
+            except:
+                pass
 
             comment_text = text_block.xpath(
                 'table//div[@class="post_body"]/text()'
             )
-            comment_text = comment_text[0].strip() if comment_text else None
+            comment_text = "\n".join(
+                [comment.strip() for comment in comment_text if comment]
+            )
 
-            comment_date = date_block.xpath('td/span[@class="smalltext"]/text()')
+            comment_date = date_block.xpath(
+                'td/span[@class="smalltext"]/text()'
+            )
             comment_date = comment_date[0] if comment_date else None
-            self.data_dic['comments'].append({
-                'id': post_id,
+            comments.append({
+                'pid': self.thread_id.replace('thread-', ''),
+                'date': comment_date,
+                'text': comment_text,
                 'commentID': commentID,
                 'user': user,
-                'user_link': user_link,
-                'comment_date': comment_date,
-                'comment_text': comment_text,
+                'authorID': authorID,
             })
+        return comments
 
-        # # ---------------get all comments ---------------
-        # for comment in soup.select('#posts [style="margin-top: 5px; "]'):
-        #     comment_user = comment.select_one('tr strong').text
-        #     comment_user_link = comment.select_one('tr strong a').get('href')
-        #     comment_date = comment.select_one(
-        #         'tr td[style="white-space: nowrap; '
-        #         'text-align: center; vertical-align: middle;"]').text
-        #     comment_text = comment.select_one('.post_body').text.strip()
+    def header_data_extract(self, html_response, template):
+        try:
+            # ---------------extract header data ------------
+            title = html_response.xpath(
+                '//td[@class="thead"]/div/strong/text()'
+            )
+            title = title[0].strip() if title else None
+            """
+            white-space: nowrap; text-align: center; vertical-align: middle;
+            white-space: nowrap; text-align: center; vertical-align: middle;
+            """
+            date = html_response.xpath(
+                '//div[@id="posts"]//td[@style="'
+                'white-space: nowrap; text-align: '
+                'center; vertical-align: middle;"]'
+                '/span/text()'
+                )
+            date = date[0].strip() if date else None
+            if not date:
+                text = "The specified thread does not exist"
+                if html_response.xpath(
+                  '//td[contains(text(), '
+                  '"{}")]'.format(text)):
+                    self.handle_error(template, text)
+                    return
+            author = html_response.xpath(
+                '//div[@id="posts"]//table[@style="'
+                'border-top-width: 0; "]//'
+                'span[@class="largetext"]/a/text()')
+            author = author[0].strip() if author else None
 
-        #     comment_dic = {
-        #         'id': post_id,
-        #         'commentID': self.counter,
-        #         'user': comment_user,
-        #         'user_link': comment_user_link,
-        #         'comment_date': comment_date,
-        #         'comment_text': comment_text,
-        #          }
-        #     # append comment dic into list
-        #     comments.append(comment_dic)
-        #     self.counter += 1
+            author_link = html_response.xpath(
+                '//div[@id="posts"]//table[@style="'
+                'border-top-width: 0; "]//'
+                'span[@class="largetext"]/a/@href')
+            if author_link:
+                pattern = re.compile(r'/user-(\d+).')
+                match = pattern.findall(author_link[0])
+                author_link = match[0] if match else None
 
-    def header_data_extract(self, soup):
-        # ---------------extract header data ------------
-        title = soup.select_one('title').text
-        date = soup.select_one(
-            '#posts [style="border-top-width: 0; "] '
-            'tr td[style="white-space: nowrap; text-align: '
-            'center; vertical-align: middle;"]').text
-        author = soup.select_one(
-            '#posts [style="border-top-width: 0; "] tr strong').text
-        author_link = soup.select_one(
-            '#posts [style="border-top-width: 0; "] tr strong a').get('href')
-        post_text = soup.select_one(
-            '#posts [style="border-top-width: 0; "] .post_body').text.strip()
-        post_id = soup.select_one(
-            '#posts [style="border-top-width: 0; "]').get('id')
+            post_text = None
+            post_text_block = html_response.xpath(
+                '//table//div[@class="post_body"]'
+            )
+            if post_text_block:
+                post_text = post_text_block[0].xpath('text()')\
 
-        return title, date, author, author_link, post_text
+                post_text = "\n".join(
+                    [post.strip() for post in post_text if post]
+                )
+            return {
+                'pid': self.thread_id.replace('thread-', ''),
+                'title': title,
+                'date': date,
+                'author': author,
+                'author_link': author_link,
+                'text': post_text,
+                'type': "post"
+            }
+        except:
+            ex = traceback.format_exc()
+            raise BrokenPage(ex)
 
-    def create_json(self, title, date, author, author_link,
-                    post_text, post_id):
-        self.data_dic['id'] = post_id
-        self.data_dic['title'] = title
-        self.data_dic['date'] = date
-        self.data_dic['author'] = author
-        self.data_dic['author_link'] = author_link
-        self.data_dic['post_text'] = post_text
-        self.data_dic['comments'] = []
-
-    def write_comment_json(self, comments):
-        self.data_dic['comments'] = comments
-
-    def write_json(self, f, file_name):
-        self.data_dic['comments'] = sorted(
-            self.data_dic['comments'], key=lambda k: k['commentID']
-        )
-        json_file = json.dumps(self.data_dic, indent=4)
-        f.write(json_file)
-        print ('%s.json done..!' % file_name)
-
+    def write_json(self, file_pointer, data, initial=False):
+        if not initial:
+            file_pointer.write(',\n')
+        json_file = json.dumps(data, indent=4)
+        file_pointer.write(json_file)
