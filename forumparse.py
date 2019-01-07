@@ -5,13 +5,17 @@ from oday_template import oday_parser
 from bmr_template import bmr_parser
 from evolution_template import evolution_parser
 from agora_template import agora_parser
+from therealdeal_template import therealdeal_parser
+from abraxas_template import abraxas_parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
     '0day': oday_parser,
     'bmr': bmr_parser,
     'evolution': evolution_parser,
-    'agora': agora_parser
+    'agora': agora_parser,
+    'therealdeal': therealdeal_parser,
+    'abraxas': abraxas_parser,
 
 }
 
