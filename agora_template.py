@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 import os
 import re
 from collections import OrderedDict
@@ -168,7 +169,9 @@ class agora_parser:
             'div[@class="postarea"]'
             '//div[@class="smalltext"]/text()'
         )
-        date = date[-1].strip('»').strip() if date else None
+        date_pattern = re.compile(r'(.*[aApP][mM])')
+        match = date_pattern.findall(date[-1])
+        date = match[0].strip() if match else None
         return date
 
     def get_author(self, tag):
