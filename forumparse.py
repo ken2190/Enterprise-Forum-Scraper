@@ -4,12 +4,15 @@ from glob import glob
 from oday_template import oday_parser
 from bmr_template import bmr_parser
 from evolution_template import evolution_parser
+from agora_template import agora_parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
     '0day': oday_parser,
-    'BMR': bmr_parser,
-    'evolution': evolution_parser
+    'bmr': bmr_parser,
+    'evolution': evolution_parser,
+    'agora': agora_parser
+
 }
 
 
@@ -42,7 +45,7 @@ class Parser:
         for filee in glob(folder_path+'/*'):
             if parser_name.lower() in filee:
                 files.append(filee)
-        parser = PARSER_MAP.get(parser_name)
+        parser = PARSER_MAP.get(parser_name.lower())
         if not parser:
             print('Message: your target name is wrong..!')
             return
