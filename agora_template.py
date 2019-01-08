@@ -5,6 +5,7 @@ from collections import OrderedDict
 import traceback
 import json
 import utils
+from lxml.html import fromstring
 
 
 class BrokenPage(Exception):
@@ -15,35 +16,38 @@ class agora_parser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
+        self.thread_name_pattern = re.compile(r'index.php.topic[=,](\d+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_name_pattern = re.compile(r'index.php.topic=\d+')
         self.thread_id = None
         # main function
         self.main()
 
     def get_pid(self):
-        pid_pattern = re.compile(r'topic=(\d+)')
+        pid_pattern = re.compile(r'topic[=,](\d+)')
         pid = pid_pattern.findall(self.thread_id)
         pid = pid[0] if pid else self.thread_id
         return pid
 
     def get_filtered_files(self, files):
-        final_files = list()
-        for file in files:
-            if file.endswith('.txt'):
-                saved_file = self.save_file(file)
-                final_files.append(saved_file)
-            else:
-                file_name_only = file.split('/')[-1]
-                if file_name_only.startswith('index.php'):
-                    final_files.append(file)
-        return sorted(final_files)
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
 
-    def save_file(self, file):
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: int(self.thread_name_pattern.search(x).group(1))
+        )
+
+        return sorted_files
+
+    def get_html_response(self, file):
         with open(file, 'rb') as f:
             content = str(f.read())
             splitter = 'Content-Type: text/html; charset=UTF-8'
@@ -52,17 +56,8 @@ class agora_parser:
                              .replace('\\n', '')\
                              .replace('\\t', '')\
                              .strip()
-            pattern = re.compile(r'(index.php.topic.*).txt')
-            new_file = pattern.findall(file)
-            if new_file:
-                new_file_path = "{}/{}".format(self.output_folder, 'Processed')
-                if not os.path.exists(new_file_path):
-                    os.makedirs(new_file_path)
-                new_name = new_file[0]
-                new_file_path = "{}/{}".format(new_file_path, new_name)
-                with open(new_file_path, 'w') as f:
-                    f.write(content)
-                return new_file_path
+            html_response = fromstring(content)
+            return html_response
 
     def main(self):
         comments = []
@@ -70,7 +65,10 @@ class agora_parser:
             print(template)
             try:
                 # read html file
-                html_response = utils.get_html_response(template)
+                if template.endswith('.txt'):
+                    html_response = self.get_html_response(template)
+                else:
+                    html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
