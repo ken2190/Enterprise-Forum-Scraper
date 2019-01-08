@@ -7,6 +7,8 @@ from evolution_template import evolution_parser
 from agora_template import agora_parser
 from therealdeal_template import therealdeal_parser
 from abraxas_template import abraxas_parser
+from kiss_template import kiss_parser
+from andromeda_template import andromeda_parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -16,6 +18,8 @@ PARSER_MAP = {
     'agora': agora_parser,
     'therealdeal': therealdeal_parser,
     'abraxas': abraxas_parser,
+    'kiss': kiss_parser,
+    'andromeda': andromeda_parser,
 
 }
 

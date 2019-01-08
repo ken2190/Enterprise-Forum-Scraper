@@ -24,7 +24,7 @@ def get_html_response(template):
     """
     returns the html response from the `template` contents
     """
-    with open(template) as f:
+    with open(template, 'rb') as f:
         content = f.read()
         html_response = fromstring(content)
         return html_response
