@@ -20,7 +20,7 @@ class evolution_parser:
         self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.error_folder = "{}/Errors".format(output_folder)
-	self.thread_name_pattern = re.compile(r'(viewtopic\.php.*id=\d+)')
+        self.thread_name_pattern = re.compile(r'(viewtopic\.php.*id=\d+)')
         self.thread_id = None
         # main function
         self.main()
@@ -51,7 +51,7 @@ class evolution_parser:
                 new_file_path = "{}/{}".format(self.output_folder, 'Processed')
                 if not os.path.exists(new_file_path):
                     os.makedirs(new_file_path)
-                new_name = new_file[0].replace('.id=', '?pid=')
+                new_name = new_file[0]
                 new_file_path = "{}/{}".format(new_file_path, new_name)
                 with open(new_file_path, 'w') as f:
                     f.write(content)
