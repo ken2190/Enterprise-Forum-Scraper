@@ -9,6 +9,7 @@ from therealdeal_template import therealdeal_parser
 from abraxas_template import abraxas_parser
 from kiss_template import kiss_parser
 from andromeda_template import andromeda_parser
+from darknetheroes_template import darknetheroes_parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -20,6 +21,8 @@ PARSER_MAP = {
     'abraxas': abraxas_parser,
     'kiss': kiss_parser,
     'andromeda': andromeda_parser,
+    'darknetheroes': darknetheroes_parser,
+    'diabolus': darknetheroes_parser,
 
 }
 
