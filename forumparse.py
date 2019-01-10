@@ -1,15 +1,16 @@
 import argparse
 import os
 from glob import glob
-from oday_template import oday_parser
-from bmr_template import bmr_parser
-from evolution_template import evolution_parser
-from agora_template import agora_parser
-from therealdeal_template import therealdeal_parser
-from abraxas_template import abraxas_parser
-from kiss_template import kiss_parser
-from andromeda_template import andromeda_parser
-from darknetheroes_template import darknetheroes_parser
+from templates.oday_template import oday_parser
+from templates.bmr_template import bmr_parser
+from templates.evolution_template import evolution_parser
+from templates.agora_template import agora_parser
+from templates.therealdeal_template import therealdeal_parser
+from templates.abraxas_template import abraxas_parser
+from templates.kiss_template import kiss_parser
+from templates.andromeda_template import andromeda_parser
+from templates.darknetheroes_template import darknetheroes_parser
+from templates.exploit_template import exploit_parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -23,7 +24,7 @@ PARSER_MAP = {
     'andromeda': andromeda_parser,
     'darknetheroes': darknetheroes_parser,
     'diabolus': darknetheroes_parser,
-
+    'exploit': exploit_parser,
 }
 
 
