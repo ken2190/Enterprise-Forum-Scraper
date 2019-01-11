@@ -6,49 +6,41 @@ from requests import Session
 from lxml.html import fromstring
 
 
-# Credentials
-USERNAME = "NightCat"
-PASSWORD = "2PK&fx2i%yL%FsIMwJaE5gfr"
-
 # Topic Counter
 TOPIC_START_COUNT = 100
 TOPIC_END_COUNT = 1000
 
-"""
-If OUTPUT_PATH not set, then, a new folder "verified" will be created
-inside current script's path and files will be saved inside this new folder.
-"""
-OUTPUT_PATH = None
+PROXY = "socks5h://localhost:9050"
 
 
 class VerifiedScrapper:
-    def __init__(self):
+    def __init__(self, kwargs):
         self.topic_start_count = TOPIC_START_COUNT
         self.topic_end_count = TOPIC_END_COUNT
-        self.login_url = "https://forum.exploit.in/index.php?act=Login&CODE=01"
+        self.login_url = "http://verified2ebdpvms.onion/index.php"
         self.topic_url = "http://verified2ebdpvms.onion/showthread.php?t={}"
         self.session = Session()
         self.session.proxies = {}
-        self.session.proxies['http'] = 'socks5h://localhost:9050'
-        self.session.proxies['https'] = 'socks5h://localhost:9050'
-        self.set_output_path()
-
-    def set_output_path(self):
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        self.output_path = OUTPUT_PATH\
-            if OUTPUT_PATH else '{}/verified'.format(current_path)
-
-        if not os.path.exists(self.output_path):
-            os.makedirs(self.output_path)
+        self.session.proxies['http'] = kwargs.get('proxy')
+        self.session.proxies['https'] = kwargs.get('proxy')
+        self.output_path = kwargs.get('output')
+        self.username = kwargs.get('user')
+        self.password = kwargs.get('password')
 
     def get_html_response(self, content):
         html_response = fromstring(content)
         return html_response
 
     def login(self):
+        if not self.username:
+            print('Username not provided')
+            return
+        if not self.password:
+            print('Password not provided')
+            return
         payload = {
-            'vb_login_username': USERNAME,
-            'vb_login_password': PASSWORD,
+            'vb_login_username': self.username,
+            'vb_login_password': self.password,
         }
         login_response = self.session.post(self.login_url, data=payload)
         html_response = self.get_html_response(login_response.content)
@@ -122,6 +114,9 @@ class VerifiedScrapper:
 
     def do_scrape(self):
         print('**************  Started verified Scrapper **************\n')
+        if not self.session.proxies['http']:
+            print('Proxy required...')
+            return
         if not self.login():
             print('Login failed! Exiting...')
             return

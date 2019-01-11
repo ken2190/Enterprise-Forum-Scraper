@@ -10,15 +10,9 @@ from lxml.html import fromstring
 TOPIC_START_COUNT = 500
 TOPIC_END_COUNT = 900
 
-"""
-If OUTPUT_PATH not set, then, a new folder "breachforums" will be created
-inside current script's path and files will be saved inside this new folder.
-"""
-OUTPUT_PATH = None
-
 
 class BreachForumsScrapper:
-    def __init__(self):
+    def __init__(self, kwargs):
         self.topic_start_count = TOPIC_START_COUNT
         self.topic_end_count = TOPIC_END_COUNT
         self.site_link = "https://breachforums.com/"
@@ -29,15 +23,7 @@ class BreachForumsScrapper:
                           'Chrome/71.0.3578.98 Safari/537.36'
         }
         self.session = Session()
-        self.set_output_path()
-
-    def set_output_path(self):
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        self.output_path = OUTPUT_PATH\
-            if OUTPUT_PATH else '{}/breachforums'.format(current_path)
-
-        if not os.path.exists(self.output_path):
-            os.makedirs(self.output_path)
+        self.output_path = kwargs.get('output')
 
     def get_html_response(self, content):
         html_response = fromstring(content)

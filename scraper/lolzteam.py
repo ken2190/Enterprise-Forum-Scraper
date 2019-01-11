@@ -10,15 +10,9 @@ from lxml.html import fromstring
 TOPIC_START_COUNT = 641000
 TOPIC_END_COUNT = 641200
 
-"""
-If OUTPUT_PATH not set, then, a new folder "lolzteam" will be created
-inside current script's path and files will be saved inside this new folder.
-"""
-OUTPUT_PATH = None
-
 
 class LolzScrapper:
-    def __init__(self):
+    def __init__(self, kwargs):
         self.topic_start_count = TOPIC_START_COUNT
         self.topic_end_count = TOPIC_END_COUNT
         self.site_link = "https://lolzteam.net/"
@@ -30,15 +24,7 @@ class LolzScrapper:
             'cookie': 'xf_id=f60b62ee46a315a39be744c1ef0b50a6'
         }
         self.session = Session()
-        self.set_output_path()
-
-    def set_output_path(self):
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        self.output_path = OUTPUT_PATH\
-            if OUTPUT_PATH else '{}/lolzteam'.format(current_path)
-
-        if not os.path.exists(self.output_path):
-            os.makedirs(self.output_path)
+        self.output_path = kwargs.get('output')
 
     def get_html_response(self, content):
         html_response = fromstring(content)
