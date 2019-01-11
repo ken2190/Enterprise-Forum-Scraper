@@ -12,7 +12,7 @@ class BrokenPage(Exception):
     pass
 
 
-class andromeda_parser:
+class AndromedaParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder

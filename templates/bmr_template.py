@@ -10,7 +10,7 @@ class BrokenPage(Exception):
     pass
 
 
-class bmr_parser:
+class BMRParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.files = self.get_filtered_files(files)

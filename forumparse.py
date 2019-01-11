@@ -1,30 +1,34 @@
 import argparse
 import os
 from glob import glob
-from templates.oday_template import oday_parser
-from templates.bmr_template import bmr_parser
-from templates.evolution_template import evolution_parser
-from templates.agora_template import agora_parser
-from templates.therealdeal_template import therealdeal_parser
-from templates.abraxas_template import abraxas_parser
-from templates.kiss_template import kiss_parser
-from templates.andromeda_template import andromeda_parser
-from templates.darknetheroes_template import darknetheroes_parser
-from templates.exploit_template import exploit_parser
+from templates.oday_template import OdayParser
+from templates.bmr_template import BMRParser
+from templates.evolution_template import EvolutionParser
+from templates.agora_template import AgoraParser
+from templates.therealdeal_template import TheRealDealParser
+from templates.abraxas_template import AbraxasParser
+from templates.kiss_template import KissParser
+from templates.andromeda_template import AndromedaParser
+from templates.darknetheroes_template import DarkNetHeroesParser
+from templates.exploit_template import ExploitParser
+from templates.antichat_template import AntichatParser
+from templates.breachforums_template import BreachForumsParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
-    '0day': oday_parser,
-    'bmr': bmr_parser,
-    'evolution': evolution_parser,
-    'agora': agora_parser,
-    'therealdeal': therealdeal_parser,
-    'abraxas': abraxas_parser,
-    'kiss': kiss_parser,
-    'andromeda': andromeda_parser,
-    'darknetheroes': darknetheroes_parser,
-    'diabolus': darknetheroes_parser,
-    'exploit': exploit_parser,
+    '0day': OdayParser,
+    'bmr': BMRParser,
+    'evolution': EvolutionParser,
+    'agora': AgoraParser,
+    'therealdeal': TheRealDealParser,
+    'abraxas': AbraxasParser,
+    'kiss': KissParser,
+    'andromeda': AndromedaParser,
+    'darknetheroes': DarkNetHeroesParser,
+    'diabolus': DarkNetHeroesParser,
+    'exploit': ExploitParser,
+    'antichat': AntichatParser,
+    'breachforums': BreachForumsParser,
 }
 
 
