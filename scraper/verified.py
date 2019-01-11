@@ -6,6 +6,11 @@ from requests import Session
 from lxml.html import fromstring
 
 
+# Credentials
+USERNAME = "NightCat"
+PASSWORD = "2PK&fx2i%yL%FsIMwJaE5gfr"
+
+
 # Topic Counter
 TOPIC_START_COUNT = 100
 TOPIC_END_COUNT = 1000
@@ -33,11 +38,9 @@ class VerifiedScrapper:
 
     def login(self):
         if not self.username:
-            print('Username not provided')
-            return
+            self.username = USERNAME
         if not self.password:
-            print('Password not provided')
-            return
+            self.password = PASSWORD
         payload = {
             'vb_login_username': self.username,
             'vb_login_password': self.password,
