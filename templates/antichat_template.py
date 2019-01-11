@@ -5,6 +5,7 @@ from collections import OrderedDict
 import traceback
 import json
 import utils
+import datetime
 from lxml.html import fromstring
 
 
@@ -152,8 +153,12 @@ class AntichatParser:
             '/span/text()'
         )
         date = date_block[0].strip() if date_block else ""
-
-        return date
+        try:
+            pattern = '%d %b  %Y'
+            date = datetime.datetime.strptime(date, pattern).timestamp()
+            return str(date)
+        except:
+            return ""
 
     def get_author(self, tag):
         author = tag.xpath(

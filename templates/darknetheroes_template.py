@@ -5,6 +5,7 @@ from collections import OrderedDict
 import traceback
 import json
 import utils
+import datetime
 
 
 class BrokenPage(Exception):
@@ -148,7 +149,12 @@ class DarkNetHeroesParser:
         date_pattern = re.compile(r'(.*)\s+')
         match = date_pattern.findall(date[-1])
         date = match[0].strip() if match else None
-        return date
+        try:
+            pattern = '%B %d, %Y, %H:%M'
+            date = datetime.datetime.strptime(date, pattern).timestamp()
+            return str(date)
+        except:
+            return ""
 
     def get_author(self, tag):
         author = tag.xpath(

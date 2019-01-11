@@ -4,6 +4,7 @@ from collections import OrderedDict
 import traceback
 import json
 import utils
+import datetime
 
 
 class BrokenPage(Exception):
@@ -137,7 +138,12 @@ class BMRParser:
                 '/a/text()'
         )
         date = date[0].strip() if date else None
-        return date
+        try:
+            pattern = '%Y-%m-%d %H:%M'
+            date = datetime.datetime.strptime(date, pattern).timestamp()
+            return str(date)
+        except:
+            return ""
 
     def get_author(self, tag):
         author = tag.xpath(

@@ -4,6 +4,7 @@ from collections import OrderedDict
 import traceback
 import json
 import utils
+import datetime
 
 
 class BrokenPage(Exception):
@@ -123,6 +124,13 @@ class OdayParser:
                 'td/span[@class="smalltext"]/text()'
             )
             comment_date = comment_date[0] if comment_date else None
+            try:
+                pattern = '%m-%d-%Y'
+                comment_date = str(datetime.datetime
+                                   .strptime(comment_date, pattern)
+                                   .timestamp())
+            except:
+                comment_date = ""
             comments.append({
                 'pid': self.thread_id.replace('thread-', ''),
                 'date': comment_date,
@@ -147,6 +155,13 @@ class OdayParser:
                 '/span/text()'
                 )
             date = date[0].strip() if date else None
+            try:
+                pattern = '%m-%d-%Y'
+                date = str(datetime.datetime
+                           .strptime(date, pattern)
+                           .timestamp())
+            except:
+                date = ""
             if not date:
                 text = "The specified thread does not exist"
                 if html_response.xpath(

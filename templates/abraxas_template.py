@@ -4,6 +4,7 @@ import re
 from collections import OrderedDict
 import traceback
 import json
+import datetime
 import utils
 
 
@@ -146,7 +147,12 @@ class AbraxasParser:
         date_pattern = re.compile(r'(.*[aApP][mM])')
         match = date_pattern.findall(date[-1])
         date = match[0].strip() if match else None
-        return date
+        try:
+            pattern = '%B %d, %Y, %I:%M:%S  %p'
+            date = datetime.datetime.strptime(date, pattern).timestamp()
+            return str(date)
+        except:
+            return ""
 
     def get_author(self, tag):
         author = tag.xpath(
