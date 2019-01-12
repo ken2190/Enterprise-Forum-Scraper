@@ -33,6 +33,10 @@ class Scraper:
             '-u', '--user', help='username to login', required=False)
         parser.add_argument(
             '-p', '--password', help='password to login', required=False)
+        parser.add_argument(
+            '-ts', '--topic_start', help='starting topic no.', required=True)
+        parser.add_argument(
+            '-te', '--topic_end', help='ending topic no.', required=True)
         args = parser.parse_args()
         return args._get_kwargs()
         # return args.template, args.output, args.proxy, args.user, args.password

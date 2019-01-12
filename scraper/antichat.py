@@ -13,8 +13,8 @@ TOPIC_END_COUNT = 56800
 
 class AntichatScrapper:
     def __init__(self, kwargs):
-        self.topic_start_count = TOPIC_START_COUNT
-        self.topic_end_count = TOPIC_END_COUNT
+        self.topic_start_count = int(kwargs.get('topic_start'))
+        self.topic_end_count = int(kwargs.get('topic_end')) + 1
         self.site_link = "https://forum.antichat.ru/"
         self.topic_url = self.site_link + "threads/{}/"
         self.headers = {

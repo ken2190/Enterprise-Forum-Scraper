@@ -20,8 +20,8 @@ PROXY = "socks5h://localhost:9050"
 
 class VerifiedScrapper:
     def __init__(self, kwargs):
-        self.topic_start_count = TOPIC_START_COUNT
-        self.topic_end_count = TOPIC_END_COUNT
+        self.topic_start_count = int(kwargs.get('topic_start'))
+        self.topic_end_count = int(kwargs.get('topic_end')) + 1
         self.login_url = "http://verified2ebdpvms.onion/index.php"
         self.topic_url = "http://verified2ebdpvms.onion/showthread.php?t={}"
         self.headers = {
