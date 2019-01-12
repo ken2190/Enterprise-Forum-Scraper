@@ -13,6 +13,7 @@ SCRAPER_MAP = {
     'exploit': ExploitScrapper,
     'lolzteam': LolzScrapper,
     'verified': VerifiedScrapper,
+    'verified1': VerifiedScrapper,
 }
 
 

@@ -12,16 +12,16 @@ PASSWORD = "2PK&fx2i%yL%FsIMwJaE5gfr"
 
 
 # Topic Counter
-TOPIC_START_COUNT = 70
-TOPIC_END_COUNT = 100000
+TOPIC_START_COUNT = 100001
+TOPIC_END_COUNT = 208230
 
 PROXY = "socks5h://localhost:9050"
 
 
 class VerifiedScrapper:
     def __init__(self, kwargs):
-        self.topic_start_count = int(kwargs.get('topic_start'))
-        self.topic_end_count = int(kwargs.get('topic_end')) + 1
+        self.topic_start_count = TOPIC_START_COUNT
+        self.topic_end_count = TOPIC_END_COUNT
         self.login_url = "http://verified2ebdpvms.onion/index.php"
         self.topic_url = "http://verified2ebdpvms.onion/showthread.php?t={}"
         self.headers = {
