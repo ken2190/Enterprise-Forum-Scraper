@@ -13,6 +13,7 @@ from templates.darknetheroes_template import DarkNetHeroesParser
 from templates.exploit_template import ExploitParser
 from templates.antichat_template import AntichatParser
 from templates.breachforums_template import BreachForumsParser
+from templates.greysec_template import GreySecParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -29,6 +30,7 @@ PARSER_MAP = {
     'exploit': ExploitParser,
     'antichat': AntichatParser,
     'breachforums': BreachForumsParser,
+    'greysec': GreySecParser,
 }
 
 
