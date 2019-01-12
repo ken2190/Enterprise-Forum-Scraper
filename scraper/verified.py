@@ -12,8 +12,8 @@ PASSWORD = "2PK&fx2i%yL%FsIMwJaE5gfr"
 
 
 # Topic Counter
-TOPIC_START_COUNT = 100
-TOPIC_END_COUNT = 1000
+TOPIC_START_COUNT = 208130
+TOPIC_END_COUNT = 208230
 
 PROXY = "socks5h://localhost:9050"
 
@@ -24,6 +24,17 @@ class VerifiedScrapper:
         self.topic_end_count = TOPIC_END_COUNT
         self.login_url = "http://verified2ebdpvms.onion/index.php"
         self.topic_url = "http://verified2ebdpvms.onion/showthread.php?t={}"
+        self.headers = {
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                          'AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/71.0.3578.98 Safari/537.36',
+            'cookie': 'IDstack=52f6ee8010f343029d3c2db65073fc619b89e8b26c46ed719cb17135185ea345%3A8022b4660875732455424ca98da29997c7d26a95eece3715c8ddf86573563ef5; '
+                      'bblastvisit=1547272348; '
+                      'bblastactivity=0; '
+                      'bbuserid=60413; '
+                      'bbpassword=b36ed0f2813a0b74ddf98e709c925d67; '
+                      'bbsessionhash=b44349dc1940d57af030efc8c58472c3'
+        }
         self.session = Session()
         self.session.proxies = {}
         self.session.proxies['http'] = kwargs.get('proxy')
@@ -36,25 +47,10 @@ class VerifiedScrapper:
         html_response = fromstring(content)
         return html_response
 
-    def login(self):
-        if not self.username:
-            self.username = USERNAME
-        if not self.password:
-            self.password = PASSWORD
-        payload = {
-            'vb_login_username': self.username,
-            'vb_login_password': self.password,
-        }
-        login_response = self.session.post(self.login_url, data=payload)
-        html_response = self.get_html_response(login_response.content)
-        if html_response.xpath('//form[@action="register.php"]'):
-            return False
-        return True
-
     def get_page_content(self, url):
         time.sleep(0.5)
         try:
-            response = self.session.get(url)
+            response = self.session.get(url, headers=self.headers)
             content = response.content
             html_response = self.get_html_response(content)
             if html_response.xpath('//div[@class="errorwrap"]'):
@@ -120,10 +116,6 @@ class VerifiedScrapper:
         if not self.session.proxies['http']:
             print('Proxy required...')
             return
-        if not self.login():
-            print('Login failed! Exiting...')
-            return
-        print('Login Successful!')
         # ----------------go to topic ------------------
         for topic in range(self.topic_start_count, self.topic_end_count):
             try:
