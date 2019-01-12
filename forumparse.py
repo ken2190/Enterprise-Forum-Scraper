@@ -14,6 +14,8 @@ from templates.exploit_template import ExploitParser
 from templates.antichat_template import AntichatParser
 from templates.breachforums_template import BreachForumsParser
 from templates.greysec_template import GreySecParser
+from templates.pandora_template import PandoraParser
+from templates.thehub_template import TheHubParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -31,6 +33,8 @@ PARSER_MAP = {
     'antichat': AntichatParser,
     'breachforums': BreachForumsParser,
     'greysec': GreySecParser,
+    'pandora': PandoraParser,
+    'thehub': TheHubParser,
 }
 
 
