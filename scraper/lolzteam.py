@@ -25,6 +25,10 @@ class LolzScrapper:
         }
         self.session = Session()
         self.output_path = kwargs.get('output')
+        if kwargs.get('proxy'):
+            self.session.proxies = {}
+            self.session.proxies['http'] = kwargs.get('proxy')
+            self.session.proxies['https'] = kwargs.get('proxy')
 
     def get_html_response(self, content):
         html_response = fromstring(content)
