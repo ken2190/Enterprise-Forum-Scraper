@@ -16,6 +16,8 @@ from templates.breachforums_template import BreachForumsParser
 from templates.greysec_template import GreySecParser
 from templates.pandora_template import PandoraParser
 from templates.thehub_template import TheHubParser
+from templates.utopia_template import UtopiaParser
+# from templates.kickass_template import KickAssParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -35,6 +37,8 @@ PARSER_MAP = {
     'greysec': GreySecParser,
     'pandora': PandoraParser,
     'thehub': TheHubParser,
+    'utopia': UtopiaParser,
+    # 'kickass': KickAssParser,
 }
 
 
