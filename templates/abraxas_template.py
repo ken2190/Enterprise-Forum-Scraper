@@ -69,7 +69,7 @@ class AbraxasParser:
                         str(self.output_folder),
                         pid
                     )
-                    file_pointer = open(output_file, 'w')
+                    file_pointer = open(output_file, 'w', encoding='utf-8')
                     utils.write_json(file_pointer, data)
                 # extract comments
                 comments.extend(self.extract_comments(html_response))
