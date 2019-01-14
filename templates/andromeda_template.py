@@ -130,12 +130,14 @@ class AndromedaParser:
             comment_date = self.get_date(comment_block)
             pid = self.get_pid()
             comments.append({
-                'pid': pid,
-                'date': comment_date,
-                'text': comment_text.strip(),
-                'commentID': commentID,
-                'user': user,
-                'authorID': authorID,
+                '_type': "forum",
+                '_source': {
+                    'pid': pid,
+                    'd': comment_date,
+                    'm': comment_text.strip(),
+                    'cid': commentID,
+                    'a': user,
+                },
             })
         return comments
 
@@ -157,13 +159,14 @@ class AndromedaParser:
             post_text = self.get_post_text(header[0])
             pid = self.get_pid()
             return {
-                'pid': pid,
-                'title': title,
-                'date': date,
-                'author': author,
-                'author_link': author_link,
-                'text': post_text.strip(),
-                'type': "post"
+                '_type': "forum",
+                '_source': {
+                    'pid': pid,
+                    's': title,
+                    'd': date,
+                    'a': author,
+                    'm': post_text.strip(),
+                }
             }
         except:
             ex = traceback.format_exc()

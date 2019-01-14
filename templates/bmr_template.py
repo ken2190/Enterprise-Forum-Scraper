@@ -94,12 +94,14 @@ class BMRParser:
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             comments.append({
-                'pid': self.thread_id.split('id=')[-1],
-                'date': comment_date,
-                'text': comment_text.strip(),
-                'commentID': commentID,
-                'user': user,
-                'authorID': authorID,
+                '_type': "forum",
+                '_source': {
+                    'pid': self.thread_id.split('id=')[-1],
+                    'd': comment_date,
+                    'm': comment_text.strip(),
+                    'cid': commentID,
+                    'a': user,
+                },
             })
         return comments
 
@@ -120,13 +122,14 @@ class BMRParser:
             post_text = self.get_post_text(header[0])
 
             return {
-                'pid': self.thread_id.split('id=')[-1],
-                'title': title,
-                'date': date,
-                'author': author,
-                'author_link': author_link,
-                'text': post_text.strip(),
-                'type': "post"
+                '_type': "forum",
+                '_source': {
+                    'pid': self.thread_id.split('id=')[-1],
+                    's': title,
+                    'd': date,
+                    'a': author,
+                    'm': post_text.strip(),
+                }
             }
         except:
             ex = traceback.format_exc()

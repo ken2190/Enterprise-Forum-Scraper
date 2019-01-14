@@ -10,6 +10,37 @@ from lxml.html import fromstring
 TOPIC_START_COUNT = 641000
 TOPIC_END_COUNT = 641200
 
+data = {
+    "login": "darkcylon1@protonmail.com",
+    "password": "Night#Kgg2",
+    "remember": "1",
+    "stop_brute_pls": "1",
+    "cookie_check": "1",
+    "_xfToken": "",
+}
+
+headers = {
+    "TE": "Trailers",
+    "Host": "lolzteam.net",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:64.0) Gecko/20100101 Firefox/64.0",
+
+}
+
+
+
+headers = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Connection": "keep-alive",
+    "Cookie": "xf_id=2f6539f788522e5b59f8bcaaaf47afef; G_ENABLED_IDPS=google; xf_session=8834fa672a7f69c7abda0e48a59eca13",
+    "Host": "lolzteam.net",
+    "If-Modified-Since": "Sun, 13 Jan 2019 14:56:01 GMT",
+    "TE": "Trailers",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:64.0) Gecko/20100101 Firefox/64.0",
+
+}
 
 class LolzScrapper:
     def __init__(self, kwargs):

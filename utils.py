@@ -44,25 +44,25 @@ def write_comments(file_pointer, comments, output_file):
     writes each comment sequentially in file object `file_pointer`
     """
     comments = sorted(
-        comments, key=lambda k: int(k['commentID'])
+        comments, key=lambda k: int(k['_source']['cid'])
     )
-    # Exclude similar comments (same date,user,id)
+    # Exclude similar comments (same date,a,id)
     seen = set()
     comments = [
         c for c in comments
-        if [(c['commentID'], c['user'], c['date'])
+        if [(c['_source']['cid'], c['_source']['a'], c['_source']['d'])
             not in seen, seen.add((
-                c['commentID'],
-                c['user'],
-                c['date']
+                c['_source']['cid'],
+                c['_source']['a'],
+                c['_source']['d']
             ))][0]
     ]
 
     # If same ids, then update ids
     for index, c in enumerate(comments):
-        previous_comments = [cm['commentID'] for cm in comments[:index]]
-        if index != 0 and c['commentID'] in previous_comments:
-            c['commentID'] = str(int(comments[index-1]['commentID']) + 1)
+        previous_comments = [cm['_source']['cid'] for cm in comments[:index]]
+        if index != 0 and c['_source']['cid'] in previous_comments:
+            c['_source']['cid'] = str(int(comments[index-1]['_source']['cid']) + 1)
 
     for comment in comments:
         write_json(file_pointer, comment)
