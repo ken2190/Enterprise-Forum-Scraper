@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 import os
 import json
 from lxml.html import fromstring
@@ -34,7 +35,7 @@ def write_json(file_pointer, data):
     """
     writes `data` in file object `file_pointer`.
     """
-    json_file = json.dumps(data, indent=4)
+    json_file = json.dumps(data, indent=4, ensure_ascii=False)
     file_pointer.write(json_file)
     file_pointer.write('\n')
 
