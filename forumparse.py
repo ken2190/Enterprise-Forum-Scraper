@@ -18,6 +18,8 @@ from templates.pandora_template import PandoraParser
 from templates.thehub_template import TheHubParser
 from templates.utopia_template import UtopiaParser
 from templates.kickass_template import KickAssParser
+from templates.darkode_template import DarkodeParser
+# from templates.greyroad_template import GreyRoadParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -39,6 +41,8 @@ PARSER_MAP = {
     'thehub': TheHubParser,
     'utopia': UtopiaParser,
     'ka': KickAssParser,
+    'darkode': DarkodeParser,
+    # 'greyroad': GreyRoadParser,
 }
 
 
