@@ -6,6 +6,7 @@ from scraper.breachforums import BreachForumsScrapper
 from scraper.exploit import ExploitScrapper
 from scraper.lolzteam import LolzScrapper
 from scraper.verified import VerifiedScrapper
+from scraper.sentryMBA import SentryMBAScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -14,6 +15,7 @@ SCRAPER_MAP = {
     'lolzteam': LolzScrapper,
     'verified': VerifiedScrapper,
     'verified1': VerifiedScrapper,
+    'sentrymba': SentryMBAScrapper
 }
 
 
