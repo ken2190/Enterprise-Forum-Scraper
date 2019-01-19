@@ -29,7 +29,7 @@ class BitCoinTalkScrapper:
         return html_response
 
     def get_page_content(self, url):
-        time.sleep(0.5)
+        time.sleep(1)
         try:
             response = self.session.get(url, headers=self.headers)
             content = response.content
@@ -39,6 +39,9 @@ class BitCoinTalkScrapper:
                '"The topic or board you are looking for appears to '
                'be either missing or off limits to you")]'):
                 return
+            if html_response.xpath(
+               '//h1[contains(text(),"Too fast / overloaded")]'):
+                return get_page_content(self, url)
             return content
         except:
             return
