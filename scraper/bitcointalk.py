@@ -47,13 +47,14 @@ class BitCoinTalkScrapper:
             return
 
     def process_first_page(self, topic):
+        initial_file = '{}/{}.html'.format(self.output_path, topic)
+        if os.path.exists(initial_file):
+            return
         url = self.topic_url.format(topic)
         content = self.get_page_content(url)
         if not content:
             print('No data for url: {}'.format(url))
             return
-
-        initial_file = '{}/{}.html'.format(self.output_path, topic)
         with open(initial_file, 'wb') as f:
             f.write(content)
         print('{} done..!'.format(topic))
