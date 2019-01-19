@@ -21,6 +21,7 @@ from templates.kickass_template import KickAssParser
 from templates.darkode_template import DarkodeParser
 from templates.greyroad_template import GreyRoadParser
 from templates.sentrymba_template import SentryMBAParser
+from templates.bitcointalk_template import BitCoinTalkParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -45,6 +46,7 @@ PARSER_MAP = {
     'darkode': DarkodeParser,
     'greyroad': GreyRoadParser,
     'sentrymba': SentryMBAParser,
+    'bitcointalk': BitCoinTalkParser,
 }
 
 
