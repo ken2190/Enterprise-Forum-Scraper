@@ -1,7 +1,6 @@
 # -- coding: utf-8 --
 import os
 import re
-from collections import OrderedDict
 import traceback
 import json
 import utils
@@ -13,13 +12,11 @@ class BrokenPage(Exception):
     pass
 
 
-class SentryMBAParser:
+class Bungee54Parser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
-        self.thread_name_pattern = re.compile(
-            r'(\d+).*html'
-        )
+        self.thread_name_pattern = re.compile(r'viewtopic\.php.*id=(\d+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -27,6 +24,12 @@ class SentryMBAParser:
         self.thread_id = None
         # main function
         self.main()
+
+    def get_pid(self):
+        pid_pattern = re.compile(r'id=(\d+)')
+        pid = pid_pattern.findall(self.thread_id)
+        pid = pid[0] if pid else self.thread_id
+        return pid
 
     def get_filtered_files(self, files):
         filtered_files = list(
@@ -53,7 +56,8 @@ class SentryMBAParser:
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
-                pid = self.thread_id = match[0]
+                self.thread_id = match[0]
+                pid = self.get_pid()
                 final = utils.is_file_final(
                     self.thread_id, self.thread_name_pattern, self.files, index
                 )
@@ -94,8 +98,7 @@ class SentryMBAParser:
     def extract_comments(self, html_response):
         comments = list()
         comment_blocks = html_response.xpath(
-          '//div[@id="posts"]/div[@class="postbit"]'
-          '/div[contains(@class,"standard")]'
+          '//div[@class="main-content main-topic"]/div'
         )
         for comment_block in comment_blocks:
             user = self.get_author(comment_block)
@@ -104,7 +107,7 @@ class SentryMBAParser:
                 continue
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
-            pid = self.thread_id
+            pid = self.get_pid()
             comments.append({
                 '_type': "forum",
                 '_source': {
@@ -122,18 +125,17 @@ class SentryMBAParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[@id="posts"]/div[@class="postbit"]'
-                '/div[contains(@class,"standard")]'
+                '//div[@class="main-content main-topic"]/div'
             )
             if not header:
                 return
-            if not self.get_comment_id(header[0]) == "1":
-                return
-            title = self.get_title(header[0])
+            # if not self.get_comment_id(header[0]) == "1":
+            #     return
+            title = self.get_title(html_response)
             date = self.get_date(header[0])
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])
-            pid = self.thread_id
+            pid = self.get_pid()
             return {
                 '_type': "forum",
                 '_source': {
@@ -150,12 +152,12 @@ class SentryMBAParser:
 
     def get_date(self, tag):
         date_block = tag.xpath(
-            'div/div[@class="head"]/text()'
+            'div//span[@class="post-link"]/a/text()'
         )
         date = date_block[0].strip() if date_block else ""
 
         try:
-            pattern = '%m-%d-%Y, %I:%M %p'
+            pattern = "%Y-%m-%d %H:%M:%S"
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
@@ -163,13 +165,11 @@ class SentryMBAParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            'div/div[@class="style"]'
-            '//strong/text()'
+            'div//span[@class="post-byline"]/strong/text()'
         )
         if not author:
             author = tag.xpath(
-                'div//div[@class="uix_userTextInner"]'
-                '/a[@class="username"]/span/text()'
+                'div//span[@class="post-byline"]/em/a/text()'
             )
 
         author = author[0].strip() if author else None
@@ -177,15 +177,14 @@ class SentryMBAParser:
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//div[@class="subject"]/text()'
+            '//h1[@class="main-title"]/a/text()'
         )
         title = title[0].strip() if title else None
         return title
 
     def get_post_text(self, tag):
         post_text = tag.xpath(
-            'div[@class="content"]/'
-            'div[@class="text scaleimages post_body scaleimages"]/text()'
+            'div//div[@class="entry-content"]/*/text()'
         )
 
         post_text = "\n".join(
@@ -195,8 +194,7 @@ class SentryMBAParser:
 
     def get_comment_id(self, tag):
         comment_block = tag.xpath(
-            'div/div[@class="head"]/div[@class="right"]'
-            '/a/text()'
+            'div//span[@class="post-num"]/text()'
         )
         if comment_block:
             commentID = comment_block[0].split('#')[-1].replace(',', '')
