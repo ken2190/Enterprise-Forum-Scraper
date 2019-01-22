@@ -1,3 +1,4 @@
+import os
 import time
 import traceback
 from requests import Session
@@ -47,13 +48,15 @@ class BaseScrapper:
         ignore_xpath=None,
         continue_xpath=None
     ):
+        initial_file = '{}/{}.html'.format(self.output_path, topic)
+        if os.path.exists(initial_file):
+            return
         url = self.topic_url.format(topic)
         content = self.get_page_content(url, ignore_xpath, continue_xpath)
         if not content:
             print('No data for url: {}'.format(url))
             return
 
-        initial_file = '{}/{}.html'.format(self.output_path, topic)
         with open(initial_file, 'wb') as f:
             f.write(content)
         print('{} done..!'.format(topic))
