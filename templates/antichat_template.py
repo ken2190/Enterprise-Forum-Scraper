@@ -20,6 +20,7 @@ class AntichatParser:
         self.thread_name_pattern = re.compile(
             r'(\d+).*html'
         )
+        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.data_dic = OrderedDict()
@@ -107,6 +108,7 @@ class AntichatParser:
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             pid = self.thread_id
+            avatar = self.get_avatar(comment_block)
             comments.append({
                 '_type': "forum",
                 '_source': {
@@ -115,6 +117,7 @@ class AntichatParser:
                     'm': comment_text.strip(),
                     'cid': commentID,
                     'a': user,
+                    'avatar': avatar,
                 },
             })
         return comments
@@ -136,6 +139,7 @@ class AntichatParser:
             author_link = self.get_author_link(header[0])
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
+            avatar = self.get_avatar(header[0])
             return {
                 '_type': "forum",
                 '_source': {
@@ -144,6 +148,7 @@ class AntichatParser:
                     'd': date,
                     'a': author,
                     'm': post_text.strip(),
+                    'avatar': avatar,
                 }
             }
         except:
@@ -222,3 +227,15 @@ class AntichatParser:
             commentID = comment_block[0].split('#')[-1].replace(',', '')
             return commentID.replace(',', '')
         return ""
+
+    def get_avatar(self, tag):
+        avatar_block = tag.xpath(
+            'div//div[@class="uix_avatarHolderInner"]'
+            '/a/img/@src'
+        )
+        if not avatar_block:
+            return ""
+        name_match = self.avatar_name_pattern.findall(avatar_block[0])
+        if not name_match:
+            return ""
+        return name_match[0]

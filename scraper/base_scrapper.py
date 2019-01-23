@@ -1,6 +1,5 @@
 import os
 import time
-import traceback
 from requests import Session
 from lxml.html import fromstring
 
@@ -21,6 +20,12 @@ class BaseScrapper:
                 'http': kwargs.get('proxy'),
                 'https': kwargs.get('proxy'),
             }
+        self.ensure_avatar_path()
+
+    def ensure_avatar_path(self, ):
+        self.avatar_path = '{}/avatars'.format(self.output_path)
+        if not os.path.exists(self.avatar_path):
+            os.makedirs(self.avatar_path)
 
     def get_html_response(self, content):
         html_response = fromstring(content)
@@ -39,7 +44,6 @@ class BaseScrapper:
                     url, ignore_xpath, continue_xpath)
             return content
         except:
-            traceback.print_exc()
             return
 
     def process_first_page(
@@ -69,3 +73,17 @@ class BaseScrapper:
             if not paginated_content:
                 return
             response = self.get_html_response(paginated_content)
+            avatar_info = self.get_avatar_info(response)
+            for name, url in avatar_info.items():
+                self.save_avatar(name, url)
+
+    def save_avatar(self, name, url):
+        avatar_file = '{}/{}'.format(self.avatar_path, name)
+        if os.path.exists(avatar_file):
+            return
+        response = self.session.get(url)
+        if not response.status_code == 200:
+            return
+        content = response.content
+        with open(avatar_file, 'wb') as f:
+            f.write(content)
