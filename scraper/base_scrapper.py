@@ -36,7 +36,7 @@ class BaseScrapper:
                 return
             if continue_xpath and html_response.xpath(continue_xpath):
                 return self.get_page_content(
-                    self, url, ignore_xpath, continue_xpath)
+                    url, ignore_xpath, continue_xpath)
             return content
         except:
             traceback.print_exc()
