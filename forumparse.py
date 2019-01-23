@@ -27,6 +27,7 @@ from templates.bungee54_template import Bungee54Parser
 from templates.cannabisroad_template import CannabisRoadParser
 from templates.hydra_template import HydraParser
 from templates.kingdom_template import KingdomParser
+from templates.nucleus_template import NucleusParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -57,6 +58,7 @@ PARSER_MAP = {
     'cannabisroad': CannabisRoadParser,
     'hydra': HydraParser,
     'kingdom': KingdomParser,
+    'nucleus': NucleusParser,
 }
 
 
