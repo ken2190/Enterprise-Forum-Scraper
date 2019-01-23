@@ -112,12 +112,13 @@ class AntichatParser:
             comments.append({
                 '_type': "forum",
                 '_source': {
+                    'f': self.parser_name,
                     'pid': pid,
                     'd': comment_date,
                     'm': comment_text.strip(),
                     'cid': commentID,
                     'a': user,
-                    'avatar': avatar,
+                    'img': avatar,
                 },
             })
         return comments
@@ -143,12 +144,13 @@ class AntichatParser:
             return {
                 '_type': "forum",
                 '_source': {
+                    'f': self.parser_name,
                     'pid': pid,
                     's': title,
                     'd': date,
                     'a': author,
                     'm': post_text.strip(),
-                    'avatar': avatar,
+                    'img': avatar,
                 }
             }
         except:
