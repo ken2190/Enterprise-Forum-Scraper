@@ -42,6 +42,14 @@ class BaseScrapper:
             if continue_xpath and html_response.xpath(continue_xpath):
                 return self.get_page_content(
                     url, ignore_xpath, continue_xpath)
+            if html_response.xpath(self.cloudfare_error):
+                if self.cloudfare_count < 5:
+                    self.cloudfare_count += 1
+                    time.sleep(60)
+                    return self.get_page_content(
+                        url, ignore_xpath, continue_xpath)
+                else:
+                    return
             return content
         except:
             return
@@ -52,6 +60,7 @@ class BaseScrapper:
         ignore_xpath=None,
         continue_xpath=None
     ):
+        self.cloudfare_count = 0
         initial_file = '{}/{}.html'.format(self.output_path, topic)
         if os.path.exists(initial_file):
             return
