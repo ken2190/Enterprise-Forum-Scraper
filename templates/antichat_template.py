@@ -109,17 +109,21 @@ class AntichatParser:
             comment_date = self.get_date(comment_block)
             pid = self.thread_id
             avatar = self.get_avatar(comment_block)
+            source = {
+                'f': self.parser_name,
+                'pid': pid,
+                'm': comment_text.strip(),
+                'cid': commentID,
+                'a': user,
+                'img': avatar,
+            }
+            if comment_date:
+                source.update({
+                    'd': comment_date
+                })
             comments.append({
                 '_type': "forum",
-                '_source': {
-                    'f': self.parser_name,
-                    'pid': pid,
-                    'd': comment_date,
-                    'm': comment_text.strip(),
-                    'cid': commentID,
-                    'a': user,
-                    'img': avatar,
-                },
+                '_source': source,
             })
         return comments
 
@@ -141,17 +145,21 @@ class AntichatParser:
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
+            source = {
+                'f': self.parser_name,
+                'pid': pid,
+                's': title,
+                'a': author,
+                'm': post_text.strip(),
+                'img': avatar,
+            }
+            if date:
+                source.update({
+                   'd': date
+                })
             return {
                 '_type': "forum",
-                '_source': {
-                    'f': self.parser_name,
-                    'pid': pid,
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
-                    'img': avatar,
-                }
+                '_source': source
             }
         except:
             ex = traceback.format_exc()
