@@ -1,3 +1,4 @@
+import traceback
 import os
 import time
 from requests import Session
@@ -34,7 +35,7 @@ class BaseScrapper:
     def get_page_content(self, url, ignore_xpath=None, continue_xpath=None):
         time.sleep(1)
         try:
-            response = self.session.get(url)
+            response = self.session.get(url, headers=self.headers)
             content = response.content
             html_response = self.get_html_response(content)
             if ignore_xpath and html_response.xpath(ignore_xpath):
@@ -42,7 +43,7 @@ class BaseScrapper:
             if continue_xpath and html_response.xpath(continue_xpath):
                 return self.get_page_content(
                     url, ignore_xpath, continue_xpath)
-            if html_response.xpath(self.cloudfare_error):
+            if self.cloudfare_error and html_response.xpath(self.cloudfare_error):
                 if self.cloudfare_count < 5:
                     self.cloudfare_count += 1
                     time.sleep(60)
@@ -52,6 +53,7 @@ class BaseScrapper:
                     return
             return content
         except:
+            # traceback.print_exc()
             return
 
     def process_first_page(

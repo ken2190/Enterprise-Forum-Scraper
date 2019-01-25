@@ -1,5 +1,6 @@
 import re
 import os
+import hashlib
 import time
 import traceback
 from requests import Session
@@ -8,8 +9,8 @@ from scraper.base_scrapper import BaseScrapper
 
 
 # Credentials
-USERNAME = "NightCat"
-PASSWORD = "2PK&fx2i%yL%FsIMwJaE5gfr"
+USERNAME = "DoZ3r"
+PASSWORD = "Clp#-1O93jhfx"
 
 
 # Topic Counter
@@ -22,7 +23,7 @@ PROXY = "socks5h://localhost:9050"
 class VerifiedScrapper(BaseScrapper):
     def __init__(self, kwargs):
         super(VerifiedScrapper, self).__init__(kwargs)
-        self.login_url = "http://verified2ebdpvms.onion/index.php"
+        self.login_url = "http://verified2ebdpvms.onion/login.php?do=login"
         self.topic_url = "http://verified2ebdpvms.onion/showthread.php?t={}"
         self.headers.update({
             'cookie': 'IDstack=52f6ee8010f343029d3c2db65073fc619b89e8b26c46ed719cb17135185ea345%3A8022b4660875732455424ca98da29997c7d26a95eece3715c8ddf86573563ef5; '
@@ -35,6 +36,7 @@ class VerifiedScrapper(BaseScrapper):
         self.username = kwargs.get('user')
         self.password = kwargs.get('password')
         self.ignore_xpath = '//div[@class="errorwrap"]'
+        self.cloudfare_error = None
 
     def write_paginated_data(self, html_response):
         next_page_block = html_response.xpath(
@@ -69,8 +71,31 @@ class VerifiedScrapper(BaseScrapper):
     def clear_cookies(self,):
         self.session.cookies['topicsread'] = ''
 
+    def login(self):
+        password = self.password or PASSWORD
+        md5_pass = hashlib.md5(password.encode('utf-8')).hexdigest()
+        payload = {
+            "do": "login",
+            "s": "",
+            "securitytoken": "guest",
+            "url": "/forum.php",
+            "vb_login_md5password": md5_pass,
+            "vb_login_md5password_utf": md5_pass,
+            "vb_login_password": "",
+            "vb_login_username": self.username or USERNAME
+        }
+        login_response = self.session.post(self.login_url, data=payload)
+        html_response = self.get_html_response(login_response.content)
+        if html_response.xpath('//form[@action="register.php"]'):
+            return False
+        return True
+
     def do_scrape(self):
         print('**************  Started verified Scrapper **************\n')
+        # if not self.login():
+        #     print('Login failed! Exiting...')
+        #     return
+        # print('Login Successful!')
         if not self.session.proxies.get('http'):
             self.session.proxies.update({
                 'http': PROXY,
