@@ -9,6 +9,7 @@ from scraper.lolzteam import LolzScrapper
 from scraper.verified import VerifiedScrapper
 from scraper.sentryMBA import SentryMBAScrapper
 from scraper.bitcointalk import BitCoinTalkScrapper
+from scraper.psbdmp import PasteBinScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -19,7 +20,8 @@ SCRAPER_MAP = {
     'verified': VerifiedScrapper,
     'verified1': VerifiedScrapper,
     'sentrymba': SentryMBAScrapper,
-    'bitcointalk': BitCoinTalkScrapper
+    'bitcointalk': BitCoinTalkScrapper,
+    'psbdmp': PasteBinScrapper
 }
 
 
