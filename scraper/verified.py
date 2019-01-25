@@ -36,7 +36,6 @@ class VerifiedScrapper(BaseScrapper):
         self.username = kwargs.get('user')
         self.password = kwargs.get('password')
         self.ignore_xpath = '//div[@class="errorwrap"]'
-        self.cloudfare_error = None
 
     def write_paginated_data(self, html_response):
         next_page_block = html_response.xpath(

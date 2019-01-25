@@ -21,6 +21,8 @@ class BaseScrapper:
                 'http': kwargs.get('proxy'),
                 'https': kwargs.get('proxy'),
             }
+        self.avatar_name_pattern = None
+        self.cloudfare_error = None
         self.ensure_avatar_path()
 
     def ensure_avatar_path(self, ):
