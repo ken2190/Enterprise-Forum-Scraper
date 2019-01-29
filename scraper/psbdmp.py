@@ -1,7 +1,7 @@
 import re
 import os
 import datetime
-from requests import Session
+import requests
 import time
 import traceback
 from lxml.html import fromstring
@@ -9,70 +9,54 @@ from lxml.html import fromstring
 
 class PasteBinScrapper:
     def __init__(self, kwargs):
-        self.api_url = 'https://psbdmp.ws/api/dump/get/timeval/{}/{}'
-        self.dump_url = 'https://pastebin.com/{}'
-        self.start_date = "2015/01/01"
+        self.base_url = 'https://psbdmp.ws'
+        self.daily_url = self.base_url + '/daily'
+        self.dump_url = 'https://psbdmp.ws/api/dump/get/{}'
         self.output_path = kwargs.get('output')
-        self.session = Session()
-        if kwargs.get('proxy'):
-            self.session.proxies = {
-                'http': kwargs.get('proxy'),
-                'https': kwargs.get('proxy'),
-            }
 
-    def get_ts(self,):
-        try:
-            pattern = '%Y/%m/%d'
-            start_date = datetime.datetime.strptime(self.start_date, pattern)
-            start_ts = int(start_date.timestamp())
-            end_date = start_date + datetime.timedelta(days=7)
-            end_ts = int(end_date.timestamp())
-            if end_ts > int(datetime.datetime.now().timestamp()):
-                return
-            self.start_date = end_date.strftime(pattern)
-            print('\n\nStart date: {}, End date: {}'
-                  .format(start_date, end_date))
-            return start_ts, end_ts
-        except:
-            traceback.print_exc()
-            return
-
-    def save_file(self, _id):
+    def save_file(self, dump_id, output_path):
         dump_file = '{}/{}.txt'.format(
-            self.output_path, _id
+            output_path, dump_id
         )
         if os.path.exists(dump_file):
             return
-        dump_url = self.dump_url.format(_id)
-        content = self.session.get(dump_url).content
-        if not content:
+        dump_url = self.dump_url.format(dump_id)
+        response = requests.get(dump_url).json()
+        if not response:
             return
-        html_response = fromstring(content)
-        raw_text = html_response.xpath(
-            '//textarea[@class="paste_code"]/text()'
-        )
-        if not raw_text:
-            print('IP banned')
+        if response.get('error_info'):
+            print(response['error_info'])
             return
         with open(dump_file, 'w') as f:
-            f.write(raw_text[0])
+            f.write(response['data'])
         print('{} done..!'.format(dump_file))
 
     def do_scrape(self):
         print('************  Pastebin Scrapper Started  ************\n')
-        while True:
-            ts = self.get_ts()
-            if not ts:
-                return
-            start_ts, end_ts = ts
+        content = requests.get(self.daily_url).content
+        html_response = fromstring(content)
+        daily_dumps = html_response.xpath(
+            '//div[@class="container"]/table//td')
+        for daily_dump in reversed(daily_dumps):
             try:
-                url = self.api_url.format(start_ts, end_ts)
-                response = self.session.get(url).json()
-                if response.get('error_info'):
-                    print(response['error_info'])
+                url = daily_dump.xpath('a/@href')
+                date = daily_dump.xpath('a/text()')
+                if not url:
                     continue
-                for data in response['data']:
-                    self.save_file(data['id'])
+                output_path = '{}/{}'.format(self.output_path, date[0])
+                if os.path.exists(output_path):
+                    continue
+                os.makedirs(output_path)
+                print('\nGetting dump for {}'.format(date[0]))
+                print('--------------------------------')
+                url = self.base_url + url[0]
+                content = requests.get(url).content
+                html_response = fromstring(content)
+                dump_ids = html_response.xpath(
+                    '//div[@class="container"]/table//td/a')
+                for dump_id in dump_ids:
+                    dump_id = dump_id.xpath('text()')[0]
+                    self.save_file(dump_id, output_path)
             except:
                 traceback.print_exc()
                 pass
