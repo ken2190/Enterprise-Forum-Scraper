@@ -57,6 +57,9 @@ class PasteBinScrapper:
         try:
             url = self.api_url.format(start_ts, end_ts)
             response = requests.get(url).json()
+            if response.get('error_info'):
+                print(response['error_info'])
+                return
             for data in response['data']:
                 self.save_file(data['id'])
         except:
