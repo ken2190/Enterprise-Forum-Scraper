@@ -23,8 +23,9 @@ PROXY = "socks5h://localhost:9050"
 class VerifiedScrapper(BaseScrapper):
     def __init__(self, kwargs):
         super(VerifiedScrapper, self).__init__(kwargs)
-        self.login_url = "http://verified2ebdpvms.onion/login.php?do=login"
-        self.topic_url = "http://verified2ebdpvms.onion/showthread.php?t={}"
+        self.site_link = "http://verified2ebdpvms.onion/"
+        self.login_url = self.site_link + "login.php?do=login"
+        self.topic_url = self.site_link + "showthread.php?t={}"
         self.headers.update({
             'cookie': 'IDstack=52f6ee8010f343029d3c2db65073fc619b89e8b26c46ed719cb17135185ea345%3A8022b4660875732455424ca98da29997c7d26a95eece3715c8ddf86573563ef5; '
                       'bblastvisit=1547272348; '
@@ -35,7 +36,7 @@ class VerifiedScrapper(BaseScrapper):
         })
         self.username = kwargs.get('user')
         self.password = kwargs.get('password')
-        self.ignore_xpath = '//div[@class="errorwrap"]'
+        self.ignore_xpath = '//div[contains(text(), "No Thread specified")]'
 
     def write_paginated_data(self, html_response):
         next_page_block = html_response.xpath(
@@ -51,7 +52,8 @@ class VerifiedScrapper(BaseScrapper):
         if not match:
             return
         topic, pagination_value = match[0]
-
+        if self.site_link not in next_page_url:
+            next_page_url = self.site_link + next_page_url
         content = self.get_page_content(
             next_page_url, self.ignore_xpath
         )
@@ -69,6 +71,23 @@ class VerifiedScrapper(BaseScrapper):
 
     def clear_cookies(self,):
         self.session.cookies['topicsread'] = ''
+
+    def get_avatar_info(self, html_response):
+        avatar_info = dict()
+        # Remaining task
+        # urls = html_response.xpath(
+        #     '//img[@class="avatarp radius100"]/@src'
+        # )
+        # for url in urls:
+        #     name_match = self.avatar_name_pattern.findall(url)
+        #     if not name_match:
+        #         continue
+        #     name = name_match[0]
+        #     if name not in avatar_info:
+        #         avatar_info.update({
+        #             name: url
+        #         })
+        return avatar_info
 
     def login(self):
         password = self.password or PASSWORD
@@ -108,6 +127,10 @@ class VerifiedScrapper(BaseScrapper):
                 )
                 if response is None:
                     continue
+
+                avatar_info = self.get_avatar_info(response)
+                for name, url in avatar_info.items():
+                    self.save_avatar(name, url)
 
                 # ------------clear cookies without logout--------------
                 self.clear_cookies()
