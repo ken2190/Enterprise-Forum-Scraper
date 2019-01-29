@@ -20,6 +20,7 @@ class SentryMBAParser:
         self.thread_name_pattern = re.compile(
             r'(\d+).*html'
         )
+        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -105,15 +106,22 @@ class SentryMBAParser:
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             pid = self.thread_id
+            avatar = self.get_avatar(comment_block)
+            source = {
+                'f': self.parser_name,
+                'pid': pid,
+                'm': comment_text.strip(),
+                'cid': commentID,
+                'a': user,
+                'img': avatar,
+            }
+            if comment_date:
+                source.update({
+                    'd': comment_date
+                })
             comments.append({
                 '_type': "forum",
-                '_source': {
-                    'pid': pid,
-                    'd': comment_date,
-                    'm': comment_text.strip(),
-                    'cid': commentID,
-                    'a': user,
-                },
+                '_source': source,
             })
         return comments
 
@@ -134,15 +142,23 @@ class SentryMBAParser:
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
+            avatar = self.get_avatar(header[0])
+            source = {
+                'f': self.parser_name,
+                'pid': pid,
+                's': title,
+                'd': date,
+                'a': author,
+                'img': avatar,
+                'm': post_text.strip(),
+            }
+            if date:
+                source.update({
+                   'd': date
+                })
             return {
                 '_type': "forum",
-                '_source': {
-                    'pid': pid,
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
-                }
+                '_source': source
             }
         except:
             ex = traceback.format_exc()
@@ -202,3 +218,14 @@ class SentryMBAParser:
             commentID = comment_block[0].split('#')[-1].replace(',', '')
             return commentID.replace(',', '')
         return ""
+
+    def get_avatar(self, tag):
+        avatar_block = tag.xpath(
+            'div//img[@class="avatarp radius100"]/@src'
+        )
+        if not avatar_block:
+            return ""
+        name_match = self.avatar_name_pattern.findall(avatar_block[0])
+        if not name_match:
+            return ""
+        return name_match[0]

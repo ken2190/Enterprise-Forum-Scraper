@@ -29,7 +29,7 @@ class SentryMBAScrapper(BaseScrapper):
             'origin': 'https://sentry.mba',
             'accept-encoding': 'gzip, deflate, br',
         })
-        self.avatar_name_pattern = None
+        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.cloudfare_count = 0
         self.cloudfare_error = '//p[contains(text(),"The web server '\
                                'reported a bad gateway error")]'
@@ -96,21 +96,18 @@ class SentryMBAScrapper(BaseScrapper):
 
     def get_avatar_info(self, html_response):
         avatar_info = dict()
-        # -----------Task left-----------------
-        # urls = html_response.xpath(
-        #     '//div[@class="uix_avatarHolderInner"]/a/img/@src'
-        # )
-        # for url in urls:
-        #     if self.site_link not in url:
-        #         url = self.site_link + url
-        #     name_match = self.avatar_name_pattern.findall(url)
-        #     if not name_match:
-        #         continue
-        #     name = name_match[0]
-        #     if name not in avatar_info:
-        #         avatar_info.update({
-        #             name: url
-        #         })
+        urls = html_response.xpath(
+            '//img[@class="avatarp radius100"]/@src'
+        )
+        for url in urls:
+            name_match = self.avatar_name_pattern.findall(url)
+            if not name_match:
+                continue
+            name = name_match[0]
+            if name not in avatar_info:
+                avatar_info.update({
+                    name: url
+                })
         return avatar_info
 
     def do_scrape(self):
@@ -119,6 +116,7 @@ class SentryMBAScrapper(BaseScrapper):
             print('Login failed! Exiting...')
             return
         print('Login Successful!')
+        self.headers.pop('accept-encoding')
         # ----------------go to topic ------------------
         for topic in range(self.topic_start_count, self.topic_end_count):
             try:
