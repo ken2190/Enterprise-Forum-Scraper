@@ -15,8 +15,8 @@ PASSWORD = "KA-Ir0np3ss!"
 
 
 # Topic Counter
-TOPIC_START_COUNT = 6727
-TOPIC_END_COUNT = 6729
+TOPIC_START_COUNT = 10
+TOPIC_END_COUNT = 7200
 
 PROXY = "socks5h://localhost:9050"
 
