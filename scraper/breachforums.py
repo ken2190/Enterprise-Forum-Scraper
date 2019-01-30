@@ -17,6 +17,7 @@ class BreachForumsScrapper(BaseScrapper):
         self.topic_url = self.site_link + "showthread.php?tid={}"
         self.ignore_xpath = '//td[contains(text(),'\
                             '"The specified thread does not exist")]'
+        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
 
     def write_paginated_data(self, html_response):
         next_page_block = html_response.xpath(
@@ -52,6 +53,22 @@ class BreachForumsScrapper(BaseScrapper):
     def clear_cookies(self,):
         self.session.cookies['topicsread'] = ''
 
+    def get_avatar_info(self, html_response):
+        avatar_info = dict()
+        urls = html_response.xpath(
+            '//div[@class="author_avatar"]/a/img/@src'
+        )
+        for url in urls:
+            name_match = self.avatar_name_pattern.findall(url)
+            if not name_match:
+                continue
+            name = name_match[0]
+            if name not in avatar_info:
+                avatar_info.update({
+                    name: url
+                })
+        return avatar_info
+
     def do_scrape(self):
         print('************  BreachForums Scrapper Started  ************\n')
         # ----------------go to topic ------------------
@@ -62,6 +79,10 @@ class BreachForumsScrapper(BaseScrapper):
                 )
                 if response is None:
                     continue
+
+                avatar_info = self.get_avatar_info(response)
+                for name, url in avatar_info.items():
+                    self.save_avatar(name, url)
 
                 # ------------clear cookies without logout--------------
                 self.clear_cookies()
