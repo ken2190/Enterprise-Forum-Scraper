@@ -2,6 +2,7 @@ import re
 import os
 import hashlib
 import time
+import random
 import traceback
 from requests import Session
 from lxml.html import fromstring
@@ -140,7 +141,9 @@ class KickAssScrapper(BaseScrapper):
             return
         print('Login Successful!')
         # ----------------go to topic ------------------
-        for topic in range(self.topic_start_count, self.topic_end_count):
+        topic_list = list(range(self.topic_start_count, self.topic_end_count))
+        random.shuffle(topic_list)
+        for topic in topic_list:
             time.sleep(1)
             try:
                 response = self.process_first_page(
