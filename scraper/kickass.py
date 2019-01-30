@@ -155,7 +155,9 @@ class KickAssScrapper(BaseScrapper):
             return
         print('Login Successful!')
         # ----------------go to topic ------------------
-        topic_list = list(range(self.topic_start_count, self.topic_end_count))
+        ts = self.topic_start_count or TOPIC_START_COUNT
+        te = self.topic_end_count or TOPIC_END_COUNT
+        topic_list = list(range(ts, te))
         random.shuffle(topic_list)
         for topic in topic_list:
             time.sleep(1)

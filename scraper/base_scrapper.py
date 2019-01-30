@@ -7,8 +7,10 @@ from lxml.html import fromstring
 
 class BaseScrapper:
     def __init__(self, kwargs):
-        self.topic_start_count = int(kwargs.get('topic_start'))
-        self.topic_end_count = int(kwargs.get('topic_end')) + 1
+        self.topic_start_count = int(kwargs.get('topic_start'))\
+            if kwargs.get('topic_start') else None
+        self.topic_end_count = int(kwargs.get('topic_end')) + 1\
+            if kwargs.get('topic_end') else None
         self.output_path = kwargs.get('output')
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
