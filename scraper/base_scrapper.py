@@ -94,7 +94,7 @@ class BaseScrapper:
         avatar_file = '{}/{}'.format(self.avatar_path, name)
         if os.path.exists(avatar_file):
             return
-        response = self.session.get(url)
+        response = self.session.get(url, headers=self.headers)
         if not response.status_code == 200:
             return
         content = response.content
