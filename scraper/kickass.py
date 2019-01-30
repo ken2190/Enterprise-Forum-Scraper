@@ -90,6 +90,24 @@ class KickAssScrapper(BaseScrapper):
                 })
         return avatar_info
 
+    def get_user_profiles(self, html_response):
+        uid_map = dict()
+        uid_pattern = re.compile(r'.*uid=(\d+)')
+        urls = html_response.xpath(
+            '//div[@class="author_avatar"]/a/@href'
+        )
+        for url in urls:
+            url = self.site_link + url
+            uid_match = uid_pattern.findall(url)
+            if not uid_match:
+                continue
+            uid = uid_match[0]
+            if uid not in uid_map:
+                uid_map.update({
+                    uid: url
+                })
+        return uid_map
+
     def login(self):
         password = self.password or PASSWORD
         username = self.username or USERNAME
@@ -107,8 +125,6 @@ class KickAssScrapper(BaseScrapper):
         my_post_key = html_response.xpath(
             '//input[@name="my_post_key"]/@value')
         if not my_post_key:
-            print('11111')
-            print(response)
             return False
         data = {
             "action": "do_login",
@@ -126,8 +142,6 @@ class KickAssScrapper(BaseScrapper):
         html_response = self.get_html_response(login_response.content)
         if html_response.xpath(
            '//span[text()="Incorrect username and/or password."]'):
-            print('22222222')
-            print(login_response.content)
             return False
         return True
 
@@ -155,6 +169,11 @@ class KickAssScrapper(BaseScrapper):
                 for name, url in avatar_info.items():
                     time.sleep(2)
                     self.save_avatar(name, url)
+
+                uid_map = self.get_user_profiles(response)
+                for uid, url in uid_map.items():
+                    time.sleep(2)
+                    self.process_user_profile(uid, url)
                 # ------------clear cookies without logout--------------
                 self.clear_cookies()
             except:

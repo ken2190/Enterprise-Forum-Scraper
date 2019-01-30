@@ -55,8 +55,23 @@ class BaseScrapper:
                     return
             return content
         except:
-            # traceback.print_exc()
             return
+
+    def process_user_profile(
+        self,
+        uid,
+        url,
+    ):
+        output_file = '{}/UID-{}.html'.format(self.output_path, uid)
+        if os.path.exists(output_file):
+            return
+        content = self.get_page_content(url)
+        if not content:
+            return
+        with open(output_file, 'wb') as f:
+            f.write(content)
+        print('UID-{} done..!'.format(uid))
+        return
 
     def process_first_page(
         self,
