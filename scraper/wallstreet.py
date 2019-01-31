@@ -2,6 +2,7 @@ import re
 import os
 import hashlib
 import time
+import random
 import traceback
 from requests import Session
 from lxml.html import fromstring
@@ -120,7 +121,11 @@ class WallStreetScrapper(BaseScrapper):
             return
         print('Login Successful!')
         # ----------------go to topic ------------------
-        for topic in range(self.topic_start_count, self.topic_end_count):
+        ts = self.topic_start_count or TOPIC_START_COUNT
+        te = self.topic_end_count or TOPIC_END_COUNT + 1
+        topic_list = list(range(ts, te))
+        random.shuffle(topic_list)
+        for topic in topic_list:
             try:
                 response = self.process_first_page(
                     topic, self.ignore_xpath

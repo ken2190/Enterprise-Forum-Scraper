@@ -111,7 +111,10 @@ class KickAssScrapper(BaseScrapper):
     def login(self):
         password = self.password or PASSWORD
         username = self.username or USERNAME
-        response = self.session.get(self.index_url, headers=self.headers).content
+        response = self.session.get(
+            self.index_url,
+            headers=self.headers
+            ).content
         # for i in range(5):
         #     try:
         #         response = self.session.get(self.login_url).content
@@ -156,11 +159,10 @@ class KickAssScrapper(BaseScrapper):
         print('Login Successful!')
         # ----------------go to topic ------------------
         ts = self.topic_start_count or TOPIC_START_COUNT
-        te = self.topic_end_count or TOPIC_END_COUNT
+        te = self.topic_end_count or TOPIC_END_COUNT + 1
         topic_list = list(range(ts, te))
         random.shuffle(topic_list)
         for topic in topic_list:
-            time.sleep(1)
             try:
                 response = self.process_first_page(
                     topic, self.ignore_xpath
@@ -169,12 +171,10 @@ class KickAssScrapper(BaseScrapper):
                     continue
                 avatar_info = self.get_avatar_info(response)
                 for name, url in avatar_info.items():
-                    time.sleep(2)
                     self.save_avatar(name, url)
 
                 uid_map = self.get_user_profiles(response)
                 for uid, url in uid_map.items():
-                    time.sleep(2)
                     self.process_user_profile(uid, url)
                 # ------------clear cookies without logout--------------
                 self.clear_cookies()

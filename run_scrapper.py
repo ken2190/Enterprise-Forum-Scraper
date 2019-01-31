@@ -47,6 +47,9 @@ class Scraper:
         parser.add_argument(
             '-p', '--password', help='password to login', required=False)
         parser.add_argument(
+            '-w', '--wait_time', help='wait time (in second) between '
+            'successive requests', required=False)
+        parser.add_argument(
             '-ts', '--topic_start', help='starting topic no.', required=False)
         parser.add_argument(
             '-te', '--topic_end', help='ending topic no.', required=False)

@@ -3,6 +3,7 @@ import os
 import time
 from requests import Session
 from lxml.html import fromstring
+from requests.exceptions import ConnectionError
 
 
 class BaseScrapper:
@@ -12,6 +13,7 @@ class BaseScrapper:
         self.topic_end_count = int(kwargs.get('topic_end')) + 1\
             if kwargs.get('topic_end') else None
         self.output_path = kwargs.get('output')
+        self.wait_time = int(kwargs.get('wait_time')) or 1
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -25,6 +27,7 @@ class BaseScrapper:
             }
         self.avatar_name_pattern = None
         self.cloudfare_error = None
+        self.retry = False
         self.ensure_avatar_path()
 
     def ensure_avatar_path(self, ):
@@ -36,18 +39,26 @@ class BaseScrapper:
         html_response = fromstring(content)
         return html_response
 
-    def get_page_content(self, url, ignore_xpath=None, continue_xpath=None):
-        time.sleep(1)
+    def get_page_content(
+        self,
+        url,
+        ignore_xpath=None,
+        continue_xpath=None,
+        topic=None
+    ):
         try:
             response = self.session.get(url, headers=self.headers)
             content = response.content
             html_response = self.get_html_response(content)
-            if ignore_xpath and html_response.xpath(ignore_xpath):
-                return
+            if ignore_xpath and html_response.xpath(ignore_xpath) and topic:
+                error_file = '{}/{}.txt'.format(self.output_path, topic)
+                with open(error_file, 'wb') as f:
+                    return
             if continue_xpath and html_response.xpath(continue_xpath):
                 return self.get_page_content(
                     url, ignore_xpath, continue_xpath)
-            if self.cloudfare_error and html_response.xpath(self.cloudfare_error):
+            if self.cloudfare_error and html_response.xpath(
+               self.cloudfare_error):
                 if self.cloudfare_count < 5:
                     self.cloudfare_count += 1
                     time.sleep(60)
@@ -56,7 +67,15 @@ class BaseScrapper:
                 else:
                     return
             return content
+        except ConnectionError:
+            if not self.retry:
+                self.retry = True
+                return self.get_page_content(
+                    url, ignore_xpath, continue_xpath)
+
+            return
         except:
+            # traceback.print_exc()
             return
 
     def process_user_profile(
@@ -64,9 +83,11 @@ class BaseScrapper:
         uid,
         url,
     ):
+        self.retry = False
         output_file = '{}/UID-{}.html'.format(self.output_path, uid)
         if os.path.exists(output_file):
             return
+        time.sleep(self.wait_time)
         content = self.get_page_content(url)
         if not content:
             return
@@ -82,11 +103,21 @@ class BaseScrapper:
         continue_xpath=None
     ):
         self.cloudfare_count = 0
+        self.retry = False
         initial_file = '{}/{}.html'.format(self.output_path, topic)
         if os.path.exists(initial_file):
             return
+        error_file = '{}/{}.txt'.format(self.output_path, topic)
+        if os.path.exists(error_file):
+            return
+        time.sleep(self.wait_time)
         url = self.topic_url.format(topic)
-        content = self.get_page_content(url, ignore_xpath, continue_xpath)
+        content = self.get_page_content(
+            url,
+            ignore_xpath,
+            continue_xpath,
+            topic
+        )
         if not content:
             print('No data for url: {}'.format(url))
             return
@@ -108,15 +139,13 @@ class BaseScrapper:
                 self.save_avatar(name, url)
 
     def save_avatar(self, name, url):
+        self.retry = False
         avatar_file = '{}/{}'.format(self.avatar_path, name)
         if os.path.exists(avatar_file):
             return
-        try:
-            response = self.session.get(url, headers=self.headers)
-        except:
+        time.sleep(self.wait_time)
+        content = self.get_page_content(url)
+        if not content:
             return
-        if not response.status_code == 200:
-            return
-        content = response.content
         with open(avatar_file, 'wb') as f:
             f.write(content)

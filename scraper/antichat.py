@@ -1,5 +1,6 @@
 import re
 import os
+import random
 import traceback
 from scraper.base_scrapper import BaseScrapper
 
@@ -72,7 +73,11 @@ class AntichatScrapper(BaseScrapper):
     def do_scrape(self):
         print('**************  Antichat Scrapper Started  **************\n')
         # ----------------go to topic ------------------
-        for topic in range(self.topic_start_count, self.topic_end_count):
+        ts = self.topic_start_count or TOPIC_START_COUNT
+        te = self.topic_end_count or TOPIC_END_COUNT + 1
+        topic_list = list(range(ts, te))
+        random.shuffle(topic_list)
+        for topic in topic_list:
             try:
                 response = self.process_first_page(
                     topic, self.ignore_xpath
