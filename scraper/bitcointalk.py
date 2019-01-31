@@ -70,6 +70,34 @@ class BitCoinTalkScrapper(BaseScrapper):
         #         })
         return avatar_info
 
+    def process_topic(self, topic):
+        try:
+            response = self.process_first_page(
+                topic, self.ignore_xpath, self.continue_xpath
+            )
+            if response is None:
+                return
+
+            # ------------clear cookies without logout--------------
+            self.clear_cookies()
+        except:
+            traceback.print_exc()
+            return
+        self.process_pagination(response)
+
+    def do_rescan(self,):
+        print('**************  Rescanning  **************')
+        print('Broken Topics found')
+        broken_topics = self.get_broken_file_topics()
+        print(broken_topics)
+        if not broken_topics:
+            return
+        for topic in broken_topics:
+            file_path = "{}/{}.html".format(self.output_path, topic)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            self.process_topic(topic)
+
     def do_scrape(self):
         print('**************  BitCoinTalk Scrapper Started  **************\n')
         # ----------------go to topic ------------------
@@ -78,19 +106,7 @@ class BitCoinTalkScrapper(BaseScrapper):
         topic_list = list(range(ts, te))
         # random.shuffle(topic_list)
         for topic in topic_list:
-            try:
-                response = self.process_first_page(
-                    topic, self.ignore_xpath, self.continue_xpath
-                )
-                if response is None:
-                    continue
-
-                # ------------clear cookies without logout--------------
-                self.clear_cookies()
-            except:
-                traceback.print_exc()
-                continue
-            self.process_pagination(response)
+            self.process_topic(topic)
 
 
 def main():

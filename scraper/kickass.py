@@ -148,6 +148,48 @@ class KickAssScrapper(BaseScrapper):
             return False
         return True
 
+    def process_topic(self, topic):
+        try:
+            response = self.process_first_page(
+                topic, self.ignore_xpath
+            )
+            if response is None:
+                return
+            avatar_info = self.get_avatar_info(response)
+            for name, url in avatar_info.items():
+                self.save_avatar(name, url)
+
+            uid_map = self.get_user_profiles(response)
+            for uid, url in uid_map.items():
+                self.process_user_profile(uid, url)
+            # ------------clear cookies without logout--------------
+            self.clear_cookies()
+        except:
+            traceback.print_exc()
+            return
+        self.process_pagination(response)
+
+    def do_rescan(self,):
+        print('**************  Rescanning  **************')
+        print('Broken Topics found')
+        broken_topics = self.get_broken_file_topics()
+        print(broken_topics)
+        if not broken_topics:
+            return
+        self.session.proxies.update({
+            'http': self.proxy,
+            'https': self.proxy,
+        })
+        if not self.login():
+            print('Login failed! Exiting...')
+            return
+        print('Login Successful!')
+        for topic in broken_topics:
+            file_path = "{}/{}.html".format(self.output_path, topic)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            self.process_topic(topic)
+
     def do_scrape(self):
         self.session.proxies.update({
             'http': self.proxy,
@@ -163,27 +205,8 @@ class KickAssScrapper(BaseScrapper):
         topic_list = list(range(ts, te))
         random.shuffle(topic_list)
         for topic in topic_list:
-            try:
-                response = self.process_first_page(
-                    topic, self.ignore_xpath
-                )
-                if response is None:
-                    continue
-                avatar_info = self.get_avatar_info(response)
-                for name, url in avatar_info.items():
-                    self.save_avatar(name, url)
-
-                uid_map = self.get_user_profiles(response)
-                for uid, url in uid_map.items():
-                    self.process_user_profile(uid, url)
-                # ------------clear cookies without logout--------------
-                self.clear_cookies()
-            except:
-                traceback.print_exc()
-                continue
-            self.process_pagination(response)
+            self.process_topic(topic)
         return False
-
 
 def main():
     print('**************  Started Kickass Scrapper **************\n')

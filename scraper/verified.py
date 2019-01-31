@@ -35,6 +35,7 @@ class VerifiedScrapper(BaseScrapper):
                       'bbpassword=b36ed0f2813a0b74ddf98e709c925d67; '
                       'bbsessionhash=b44349dc1940d57af030efc8c58472c3'
         })
+        self.proxy = kwargs.get('proxy') or PROXY
         self.username = kwargs.get('user')
         self.password = kwargs.get('password')
         self.ignore_xpath = '//div[contains(text(), "No Thread specified")]'
@@ -109,6 +110,42 @@ class VerifiedScrapper(BaseScrapper):
             return False
         return True
 
+    def process_topic(self, topic):
+        try:
+            response = self.process_first_page(
+                topic, self.ignore_xpath
+            )
+            if response is None:
+                return
+
+            avatar_info = self.get_avatar_info(response)
+            for name, url in avatar_info.items():
+                self.save_avatar(name, url)
+
+            # ------------clear cookies without logout--------------
+            self.clear_cookies()
+        except:
+            traceback.print_exc()
+            return
+        self.process_pagination(response)
+
+    def do_rescan(self,):
+        print('**************  Rescanning  **************')
+        print('Broken Topics found')
+        broken_topics = self.get_broken_file_topics()
+        print(broken_topics)
+        if not broken_topics:
+            return
+        self.session.proxies.update({
+            'http': self.proxy,
+            'https': self.proxy,
+        })
+        for topic in broken_topics:
+            file_path = "{}/{}.html".format(self.output_path, topic)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            self.process_topic(topic)
+
     def do_scrape(self):
         print('**************  Started verified Scrapper **************\n')
         # if not self.login():
@@ -117,8 +154,8 @@ class VerifiedScrapper(BaseScrapper):
         # print('Login Successful!')
         if not self.session.proxies.get('http'):
             self.session.proxies.update({
-                'http': PROXY,
-                'https': PROXY,
+                'http': self.proxy,
+                'https': self.proxy,
             })
         # ----------------go to topic ------------------
         ts = self.topic_start_count or TOPIC_START_COUNT
@@ -126,23 +163,7 @@ class VerifiedScrapper(BaseScrapper):
         topic_list = list(range(ts, te))
         # random.shuffle(topic_list)
         for topic in topic_list:
-            try:
-                response = self.process_first_page(
-                    topic, self.ignore_xpath
-                )
-                if response is None:
-                    continue
-
-                avatar_info = self.get_avatar_info(response)
-                for name, url in avatar_info.items():
-                    self.save_avatar(name, url)
-
-                # ------------clear cookies without logout--------------
-                self.clear_cookies()
-            except:
-                traceback.print_exc()
-                continue
-            self.process_pagination(response)
+            self.process_topic(topic)
 
 
 def main():

@@ -111,6 +111,55 @@ class WallStreetScrapper(BaseScrapper):
             return False
         return True
 
+    def process_topic(self, topic):
+        try:
+            response = self.process_first_page(
+                topic, self.ignore_xpath
+            )
+            if response is None:
+                return
+            continue_xpath = '//h1[contains(text(), '\
+                '"Please refresh your page")]'
+            if response.xpath(continue_xpath):
+                self.topic_start_count = topic
+                self.session = Session()
+                initial_file = '{}/{}.html'.format(self.output_path, topic)
+                if os.path.exists(initial_file):
+                    os.remove(initial_file)
+                print('Initiliazing again.............')
+                return self.do_scrape()
+            avatar_info = self.get_avatar_info(response)
+            for name, url in avatar_info.items():
+                self.save_avatar(name, url)
+
+            # ------------clear cookies without logout--------------
+            self.clear_cookies()
+        except:
+            traceback.print_exc()
+            return
+        self.process_pagination(response)
+
+    def do_rescan(self,):
+        print('**************  Rescanning  **************')
+        print('Broken Topics found')
+        broken_topics = self.get_broken_file_topics()
+        print(broken_topics)
+        if not broken_topics:
+            return
+        self.session.proxies.update({
+            'http': self.proxy,
+            'https': self.proxy,
+        })
+        if not self.login():
+            print('Login failed! Exiting...')
+            return
+        print('Login Successful!')
+        for topic in broken_topics:
+            file_path = "{}/{}.html".format(self.output_path, topic)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            self.process_topic(topic)
+
     def do_scrape(self):
         self.session.proxies.update({
             'http': self.proxy,
@@ -126,33 +175,7 @@ class WallStreetScrapper(BaseScrapper):
         topic_list = list(range(ts, te))
         # random.shuffle(topic_list)
         for topic in topic_list:
-            try:
-                response = self.process_first_page(
-                    topic, self.ignore_xpath
-                )
-                if response is None:
-                    continue
-                continue_xpath = '//h1[contains(text(), '\
-                    '"Please refresh your page")]'
-                if response.xpath(continue_xpath):
-                    self.topic_start_count = topic
-                    self.session = Session()
-                    initial_file = '{}/{}.html'.format(self.output_path, topic)
-                    if os.path.exists(initial_file):
-                        os.remove(initial_file)
-                    print('Initiliazing again.............')
-                    return self.do_scrape()
-                avatar_info = self.get_avatar_info(response)
-                for name, url in avatar_info.items():
-                    self.save_avatar(name, url)
-
-                # ------------clear cookies without logout--------------
-                self.clear_cookies()
-            except:
-                traceback.print_exc()
-                continue
-            self.process_pagination(response)
-        return False
+            self.process_topic(topic)
 
 
 def main():

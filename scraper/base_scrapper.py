@@ -1,6 +1,9 @@
-import traceback
+
 import os
+import re
 import time
+import traceback
+from glob import glob
 from requests import Session
 from lxml.html import fromstring
 from requests.exceptions import ConnectionError
@@ -39,6 +42,15 @@ class BaseScrapper:
     def get_html_response(self, content):
         html_response = fromstring(content)
         return html_response
+
+    def get_broken_file_topics(self,):
+        broken_topics = []
+        file_pattern = re.compile(r'.*/(\d+)\.html')
+        for _file in glob(self.output_path+'/*'):
+            topic_match = file_pattern.findall(_file)
+            if topic_match and os.path.getsize(_file) < 4*1024:
+                broken_topics.append(topic_match[0])
+        return broken_topics
 
     def get_page_content(
         self,
