@@ -105,7 +105,7 @@ class LolzScrapper(BaseScrapper):
         ts = self.topic_start_count or TOPIC_START_COUNT
         te = self.topic_end_count or TOPIC_END_COUNT + 1
         topic_list = list(range(ts, te))
-        random.shuffle(topic_list)
+        # random.shuffle(topic_list)
         for topic in topic_list:
             try:
                 response = self.process_first_page(
