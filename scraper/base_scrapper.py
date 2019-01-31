@@ -13,7 +13,8 @@ class BaseScrapper:
         self.topic_end_count = int(kwargs.get('topic_end')) + 1\
             if kwargs.get('topic_end') else None
         self.output_path = kwargs.get('output')
-        self.wait_time = int(kwargs.get('wait_time')) or 1
+        self.wait_time = int(kwargs.get('wait_time'))\
+            if kwargs.get('wait_time') else 1
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) '
