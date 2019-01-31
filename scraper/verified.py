@@ -39,6 +39,7 @@ class VerifiedScrapper(BaseScrapper):
         self.username = kwargs.get('user')
         self.password = kwargs.get('password')
         self.ignore_xpath = '//div[contains(text(), "No Thread specified")]'
+        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
 
     def write_paginated_data(self, html_response):
         next_page_block = html_response.xpath(
@@ -76,19 +77,19 @@ class VerifiedScrapper(BaseScrapper):
 
     def get_avatar_info(self, html_response):
         avatar_info = dict()
-        # Remaining task
-        # urls = html_response.xpath(
-        #     '//img[@class="avatarp radius100"]/@src'
-        # )
-        # for url in urls:
-        #     name_match = self.avatar_name_pattern.findall(url)
-        #     if not name_match:
-        #         continue
-        #     name = name_match[0]
-        #     if name not in avatar_info:
-        #         avatar_info.update({
-        #             name: url
-        #         })
+        urls = html_response.xpath(
+            '//img[contains(@alt, "Avatar")]/@src'
+        )
+        for url in urls:
+            url = self.site_link + url
+            name_match = self.avatar_name_pattern.findall(url)
+            if not name_match:
+                continue
+            name = name_match[0]
+            if name not in avatar_info:
+                avatar_info.update({
+                    name: url
+                })
         return avatar_info
 
     def login(self):
