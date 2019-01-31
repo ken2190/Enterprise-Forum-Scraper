@@ -14,7 +14,8 @@ TOPIC_END_COUNT = 5033000
 class BitCoinTalkScrapper(BaseScrapper):
     def __init__(self, kwargs):
         super(BitCoinTalkScrapper, self).__init__(kwargs)
-        self.topic_url = "https://bitcointalk.org/index.php?topic={}.0"
+        self.site_link = "https://bitcointalk.org"
+        self.topic_url = self.site_link + "/index.php?topic={}.0"
         self.ignore_xpath = \
             '//td[contains(text(),'\
             '"The topic or board you are looking for appears to '\
@@ -56,18 +57,19 @@ class BitCoinTalkScrapper(BaseScrapper):
 
     def get_avatar_info(self, html_response):
         avatar_info = dict()
-        # urls = html_response.xpath(
-        #     '//div[@class="author_avatar"]/a/img/@src'
-        # )
-        # for url in urls:
-        #     name_match = self.avatar_name_pattern.findall(url)
-        #     if not name_match:
-        #         continue
-        #     name = name_match[0]
-        #     if name not in avatar_info:
-        #         avatar_info.update({
-        #             name: url
-        #         })
+        urls = html_response.xpath(
+            '//img[@class="avatar"]/@src'
+        )
+        for url in urls:
+            url = self.site_link + url
+            name_match = self.avatar_name_pattern.findall(url)
+            if not name_match:
+                continue
+            name = name_match[0]
+            if name not in avatar_info:
+                avatar_info.update({
+                    name: url
+                })
         return avatar_info
 
     def process_topic(self, topic):
@@ -77,6 +79,10 @@ class BitCoinTalkScrapper(BaseScrapper):
             )
             if response is None:
                 return
+
+            avatar_info = self.get_avatar_info(response)
+            for name, url in avatar_info.items():
+                self.save_avatar(name, url)
 
             # ------------clear cookies without logout--------------
             self.clear_cookies()
