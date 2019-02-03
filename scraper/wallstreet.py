@@ -160,6 +160,45 @@ class WallStreetScrapper(BaseScrapper):
                 os.remove(file_path)
             self.process_topic(topic)
 
+    def do_new_posts_scrape(self,):
+        print('**************  New posts scan  **************')
+        self.session.proxies.update({
+            'http': self.proxy,
+            'https': self.proxy,
+        })
+        if not self.login():
+            print('Login failed! Exiting...')
+            return
+        print('Login Successful!')
+        new_post_url = 'http://x7bwsmcore5fmx56.onion/search.php?'\
+                       'action=show_new'
+        while True:
+            print('Url: {}'.format(new_post_url))
+            content = self.get_page_content(new_post_url)
+            if not content:
+                print('New posts not found')
+                return
+            new_topics = list()
+            html_response = self.get_html_response(content)
+            urls = html_response.xpath('//h3[@class="hn"]/a/@href')
+            pattern = re.compile(r"id=(\d+)")
+            for url in urls:
+                match = pattern.findall(url)
+                if not match:
+                    continue
+                new_topics.append(match[0])
+            for topic in new_topics:
+                # file_path = "{}/{}.html".format(self.output_path, topic)
+                # if os.path.exists(file_path):
+                #     os.remove(file_path)
+                self.process_topic(topic)
+            next_url = html_response.xpath(
+                '//p[@class="paging"]/strong'
+                '//following-sibling::a[1]/@href')
+            if not next_url:
+                return
+            new_post_url = self.site_link + next_url[0]
+
     def do_scrape(self):
         self.session.proxies.update({
             'http': self.proxy,

@@ -91,6 +91,65 @@ class BitCoinTalkScrapper(BaseScrapper):
             return
         self.process_pagination(response)
 
+    def get_paginated_value(self, response):
+        pagination_value = response.xpath(
+            '//a[following-sibling::text()[1]=" ["]/'
+            'following-sibling::b[1]/text()'
+            )
+        return pagination_value[0] if pagination_value else False
+
+    def do_new_posts_scrape(self,):
+        print('**************  New posts scan  **************')
+        new_post_url = self.site_link + "/index.php?action=recent"
+        while True:
+            print('Url: {}'.format(new_post_url))
+            content = self.get_page_content(new_post_url)
+            if not content:
+                print('New posts not found')
+                return
+            new_topics = list()
+            html_response = self.get_html_response(content)
+            urls = html_response.xpath(
+                '//td[@class="middletext"]/div/b/a/@href')
+            next_url = html_response.xpath(
+                '//b[following-sibling::text()[1]="] "]'
+                '/following-sibling::a[1]/@href')
+            topic_pattern = re.compile(r"topic=(\d+)")
+            for url in urls:
+                content = self.get_page_content(
+                    url, self.ignore_xpath, self.continue_xpath
+                )
+                if not content:
+                    continue
+                topic_match = topic_pattern.findall(url)
+                if not topic_match:
+                    continue
+                topic = topic_match[0]
+                html_response = self.get_html_response(content)
+                pagination_value = self.get_paginated_value(html_response)
+                if pagination_value:
+                    paginated_file = '{}/{}-{}.html'.format(
+                        self.output_path, topic, pagination_value
+                    )
+                else:
+                    paginated_file = '{}/{}.html'.format(
+                        self.output_path, topic
+                    )
+                with open(paginated_file, 'wb') as f:
+                    f.write(content)
+                if pagination_value:
+                    print('{}-{} done..!'.format(topic, pagination_value))
+                else:
+                    print('{} done..!'.format(topic))
+
+                avatar_info = self.get_avatar_info(html_response)
+                for name, url in avatar_info.items():
+                    self.save_avatar(name, url)
+
+            if not next_url:
+                return
+            new_post_url = next_url[0]
+
     def do_rescan(self,):
         print('**************  Rescanning  **************')
         print('Broken Topics found')

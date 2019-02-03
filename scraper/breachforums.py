@@ -89,6 +89,10 @@ class BreachForumsScrapper(BaseScrapper):
             return
         self.process_pagination(response)
 
+    def do_new_posts_scrape(self,):
+        print('**************  New posts scan  **************')
+        print('Implementation not complete yet!!')
+
     def do_rescan(self,):
         print('**************  Rescanning  **************')
         print('Broken Topics found')
