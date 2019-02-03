@@ -2,6 +2,7 @@
 import os
 import re
 import time
+import datetime
 import traceback
 from glob import glob
 from requests import Session
@@ -33,6 +34,14 @@ class BaseScrapper:
         self.cloudfare_error = None
         self.retry = False
         self.ensure_avatar_path()
+        if kwargs.get('daily'):
+            self.ensure_daily_output_path()
+
+    def ensure_daily_output_path(self,):
+        folder_name = datetime.datetime.now().date().isoformat()
+        self.output_path = '{}/{}'.format(self.output_path, folder_name)
+        if not os.path.exists(self.output_path):
+            os.makedirs(self.output_path)
 
     def ensure_avatar_path(self, ):
         self.avatar_path = '{}/avatars'.format(self.output_path)
