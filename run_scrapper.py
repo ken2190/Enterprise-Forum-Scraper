@@ -56,6 +56,9 @@ class Scraper:
         parser.add_argument(
             '-rs', '--rescan', help='Rescan the broken files and re-download',
             action='store_true')
+        parser.add_argument(
+            '-d', '--daily', help='Scrape new posts for today',
+            action='store_true')
         args = parser.parse_args()
         return args._get_kwargs()
         # return args.template, args.output, args.proxy, args.user, args.password
@@ -75,6 +78,8 @@ class Scraper:
         scraper_obj = scraper(kwargs)
         if kwargs.get('rescan'):
             scraper_obj.do_rescan()
+        elif kwargs.get('daily'):
+            scraper_obj.do_new_posts_scrape()
         else:
             scraper_obj.do_scrape()
 
