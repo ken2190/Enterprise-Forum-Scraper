@@ -28,6 +28,7 @@ from templates.cannabisroad_template import CannabisRoadParser
 from templates.hydra_template import HydraParser
 from templates.kingdom_template import KingdomParser
 from templates.nucleus_template import NucleusParser
+from templates.verified_template import VerifiedParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -59,6 +60,7 @@ PARSER_MAP = {
     'hydra': HydraParser,
     'kingdom': KingdomParser,
     'nucleus': NucleusParser,
+    'verified': VerifiedParser,
 }
 
 
