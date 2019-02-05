@@ -29,6 +29,7 @@ from templates.hydra_template import HydraParser
 from templates.kingdom_template import KingdomParser
 from templates.nucleus_template import NucleusParser
 from templates.verified_template import VerifiedParser
+from templates.wallstreet_template import WallStreetParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -61,6 +62,7 @@ PARSER_MAP = {
     'kingdom': KingdomParser,
     'nucleus': NucleusParser,
     'verified': VerifiedParser,
+    'wallstreet': WallStreetParser
 }
 
 
