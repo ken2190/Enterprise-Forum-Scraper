@@ -17,9 +17,9 @@ PASSWORD = "Night#Wall09"
 PROXY = "socks5h://localhost:9050"
 
 
-class GalaxyScrapper(BaseScrapper):
+class Galaxy3Scrapper(BaseScrapper):
     def __init__(self, kwargs):
-        super(GalaxyScrapper, self).__init__(kwargs)
+        super(Galaxy3Scrapper, self).__init__(kwargs)
         self.start_url = "http://galaxy3m2mn5iqtn.onion/thewire/all"
         self.topic_url = "http://galaxy3m2mn5iqtn.onion/thewire/thread/{}"
         self.username = kwargs.get('user')
@@ -214,7 +214,7 @@ class GalaxyScrapper(BaseScrapper):
 
 def main():
     print('**************  Started galaxy Scrapper **************\n')
-    template = GalaxyScrapper()
+    template = Galaxy3Scrapper()
     template.do_scrape()
 
 if __name__ == '__main__':

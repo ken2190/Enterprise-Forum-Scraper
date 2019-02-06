@@ -12,7 +12,7 @@ from scraper.bitcointalk import BitCoinTalkScrapper
 from scraper.psbdmp import PasteBinScrapper
 from scraper.wallstreet import WallStreetScrapper
 from scraper.kickass import KickAssScrapper
-from scraper.galaxy import GalaxyScrapper
+from scraper.galaxy3 import Galaxy3Scrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -27,7 +27,7 @@ SCRAPER_MAP = {
     'psbdmp': PasteBinScrapper,
     'wallstreet': WallStreetScrapper,
     'kickass': KickAssScrapper,
-    'galaxy': GalaxyScrapper,
+    'galaxy3': Galaxy3Scrapper,
 }
 
 
