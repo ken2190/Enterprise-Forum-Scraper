@@ -30,6 +30,7 @@ from templates.kingdom_template import KingdomParser
 from templates.nucleus_template import NucleusParser
 from templates.verified_template import VerifiedParser
 from templates.wallstreet_template import WallStreetParser
+from templates.galaxy3_template import Galaxy3Parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -62,7 +63,8 @@ PARSER_MAP = {
     'kingdom': KingdomParser,
     'nucleus': NucleusParser,
     'verified': VerifiedParser,
-    'wallstreet': WallStreetParser
+    'wallstreet': WallStreetParser,
+    'galaxy3': Galaxy3Parser,
 }
 
 
