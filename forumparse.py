@@ -31,6 +31,7 @@ from templates.nucleus_template import NucleusParser
 from templates.verified_template import VerifiedParser
 from templates.wallstreet_template import WallStreetParser
 from templates.galaxy3_template import Galaxy3Parser
+from templates.galaxy1_template import Galaxy1Parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -65,6 +66,7 @@ PARSER_MAP = {
     'verified': VerifiedParser,
     'wallstreet': WallStreetParser,
     'galaxy3': Galaxy3Parser,
+    'galaxy1': Galaxy1Parser,
 }
 
 
@@ -95,7 +97,8 @@ class Parser:
         # -----------filter files which user want to parse --------------
         files = []
         for filee in glob(folder_path+'/*'):
-            if parser_name.lower() in filee:
+            if parser_name.lower() in filee and\
+               os.path.isfile(filee):
                 files.append(filee)
         parser = PARSER_MAP.get(parser_name.lower())
         if not parser:
