@@ -97,8 +97,7 @@ class Parser:
         # -----------filter files which user want to parse --------------
         files = []
         for filee in glob(folder_path+'/*'):
-            if parser_name.lower() in filee and\
-               os.path.isfile(filee):
+            if os.path.isfile(filee):
                 files.append(filee)
         parser = PARSER_MAP.get(parser_name.lower())
         if not parser:
