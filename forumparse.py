@@ -33,6 +33,7 @@ from templates.wallstreet_template import WallStreetParser
 from templates.galaxy3_template import Galaxy3Parser
 from templates.galaxy1_template import Galaxy1Parser
 from templates.silkroad1_template import SilkRoad1Parser
+from templates.silkroad2_template import SilkRoad2Parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -69,6 +70,7 @@ PARSER_MAP = {
     'galaxy3': Galaxy3Parser,
     'galaxy1': Galaxy1Parser,
     'silkroad1': SilkRoad1Parser,
+    'silkroad2': SilkRoad2Parser,
 }
 
 
