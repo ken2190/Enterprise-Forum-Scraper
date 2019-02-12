@@ -69,7 +69,9 @@ class SilkRoad1Parser:
                     file_type = 1
                 else:
                     match = self.thread_name_pattern2.findall(file_name_only)
-                    if match:
+                    if match and template.endswith('.html'):
+                        file_type = 1
+                    elif match:
                         file_type = 2
                 if not file_type:
                     continue
