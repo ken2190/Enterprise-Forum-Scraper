@@ -35,6 +35,7 @@ from templates.galaxy1_template import Galaxy1Parser
 from templates.silkroad1_template import SilkRoad1Parser
 from templates.silkroad2_template import SilkRoad2Parser
 from templates.lolzteam_template import LolzTeamParser
+from templates.galaxy2_template import Galaxy2Parser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -73,6 +74,7 @@ PARSER_MAP = {
     'silkroad1': SilkRoad1Parser,
     'silkroad2': SilkRoad2Parser,
     'lolzteam': LolzTeamParser,
+    'galaxy2': Galaxy2Parser,
 }
 
 
