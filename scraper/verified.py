@@ -145,6 +145,7 @@ class VerifiedScrapper(BaseScrapper):
             'http': self.proxy,
             'https': self.proxy,
         })
+        random.shuffle(broken_topics)
         for topic in broken_topics:
             file_path = "{}/{}.html".format(self.output_path, topic)
             if os.path.exists(file_path):
@@ -166,7 +167,7 @@ class VerifiedScrapper(BaseScrapper):
         ts = self.topic_start_count or TOPIC_START_COUNT
         te = self.topic_end_count or TOPIC_END_COUNT + 1
         topic_list = list(range(ts, te))
-        # random.shuffle(topic_list)
+        random.shuffle(topic_list)
         for topic in topic_list:
             self.process_topic(topic)
 
