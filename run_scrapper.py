@@ -13,6 +13,7 @@ from scraper.psbdmp import PasteBinScrapper
 from scraper.wallstreet import WallStreetScrapper
 from scraper.kickass import KickAssScrapper
 from scraper.galaxy3 import Galaxy3Scrapper
+from scraper.badkarma import BadKarmaScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -28,6 +29,7 @@ SCRAPER_MAP = {
     'wallstreet': WallStreetScrapper,
     'kickass': KickAssScrapper,
     'galaxy3': Galaxy3Scrapper,
+    'badkarma': BadKarmaScrapper,
 }
 
 
