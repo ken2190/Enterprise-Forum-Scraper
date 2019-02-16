@@ -13,12 +13,12 @@ class BrokenPage(Exception):
     pass
 
 
-class SilkRoad1Parser:
+class SilkRoad2Parser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
         self.thread_name_pattern1 = re.compile(
-            r'thread_(\d+).*html'
+            r'(\d+).htm$'
         )
         self.thread_name_pattern2 = re.compile(
             r'.*topic=(\d+)'
@@ -55,6 +55,20 @@ class SilkRoad1Parser:
 
         return sorted_files_1 + sorted_files_2
 
+    def get_html_response(self, file):
+        with open(file, 'rb') as f:
+            content = str(f.read())
+            splitter = re.compile(r'Last-Modified:.*?GMT')
+            if not splitter.search(content):
+                return
+            content = splitter.split(content)[-1]
+            content = content.replace('\\r', '')\
+                             .replace('\\n', '')\
+                             .replace('\\t', '')\
+                             .strip()
+            html_response = fromstring(content)
+            return html_response
+
     def main(self):
         comments = []
         output_file = None
@@ -62,16 +76,19 @@ class SilkRoad1Parser:
             file_type = None
             print(template)
             try:
-                html_response = utils.get_html_response(template)
+                if template.endswith('.txt'):
+                    html_response = self.get_html_response(template)
+                    if html_response is None:
+                        continue
+                else:
+                    html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern1.findall(file_name_only)
                 if match:
                     file_type = 1
                 else:
                     match = self.thread_name_pattern2.findall(file_name_only)
-                    if match and template.endswith('.html'):
-                        file_type = 1
-                    elif match:
+                    if match:
                         file_type = 2
                 if not file_type:
                     continue
@@ -130,16 +147,12 @@ class SilkRoad1Parser:
     def extract_comments(self, html_response, file_type):
         comments = list()
         if file_type == 1:
-            comment_blocks = html_response.xpath(
-              '//dl[@id="posts"]/'
-              'dt[@class="postheader"]'
-            )
-            comment_blocks = comment_blocks[1:]
+            whole_text = html_response.text
+            comment_blocks = whole_text.split('Title:')[2:]
         else:
             comment_blocks = html_response.xpath(
               '//div[@class="post_wrapper"]'
             )
-        # print(comment_blocks)
         for index, comment_block in enumerate(comment_blocks, 1):
             user = self.get_author(comment_block, file_type)
             comment_text = self.get_post_text(comment_block, file_type)
@@ -178,10 +191,8 @@ class SilkRoad1Parser:
 
             # ---------------extract header data ------------
             if file_type == 1:
-                header = html_response.xpath(
-                    '//dl[@id="posts"]/'
-                    'dt[@class="postheader"]'
-                )
+                whole_text = html_response.text
+                header = [whole_text.split('Title:')[1]]
             else:
                 header = html_response.xpath(
                     '//div[@class="post_wrapper"]'
@@ -222,11 +233,10 @@ class SilkRoad1Parser:
     def get_date(self, tag, file_type):
         date = ""
         if file_type == 1:
-            date_block = tag.xpath(
-                'strong/text()'
-            )
-            if len(date_block) == 3:
-                date = date_block[2].strip()
+            date_block = re.compile(r'Post by:.*? on (.*? \d+:\d+:\d+ [ap]m)')
+            match = date_block.findall(tag)
+            if match:
+                date = match[0].strip()
         else:
             date = tag.xpath(
                 'div//div[@class="smalltext"]/text()'
@@ -236,7 +246,7 @@ class SilkRoad1Parser:
             date = match[0].strip() if match else None
 
         try:
-            pattern = "%B %d, %Y, %I:%M %p"
+            pattern = "%B %d, %Y, %I:%M:%S %p"
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
@@ -244,28 +254,22 @@ class SilkRoad1Parser:
 
     def get_author(self, tag, file_type):
         if file_type == 1:
-            author = tag.xpath(
-                'strong/text()'
-            )
-            if len(author) == 3:
-                author = author[1].strip()
-                return author
+            author_block = re.compile(r'Post by: (.*?) on ')
+            match = author_block.findall(tag)
+            if match:
+                return match[0].strip()
         else:
             author = tag.xpath(
                 'div[@class="poster"]'
                 '/h4/a/text()'
             )
             author = author[0].strip() if author else None
-        return author
+            return author
 
     def get_title(self, tag, file_type):
         if file_type == 1:
-            title = tag.xpath(
-                'strong/text()'
-            )
-            if len(title) == 3:
-                title = title[0].strip()
-                return title
+            title = tag.split('\n')[0].strip()
+            return title
         else:
             title = tag.xpath(
                 'div//h5/a/text()'
@@ -275,19 +279,20 @@ class SilkRoad1Parser:
 
     def get_post_text(self, tag, file_type):
         if file_type == 1:
-            post_text_block = tag.xpath(
-                'following-sibling::dd[1]'
-            )
+            post_block = re.compile(
+                r'Post by:.*?\d+:\d+:\d+ [ap]m(.*)', re.DOTALL)
+            match = post_block.findall(tag)
+            if match:
+                return match[0].strip()
         else:
-            pass
             post_text_block = tag.xpath(
                 'div//div[@class="post"]/'
-                '/div[@class="inner"]'
+                '/div[@class="inner"]/text()'
             )
-        post_text = "\n".join([
-            post_text.xpath('string()') for post_text in post_text_block
-        ])
-        return post_text.strip()
+            post_text = "\n".join(
+                [text.strip() for text in post_text_block]
+            ) if post_text_block else ""
+            return post_text.strip()
 
     def get_avatar(self, tag, file_type):
         return

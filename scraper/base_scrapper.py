@@ -39,12 +39,12 @@ class BaseScrapper:
 
     def ensure_daily_output_path(self,):
         folder_name = datetime.datetime.now().date().isoformat()
-        self.output_path = '{}/{}'.format(self.output_path, folder_name)
+        self.output_path = f'{self.output_path}/{folder_name}'
         if not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
 
     def ensure_avatar_path(self, ):
-        self.avatar_path = '{}/avatars'.format(self.output_path)
+        self.avatar_path = f'{self.output_path}/avatars'
         if not os.path.exists(self.avatar_path):
             os.makedirs(self.avatar_path)
 
@@ -73,7 +73,7 @@ class BaseScrapper:
             content = response.content
             html_response = self.get_html_response(content)
             if ignore_xpath and html_response.xpath(ignore_xpath) and topic:
-                error_file = '{}/{}.txt'.format(self.output_path, topic)
+                error_file = f'{self.output_path}/{topic}.txt'
                 with open(error_file, 'wb') as f:
                     return
             if continue_xpath and html_response.xpath(continue_xpath):
@@ -106,7 +106,7 @@ class BaseScrapper:
         url,
     ):
         self.retry = False
-        output_file = '{}/UID-{}.html'.format(self.output_path, uid)
+        output_file = f'{self.output_path}/UID-{uid}.html'
         if os.path.exists(output_file):
             return
         time.sleep(self.wait_time)
@@ -115,7 +115,7 @@ class BaseScrapper:
             return
         with open(output_file, 'wb') as f:
             f.write(content)
-        print('UID-{} done..!'.format(uid))
+        print(f'UID-{uid} done..!')
         return
 
     def process_first_page(
@@ -126,10 +126,10 @@ class BaseScrapper:
     ):
         self.cloudfare_count = 0
         self.retry = False
-        initial_file = '{}/{}.html'.format(self.output_path, topic)
+        initial_file = f'{self.output_path}/{topic}-1.html'
         if os.path.exists(initial_file):
             return
-        error_file = '{}/{}.txt'.format(self.output_path, topic)
+        error_file = f'{self.output_path}/{topic}.txt'
         if os.path.exists(error_file):
             return
         time.sleep(self.wait_time)
@@ -141,12 +141,12 @@ class BaseScrapper:
             topic
         )
         if not content:
-            print('No data for url: {}'.format(url))
+            print(f'No data for url: {url}')
             return
 
         with open(initial_file, 'wb') as f:
             f.write(content)
-        print('{} done..!'.format(topic))
+        print(f'{topic}-1 done..!')
         html_response = self.get_html_response(content)
         return html_response
 
@@ -162,7 +162,7 @@ class BaseScrapper:
 
     def save_avatar(self, name, url):
         self.retry = False
-        avatar_file = '{}/{}'.format(self.avatar_path, name)
+        avatar_file = f'{self.avatar_path}/{name}'
         if os.path.exists(avatar_file):
             return
         time.sleep(self.wait_time)
