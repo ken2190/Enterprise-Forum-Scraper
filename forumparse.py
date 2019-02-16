@@ -39,6 +39,7 @@ from templates.galaxy2_template import Galaxy2Parser
 from templates.genesis_template import GenesisParser
 from templates.hell_template import HellParser
 from templates.nulled_template import NulledParser
+from templates.badkarma_template import BadKarmaParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -81,6 +82,7 @@ PARSER_MAP = {
     'genesis': GenesisParser,
     'hell': HellParser,
     'nulled': NulledParser,
+    'badkarma': BadKarmaParser,
 }
 
 
