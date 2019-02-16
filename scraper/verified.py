@@ -10,8 +10,8 @@ from scraper.base_scrapper import BaseScrapper
 
 
 # Credentials
-USERNAME = "DoZ3r"
-PASSWORD = "Clp#-1O93jhfx"
+USERNAME = "vrx9"
+PASSWORD = "Night#Vrx099"
 
 
 # Topic Counter
@@ -28,11 +28,11 @@ class VerifiedScrapper(BaseScrapper):
         self.login_url = self.site_link + "login.php?do=login"
         self.topic_url = self.site_link + "showthread.php?t={}"
         self.headers.update({
-            'cookie': 'IDstack=52f6ee8010f343029d3c2db65073fc619b89e8b26c46ed719cb17135185ea345%3A8022b4660875732455424ca98da29997c7d26a95eece3715c8ddf86573563ef5; '
-                      'bblastvisit=1547272348; '
+            'cookie': 'IDstack=db57dd63d50b537ca89882f289e6950d7d72de45bde0a73358837ed729e0935a; '
+                      'bblastvisit=1549534014; '
                       'bblastactivity=0; '
-                      'bbuserid=60413; '
-                      'bbpassword=b36ed0f2813a0b74ddf98e709c925d67; '
+                      'bbuserid=62675; '
+                      'bbpassword=edc7e2c6b7bfe17463f5f875c244d79c; '
                       'bbsessionhash=b44349dc1940d57af030efc8c58472c3'
         })
         self.proxy = kwargs.get('proxy') or PROXY

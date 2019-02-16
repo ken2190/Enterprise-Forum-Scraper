@@ -7,8 +7,10 @@ from scraper.base_scrapper import BaseScrapper
 
 
 # Credentials
-USERNAME = "bullet"
-PASSWORD = "9VJ?ZPL392_p=Ky?"
+#USERNAME = "bullet"
+#PASSWORD = "9VJ?ZPL392_p=Ky?"
+USERNAME = "x23"
+PASSWORD = "Night#Sentry99"
 
 # Topic Counter
 TOPIC_START_COUNT = 20800
