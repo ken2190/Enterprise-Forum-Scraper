@@ -11,7 +11,7 @@ class BadKarmaScrapper(BaseScrapper):
     def __init__(self, kwargs):
         super(BadKarmaScrapper, self).__init__(kwargs)
         self.base_url = 'http://www.badkarma.ru/'
-        self.topic_pattern = re.compile(r'/threads/.*\.(\d+)/')
+        self.topic_pattern = re.compile(r'/threads/.*?(\d+)/')
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.cloudfare_error = None
 
@@ -38,7 +38,10 @@ class BadKarmaScrapper(BaseScrapper):
             f.write(content)
 
     def process_first_page(self, topic_url):
-        topic = self.topic_pattern.findall(topic_url)[0]
+        topic = self.topic_pattern.findall(topic_url)
+        if not topic:
+            return
+        topic = topic[0]
         initial_file = f'{self.output_path}/{topic}-1.html'
         if os.path.exists(initial_file):
             return
