@@ -14,13 +14,14 @@ class BrokenPage(Exception):
 class TheRealDealParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
+        self.thread_name_pattern = re.compile(r'index\.php\?topic=(\d+)')
+        self.order_info_pattern = re.compile(r'^(\d+)$')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.output_folder = output_folder
         self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_name_pattern = re.compile(r'(index\.php\?topic=\d+)')
         self.thread_id = None
         # main function
         self.main()
@@ -32,12 +33,85 @@ class TheRealDealParser:
         return pid
 
     def get_filtered_files(self, files):
-        final_files = list()
-        for file in files:
-            file_name_only = file.split('/')[-1]
-            if file_name_only.startswith('index.php'):
-                final_files.append(file)
-        return sorted(final_files)
+        filtered_files_1 = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+
+        sorted_files_1 = sorted(
+            filtered_files_1,
+            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+
+        filtered_files_2 = list(
+            filter(
+                lambda x: self.order_info_pattern
+                              .search(x.split('/')[-1]) is not None,
+                files
+            )
+        )
+
+        sorted_files_2 = sorted(
+            filtered_files_2,
+            key=lambda x: int(self.order_info_pattern
+                                  .search(x.split('/')[-1]).group(1)))
+
+        return sorted_files_1 + sorted_files_2
+
+    def extract_order_detail(self, html_response):
+        data = dict()
+        order_block = html_response.xpath(
+            '//div[@id="order-details"]/div[1]')
+        address_block = html_response.xpath(
+            '//div[@id="order-details"]/div[2]')
+        signature_block = html_response.xpath(
+            '//div[@id="order-details"]/div[3]')
+        seller = order_block[0].xpath(
+            'div//div[@class="panel-heading"]/a/text()')
+        if seller:
+            data.update({
+                'seller': seller[0].strip()
+            })
+        total = order_block[0].xpath(
+            'div//td[strong[text()="Total"]]'
+            '/following-sibling::td[1]/b/text()')
+        if total:
+            data.update({
+                'price': total[0].split('BTC')[-1].strip()
+            })
+        escrow_address = address_block[0].xpath(
+            'div//code[@id="addressCode"]/text()')
+        if escrow_address:
+            data.update({
+                'escrowAddress': escrow_address[0].strip()
+            })
+        if signature_block:
+            additional_address = signature_block[0].xpath(
+                'form//div[@class="col-xs-6"]/text()')
+            if additional_address and len(additional_address) == 2:
+                data.update({
+                    'feeAddress': additional_address[0].strip(),
+                    'sellerBTCAddress': additional_address[1].strip()
+                })
+        return data
+
+    def process_order_details(self, order_id, html_response):
+        data = {
+            'orderNumber': order_id
+        }
+        additional_data = self.extract_order_detail(html_response)
+        if not additional_data:
+            return
+        data.update(additional_data)
+        output_file = '{}/{}.json'.format(
+            str(self.output_folder),
+            order_id
+        )
+        with open(output_file, 'w', encoding='utf-8') as file_pointer:
+            utils.write_json(file_pointer, data)
+            print('\nJson written in {}'.format(output_file))
+            print('----------------------------------------\n')
 
     def main(self):
         comments = []
@@ -47,12 +121,17 @@ class TheRealDealParser:
                 # read html file
                 html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
+                order_match = self.order_info_pattern.findall(file_name_only)
+                if order_match:
+                    self.process_order_details(order_match[0], html_response)
+                    continue
+
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     print('no match')
                     continue
-                self.thread_id = match[0]
-                pid = self.get_pid()
+                pid = self.thread_id = match[0]
+                # pid = self.get_pid()
                 final = utils.is_file_final(
                     self.thread_id, self.thread_name_pattern, self.files, index
                 )
@@ -102,7 +181,7 @@ class TheRealDealParser:
                 continue
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
-            pid = self.get_pid()
+            pid = self.thread_id
             comments.append({
                 '_type': "forum",
                 '_source': {
@@ -129,7 +208,7 @@ class TheRealDealParser:
             author = self.get_author(header[0])
             author_link = self.get_author_link(header[0])
             post_text = self.get_post_text(header[0])
-            pid = self.get_pid()
+            pid = self.thread_id
             return {
                 '_type': "forum",
                 '_source': {
