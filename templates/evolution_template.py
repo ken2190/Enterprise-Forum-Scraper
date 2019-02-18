@@ -6,6 +6,7 @@ import traceback
 import json
 import utils
 import datetime
+from lxml.html import fromstring
 
 
 class BrokenPage(Exception):
@@ -16,29 +17,31 @@ class EvolutionParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
+        self.thread_name_pattern = re.compile(r'viewtopic\.php.*id=(\d+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_name_pattern = re.compile(r'(viewtopic\.php.*id=\d+)')
         self.thread_id = None
         # main function
         self.main()
 
     def get_filtered_files(self, files):
-        final_files = list()
-        for file in files:
-            if file.endswith('.txt'):
-                saved_file = self.save_file(file)
-                final_files.append(saved_file)
-            else:
-                file_name_only = file.split('/')[-1]
-                if file_name_only.startswith('viewtopic.php'):
-                    final_files.append(file)
-        return sorted(final_files)
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
 
-    def save_file(self, file):
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+
+        return sorted_files
+
+    def get_html_response(self, file):
         with open(file, 'rb') as f:
             content = str(f.read())
             content = content.split('SAMEORIGIN')[-1]
@@ -46,17 +49,8 @@ class EvolutionParser:
                              .replace('\\n', '')\
                              .replace('\\t', '')\
                              .strip()
-            pattern = re.compile(r'(viewtopic.php.*).txt')
-            new_file = pattern.findall(file)
-            if new_file:
-                new_file_path = "{}/{}".format(self.output_folder, 'Processed')
-                if not os.path.exists(new_file_path):
-                    os.makedirs(new_file_path)
-                new_name = new_file[0]
-                new_file_path = "{}/{}".format(new_file_path, new_name)
-                with open(new_file_path, 'w') as f:
-                    f.write(content)
-                return new_file_path
+            html_response = fromstring(content)
+            return html_response
 
     def main(self):
         comments = []
@@ -64,12 +58,15 @@ class EvolutionParser:
             print(template)
             try:
                 # read html file
-                html_response = utils.get_html_response(template)
+                if template.endswith('.txt'):
+                    html_response = self.get_html_response(template)
+                else:
+                    html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
-                self.thread_id = match[0]
+                pid = self.thread_id = match[0]
                 final = utils.is_file_final(
                     self.thread_id, self.thread_name_pattern, self.files, index
                 )
@@ -83,7 +80,7 @@ class EvolutionParser:
                     # write file
                     output_file = '{}/{}.json'.format(
                         str(self.output_folder),
-                        self.thread_id.split('id=')[-1]
+                        pid
                     )
                     file_pointer = open(output_file, 'w', encoding='utf-8')
                     utils.write_json(file_pointer, data)
@@ -95,18 +92,13 @@ class EvolutionParser:
                     comments = []
             except BrokenPage as ex:
                 utils.handle_error(
-                    self.thread_id.split('id=')[-1],
+                    pid,
                     self.error_folder,
                     ex
                 )
             except:
                 traceback.print_exc()
                 continue
-        self.remove_intermediate_folder()
-
-    def remove_intermediate_folder(self,):
-        path = "{}/{}".format(self.output_folder, 'Processed')
-        shutil.rmtree(path)
 
     def extract_comments(self, html_response):
         comments = list()
@@ -122,12 +114,13 @@ class EvolutionParser:
             commentID = self.get_comment_id(comment_block)
             if not commentID:
                 continue
+            pid = self.thread_id
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             comments.append({
                 '_type': "forum",
                 '_source': {
-                    'pid': self.thread_id.split('id=')[-1],
+                    'pid': pid,
                     'd': comment_date,
                     'm': comment_text.strip(),
                     'cid': commentID,
@@ -154,11 +147,11 @@ class EvolutionParser:
             if not author_link:
                 author_link = ""
             post_text = self.get_post_text(header[0])
-
+            pid = self.thread_id
             return {
                 '_type': "forum",
                 '_source': {
-                    'pid': self.thread_id.split('id=')[-1],
+                    'pid': pid,
                     's': title,
                     'd': date,
                     'a': author,
