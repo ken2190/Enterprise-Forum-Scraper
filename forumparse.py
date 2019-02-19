@@ -102,7 +102,7 @@ class Parser:
         parser.add_argument(
             '-p', '--path', help='input folder path', required=True)
         parser.add_argument(
-            '-f', '--output_folder', help='output folder path', required=True)
+            '-o', '--output_folder', help='output folder path', required=True)
         args = parser.parse_args()
 
         return args.template, args.path, args.output_folder

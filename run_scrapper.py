@@ -15,6 +15,7 @@ from scraper.kickass import KickAssScrapper
 from scraper.galaxy3 import Galaxy3Scrapper
 from scraper.badkarma import BadKarmaScrapper
 from scraper.antichat_v2 import Antichatv2Scrapper
+from scraper.sinister import SinisterScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -32,6 +33,7 @@ SCRAPER_MAP = {
     'galaxy3': Galaxy3Scrapper,
     'badkarma': BadKarmaScrapper,
     'antichat_v2': Antichatv2Scrapper,
+    'sinister': SinisterScrapper,
 }
 
 
