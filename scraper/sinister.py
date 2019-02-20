@@ -38,6 +38,8 @@ class SinisterScrapper(BaseScrapper):
 
     def process_first_page(self, topic_url):
         topic = topic_url.replace(self.base_url, '').replace('Thread-', '')
+        name_regex = re.compile(r'(%\w+-?)')
+        topic = name_regex.sub('', topic)
         initial_file = f'{self.output_path}/{topic}--1.html'
         if os.path.exists(initial_file):
             return
@@ -80,6 +82,8 @@ class SinisterScrapper(BaseScrapper):
             return
         topic, pagination_value = match[0]
         topic = topic.replace('Thread-', '')
+        name_regex = re.compile(r'(%\w+-?)')
+        topic = name_regex.sub('', topic)
         content = self.get_page_content(next_page_url)
         if not content:
             return
