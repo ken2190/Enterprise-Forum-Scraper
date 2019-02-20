@@ -152,6 +152,9 @@ class SentryMBAScrapper(BaseScrapper):
             file_path = "{}/{}.html".format(self.output_path, topic)
             if os.path.exists(file_path):
                 os.remove(file_path)
+            file_path = "{}/{}-1.html".format(self.output_path, topic)
+            if os.path.exists(file_path):
+                os.remove(file_path)
             self.process_topic(topic)
 
     def do_scrape(self):

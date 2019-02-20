@@ -54,7 +54,7 @@ class BaseScrapper:
 
     def get_broken_file_topics(self,):
         broken_topics = []
-        file_pattern = re.compile(r'.*/(\d+)\.html')
+        file_pattern = re.compile(r'.*/(\d+)-?1?\.html')
         for _file in glob(self.output_path+'/*'):
             topic_match = file_pattern.findall(_file)
             if topic_match and os.path.getsize(_file) < 4*1024:

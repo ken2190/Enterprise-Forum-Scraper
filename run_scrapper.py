@@ -16,6 +16,7 @@ from scraper.galaxy3 import Galaxy3Scrapper
 from scraper.badkarma import BadKarmaScrapper
 from scraper.antichat_v2 import Antichatv2Scrapper
 from scraper.sinister import SinisterScrapper
+from scraper.sentryMBA_v2 import SentryMBAv2Scrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -34,6 +35,7 @@ SCRAPER_MAP = {
     'badkarma': BadKarmaScrapper,
     'antichat_v2': Antichatv2Scrapper,
     'sinister': SinisterScrapper,
+    'sentrymba_v2': SentryMBAv2Scrapper,
 }
 
 
