@@ -42,6 +42,7 @@ from templates.nulled_template import NulledParser
 from templates.badkarma_template import BadKarmaParser
 from templates.outlawmarket_template import OutLawMarketParser
 from templates.alphabay_template import AlphaBayParser
+from templates.sinister_template import SinisterParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -87,6 +88,7 @@ PARSER_MAP = {
     'badkarma': BadKarmaParser,
     'outlawmarket': OutLawMarketParser,
     'alphabay': AlphaBayParser,
+    'sinister': SinisterParser,
 }
 
 
