@@ -17,8 +17,11 @@ class AlphaBayParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
-        self.thread_name_pattern = re.compile(
+        self.thread_name_pattern_1 = re.compile(
             r'listing\.php.*id=(\d+)$'
+        )
+        self.thread_name_pattern_2 = re.compile(
+            r'(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(files)
@@ -32,15 +35,25 @@ class AlphaBayParser:
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
+                lambda x: self.thread_name_pattern_1.search(x) is not None,
                 files
             )
         )
-        sorted_files = sorted(
+        sorted_files_1 = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+            key=lambda x: int(self.thread_name_pattern_1.search(x).group(1)))
 
-        return sorted_files
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern_2.search(x) is not None,
+                files
+            )
+        )
+        sorted_files_2 = sorted(
+            filtered_files,
+            key=lambda x: int(self.thread_name_pattern_2.search(x).group(1)))
+
+        return sorted_files_1 + sorted_files_2
 
     def main(self):
         comments = []
@@ -50,7 +63,9 @@ class AlphaBayParser:
             try:
                 html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
-                match = self.thread_name_pattern.findall(file_name_only)
+                match = self.thread_name_pattern_1.findall(file_name_only)
+                if not match:
+                    match = self.thread_name_pattern_2.findall(file_name_only)
                 if not match:
                     continue
                 pid = self.thread_id = match[0]
