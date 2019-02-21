@@ -20,7 +20,7 @@ class SentryMBAParser:
         self.thread_name_pattern = re.compile(
             r'(\d+).*html'
         )
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
+        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()

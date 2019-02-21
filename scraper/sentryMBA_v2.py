@@ -20,15 +20,14 @@ class SentryMBAv2Scrapper(BaseScrapper):
         self.topic_pattern = re.compile(r'tid=(\d+)')
         self.username = kwargs.get('user')
         self.password = kwargs.get('password')
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.cloudfare_error = None
+        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+        self.cloudfare_error = '//h2[text()="Bad gateway"]'
         self.headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) "
                           "AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/72.0.3626.109 Safari/537.36",
             'referer': 'https://sentry.mba/member.php?action=login',
             'origin': 'https://sentry.mba',
-            'accept-encoding': 'gzip, deflate, br',
         }
         self.kwargs = kwargs
 
@@ -66,10 +65,19 @@ class SentryMBAv2Scrapper(BaseScrapper):
         if not content:
             print(f'No data for url: {topic_url}')
             return
+        html_response = self.get_html_response(content)
+        if html_response.xpath(self.cloudfare_error):
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            print('!! Cloudfare Error Occurrred !!')
+            print(f'URL:{topic_url}')
+            print('Initializing Session again')
+            self.session = Session()
+            self.login()
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            return self.process_first_page(topic_url)
         with open(initial_file, 'wb') as f:
             f.write(content)
         print(f'{topic}-1 done..!')
-        html_response = self.get_html_response(content)
         avatar_info = self.get_avatar_info(html_response)
         for name, url in avatar_info.items():
             self.save_avatar(name, url)
@@ -104,16 +112,25 @@ class SentryMBAv2Scrapper(BaseScrapper):
         content = self.get_page_content(next_page_url)
         if not content:
             return
+        new_html_response = self.get_html_response(content)
+        if new_html_response.xpath(self.cloudfare_error):
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            print('!! Cloudfare Error Occurrred !!')
+            print(f'URL:{next_page_url}')
+            print('Initializing Session again')
+            self.session = Session()
+            self.login()
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            return self.write_paginated_data(html_response)
         paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
         with open(paginated_file, 'wb') as f:
             f.write(content)
 
         print(f'{topic}-{pagination_value} done..!')
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
+        avatar_info = self.get_avatar_info(new_html_response)
         for name, url in avatar_info.items():
             self.save_avatar(name, url)
-        return next_page_url, html_response
+        return next_page_url, new_html_response
 
     def process_forum(self, url):
         while True:
@@ -182,6 +199,16 @@ class SentryMBAv2Scrapper(BaseScrapper):
         return avatar_info
 
     def login(self):
+        url = "https://sentry.mba/member.php?action=login"
+        content = self.get_page_content(url)
+        if not content:
+            print(f'No data for url: {content}')
+            return
+        html_response = self.get_html_response(content)
+        my_post_key = html_response.xpath(
+            '//input[@name="my_post_key"]/@value')
+        if not my_post_key:
+            return
         if not self.username:
             self.username = USERNAME
         if not self.password:
@@ -194,7 +221,7 @@ class SentryMBAv2Scrapper(BaseScrapper):
             "submit": "Submit",
             "action": "do_login",
             "url": "https://sentry.mba/index.php",
-            "my_post_key": "fd31952853b63192dddbb54ecce6ad7d",
+            "my_post_key": my_post_key[0],
         }
         login_response = self.session.post(
             self.login_url,
@@ -204,24 +231,20 @@ class SentryMBAv2Scrapper(BaseScrapper):
         html_response = self.get_html_response(login_response.content)
         if html_response.xpath(
            '//div[contains(text(), "Authorization code mismatch")]'):
-            return False
+            return
         return True
 
     def do_new_posts_scrape(self,):
         print('**************  New posts scan  **************')
-        print('Implementation not complete yet!!')
-        return
         if not self.login():
             print('Login failed! Exiting...')
             return
         print('Login Successful!')
         new_posts_url = self.base_url + "/search.php?action=getdaily"
-        self.headers.pop('accept-encoding', None)
         main_content = self.get_page_content(self.base_url)
         if not main_content:
             print(f'No data for url: {self.base_url}')
             return
-        print(main_content)
         self.headers.update({
             'referer': self.headers['origin']
         })
@@ -229,11 +252,9 @@ class SentryMBAv2Scrapper(BaseScrapper):
         if not main_content:
             print(f'No data for url: {self.base_url}')
             return
-        print(main_content)
         html_response = self.get_html_response(main_content)
         topic_urls = html_response.xpath(
             '//div[@class="row p10"]/span/a[@id]/@href')
-        print(topic_urls)
         for topic_url in topic_urls:
             topic_url = self.base_url + topic_url\
                 if self.base_url not in topic_url else topic_url
@@ -248,7 +269,6 @@ class SentryMBAv2Scrapper(BaseScrapper):
             print('Login failed! Exiting...')
             return
         print('Login Successful!')
-        self.headers.pop('accept-encoding', None)
         main_content = self.get_page_content(self.base_url)
         if not main_content:
             print(f'No data for url: {self.base_url}')
