@@ -18,6 +18,7 @@ from scraper.antichat_v2 import Antichatv2Scrapper
 from scraper.sinister import SinisterScrapper
 from scraper.sentryMBA_v2 import SentryMBAv2Scrapper
 from scraper.verified_carder import VerifiedCarderScrapper
+from scraper.carder import CarderScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -37,7 +38,7 @@ SCRAPER_MAP = {
     'antichat_v2': Antichatv2Scrapper,
     'sinister': SinisterScrapper,
     'sentrymba_v2': SentryMBAv2Scrapper,
-    'verified_carder': VerifiedCarderScrapper,
+    'carder': CarderScrapper,
 }
 
 

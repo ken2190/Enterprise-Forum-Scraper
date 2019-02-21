@@ -21,12 +21,17 @@ def handle_error(template, error_folder, error_message):
         file_pointer.write(str(error_message))
 
 
-def get_html_response(template):
+def get_html_response(template, pattern=None, encoding=None):
     """
     returns the html response from the `template` contents
     """
     with open(template, 'rb') as f:
         content = f.read()
+        if pattern:
+            encoding = encoding if encoding else 'utf-8'
+            content = pattern.sub(
+                '', content.decode(encoding))\
+                .encode(encoding)
         html_response = fromstring(content)
         return html_response
 

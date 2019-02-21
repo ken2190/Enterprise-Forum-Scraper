@@ -44,6 +44,7 @@ from templates.outlawmarket_template import OutLawMarketParser
 from templates.alphabay_template import AlphaBayParser
 from templates.sinister_template import SinisterParser
 from templates.verified_carder_template import VerifiedCarderParser
+from templates.carder_template import CarderParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -91,6 +92,7 @@ PARSER_MAP = {
     'alphabay': AlphaBayParser,
     'sinister': SinisterParser,
     'verified_carder': VerifiedCarderParser,
+    'carder': CarderParser,
 }
 
 

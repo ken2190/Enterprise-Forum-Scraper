@@ -6,25 +6,39 @@ import requests
 from requests import Session
 from scraper.base_scrapper import BaseScrapper
 
+RCKID = "f5XSM80a0rpu39WlOXmBB3BBY7mj8Ts3JibPn6Z8ezSTGPRMvWMhQsOinhML8c2K"
+BLAZINGFAST_WEB_PROTECT = "53b9998982df4d031165f522b027879c"
 
-class VerifiedCarderScrapper(BaseScrapper):
+
+class CarderScrapper(BaseScrapper):
     def __init__(self, kwargs):
-        super(VerifiedCarderScrapper, self).__init__(kwargs)
-        self.base_url = 'https://verifiedcarder.ws/'
-        self.topic_pattern = re.compile(r'.*\.(\d+)/$')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+        super(CarderScrapper, self).__init__(kwargs)
+        self.base_url = 'http://carder.me/'
+        self.topic_pattern = re.compile(r't=(\d+)')
+        self.comment_pattern = re.compile(r'(\<\!--.*?--\!\>)')
         self.cloudfare_error = None
+        cookie = f"rcksid={RCKID}; "\
+            f"BLAZINGFAST-WEB-PROTECT={BLAZINGFAST_WEB_PROTECT};"
+        self.headers = {
+            "Cookie": cookie,
+            "Host": "carder.me",
+            "Referer": "http://carder.me/",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/72.0.3626.109 Safari/537.36"
+        }
 
     def get_page_content(self, url):
         time.sleep(self.wait_time)
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=self.headers)
             content = response.content
             html_response = self.get_html_response(content)
             if html_response.xpath('//div[@class="errorwrap"]'):
                 return
             return content
         except:
+            traceback.print_exc()
             return
 
     def save_avatar(self, name, url):
@@ -52,7 +66,14 @@ class VerifiedCarderScrapper(BaseScrapper):
         with open(initial_file, 'wb') as f:
             f.write(content)
         print(f'{topic}-1 done..!')
+        content = self.comment_pattern.sub('', str(content))
         html_response = self.get_html_response(content)
+        if html_response.xpath(
+            '//font[contains(text(), "Verifying your browser, please wait")]'
+        ):
+            print('DDOS identified. Retyring after a min')
+            time.sleep(60)
+            return self.process_first_page(topic_url)
         avatar_info = self.get_avatar_info(html_response)
         for name, url in avatar_info.items():
             self.save_avatar(name, url)
@@ -70,14 +91,14 @@ class VerifiedCarderScrapper(BaseScrapper):
 
     def write_paginated_data(self, html_response):
         next_page_block = html_response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]/@href'
+            '//a[@rel="next"]/@href'
         )
         if not next_page_block:
             return
         next_page_url = next_page_block[0]
         next_page_url = self.base_url + next_page_url\
             if self.base_url not in next_page_url else next_page_url
-        pattern = re.compile(r'.*\.(\d+)/page-(\d+)$')
+        pattern = re.compile(r't=(\d+)&page=(\d+)')
         match = pattern.findall(next_page_url)
         if not match:
             return
@@ -90,6 +111,7 @@ class VerifiedCarderScrapper(BaseScrapper):
             f.write(content)
 
         print(f'{topic}-{pagination_value} done..!')
+        content = self.comment_pattern.sub('', str(content))
         html_response = self.get_html_response(content)
         avatar_info = self.get_avatar_info(html_response)
         for name, url in avatar_info.items():
@@ -103,17 +125,18 @@ class VerifiedCarderScrapper(BaseScrapper):
             if not forum_content:
                 print(f'No data for url: {forum_content}')
                 return
+            forum_content = self.comment_pattern.sub('', str(forum_content))
             html_response = self.get_html_response(forum_content)
             topic_urls = html_response.xpath(
-                '//div[@class="structItemContainer-group js-threadList"]'
-                '//div[@class="structItem-title"]/a/@href'
+                '//table[@id="threadslist"]//td[@id]'
+                '//a[contains(@href, "showthread.php")]/@href'
             )
             for topic_url in topic_urls:
                 topic_url = self.base_url + topic_url\
                     if self.base_url not in topic_url else topic_url
                 self.process_topic(topic_url)
             forum_pagination_url = html_response.xpath(
-                '//a[@class="pageNav-jump pageNav-jump--next"]/@href'
+                '//a[@rel="next"]/@href'
             )
             if not forum_pagination_url:
                 return
@@ -124,12 +147,17 @@ class VerifiedCarderScrapper(BaseScrapper):
     def get_forum_urls(self, html_response):
         urls = set()
         extracted_urls = html_response.xpath(
-            '//h3[@class="node-title"]/a/@href')
+            '//td[@class="alt1Active"]'
+            '//a[contains(@href, "forumdisplay.php")]/@href'
+        )
         for _url in extracted_urls:
             if self.base_url not in _url:
                 urls.add(self.base_url + _url)
             else:
                 urls.add(_url)
+        urls = sorted(
+            urls,
+            key=lambda x: int(x.split('f=')[-1]))
         return urls
 
     def clear_cookies(self,):
@@ -138,15 +166,24 @@ class VerifiedCarderScrapper(BaseScrapper):
     def get_avatar_info(self, html_response):
         avatar_info = dict()
         urls = html_response.xpath(
-            '//div[@class="message-avatar-wrapper"]/a/img/@src'
+            '//td[@class="alt2 leftside"]/div/a/img/@src'
         )
         for url in urls:
             url = self.base_url + url\
                 if not url.startswith('http') else url
-            name_match = self.avatar_name_pattern.findall(url)
-            if not name_match:
-                continue
-            name = name_match[0]
+            if "image.php" in url:
+                avatar_name_pattern = re.compile(r'u=(\d+)')
+                name_match = avatar_name_pattern.findall(url)
+                if not name_match:
+                    continue
+                name = f'{name_match[0]}.jpg'
+            else:
+                avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+                name_match = avatar_name_pattern.findall(url)
+                if not name_match:
+                    continue
+                name = name_match[0]
+
             if name not in avatar_info:
                 avatar_info.update({
                     name: url
@@ -154,19 +191,20 @@ class VerifiedCarderScrapper(BaseScrapper):
         return avatar_info
 
     def do_scrape(self):
-        print('************  VerifiedCarder Scrapper Started  ************\n')
+        print('************  Carder Scrapper Started  ************\n')
         main_content = self.get_page_content(self.base_url)
         if not main_content:
             print(f'No data for url: {self.base_url}')
             return
         html_response = self.get_html_response(main_content)
         forum_urls = self.get_forum_urls(html_response)
+        # forum_urls = ['http://carder.me/forumdisplay.php?f=8']
         for forum_url in forum_urls:
             self.process_forum(forum_url)
 
 
 def main():
-    template = VerifiedCarderScrapper()
+    template = CarderScrapper()
     template.do_scrape()
 
 
