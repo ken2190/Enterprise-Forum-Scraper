@@ -2,6 +2,7 @@
 import os
 import json
 from lxml.html import fromstring
+from lxml.etree import ParserError
 
 
 def handle_error(template, error_folder, error_message):
@@ -32,7 +33,10 @@ def get_html_response(template, pattern=None, encoding=None):
             content = pattern.sub(
                 '', content.decode(encoding))\
                 .encode(encoding)
-        html_response = fromstring(content)
+        try:
+            html_response = fromstring(content)
+        except ParserError as ex:
+            return
         return html_response
 
 

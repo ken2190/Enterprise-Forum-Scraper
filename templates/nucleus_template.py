@@ -16,7 +16,8 @@ class NucleusParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
-        self.thread_name_pattern = re.compile(r'(viewtopic\.php.*id=\d+)')
+        self.thread_name_pattern_1 = re.compile(r'viewtopic\.php\?pid=(\d+)')
+        self.thread_name_pattern_2 = re.compile(r'viewtopic\.php\?id=(\d+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -25,42 +26,67 @@ class NucleusParser:
         # main function
         self.main()
 
-    def get_pid(self):
-        pid_pattern = re.compile(r'id=(\d+)')
-        pid = pid_pattern.findall(self.thread_id)
-        pid = pid[0] if pid else self.thread_id
-        return pid
-
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
+                lambda x: self.thread_name_pattern_1.search(x) is not None,
                 files
             )
         )
-        pid_pattern = re.compile(r'id=(\d+)')
-        sorted_files = sorted(
+        sorted_files_1 = sorted(
             filtered_files,
-            key=lambda x: int(pid_pattern.search(x).group(1)))
+            key=lambda x: int(self.thread_name_pattern_1.search(x).group(1)))
 
-        return sorted_files
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern_2.search(x) is not None,
+                files
+            )
+        )
+        sorted_files_2 = sorted(
+            filtered_files,
+            key=lambda x: int(self.thread_name_pattern_2.search(x).group(1)))
+
+        return sorted_files_1 + sorted_files_2
 
     def main(self):
         comments = []
         output_file = None
         for index, template in enumerate(self.files):
-            print(template)
+            file_type = None
             try:
                 html_response = utils.get_html_response(template)
-                file_name_only = template.split('/')[-1]
-                match = self.thread_name_pattern.findall(file_name_only)
-                if not match:
+                if html_response is None:
                     continue
-                self.thread_id = match[0]
-                pid = self.get_pid()
-                final = utils.is_file_final(
-                    self.thread_id, self.thread_name_pattern, self.files, index
-                )
+                file_name_only = template.split('/')[-1]
+                match = self.thread_name_pattern_1.findall(file_name_only)
+                if match:
+                    file_type = 1
+                else:
+                    match = self.thread_name_pattern_2.findall(file_name_only)
+                    if match:
+                        file_type = 2
+                if not file_type:
+                    continue
+                if file_type == 1:
+                    pid = self.thread_id = match[0]
+                else:
+                    pid = self.thread_id = f'{match[0]}-1'
+                print(template)
+                if file_type == 1:
+                    final = utils.is_file_final(
+                        self.thread_id,
+                        self.thread_name_pattern_1,
+                        self.files,
+                        index
+                    )
+                else:
+                    final = utils.is_file_final(
+                        match[0],
+                        self.thread_name_pattern_2,
+                        self.files,
+                        index
+                    )
                 if self.thread_id not in self.distinct_files and\
                    not output_file:
 
@@ -102,21 +128,26 @@ class NucleusParser:
         )
         for comment_block in comment_blocks:
             user = self.get_author(comment_block)
-            commentID = self.get_comment_id(comment_block)
-            if not commentID or commentID == "1":
+            comment_id = self.get_comment_id(comment_block)
+            if not comment_id or comment_id == "1":
                 continue
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
-            pid = self.get_pid()
+            pid = self.thread_id
+            source = {
+                'f': self.parser_name,
+                'pid': pid,
+                'm': comment_text.strip(),
+                'cid': comment_id,
+                'a': user,
+            }
+            if comment_date:
+                source.update({
+                    'd': comment_date
+                })
             comments.append({
                 '_type': "forum",
-                '_source': {
-                    'pid': pid,
-                    'd': comment_date,
-                    'm': comment_text.strip(),
-                    'cid': commentID,
-                    'a': user,
-                },
+                '_source': source,
             })
         return comments
 
@@ -129,22 +160,27 @@ class NucleusParser:
             )
             if not header:
                 return
-            # if not self.get_comment_id(header[0]) == "1":
-                # return
+            if not self.get_comment_id(header[0]) == "1":
+                return
             title = self.get_title(header[0])
             date = self.get_date(header[0])
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])
-            pid = self.get_pid()
+            pid = self.thread_id
+            source = {
+                'f': self.parser_name,
+                'pid': pid,
+                's': title,
+                'a': author,
+                'm': post_text.strip(),
+            }
+            if date:
+                source.update({
+                   'd': date
+                })
             return {
                 '_type': "forum",
-                '_source': {
-                    'pid': pid,
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
-                }
+                '_source': source
             }
         except:
             ex = traceback.format_exc()
