@@ -45,6 +45,7 @@ from templates.alphabay_template import AlphaBayParser
 from templates.sinister_template import SinisterParser
 from templates.verified_carder_template import VerifiedCarderParser
 from templates.carder_template import CarderParser
+from templates.ccc_mn_template import CCCMNParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -93,6 +94,7 @@ PARSER_MAP = {
     'sinister': SinisterParser,
     'verified_carder': VerifiedCarderParser,
     'carder': CarderParser,
+    'ccc_mn': CCCMNParser,
 }
 
 
