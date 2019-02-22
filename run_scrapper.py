@@ -38,6 +38,7 @@ SCRAPER_MAP = {
     'antichat_v2': Antichatv2Scrapper,
     'sinister': SinisterScrapper,
     'sentrymba_v2': SentryMBAv2Scrapper,
+    'verified_carder': VerifiedCarderScrapper,
     'carder': CarderScrapper,
 }
 
