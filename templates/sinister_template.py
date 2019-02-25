@@ -46,6 +46,9 @@ class SinisterParser:
 
         return sorted_files
 
+    def get_pid(self, topic):
+        return str(abs(hash(topic)) % (10 ** 6))
+
     def main(self):
         comments = []
         output_file = None
@@ -114,7 +117,7 @@ class SinisterParser:
             user = self.get_author(comment_block)
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
-            pid = self.thread_id
+            pid = self.get_pid(self.thread_id)
             avatar = self.get_avatar(comment_block)
             comment_id = self.get_comment_id(comment_block)
             if not comment_id or comment_id == "1":
@@ -155,7 +158,7 @@ class SinisterParser:
             date = self.get_date(header[0])
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])
-            pid = self.thread_id
+            pid = self.get_pid(self.thread_id)
             avatar = self.get_avatar(header[0])
             source = {
                 'f': self.parser_name,
