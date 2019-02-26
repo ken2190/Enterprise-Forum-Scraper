@@ -47,6 +47,7 @@ from templates.verified_carder_template import VerifiedCarderParser
 from templates.carder_template import CarderParser
 from templates.ccc_mn_template import CCCMNParser
 from templates.cracked_to_template import CrackedToParser
+from templates.sky_fraud_template import SkyFraudParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -97,6 +98,7 @@ PARSER_MAP = {
     'carder': CarderParser,
     'ccc_mn': CCCMNParser,
     'cracked_to': CrackedToParser,
+    'sky_fraud': SkyFraudParser,
 }
 
 
