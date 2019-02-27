@@ -23,6 +23,7 @@ from scraper.ccc_mn import CCCMNScrapper
 from scraper.cracked_to import CrackedToScrapper
 from scraper.sky_fraud import SkyFraudScrapper
 from scraper.nulled import NulledScrapper
+from scraper.dark_skies import DarkSkiesScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -48,6 +49,7 @@ SCRAPER_MAP = {
     'cracked_to': CrackedToScrapper,
     'sky_fraud': SkyFraudScrapper,
     'nulled': NulledScrapper,
+    'dark_skies': DarkSkiesScrapper,
 }
 
 
