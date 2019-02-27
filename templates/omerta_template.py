@@ -14,7 +14,7 @@ class BrokenPage(Exception):
     pass
 
 
-class SkyFraudParser:
+class OmertaParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = parser_name
@@ -158,7 +158,7 @@ class SkyFraudParser:
                 return
             if not self.get_comment_id(header[0]) == "1":
                 return
-            title = self.get_title(header[0])
+            title = self.get_title(html_response)
             date = self.get_date(header[0])
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])
@@ -190,15 +190,15 @@ class SkyFraudParser:
     def get_date(self, tag):
         date = ""
         date_block = tag.xpath(
-            'table//td[1][@class="thead"]'
-            '/a/following-sibling::text()'
+            'table//td[1][@class="tcat"]'
+            '/a[@name]/following-sibling::text()'
         )
         if date_block:
             date = date_block[0].strip()
         if not date:
             return ""
         try:
-            pattern = "%d.%m.%Y, %H:%M"
+            pattern = "%m-%d-%Y, %I:%M %p"
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
@@ -218,11 +218,11 @@ class SkyFraudParser:
             )
         if not author:
             author = tag.xpath(
-                'aside/div[@class="post-username"]/span/a/strong/span/text()'
+                'table//a[@class="bigusername"]/text()'
             )
         if not author:
             author = tag.xpath(
-                'aside/div[@class="post-username"]/span/text()'
+                'table//a[@class="bigusername"]/font/text()'
             )
 
         author = author[0].strip() if author else None
@@ -230,15 +230,14 @@ class SkyFraudParser:
 
     def get_title(self, tag):
         title = tag.xpath(
-            'table//tr[@valign="top"]/td[@class="alt2" and @id]'
-            '/div[@class="smallfont"]/strong/text()'
+            '//td[@class="navbar"]/strong/text()'
         )
         title = title[0].strip() if title else None
         return title
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
-            'table//tr[@valign="top"]/td[@class="alt2" and @id]'
+            'table//tr[@valign="top"]/td[@class="alt1" and @id]'
             '/div[@id]/descendant::text()['
             'not(ancestor::div[@style="margin:20px; margin-top:5px; "])]'
         )
@@ -261,7 +260,7 @@ class SkyFraudParser:
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            'table//td[2][@class="thead"]/a/strong/text()'
+            'table//td[2][@class="tcat"]/a/strong/text()'
         )
         # print(comment_block)
         if comment_block:
