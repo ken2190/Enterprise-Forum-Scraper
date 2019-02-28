@@ -50,6 +50,7 @@ from templates.cracked_to_template import CrackedToParser
 from templates.sky_fraud_template import SkyFraudParser
 from templates.omerta_template import OmertaParser
 from templates.dark_skies_template import DarkSkiesParser
+from templates.procrd_template import ProcrdParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -103,6 +104,7 @@ PARSER_MAP = {
     'sky_fraud': SkyFraudParser,
     'omerta': OmertaParser,
     'dark_skies': DarkSkiesParser,
+    'procrd': ProcrdParser,
 }
 
 
