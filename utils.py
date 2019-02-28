@@ -60,10 +60,10 @@ def write_comments(file_pointer, comments, output_file):
     seen = set()
     comments = [
         c for c in comments
-        if [(c['_source']['cid'], c['_source']['a'], c['_source'].get('d'))
+        if [(c['_source']['cid'], c['_source']['author'], c['_source'].get('d'))
             not in seen, seen.add((
                 c['_source']['cid'],
-                c['_source']['a'],
+                c['_source']['author'],
                 c['_source'].get('d')
             ))][0]
     ]
