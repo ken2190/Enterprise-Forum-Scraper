@@ -25,6 +25,7 @@ from scraper.sky_fraud import SkyFraudScrapper
 from scraper.nulled import NulledScrapper
 from scraper.dark_skies import DarkSkiesScrapper
 from scraper.procrd import ProcrdScrapper
+from scraper.hydra import HydraScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -52,6 +53,7 @@ SCRAPER_MAP = {
     'nulled': NulledScrapper,
     'dark_skies': DarkSkiesScrapper,
     'procrd': ProcrdScrapper,
+    'hydra': HydraScrapper,
 }
 
 
