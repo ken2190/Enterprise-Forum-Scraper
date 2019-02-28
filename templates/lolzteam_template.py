@@ -120,11 +120,11 @@ class LolzTeamParser:
             pid = self.thread_id
             avatar = self.get_avatar(comment_block)
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
-                'm': comment_text.strip(),
+                'message': comment_text.strip(),
                 'cid': str(self.comment_index),
-                'a': user,
+                'author': user,
                 'img': avatar,
             }
             if comment_date:
@@ -132,7 +132,7 @@ class LolzTeamParser:
                     'd': comment_date
                 })
             comments.append({
-                '_type': "forum",
+                
                 '_source': source,
             })
             self.comment_index += 1
@@ -154,7 +154,7 @@ class LolzTeamParser:
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
                 's': title,
                 'a': author,
@@ -166,7 +166,7 @@ class LolzTeamParser:
                    'd': date
                 })
             return {
-                '_type': "forum",
+                
                 '_source': source
             }
         except:

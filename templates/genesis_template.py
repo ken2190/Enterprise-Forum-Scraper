@@ -113,11 +113,11 @@ class GenesisParser:
             if not comment_id:
                 continue
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
-                'm': comment_text.strip(),
+                'message': comment_text.strip(),
                 'cid': comment_id,
-                'a': user,
+                'author': user,
             }
             if comment_date:
                 source.update({
@@ -128,7 +128,7 @@ class GenesisParser:
                     'img': avatar
                 })
             comments.append({
-                '_type': "forum",
+                
                 '_source': source,
             })
         return comments
@@ -151,7 +151,7 @@ class GenesisParser:
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
                 's': title,
                 'a': author,
@@ -166,7 +166,7 @@ class GenesisParser:
                     'img': avatar
                 })
             return {
-                '_type': "forum",
+                
                 '_source': source
             }
         except:

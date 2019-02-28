@@ -132,13 +132,13 @@ class OdayParser:
             except:
                 comment_date = ""
             comments.append({
-                '_type': "forum",
+                
                 '_source': {
                     'pid': self.thread_id.replace('thread-', ''),
-                    'd': comment_date,
-                    'm': comment_text.strip(),
+                    'date': comment_date,
+                    'message': comment_text.strip(),
                     'cid': commentID,
-                    'a': user,
+                    'author': user,
                 },
             })
         return comments
@@ -201,7 +201,7 @@ class OdayParser:
                     [post.strip() for post in post_text if post]
                 )
             return {
-                '_type': "forum",
+                
                 '_source': {
                     'pid': self.thread_id.replace('thread-', ''),
                     's': title,

@@ -105,13 +105,13 @@ class PandoraParser:
             comment_date = self.get_date(comment_block)
             pid = self.get_pid()
             comments.append({
-                '_type': "forum",
+                
                 '_source': {
                     'pid': pid,
-                    'd': comment_date,
-                    'm': comment_text.strip(),
+                    'date': comment_date,
+                    'message': comment_text.strip(),
                     'cid': commentID,
-                    'a': user,
+                    'author': user,
                 },
             })
         return comments
@@ -134,7 +134,7 @@ class PandoraParser:
             post_text = self.get_post_text(header[-1])
             pid = self.get_pid()
             return {
-                '_type': "forum",
+                
                 '_source': {
                     'pid': pid,
                     's': title,

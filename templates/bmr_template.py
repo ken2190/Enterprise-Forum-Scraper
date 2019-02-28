@@ -94,13 +94,13 @@ class BMRParser:
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             comments.append({
-                '_type': "forum",
+                
                 '_source': {
                     'pid': self.thread_id.split('id=')[-1],
-                    'd': comment_date,
-                    'm': comment_text.strip(),
+                    'date': comment_date,
+                    'message': comment_text.strip(),
                     'cid': commentID,
-                    'a': user,
+                    'author': user,
                 },
             })
         return comments
@@ -122,7 +122,7 @@ class BMRParser:
             post_text = self.get_post_text(header[0])
 
             return {
-                '_type': "forum",
+                
                 '_source': {
                     'pid': self.thread_id.split('id=')[-1],
                     's': title,

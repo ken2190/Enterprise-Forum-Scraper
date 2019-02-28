@@ -135,18 +135,18 @@ class NucleusParser:
             comment_date = self.get_date(comment_block)
             pid = self.thread_id
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
-                'm': comment_text.strip(),
+                'message': comment_text.strip(),
                 'cid': comment_id,
-                'a': user,
+                'author': user,
             }
             if comment_date:
                 source.update({
                     'd': comment_date
                 })
             comments.append({
-                '_type': "forum",
+                
                 '_source': source,
             })
         return comments
@@ -168,7 +168,7 @@ class NucleusParser:
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
                 's': title,
                 'a': author,
@@ -179,7 +179,7 @@ class NucleusParser:
                    'd': date
                 })
             return {
-                '_type': "forum",
+                
                 '_source': source
             }
         except:

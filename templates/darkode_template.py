@@ -106,13 +106,13 @@ class DarkodeParser:
             comment_date = self.get_date(comment_blocks[date_index])
             pid = self.thread_id
             comments.append({
-                '_type': "forum",
+                
                 '_source': {
                     'pid': pid,
-                    'd': comment_date,
-                    'm': comment_text.strip(),
+                    'date': comment_date,
+                    'message': comment_text.strip(),
                     'cid': str(index),
-                    'a': user,
+                    'author': user,
                 },
             })
         return comments
@@ -134,7 +134,7 @@ class DarkodeParser:
             post_text = self.get_post_text(header[1])
             pid = self.thread_id
             return {
-                '_type': "forum",
+                
                 '_source': {
                     'pid': pid,
                     's': title,

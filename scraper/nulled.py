@@ -8,9 +8,9 @@ from requests import Session
 from lxml.html import fromstring
 from lxml.etree import ParserError
 
-CSV_PATH = '/Users/PathakUmesh/Downloads/nulled_threads.csv'
-OUTPUT_PATH = '/Users/PathakUmesh/Desktop/nulled_output'
-WAIT_TIME = 1
+CSV_PATH = '/mnt/scrape/nulled/nulled.csv'
+OUTPUT_PATH = '/mnt/scrape/nulled/output'
+WAIT_TIME = 0
 
 
 class NulledScrapper:

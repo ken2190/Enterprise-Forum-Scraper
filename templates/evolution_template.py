@@ -118,13 +118,13 @@ class EvolutionParser:
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             comments.append({
-                '_type': "forum",
+                
                 '_source': {
                     'pid': pid,
-                    'd': comment_date,
-                    'm': comment_text.strip(),
+                    'date': comment_date,
+                    'message': comment_text.strip(),
                     'cid': commentID,
-                    'a': user,
+                    'author': user,
                 },
             })
         return comments
@@ -149,7 +149,7 @@ class EvolutionParser:
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
             return {
-                '_type': "forum",
+                
                 '_source': {
                     'pid': pid,
                     's': title,

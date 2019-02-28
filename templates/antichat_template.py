@@ -110,11 +110,11 @@ class AntichatParser:
             pid = self.thread_id
             avatar = self.get_avatar(comment_block)
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
-                'm': comment_text.strip(),
+                'message': comment_text.strip(),
                 'cid': commentID,
-                'a': user,
+                'author': user,
                 'img': avatar,
             }
             if comment_date:
@@ -122,7 +122,7 @@ class AntichatParser:
                     'd': comment_date
                 })
             comments.append({
-                '_type': "forum",
+                
                 '_source': source,
             })
         return comments
@@ -146,7 +146,7 @@ class AntichatParser:
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
                 's': title,
                 'a': author,
@@ -158,7 +158,7 @@ class AntichatParser:
                    'd': date
                 })
             return {
-                '_type': "forum",
+                
                 '_source': source
             }
         except:

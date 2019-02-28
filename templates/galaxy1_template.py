@@ -104,11 +104,11 @@ class Galaxy1Parser:
             pid = self.thread_id
             avatar = self.get_avatar(comment_block)
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
-                'm': comment_text.strip(),
+                'message': comment_text.strip(),
                 'cid': str(index),
-                'a': user,
+                'author': user,
                 'img': avatar,
             }
             if comment_date:
@@ -116,7 +116,7 @@ class Galaxy1Parser:
                     'd': comment_date
                 })
             comments.append({
-                '_type': "forum",
+                
                 '_source': source,
             })
         return comments
@@ -140,7 +140,7 @@ class Galaxy1Parser:
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
             source = {
-                'f': self.parser_name,
+                'forum': self.parser_name,
                 'pid': pid,
                 's': title,
                 'd': date,
@@ -153,7 +153,7 @@ class Galaxy1Parser:
                    'd': date
                 })
             return {
-                '_type': "forum",
+                
                 '_source': source
             }
         except:
