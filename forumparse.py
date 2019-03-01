@@ -51,6 +51,7 @@ from templates.sky_fraud_template import SkyFraudParser
 from templates.omerta_template import OmertaParser
 from templates.dark_skies_template import DarkSkiesParser
 from templates.procrd_template import ProcrdParser
+from templates.blackbox_template import BlackBoxParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -105,6 +106,7 @@ PARSER_MAP = {
     'omerta': OmertaParser,
     'dark_skies': DarkSkiesParser,
     'procrd': ProcrdParser,
+    'blackbox': BlackBoxParser,
 }
 
 

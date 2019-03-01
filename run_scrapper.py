@@ -26,6 +26,7 @@ from scraper.nulled import NulledScrapper
 from scraper.dark_skies import DarkSkiesScrapper
 from scraper.procrd import ProcrdScrapper
 from scraper.hydra import HydraScrapper
+from scraper.blackbox import BlackBoxScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -54,6 +55,7 @@ SCRAPER_MAP = {
     'dark_skies': DarkSkiesScrapper,
     'procrd': ProcrdScrapper,
     'hydra': HydraScrapper,
+    'blackbox': BlackBoxScrapper,
 }
 
 
