@@ -52,6 +52,7 @@ from templates.omerta_template import OmertaParser
 from templates.dark_skies_template import DarkSkiesParser
 from templates.procrd_template import ProcrdParser
 from templates.blackbox_template import BlackBoxParser
+from templates.v3rmillion_template import V3RMillionParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -107,6 +108,7 @@ PARSER_MAP = {
     'dark_skies': DarkSkiesParser,
     'procrd': ProcrdParser,
     'blackbox': BlackBoxParser,
+    'v3rmillion': V3RMillionParser,
 }
 
 
