@@ -126,10 +126,11 @@ class TheHubScrapper(BaseScrapper):
             forum_content = self.comment_pattern.sub('', str(forum_content))
             html_response = self.get_html_response(forum_content)
             topic_urls = html_response.xpath(
-                '//td[@class="subject stickybg2" or '
-                '@class="subject windowbg2"]//span[contains(@id, "msg_")]'
+                '//td[contains(@class, "subject ")]'
+                '//span[contains(@id, "msg_")]'
                 '/a/@href'
             )
+            # print(len(topic_urls))
             for topic_url in topic_urls:
                 topic_url = self.base_url + topic_url\
                     if not topic_url.startswith('http') else topic_url
@@ -177,9 +178,7 @@ class TheHubScrapper(BaseScrapper):
     def login(self):
         password = self.password or PASSWORD
         username = self.username or USERNAME
-        print('hello')
         response = self.session.get(self.base_url).content
-        print('hello there')
         if not response:
             return
         html_response = self.get_html_response(response)
@@ -227,7 +226,7 @@ class TheHubScrapper(BaseScrapper):
         print(forum_urls)
         # return
         # forum_urls = ['http://carder.me/forumdisplay.php?f=8']
-        for forum_url in forum_urls[1:]:
+        for forum_url in forum_urls:
             self.process_forum(forum_url)
 
 
