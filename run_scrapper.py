@@ -28,6 +28,7 @@ from scraper.procrd import ProcrdScrapper
 from scraper.hydra import HydraScrapper
 from scraper.blackbox import BlackBoxScrapper
 from scraper.v3rmillion import V3RMillionScrapper
+from scraper.thehub import TheHubScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -58,6 +59,7 @@ SCRAPER_MAP = {
     'hydra': HydraScrapper,
     'blackbox': BlackBoxScrapper,
     'v3rmillion': V3RMillionScrapper,
+    'thehub': TheHubScrapper,
 }
 
 

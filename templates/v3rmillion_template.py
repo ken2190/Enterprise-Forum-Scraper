@@ -27,7 +27,6 @@ class V3RMillionParser:
         )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(files)
-        print(self.files)
         self.folder_path = folder_path
         self.distinct_files = set()
         self.error_folder = "{}/Errors".format(output_folder)

@@ -16,29 +16,35 @@ class TheHubParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
+        self.thread_name_pattern = re.compile(
+            r'(\d+).*html$'
+        )
+        self.pagination_pattern = re.compile(
+            r'\d+-(\d+)\.html$'
+        )
+        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
-        self.data_dic = OrderedDict()
         self.distinct_files = set()
         self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_name_pattern = re.compile(r'index\.php.*topic=\d+')
         self.thread_id = None
         # main function
         self.main()
 
-    def get_pid(self):
-        pid_pattern = re.compile(r'topic=(\d+)')
-        pid = pid_pattern.findall(self.thread_id)
-        pid = pid[0] if pid else self.thread_id
-        return pid
-
     def get_filtered_files(self, files):
-        final_files = list()
-        for file in files:
-            file_name_only = file.split('/')[-1]
-            if file_name_only.startswith('index.php'):
-                final_files.append(file)
-        return sorted(final_files)
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(
+                    x.split('/')[-1]) is not None,
+                files
+            )
+        )
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: int(self.thread_name_pattern.search(
+                x.split('/')[-1]).group(1)))
+
+        return sorted_files
 
     def main(self):
         comments = []
@@ -51,18 +57,25 @@ class TheHubParser:
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
-                self.thread_id = match[0]
-                pid = self.get_pid()
+                pid = self.thread_id = match[0]
+                pagination = self.pagination_pattern.findall(file_name_only)
+                if pagination:
+                    pagination = int(pagination[0])
                 final = utils.is_file_final(
-                    self.thread_id, self.thread_name_pattern, self.files, index
+                    self.thread_id,
+                    self.thread_name_pattern,
+                    self.files,
+                    index
                 )
                 if self.thread_id not in self.distinct_files and\
                    not output_file:
 
                     # header data extract
-                    data = self.header_data_extract(html_response, template)
-                    if not data:
-                        comments.extend(self.extract_comments(html_response))
+                    data = self.header_data_extract(
+                        html_response, template)
+                    if not data or not pagination == 1:
+                        comments.extend(
+                            self.extract_comments(html_response))
                         continue
                     self.distinct_files.add(self.thread_id)
 
@@ -74,7 +87,8 @@ class TheHubParser:
                     file_pointer = open(output_file, 'w', encoding='utf-8')
                     utils.write_json(file_pointer, data)
                 # extract comments
-                comments.extend(self.extract_comments(html_response))
+                comments.extend(
+                    self.extract_comments(html_response))
 
                 if final:
                     utils.write_comments(file_pointer, comments, output_file)
@@ -95,24 +109,32 @@ class TheHubParser:
         comment_blocks = html_response.xpath(
           '//div[@class="post_wrapper"]'
         )
-        for comment_block in comment_blocks:
+        for index, comment_block in enumerate(comment_blocks, 1):
             user = self.get_author(comment_block)
-            authorID = self.get_author_link(comment_block)
-            commentID = self.get_comment_id(comment_block)
-            if not commentID:
-                continue
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
-            pid = self.get_pid()
+            pid = self.thread_id
+            avatar = self.get_avatar(comment_block)
+            comment_id = self.get_comment_id(comment_block)
+            if not comment_id:
+                continue
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                'message': comment_text.strip(),
+                'cid': comment_id,
+                'author': user,
+            }
+            if comment_date:
+                source.update({
+                    'd': comment_date
+                })
+            if avatar:
+                source.update({
+                    'img': avatar
+                })
             comments.append({
-                
-                '_source': {
-                    'pid': pid,
-                    'date': comment_date,
-                    'message': comment_text.strip(),
-                    'cid': commentID,
-                    'author': user,
-                },
+                '_source': source,
             })
         return comments
 
@@ -125,21 +147,31 @@ class TheHubParser:
             )
             if not header:
                 return
+            if self.get_comment_id(header[0]):
+                return
             title = self.get_title(header[0])
             date = self.get_date(header[0])
             author = self.get_author(header[0])
-            author_link = self.get_author_link(header[0])
             post_text = self.get_post_text(header[0])
-            pid = self.get_pid()
+            pid = self.thread_id
+            avatar = self.get_avatar(header[0])
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                's': title,
+                'a': author,
+                'm': post_text.strip(),
+            }
+            if date:
+                source.update({
+                   'd': date
+                })
+            if avatar:
+                source.update({
+                    'img': avatar
+                })
             return {
-                
-                '_source': {
-                    'pid': pid,
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
-                }
+                '_source': source
             }
         except:
             ex = traceback.format_exc()
@@ -177,25 +209,32 @@ class TheHubParser:
         title = title[0].strip() if title else None
         return title
 
-    def get_author_link(self, tag):
-        author_link = tag.xpath(
-            'div/h4/a/@href'
-        )
-        if author_link:
-            pattern = re.compile(r'u=(\d+)')
-            match = pattern.findall(author_link[0])
-            author_link = match[0] if match else None
-        return author_link
-
     def get_post_text(self, tag):
         post_text = tag.xpath(
             'div//div[@class="post"]/'
-            '/div[@class="inner"]/text()'
+            '/div[@class="inner"]'
+            '/descendant::text()['
+            'not(ancestor::blockquote) and'
+            'not(div[@class="quoteheader"]) and'
+            'not(div[@class="quotefooter"])]'
         )
         post_text = "\n".join(
             [text.strip() for text in post_text]
         ) if post_text else ""
         return post_text
+
+    def get_avatar(self, tag):
+        avatar_block = tag.xpath(
+            'div//li[@class="avatar"]/a/img/@src'
+        )
+        if not avatar_block:
+            return ""
+        avatar_name_pattern = re.compile(r'attach=(\d+)')
+        name_match = avatar_name_pattern.findall(avatar_block[0])
+        if not name_match:
+            return ""
+        name = f'{name_match[0]}.jpg'
+        return name
 
     def get_comment_id(self, tag):
         commentID = ""
@@ -203,6 +242,7 @@ class TheHubParser:
             'div[@class="postarea"]'
             '//div[@class="smalltext"]/strong/text()'
         )
+        # print(comment_block)
         if comment_block:
             comment_pattern = re.compile(r'Reply #(\d+) on:')
             match = comment_pattern.findall(comment_block[0])
