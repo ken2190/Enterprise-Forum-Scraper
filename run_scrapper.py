@@ -29,6 +29,7 @@ from scraper.hydra import HydraScrapper
 from scraper.blackbox import BlackBoxScrapper
 from scraper.v3rmillion import V3RMillionScrapper
 from scraper.thehub import TheHubScrapper
+from scraper.justpasteit import JustPasteItScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -60,6 +61,7 @@ SCRAPER_MAP = {
     'blackbox': BlackBoxScrapper,
     'v3rmillion': V3RMillionScrapper,
     'thehub': TheHubScrapper,
+    'justpasteit': JustPasteItScrapper,
 }
 
 
