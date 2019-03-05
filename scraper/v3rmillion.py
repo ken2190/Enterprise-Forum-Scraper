@@ -128,7 +128,7 @@ class V3RMillionScrapper(BaseScrapper):
             forum_content = self.comment_pattern.sub('', str(forum_content))
             html_response = self.get_html_response(forum_content)
             topic_urls = html_response.xpath(
-                '//span[@id and @class=" subject_new"]/a/@href'
+                '//span[@id and contains(@class, " subject_")]/a/@href'
             )
             for topic_url in topic_urls:
                 topic_url = self.base_url + topic_url\
