@@ -32,6 +32,7 @@ from scraper.thehub import TheHubScrapper
 from scraper.justpasteit import JustPasteItScrapper
 from scraper.silk_road3 import SilkRoad3Scrapper
 from scraper.hiddenhand import HiddenHandScrapper
+from scraper.prvtzone import PrvtZoneScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -66,6 +67,7 @@ SCRAPER_MAP = {
     'justpasteit': JustPasteItScrapper,
     'silk_road3': SilkRoad3Scrapper,
     'hiddenhand': HiddenHandScrapper,
+    'prvtzone': PrvtZoneScrapper,
 }
 
 

@@ -55,6 +55,7 @@ from templates.blackbox_template import BlackBoxParser
 from templates.v3rmillion_template import V3RMillionParser
 from templates.silk_road3_template import SilkRoad3Parser
 from templates.hiddenhand_template import HiddenHandParser
+from templates.prvtzone_template import PrvtZoneParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -113,6 +114,7 @@ PARSER_MAP = {
     'v3rmillion': V3RMillionParser,
     'silkroad3': SilkRoad3Parser,
     'hiddenhand': HiddenHandParser,
+    'prvtzone': PrvtZoneParser,
 }
 
 
