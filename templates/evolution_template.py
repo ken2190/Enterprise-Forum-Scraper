@@ -108,24 +108,26 @@ class EvolutionParser:
         for comment_block in comment_blocks[1:]:
 
             user = self.get_author(comment_block)
-            authorID = self.get_author_link(comment_block)
-            if not authorID:
-                authorID = ""
             commentID = self.get_comment_id(comment_block)
             if not commentID:
                 continue
             pid = self.thread_id
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                'message': comment_text.strip(),
+                'cid': commentID,
+                'author': user,
+            }
+            if comment_date:
+                source.update({
+                    'd': comment_date
+                })
+
             comments.append({
-                
-                '_source': {
-                    'pid': pid,
-                    'date': comment_date,
-                    'message': comment_text.strip(),
-                    'cid': commentID,
-                    'author': user,
-                },
+                '_source': source,
             })
         return comments
 
@@ -143,20 +145,21 @@ class EvolutionParser:
                 return
             date = self.get_date(header[0])
             author = self.get_author(header[0])
-            author_link = self.get_author_link(header[0])
-            if not author_link:
-                author_link = ""
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                's': title,
+                'a': author,
+                'm': post_text.strip(),
+            }
+            if date:
+                source.update({
+                   'd': date
+                })
             return {
-                
-                '_source': {
-                    'pid': pid,
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
-                }
+                '_source': source
             }
         except:
             ex = traceback.format_exc()
@@ -185,6 +188,12 @@ class EvolutionParser:
                 '/span/text()'
             )
 
+        if not author:
+            author = tag.xpath(
+                'div[@class="box"]//dt/strong/'
+                '/a/text()'
+            )
+
         author = author[0].strip() if author else None
         return author
 
@@ -194,17 +203,6 @@ class EvolutionParser:
         )
         title = title[0].replace('Re:', '').strip() if title else None
         return title
-
-    def get_author_link(self, tag):
-        author_link = tag.xpath(
-            'div[@class="box"]//dt/strong/'
-            '/a/@href'
-        )
-        if author_link:
-            pattern = re.compile(r'id=(\d+)')
-            match = pattern.findall(author_link[0])
-            author_link = match[0] if match else None
-        return author_link
 
     def get_post_text(self, tag):
         post_text = None
