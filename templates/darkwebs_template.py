@@ -1,37 +1,22 @@
 # -- coding: utf-8 --
 import os
 import re
-import locale
 from collections import OrderedDict
 import traceback
+import locale
 import json
 import utils
 import datetime
 from lxml.html import fromstring
 
 
-NOISE_PATTERN = re.compile(r'\<script\>var.*?\</script\>', re.M | re.DOTALL)
-TO_DELETE = '<script type="text/javascript" '\
-    'src="https://v3rmillion.net/jscripts/myalerts.js"></script>'
-
-
-def save(file):
-    file_name = file.rsplit('/', 1)[1]
-    output_path = os.path.join(output_folder, file_name)
-    content = open(file, 'r').read()
-    formatted_content = NOISE_PATTERN.sub('', content).replace(TO_DELETE, '')
-    with open(output_path, 'w') as fp:
-        fp.write(formatted_content)
-        print(f'Written: {output_path}')
-
-
 class BrokenPage(Exception):
     pass
 
 
-class V3RMillionParser:
+class DarkWebsParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+        locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = parser_name
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
@@ -40,7 +25,7 @@ class V3RMillionParser:
         self.pagination_pattern = re.compile(
             r'\d+-(\d+)\.html$'
         )
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -52,15 +37,13 @@ class V3RMillionParser:
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern.search(
-                    x.split('/')[-1]) is not None,
+                lambda x: self.thread_name_pattern.search(x) is not None,
                 files
             )
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(
-                x.split('/')[-1]).group(1)))
+            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
 
         return sorted_files
 
@@ -91,7 +74,7 @@ class V3RMillionParser:
                     # header data extract
                     data = self.header_data_extract(
                         html_response, template)
-                    if not data or not pagination == 1:
+                    if not data or not pagination == 0:
                         comments.extend(
                             self.extract_comments(html_response))
                         continue
@@ -125,7 +108,7 @@ class V3RMillionParser:
     def extract_comments(self, html_response):
         comments = list()
         comment_blocks = html_response.xpath(
-            '//div[@id="posts"]/div[@class="post "]'
+          '//div[@class="message-inner"]'
         )
         # print(comment_blocks)
         for index, comment_block in enumerate(comment_blocks, 1):
@@ -162,7 +145,7 @@ class V3RMillionParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[@id="posts"]/div[@class="post "]'
+                '//div[@class="message-inner"]'
             )
             if not header:
                 return
@@ -198,11 +181,11 @@ class V3RMillionParser:
 
     def get_date(self, tag):
         date_block = tag.xpath(
-            'div//span[@class="post_date"]/text()'
+            'div//div[@class="message-attribution-main"]/a/time/@title'
         )
         date = date_block[0].strip() if date_block else ""
         try:
-            pattern = "%m-%d-%Y, %I:%M %p"
+            pattern = "%d.%m.%Y в %H:%M"
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
@@ -210,59 +193,38 @@ class V3RMillionParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            'div//div[@class="author_information"]/strong/span/a/text()'
+            'div//div[@class="message-userDetails"]/h4/a/span/text()'
         )
         if not author:
             author = tag.xpath(
-                'div//div[@class="author_information"]/strong//em/text()'
+                'div//div[@class="message-userDetails"]/h4/a/text()'
             )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="author_information"]/strong//b/span/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="author_information"]'
-                '/strong/span/a/span/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="author_information"]'
-                '/strong/span/a/span/strong/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="author_information"]'
-                '/strong/span/a/span/bold/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="author_information"]'
-                '/strong/span/a/span/strong/s/text()'
-            )
+
         author = author[0].strip() if author else None
         return author
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//span[@class="active"]/text()'
+            '//h1[@class="p-title-value"]/text()'
         )
-        title = title[-1].strip() if title else None
+        title = title[0].strip() if title else None
         return title
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
-            'div//div[@class="post_body scaleimages"]'
-            '/descendant::text()[not(ancestor::blockquote)]'
+            'div//div[@class="bbWrapper"]'
+            '/descendant::text()[not(ancestor::div'
+            '[contains(@class, "bbCodeBlock bbCodeBlock--expandable '
+            'bbCodeBlock--quote")])]'
         )
-        post_text = "".join([
+        post_text = " ".join([
             post_text.strip() for post_text in post_text_block
         ])
         return post_text.strip()
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            'div//div[@class="author_avatar"]/a/img/@src'
+            'div//div[@class="message-avatar-wrapper"]/a/img/@src'
         )
         if not avatar_block:
             return ""
@@ -274,10 +236,10 @@ class V3RMillionParser:
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            'div[@class="post_head"]/div/strong/a/text()'
+            'div//header[@class="message-attribution message-'
+            'attribution--split"]//a/text()'
         )
-        # print(comment_block)
         if comment_block:
-            comment_id = comment_block[0].split('#')[-1]
+            comment_id = comment_block[-1].split('#')[-1]
 
-        return comment_id.replace(',', '')
+        return comment_id.replace(',', '').strip()

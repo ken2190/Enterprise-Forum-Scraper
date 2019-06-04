@@ -10,26 +10,11 @@ import datetime
 from lxml.html import fromstring
 
 
-NOISE_PATTERN = re.compile(r'\<script\>var.*?\</script\>', re.M | re.DOTALL)
-TO_DELETE = '<script type="text/javascript" '\
-    'src="https://v3rmillion.net/jscripts/myalerts.js"></script>'
-
-
-def save(file):
-    file_name = file.rsplit('/', 1)[1]
-    output_path = os.path.join(output_folder, file_name)
-    content = open(file, 'r').read()
-    formatted_content = NOISE_PATTERN.sub('', content).replace(TO_DELETE, '')
-    with open(output_path, 'w') as fp:
-        fp.write(formatted_content)
-        print(f'Written: {output_path}')
-
-
 class BrokenPage(Exception):
     pass
 
 
-class V3RMillionParser:
+class HackForumsParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = parser_name
@@ -125,7 +110,7 @@ class V3RMillionParser:
     def extract_comments(self, html_response):
         comments = list()
         comment_blocks = html_response.xpath(
-            '//div[@id="posts"]/div[@class="post "]'
+            '//div[@class="post_wrapper"]'
         )
         # print(comment_blocks)
         for index, comment_block in enumerate(comment_blocks, 1):
@@ -162,7 +147,7 @@ class V3RMillionParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[@id="posts"]/div[@class="post "]'
+                '//div[@class="post_wrapper"]'
             )
             if not header:
                 return
@@ -245,7 +230,7 @@ class V3RMillionParser:
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//span[@class="active"]/text()'
+            '//td[@class="thead"]//h1/text()'
         )
         title = title[-1].strip() if title else None
         return title
@@ -274,7 +259,7 @@ class V3RMillionParser:
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            'div[@class="post_head"]/div/strong/a/text()'
+            'div/div[@class="post_head"]/div/strong/a/text()'
         )
         # print(comment_block)
         if comment_block:
