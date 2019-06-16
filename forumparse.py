@@ -58,6 +58,7 @@ from templates.hiddenhand_template import HiddenHandParser
 from templates.prvtzone_template import PrvtZoneParser
 from templates.hackforums_template import HackForumsParser
 from templates.darkwebs_template import DarkWebsParser
+from templates.nulledbb_template import NulledBBParser
 # from blackmarket_template import blackmarket_parser
 
 PARSER_MAP = {
@@ -119,6 +120,7 @@ PARSER_MAP = {
     'prvtzone': PrvtZoneParser,
     'hackforums': HackForumsParser,
     'darkwebs': DarkWebsParser,
+    'nulledbb': NulledBBParser,
 }
 
 

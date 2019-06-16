@@ -22,14 +22,23 @@ FORUM_URLS = [
     'https://nulledbb.com/forum-Milestones-Achievements',
     'STOP'
 ]
+REDIRECT_XPATH = '//h2[contains(text(), "Verifying you\'re not a bot. '\
+                 'You\'ll be redirected shortly")]'
 
 
 def get_response(worker, url):
     while True:
         try:
             worker.get(url)
-            return
+            data = worker.page_source
+            html_response = fromstring(data)
+            if html_response.xpath(REDIRECT_XPATH):
+                print('Redirecting occured; waiting....')
+                sleep(10)
+                data = worker.page_source
+            return data
         except:
+            traceback.print_exc()
             # worker.close()
             print('Retrying....')
             sleep(1)
@@ -88,7 +97,6 @@ class NulledBBScrapper():
 
     def each_tab_task(self, worker, url):
         get_response(worker, url)
-        sleep(10)
         print(f'FORUM URL: {url}')
         self.process_forum(worker)
 
@@ -118,11 +126,10 @@ class NulledBBScrapper():
         get_response(worker, paginated_link)
         sleep(2)
         print(f'\nFORUM URL: {paginated_link}')
-        self.process_forum(worker)
+        return self.process_forum(worker)
 
     def process_thread(self, worker, link, file_path):
-        get_response(worker, link)
-        data = worker.page_source
+        data = get_response(worker, link)
         with open(file_path, 'wb') as f:
             f.write(data.encode('utf-8'))
         print(f'Saved data for {link.rsplit("thread-", 1)[-1]} '
