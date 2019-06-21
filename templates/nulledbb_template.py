@@ -18,10 +18,10 @@ class NulledBBParser:
         self.parser_name = parser_name
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
-            r'(\d+).*html$'
+            r'(.*)-\d+\.html$'
         )
         self.pagination_pattern = re.compile(
-            r'\d+-(\d+)\.html$'
+            r'-(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(files)
@@ -56,12 +56,16 @@ class NulledBBParser:
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
-                pid = self.thread_id = match[0]
+                pid = self.thread_id = str(
+                    int.from_bytes(
+                        match[0].encode('utf-8'), byteorder='big'
+                    ) % (10 ** 7)
+                )
                 pagination = self.pagination_pattern.findall(file_name_only)
                 if pagination:
                     pagination = int(pagination[0])
                 final = utils.is_file_final(
-                    self.thread_id,
+                    match[0],
                     self.thread_name_pattern,
                     self.files,
                     index
