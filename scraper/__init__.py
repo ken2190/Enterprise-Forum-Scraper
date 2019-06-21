@@ -33,6 +33,7 @@ from scraper.prvtzone import PrvtZoneScrapper
 from scraper.runion import RUnionScrapper
 from scraper.nulledbb_selenium import NulledBBScrapper
 from scraper.russian_carders import RussianCarderScrapper
+from scraper.blackhatworld import BlackHatWorldScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -71,4 +72,5 @@ SCRAPER_MAP = {
     'runion': RUnionScrapper,
     'nulledbb': NulledBBScrapper,
     'russian_carders': RussianCarderScrapper,
+    'blackhatworld': BlackHatWorldScrapper,
 }
