@@ -103,9 +103,33 @@ class BlackHatWorldSpider(scrapy.Spider):
 class BlackHatWorldScrapper():
     def __init__(self, kwargs):
         self.output_path = kwargs.get('output')
+        self.proxy = kwargs.get('proxy') or None
+        self.request_delay = 0.1
+        self.no_of_threads = 16
 
     def do_scrape(self):
-        process = CrawlerProcess()
+        settings = {
+            'DOWNLOAD_DELAY': self.request_delay,
+            'CONCURRENT_REQUESTS': self.no_of_threads,
+            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+            'RETRY_HTTP_CODES': [403, 429, 500, 503],
+            'RETRY_TIMES': 10,
+            'LOG_ENABLED': True,
+
+        }
+        if self.proxy:
+            settings.update({
+                "DOWNLOADER_MIDDLEWARES": {
+                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+                },
+                'ROTATING_PROXY_LIST': self.proxy,
+
+            })
+        process = CrawlerProcess(settings)
         process.crawl(BlackHatWorldSpider, self.output_path)
         process.start()
 
