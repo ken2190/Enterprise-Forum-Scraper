@@ -57,6 +57,7 @@ from templates.hackforums_template import HackForumsParser
 from templates.darkwebs_template import DarkWebsParser
 from templates.nulledbb_template import NulledBBParser
 from templates.russian_carder_template import RussianCarderParser
+from templates.blackhatworld_template import BlackHatWorldParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -118,5 +119,6 @@ PARSER_MAP = {
     'hackforums': HackForumsParser,
     'darkwebs': DarkWebsParser,
     'nulledbb': NulledBBParser,
-    'russian_carder': RussianCarderParser
+    'russian_carder': RussianCarderParser,
+    'blackhatworld': BlackHatWorldParser,
 }
