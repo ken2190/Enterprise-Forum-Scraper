@@ -58,6 +58,7 @@ from templates.darkwebs_template import DarkWebsParser
 from templates.nulledbb_template import NulledBBParser
 from templates.russian_carder_template import RussianCarderParser
 from templates.blackhatworld_template import BlackHatWorldParser
+from templates.thecc_template import TheCCParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -121,4 +122,5 @@ PARSER_MAP = {
     'nulledbb': NulledBBParser,
     'russian_carder': RussianCarderParser,
     'blackhatworld': BlackHatWorldParser,
+    'thecc': TheCCParser,
 }
