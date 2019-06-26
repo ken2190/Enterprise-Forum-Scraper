@@ -35,6 +35,7 @@ from scraper.nulledbb_selenium import NulledBBScrapper
 from scraper.russian_carders import RussianCarderScrapper
 from scraper.blackhatworld import BlackHatWorldScrapper
 from scraper.thecc import TheCCScrapper
+from scraper.prtship import PrtShipScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -75,4 +76,5 @@ SCRAPER_MAP = {
     'russian_carders': RussianCarderScrapper,
     'blackhatworld': BlackHatWorldScrapper,
     'thecc': TheCCScrapper,
+    'prtship': PrtShipScrapper,
 }
