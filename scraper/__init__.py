@@ -36,6 +36,7 @@ from scraper.russian_carders import RussianCarderScrapper
 from scraper.blackhatworld import BlackHatWorldScrapper
 from scraper.thecc import TheCCScrapper
 from scraper.prtship import PrtShipScrapper
+from scraper.carding_school import CardingSchoolScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -77,4 +78,5 @@ SCRAPER_MAP = {
     'blackhatworld': BlackHatWorldScrapper,
     'thecc': TheCCScrapper,
     'prtship': PrtShipScrapper,
+    'carding_school': CardingSchoolScrapper,
 }

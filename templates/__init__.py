@@ -60,6 +60,7 @@ from templates.russian_carder_template import RussianCarderParser
 from templates.blackhatworld_template import BlackHatWorldParser
 from templates.thecc_template import TheCCParser
 from templates.prtship_template import PrtShipParser
+from templates.cardingschool_template import CardingSchoolParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -125,4 +126,5 @@ PARSER_MAP = {
     'blackhatworld': BlackHatWorldParser,
     'thecc': TheCCParser,
     'prtship': PrtShipParser,
+    'carding_school': CardingSchoolParser,
 }
