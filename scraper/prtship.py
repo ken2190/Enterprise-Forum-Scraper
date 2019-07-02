@@ -1,8 +1,10 @@
 import os
 import re
+import json
 import scrapy
 from math import ceil
 import configparser
+from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
@@ -32,11 +34,29 @@ class PrtShipSpider(scrapy.Spider):
         )
 
     def parse(self, response):
-        # print(response.text)
+        token = response.xpath(
+            '//input[@name="_xfToken"]/@value').extract_first()
+        params = {
+            '_xfRequestUri': '/',
+            '_xfWithData': '1',
+            '_xfToken': token,
+            '_xfResponseType': 'json'
+        }
+        yield FormRequest(
+            url="https://prtship.com/list-custom-tabs/english.1",
+            callback=self.parse_main_page,
+            formdata=params,
+            headers=self.headers
+            )
+
+    def parse_main_page(self, response):
+        json_response = json.loads(response.text)
+        html_response = json_response['html']['content']
+        response = fromstring(html_response)
         forums = response.xpath(
             '//h3[@class="node-title"]/a')
         for forum in forums:
-            url = forum.xpath('@href').extract_first()
+            url = forum.xpath('@href')[0]
             if self.base_url not in url:
                 url = self.base_url + url
             yield Request(
