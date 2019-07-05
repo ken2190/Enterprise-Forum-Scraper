@@ -33,8 +33,8 @@ def write_json_to_file(csv_writer, single_json):
     ]
     mydict = dict()
     for field in data:
-        key, value = [f.strip() for f in field.split(':')]
-        key = key.replace('"', '')
+        key = field.split(':')[0].replace('"', '')
+        value = ':'.join(field.split(':')[1:]).replace('"', "'")
         value = re.sub(r'NumberLong\((.*?)\)', '\\1', value)
         try:
             if key not in ['phone', 'ip_address'] and int(value):
