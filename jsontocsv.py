@@ -37,9 +37,9 @@ def write_json_to_file(csv_writer, single_json):
         value = ':'.join(field.split(':')[1:]).replace('"', "'")
         value = re.sub(r'NumberLong\((.*?)\)', '\\1', value)
         try:
-            if key not in ['phone', 'ip_address'] and int(value):
+            if key not in ['phone', 'ip_address'] and int(value.strip("'")):
                 value = ''
-            if key == 'zip' and len(value) > 5 and int(value):
+            if key == 'zip' and len(value) > 5 and int(value.strip("'")):
                 value = ''
         except:
             pass
