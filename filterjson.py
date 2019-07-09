@@ -14,6 +14,8 @@ def process_line(out_file, single_json):
     json_response = json.loads(single_json)
     filtered_json = dict()
     for key, value in json_response.items():
+        if not value:
+            continue
         if key == 'phone':
             filtered_json.update({key: value})
             continue
