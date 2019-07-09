@@ -57,7 +57,7 @@ def process_line(out_file, single_json, _type):
     filtered_json = dict()
     for key, value in json_response.items():
         if key in fields:
-            filtered_json.update({key: list(value.values)[0]})
+            filtered_json.update({key: list(value.values())[0]})
     out_file.write(json.dumps(filtered_json)+'\n')
 
 
