@@ -39,6 +39,7 @@ from scraper.prtship import PrtShipScrapper
 from scraper.carding_school import CardingSchoolScrapper
 from scraper.darknet import DarknetScrapper
 from scraper.verified_v2 import Verifiedv2Scrapper
+from scraper.lcpcc import LCPScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -83,4 +84,5 @@ SCRAPER_MAP = {
     'carding_school': CardingSchoolScrapper,
     'darknet': DarknetScrapper,
     'verifiedv2': Verifiedv2Scrapper,
+    'lcpcc': LCPScrapper,
 }
