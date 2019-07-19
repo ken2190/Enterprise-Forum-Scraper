@@ -83,56 +83,62 @@ class LCPSpider(scrapy.Spider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = f'{self.base_url}forum/{url}'
-            # Remove this check  after test
-            if 'show=news' in url:
-                yield Request(
-                    url=url,
-                    headers=headers,
-                    callback=self.parse_forum
-                )
+
+            yield Request(
+                url=url,
+                headers=headers,
+                callback=self.parse_forum,
+                meta={'headers': headers}
+            )
 
     def parse_forum(self, response):
-        threads = response.xpath(
-            '//a[contains(@href, "viewe=")]')
-        max_pages = 10
-        counter = 0
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first().strip('.')
-            if self.base_url not in thread_url:
-                thread_url = f'{self.base_url}forum/{thread_url}'
-            match = self.topic_pattern.findall(thread_url)
-            if not match:
-                continue
-            topic_id = str(
-                int.from_bytes(
-                    match[0].encode('utf-8'), byteorder='big'
-                ) % (10 ** 7)
-            )
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
-            if os.path.exists(file_name):
-                continue
-            headers = {
-                'Accept': 'text/html,application/xhtml+xml,application/xml;'
-                          'q=0.9,image/webp,image/apng,*/*;'
-                          'q=0.8,application/signed-exchange;v=b3',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Accept-Language': 'en-US,en;q=0.9,hi;q=0.8',
-                "Connection": 'keep-alive',
-                'Host': 'lcp.cc',
-                'Referer': response.url,
-                'Upgrade-Insecure-Requests': '1',
-                'User-Agent': USER_AGENT
-            }
+        old_pages = response.xpath(
+            '//a[text()="Show Old Pages"]/@href').extract_first()
+        if old_pages:
+            url = f'{self.base_url}forum/{old_pages}'
             yield Request(
-                url=thread_url,
-                headers=headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                url=url,
+                headers=response.meta['headers'],
+                callback=self.parse_forum
             )
-            # Remove below lines after test
-            counter += 1
-            if counter == max_pages:
-                break
+        else:
+            threads = response.xpath(
+                '//a[contains(@href, "viewe=")]')
+            max_pages = 10
+            counter = 0
+            for thread in threads:
+                thread_url = thread.xpath('@href').extract_first().strip('.')
+                if self.base_url not in thread_url:
+                    thread_url = f'{self.base_url}forum/{thread_url}'
+                match = self.topic_pattern.findall(thread_url)
+                if not match:
+                    continue
+                topic_id = str(
+                    int.from_bytes(
+                        match[0].encode('utf-8'), byteorder='big'
+                    ) % (10 ** 7)
+                )
+                file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
+                if os.path.exists(file_name):
+                    continue
+                headers = {
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;'
+                              'q=0.9,image/webp,image/apng,*/*;'
+                              'q=0.8,application/signed-exchange;v=b3',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Accept-Language': 'en-US,en;q=0.9,hi;q=0.8',
+                    "Connection": 'keep-alive',
+                    'Host': 'lcp.cc',
+                    'Referer': response.url,
+                    'Upgrade-Insecure-Requests': '1',
+                    'User-Agent': USER_AGENT
+                }
+                yield Request(
+                    url=thread_url,
+                    headers=headers,
+                    callback=self.parse_thread,
+                    meta={'topic_id': topic_id}
+                )
 
     def parse_thread(self, response):
         topic_id = response.meta['topic_id']
@@ -162,8 +168,8 @@ class LCPScrapper():
     def __init__(self, kwargs):
         self.output_path = kwargs.get('output')
         self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 2
-        self.no_of_threads = 10
+        self.request_delay = 0.1
+        self.no_of_threads = 20
 
     def do_scrape(self):
         settings = {
