@@ -62,6 +62,7 @@ from templates.thecc_template import TheCCParser
 from templates.prtship_template import PrtShipParser
 from templates.cardingschool_template import CardingSchoolParser
 from templates.darknet_template import DarknetParser
+from templates.raidforums_template import RaidForumsParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -129,4 +130,5 @@ PARSER_MAP = {
     'prtship': PrtShipParser,
     'carding_school': CardingSchoolParser,
     'darknet': DarknetParser,
+    'raidforums': RaidForumsParser,
 }

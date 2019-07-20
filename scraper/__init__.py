@@ -40,6 +40,7 @@ from scraper.carding_school import CardingSchoolScrapper
 from scraper.darknet import DarknetScrapper
 from scraper.verified_v2 import Verifiedv2Scrapper
 from scraper.lcpcc import LCPScrapper
+from scraper.raidforums import RaidForumsScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -85,4 +86,5 @@ SCRAPER_MAP = {
     'darknet': DarknetScrapper,
     'verifiedv2': Verifiedv2Scrapper,
     'lcpcc': LCPScrapper,
+    'raidforums': RaidForumsScrapper,
 }
