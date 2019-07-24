@@ -20,9 +20,24 @@ GYFCAT_FIELDS = [
     'password',
 ]
 
+PIPL_FIELDS = [
+    'firstname',
+    'lastname',
+    'street',
+    'city',
+    'zip',
+    'dateOfBirth',
+    'court',
+    'professionalLicense',
+    'emails',
+    'phone',
+    'socialUrls'
+]
+
 FIELD_MAPS = {
     'pizap': PIZAP_FIELDS,
-    'gyfcat': GYFCAT_FIELDS
+    'gyfcat': GYFCAT_FIELDS,
+    'pipl': PIPL_FIELDS
 }
 
 
@@ -39,6 +54,37 @@ class Parser:
 
     def get_args(self,):
         return self.parser.parse_args()
+
+
+def process_pipl(out_file, single_json, fields):
+    single_json = re.sub(r'ObjectId\((.*?)\)', '\\1', single_json)
+    single_json = re.sub(r'NumberInt\((.*?)\)', '\\1', single_json)
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    for key, value in json_response.items():
+        if key not in fields:
+            continue
+        if not value:
+            continue
+        if key == 'emails':
+            for index, email in enumerate(value, 1):
+                filtered_json.update({'email{}'.format(index): email})
+        elif key == 'court':
+            filtered_json.update({
+                'civilCourtRecordCount': value['civilCourtRecordCount']
+            })
+        elif key == 'socialUrls':
+            fb_url = None
+            for social in value:
+                if social['domain'] == 'facebook.com' and\
+                   '/people/' not in social['url']:
+                    fb_url = social['url']
+                    break
+            if fb_url:
+                filtered_json.update({'facebookURL': fb_url})
+        else:
+            filtered_json.update({key: value})
+    out_file.write(json.dumps(filtered_json)+'\n')
 
 
 def process_line(out_file, single_json, _type):
@@ -68,7 +114,10 @@ def process_file(args):
         with open(input_file, 'r') as fp:
             for line_number, single_json in enumerate(fp, 1):
                 try:
-                    process_line(out_file, single_json, args.type)
+                    if not args.type == 'pipl':
+                        process_line(out_file, single_json, args.type)
+                    else:
+                        process_pipl(out_file, single_json, FIELD_MAPS['pipl'])
                 except:
                     print('Error in line number:', line_number)
                     traceback.print_exc()
