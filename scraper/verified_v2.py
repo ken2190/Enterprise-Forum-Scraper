@@ -11,7 +11,8 @@ USER = "cyrax11"
 PASS = "Night#Verify098"
 PROXY = 'http://127.0.0.1:8118'
 
-
+bbsessionhash = 'eca9eeeea77333dd0826e8e0d6b1e8c8'
+IDstack = 'cfbd60bf5d729ff52adc6a91d82cc4f7afdce4bd5fbf6943dea016b2bb35e16b'
 class VerifiedSpider(scrapy.Spider):
     name = 'verified_spider'
 
@@ -26,7 +27,7 @@ class VerifiedSpider(scrapy.Spider):
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0',
             'Host': 'verified2ebdpvms.onion',
-            'Cookie': 'IDstack=071ea59c66a0401273b0b2e31282786e9f2a93bcd013d3adc571716b1df6d629:2e78994c1804a73e6e543d8c39f635e25e798378dcea22c9c9ab1a91519c38da; bblastvisit=1562411502; bblastactivity=0; bbsessionhash=fd29e05b7c4d397d2938a3c64e88e281',
+            'Cookie': 'IDstack={}; bblastvisit=1562411502; bblastactivity=0; bbsessionhash={}'.format(IDstack, bbsessionhash),
         }
 
     def start_requests(self):
