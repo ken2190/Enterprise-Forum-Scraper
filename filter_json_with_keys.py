@@ -118,6 +118,7 @@ def process_file(args):
                         process_line(out_file, single_json, args.type)
                     else:
                         process_pipl(out_file, single_json, FIELD_MAPS['pipl'])
+                    print('Writing line number:', line_number)
                 except:
                     print('Error in line number:', line_number)
                     traceback.print_exc()
