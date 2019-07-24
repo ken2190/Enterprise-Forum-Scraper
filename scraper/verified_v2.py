@@ -26,7 +26,7 @@ class VerifiedSpider(scrapy.Spider):
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0',
             'Host': 'verified2ebdpvms.onion',
-            'Cookie': 'IDstack=56f1d55ab74837c3862a105577c348198a913249afb053c6bc34f9d6a6e8a40a%3A1cc129e65f8ba92074ffeafe835773e729941f59af6f5088fc6dfb8c09d5a544; bblastvisit=1562411502; bblastactivity=0; bbsessionhash=e19802ca3e1a11f409ed18f38cb74298',
+            'Cookie': 'IDstack=071ea59c66a0401273b0b2e31282786e9f2a93bcd013d3adc571716b1df6d629:2e78994c1804a73e6e543d8c39f635e25e798378dcea22c9c9ab1a91519c38da; bblastvisit=1562411502; bblastactivity=0; bbsessionhash=fd29e05b7c4d397d2938a3c64e88e281',
         }
 
     def start_requests(self):
