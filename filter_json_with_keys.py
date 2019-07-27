@@ -69,7 +69,7 @@ def process_pipl(out_file, single_json, fields):
         if key == 'emails':
             for index, email in enumerate(value, 1):
                 filtered_json.update({'email{}'.format(index): email})
-        elif key == 'court':
+        elif key == 'court' and value.get('civilCourtRecordCount'):
             filtered_json.update({
                 'civilCourtRecordCount': value['civilCourtRecordCount']
             })
