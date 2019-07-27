@@ -40,7 +40,12 @@ class CrackedToScrapper(BaseScrapper):
         topic = topic_url.replace(self.base_url, '').replace('Thread-', '')
         name_regex = re.compile(r'(%\w+-?)')
         topic = name_regex.sub('', topic)
-        initial_file = f'{self.output_path}/{topic}--1.html'
+        topic = str(
+            int.from_bytes(
+                topic.encode('utf-8'), byteorder='big'
+            ) % (10 ** 7)
+        )
+        initial_file = f'{self.output_path}/{topic}-1.html'
         if os.path.exists(initial_file):
             return
         content = self.get_page_content(topic_url)
@@ -49,7 +54,7 @@ class CrackedToScrapper(BaseScrapper):
             return
         with open(initial_file, 'wb') as f:
             f.write(content)
-        print(f'{topic}--1 done..!')
+        print(f'{topic}-1 done..!')
         html_response = self.get_html_response(content)
         avatar_info = self.get_avatar_info(html_response)
         for name, url in avatar_info.items():
@@ -84,14 +89,19 @@ class CrackedToScrapper(BaseScrapper):
         topic = topic.replace('Thread-', '')
         name_regex = re.compile(r'(%\w+-?)')
         topic = name_regex.sub('', topic)
+        topic = str(
+            int.from_bytes(
+                topic.encode('utf-8'), byteorder='big'
+            ) % (10 ** 7)
+        )
         content = self.get_page_content(next_page_url)
         if not content:
             return
-        paginated_file = f'{self.output_path}/{topic}--{pagination_value}.html'
+        paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
         with open(paginated_file, 'wb') as f:
             f.write(content)
 
-        print(f'{topic}--{pagination_value} done..!')
+        print(f'{topic}-{pagination_value} done..!')
         html_response = self.get_html_response(content)
         avatar_info = self.get_avatar_info(html_response)
         for name, url in avatar_info.items():
