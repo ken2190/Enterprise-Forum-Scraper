@@ -14,8 +14,9 @@ class BlackHatWorldSpider(scrapy.Spider):
         self.base_url = "https://www.blackhatworld.com/"
         self.start_url = '{}/forums/'.format(self.base_url)
         self.topic_pattern = re.compile(r'.*\.(\d+)/$')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)$')
+        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
+        self.username_pattern = re.compile(r'members/(.*)\.\d+')
         self.start_url = 'https://www.blackhatworld.com/forums/'
         self.output_path = output_path
         self.headers = {
@@ -23,6 +24,18 @@ class BlackHatWorldSpider(scrapy.Spider):
                           "AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/74.0.3729.169 Safari/537.36",
         }
+        self.set_users_path()
+        self.ensure_avatar_path()
+
+    def set_users_path(self, ):
+        self.user_path = os.path.join(self.output_path, 'users')
+        if not os.path.exists(self.user_path):
+            os.makedirs(self.user_path)
+
+    def ensure_avatar_path(self):
+        self.avatar_path = f'{self.output_path}/avatars'
+        if not os.path.exists(self.avatar_path):
+            os.makedirs(self.avatar_path)
 
     def start_requests(self):
         yield Request(
@@ -66,6 +79,27 @@ class BlackHatWorldSpider(scrapy.Spider):
                 meta={'topic_id': topic_id[0]}
             )
 
+        users = response.xpath('//span[@class="avatarContainer"]/a')
+        for user in users:
+            user_url = user.xpath('@href').extract_first()
+            if self.base_url not in user_url:
+                user_url = self.base_url + user_url
+            user_id = self.username_pattern.findall(user_url)
+            if not user_id:
+                continue
+            file_name = '{}/{}.html'.format(self.user_path, user_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=user_url,
+                # headers=self.headers,
+                callback=self.parse_user,
+                meta={
+                    'file_name': file_name,
+                    'user_id': user_id[0]
+                }
+            )
+
         next_page = response.xpath('//a[text()="Next >"]')
         if next_page:
             next_page_url = next_page.xpath('@href').extract_first()
@@ -76,6 +110,37 @@ class BlackHatWorldSpider(scrapy.Spider):
                 headers=self.headers,
                 callback=self.parse_forum
             )
+
+    def parse_user(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            print(f"User {response.meta['user_id']} done..!")
+
+        avatar_url = response.xpath(
+            '//img[@itemprop="photo"]/@src').extract_first()
+        name_match = self.avatar_name_pattern.findall(avatar_url)
+        if not name_match:
+            return
+        name = name_match[0]
+        file_name = '{}/{}'.format(self.avatar_path, name)
+        if os.path.exists(file_name):
+            return
+        yield Request(
+            url=avatar_url,
+            # headers=self.headers,
+            callback=self.parse_avatar,
+            meta={
+                'file_name': file_name,
+                'user_id': response.meta['user_id']
+            }
+        )
+
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            print(f"Avatar for user {response.meta['user_id']} done..!")
 
     def parse_thread(self, response):
         topic_id = response.meta['topic_id']
