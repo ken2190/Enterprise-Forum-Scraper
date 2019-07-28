@@ -34,6 +34,11 @@ class Scraper:
         parser.add_argument(
             '-d', '--daily', help='Scrape new posts for today',
             action='store_true')
+        parser.add_argument(
+            '-uo', '--useronly', help='Scrape only users page',
+            action='store_true')
+        parser.add_argument(
+            '-s', '--start_date', help='Scrape from the given dates', required=False)
         args = parser.parse_args()
         return args._get_kwargs()
         # return args.template, args.output, args.proxy, args.user, args.password
