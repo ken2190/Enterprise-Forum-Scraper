@@ -21,6 +21,7 @@ class PasteBinScrapper:
             output_path, dump_id
         )
         if os.path.exists(dump_file):
+            print('{} already exists..!'.format(dump_file))
             return
         dump_url = self.dump_url.format(dump_id)
         response = requests.get(dump_url).text
@@ -38,9 +39,8 @@ class PasteBinScrapper:
             try:
                 _from = self.start_date.strftime(self.date_format)
                 output_path = '{}/{}'.format(self.output_path, _from)
-                if os.path.exists(output_path):
-                    continue
-                os.makedirs(output_path)
+                if not os.path.exists(output_path):
+                    os.makedirs(output_path)
                 self.start_date = self.start_date + datetime.timedelta(days=1)
                 _to = self.start_date.strftime(self.date_format)
                 data = {
