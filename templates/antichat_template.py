@@ -119,7 +119,7 @@ class AntichatParser:
             }
             if comment_date:
                 source.update({
-                    'd': comment_date
+                    'date': comment_date
                 })
             comments.append({
                 
@@ -148,14 +148,14 @@ class AntichatParser:
             source = {
                 'forum': self.parser_name,
                 'pid': pid,
-                's': title,
-                'a': author,
-                'm': post_text.strip(),
+                'subject': title,
+                'author': author,
+                'message': post_text.strip(),
                 'img': avatar,
             }
             if date:
                 source.update({
-                   'd': date
+                   'date': date
                 })
             return {
                 

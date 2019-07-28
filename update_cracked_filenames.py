@@ -1,7 +1,7 @@
 import re
 import os
 import glob
-folder_path = '/Users/PathakUmesh/Desktop/Cracked'
+folder_path = '/mnt/vol2/cracked.to/'
 
 for file in glob.glob(folder_path+'/*'):
     if os.path.isfile(file):

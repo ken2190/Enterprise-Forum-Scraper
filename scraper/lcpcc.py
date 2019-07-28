@@ -169,7 +169,7 @@ class LCPScrapper():
         self.output_path = kwargs.get('output')
         self.proxy = kwargs.get('proxy') or None
         self.request_delay = 0.1
-        self.no_of_threads = 20
+        self.no_of_threads = 10
 
     def do_scrape(self):
         settings = {

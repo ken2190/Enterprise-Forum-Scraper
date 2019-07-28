@@ -204,10 +204,10 @@ class OdayParser:
                 
                 '_source': {
                     'pid': self.thread_id.replace('thread-', ''),
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
+                    'subject': title,
+                    'date': date,
+                    'author': author,
+                    'message': post_text.strip(),
                 }
             }
         except:

@@ -125,10 +125,10 @@ class BMRParser:
                 
                 '_source': {
                     'pid': self.thread_id.split('id=')[-1],
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
+                    'subject': title,
+                    'date': date,
+                    'author': author,
+                    'message': post_text.strip(),
                 }
             }
         except:

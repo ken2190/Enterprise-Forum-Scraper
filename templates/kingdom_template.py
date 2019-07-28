@@ -140,10 +140,10 @@ class KingdomParser:
                 
                 '_source': {
                     'pid': pid,
-                    's': title,
-                    'd': date,
-                    'a': author,
-                    'm': post_text.strip(),
+                    'subject': title,
+                    'date': date,
+                    'author': author,
+                    'message': post_text.strip(),
                 }
             }
         except:

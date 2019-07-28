@@ -116,7 +116,7 @@ class WallStreetParser:
             }
             if comment_date:
                 source.update({
-                    'd': comment_date
+                    'date': comment_date
                 })
             comments.append({
                 
@@ -145,15 +145,15 @@ class WallStreetParser:
             source = {
                 'forum': self.parser_name,
                 'pid': pid,
-                's': title,
-                'd': date,
-                'a': author,
+                'subject': title,
+                'date': date,
+                'author': author,
                 'img': avatar,
-                'm': post_text.strip(),
+                'message': post_text.strip(),
             }
             if date:
                 source.update({
-                   'd': date
+                   'date': date
                 })
             return {
                 

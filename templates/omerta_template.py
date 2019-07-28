@@ -133,7 +133,7 @@ class OmertaParser:
                 }
                 if comment_date:
                     source.update({
-                        'd': comment_date
+                        'date': comment_date
                     })
                 if avatar:
                     source.update({
@@ -167,13 +167,13 @@ class OmertaParser:
             source = {
                 'forum': self.parser_name,
                 'pid': pid,
-                's': title,
-                'a': author,
-                'm': post_text.strip(),
+                'subject': title,
+                'author': author,
+                'message': post_text.strip(),
             }
             if date:
                 source.update({
-                   'd': date
+                   'date': date
                 })
             if avatar:
                 source.update({
