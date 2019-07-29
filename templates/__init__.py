@@ -64,6 +64,7 @@ from templates.cardingschool_template import CardingSchoolParser
 from templates.darknet_template import DarknetParser
 from templates.raidforums_template import RaidForumsParser
 from templates.marviher_template import MarviherParser
+from templates.lcpcc_template import LCPCCParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -132,5 +133,6 @@ PARSER_MAP = {
     'carding_school': CardingSchoolParser,
     'darknet': DarknetParser,
     'raidforums': RaidForumsParser,
-    'marviher': MarviherParser
+    'marviher': MarviherParser,
+    'lcpcc': LCPCCParser,
 }
