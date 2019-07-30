@@ -20,10 +20,10 @@ class CrackedToParser:
         self.parser_name = parser_name
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
-            r'(.*)--\d+\.html$'
+            r'(.*)-\d+\.html$'
         )
         self.pagination_pattern = re.compile(
-            r'.*--(\d+)\.html$'
+            r'.*-(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(files)
@@ -111,7 +111,7 @@ class CrackedToParser:
     def extract_comments(self, html_response):
         comments = list()
         comment_blocks = html_response.xpath(
-          '//div[@class="post-box"]'
+          '//div[contains(@class, "post-box")]'
         )
         # print(comment_blocks)
         for index, comment_block in enumerate(comment_blocks, 1):
@@ -149,7 +149,7 @@ class CrackedToParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[@class="post-box"]'
+                '//div[contains(@class, "post-box")]'
             )
             if not header:
                 return
