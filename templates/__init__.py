@@ -66,6 +66,7 @@ from templates.raidforums_template import RaidForumsParser
 from templates.marviher_template import MarviherParser
 from templates.lcpcc_template import LCPCCParser
 from templates.runion_template import RUnionParser
+from templates.raidforums_users_template import RaidForumsUserParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -137,4 +138,5 @@ PARSER_MAP = {
     'marviher': MarviherParser,
     'lcpcc': LCPCCParser,
     'runion': RUnionParser,
+    'raidforums_users': RaidForumsUserParser,
 }
