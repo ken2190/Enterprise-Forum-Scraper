@@ -17,8 +17,11 @@ class NulledBBParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
+        # self.thread_name_pattern = re.compile(
+            # r'(.*)-\d+\.html$'
+        # )
         self.thread_name_pattern = re.compile(
-            r'(.*)-\d+\.html$'
+            r'(\d+)-\d+\.html$'
         )
         self.pagination_pattern = re.compile(
             r'-(\d+)\.html$'
@@ -35,15 +38,18 @@ class NulledBBParser:
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
+                lambda x: self.thread_name_pattern.search(
+                    x.split('/')[-1]) is not None,
                 files
             )
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+            key=lambda x: int(self.thread_name_pattern.search(
+                x.split('/')[-1]).group(1)))
 
         return sorted_files
+
 
     def main(self):
         comments = []
@@ -56,11 +62,12 @@ class NulledBBParser:
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
-                pid = self.thread_id = str(
-                    int.from_bytes(
-                        match[0].encode('utf-8'), byteorder='big'
-                    ) % (10 ** 7)
-                )
+                pid = self.thread_id = match[0]
+                # pid = self.thread_id = str(
+                #     int.from_bytes(
+                #         match[0].encode('utf-8'), byteorder='big'
+                #     ) % (10 ** 7)
+                # )
                 pagination = self.pagination_pattern.findall(file_name_only)
                 if pagination:
                     pagination = int(pagination[0])
@@ -199,6 +206,10 @@ class NulledBBParser:
         author = tag.xpath(
             'div//div[contains(@class, "postbit-username")]//span/text()'
         )
+        if not author:
+            author = tag.xpath(
+                'div//div[contains(@class, "postbit-username")]//span/s/text()'
+            )
         if not author:
             author = tag.xpath(
                 'div//div[@class="message-userDetails"]/h4/a/text()'
