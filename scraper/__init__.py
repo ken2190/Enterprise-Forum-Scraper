@@ -44,6 +44,7 @@ from scraper.lcpcc import LCPScrapper
 from scraper.raidforums import RaidForumsScrapper
 from scraper.marviher import MarviherScrapper
 from scraper.antichat_v3 import Antichatv3Scrapper
+from scraper.xss import XSSScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -93,4 +94,5 @@ SCRAPER_MAP = {
     'marviher': MarviherScrapper,
     'exploitv2': ExploitV2Scrapper,
     'antichat_v3': Antichatv3Scrapper,
+    'xss': XSSScrapper,
 }
