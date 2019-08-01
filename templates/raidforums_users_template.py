@@ -11,9 +11,11 @@ import dateutil.parser as dparser
 class RaidForumsUserParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
-        self.output_folder = output_folder
         self.file_pattern = re.compile(
             r'-history\.html$'
+        )
+        self.output_file = '{}/USER_HISTORY.json'.format(
+            str(output_folder)
         )
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
@@ -31,32 +33,32 @@ class RaidForumsUserParser:
 
     def main(self):
         comments = []
-        for index, template in enumerate(self.files):
-            print(template)
-            try:
-                html_response = utils.get_html_response(template)
-                user_id = get_user_id(html_response)
-                if not user_id:
+        with open(self.output_file, 'w', encoding='utf-8') as fp:
+            for index, template in enumerate(self.files):
+                print(template)
+                try:
+                    html_response = utils.get_html_response(template)
+                    user_id = get_user_id(html_response)
+                    if not user_id:
+                        continue
+                    aliases = get_aliases(html_response)
+                    self.write_data(fp, user_id, aliases)
+                except Exception as ex:
+                    traceback.print_exc()
                     continue
-                aliases = get_aliases(html_response)
-                self.write_data(user_id, aliases)
-            except Exception as ex:
-                traceback.print_exc()
-                continue
-
-    def write_data(self, user_id, aliases):
-        output_file = '{}/{}.json'.format(
-            str(self.output_folder),
-            user_id
-        )
-        with open(output_file, 'w', encoding='utf-8') as fp:
-            for alias in aliases:
-                alias.update({
-                    'user_id': user_id
-                })
-                utils.write_json(fp, alias)
-        print('\nJson written in {}'.format(output_file))
+        print('\nJson written in {}'.format(self.output_file))
         print('----------------------------------------------------\n')
+
+    def write_data(self, fp, user_id, aliases):
+        data = {
+            "_type": "forums",
+            "_source": {
+                "forum": "raidforums.com",
+                "username": user_id,
+                "aliases": aliases
+            }
+        }
+        utils.write_json(fp, data)
 
 
 def get_user_id(html_response):
