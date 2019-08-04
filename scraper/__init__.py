@@ -45,6 +45,7 @@ from scraper.raidforums import RaidForumsScrapper
 from scraper.marviher import MarviherScrapper
 from scraper.antichat_v3 import Antichatv3Scrapper
 from scraper.xss import XSSScrapper
+from scraper.hackforums import HackForumsScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -95,4 +96,5 @@ SCRAPER_MAP = {
     'exploitv2': ExploitV2Scrapper,
     'antichat_v3': Antichatv3Scrapper,
     'xss': XSSScrapper,
+    'hackforums': HackForumsScrapper,
 }
