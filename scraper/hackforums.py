@@ -10,6 +10,8 @@ import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
+COOKIE = ''
+
 
 def get_cookie():
     url = "https://hackforums.net/member.php?action=login"
@@ -56,7 +58,8 @@ class HackForumsSpider(scrapy.Spider):
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/75.0.3770.142 Safari/537.36',
-            'cookie': get_cookie(),
+            # 'cookie': get_cookie(),
+            'cookie': COOKIE,
         }
 
     def start_requests(self):
