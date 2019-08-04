@@ -20,8 +20,6 @@ def get_cookie():
     browser = webdriver.Chrome(
         chrome_options=options,
     )
-
-    browser = webdriver.Chrome(chrome_options=options)
     browser.get(url)
     print('Waiting for cloudfare message to vanish')
     time.sleep(20)
