@@ -23,7 +23,8 @@ def get_cookie():
 
     browser = webdriver.Chrome(chrome_options=options)
     browser.get(url)
-    time.sleep(10)
+    print('Waiting for cloudfare message to vanish')
+    time.sleep(20)
     username = browser.find_element_by_xpath('//input[@name="username"]')
     username.send_keys('hackwithme123')
     time.sleep(1)
