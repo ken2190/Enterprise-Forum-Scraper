@@ -78,10 +78,20 @@ def process_pipl(out_file, single_json, fields):
             for social in value:
                 if social['domain'] == 'facebook.com' and\
                    '/people/' not in social['url']:
-                    fb_url = social['url']
-                    break
-            if fb_url:
-                filtered_json.update({'facebookURL': fb_url})
+                    filtered_json.update({'facebookURL': social['url']})
+
+                elif social['domain'] == 'linkedin.com':
+                    filtered_json.update({'linkedinURL': social['url']})
+
+                elif social['domain'] == 'twitter.com':
+                    filtered_json.update({'twitterURL': social['url']})
+
+                elif social['domain'] == 'amazon.com':
+                    filtered_json.update({'amazonURL': social['url']})
+
+                elif social['domain'] == '10Digits.us':
+                    filtered_json.update({'10digitsURL': social['url']})
+
         else:
             filtered_json.update({key: value})
     out_file.write(json.dumps(filtered_json)+'\n')
