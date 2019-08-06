@@ -47,6 +47,7 @@ from scraper.antichat_v3 import Antichatv3Scrapper
 from scraper.xss import XSSScrapper
 from scraper.hackforums import HackForumsScrapper
 from scraper.rstforums import RSTForumsScrapper
+from scraper.bhf_io import BHFIOScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -99,4 +100,5 @@ SCRAPER_MAP = {
     'xss': XSSScrapper,
     'hackforums': HackForumsScrapper,
     'rstforums': RSTForumsScrapper,
+    'bhfio': BHFIOScrapper,
 }

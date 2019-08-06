@@ -69,6 +69,7 @@ from templates.runion_template import RUnionParser
 from templates.raidforums_users_template import RaidForumsUserParser
 from templates.xss_template import XSSParser
 from templates.rstforums_template import RSTForumsParser
+from templates.bhfio_template import BHFIOParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -143,4 +144,5 @@ PARSER_MAP = {
     'raidforums_users': RaidForumsUserParser,
     'xss': XSSParser,
     'rstforums': RSTForumsParser,
+    'bhfio': BHFIOParser,
 }
