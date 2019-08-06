@@ -11,6 +11,9 @@ from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
 
+COOKIE = '__cfduid=d2cdf4bb92536fc8853d5c198274107fa1565064627; mybb[lastvisit]=1565064627; mybb[lastactive]=1565064680; _ga=GA1.2.94449341.1565064629; _gid=GA1.2.144744003.1565064629; cf_clearance=f2c2ff5dffd86ad21f591ec997df616d8a474539-1565064639-604800-150; loginattempts=1; mybbuser=4254128_uhB1kF2Xk6bknXbbZrkF91ogn8CmOJO2DLI0PSchUPvFuP8Xoe; myalerts=MTgwOTc2MDUwNDAzODQ%3D; mybb[gdpr]=1; sid=ce232391ea141335b5186c8d7ff1b6dd; menutabs=0; _gat_gtag_UA_249290_34=1'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0'
+
 def get_cookie():
     url = "https://hackforums.net/member.php?action=login"
     options = Options()
@@ -51,10 +54,9 @@ class HackForumsSpider(scrapy.Spider):
         self.output_path = output_path
         self.headers = {
             'referer': 'https://hackforums.net/member.php',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) '
-                          'AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/75.0.3770.142 Safari/537.36',
-            'cookie': get_cookie(),
+            'user-agent': USER_AGENT,
+            'cookie': COOKIE,
+            # 'cookie': get_cookie(),
         }
 
     def start_requests(self):
