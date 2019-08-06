@@ -45,13 +45,14 @@ def get_cookie():
 class HackForumsSpider(scrapy.Spider):
     name = 'hackforums_spider'
 
-    def __init__(self, output_path):
+    def __init__(self, output_path, avatar_path):
         self.base_url = "https://hackforums.net/"
         self.topic_pattern = re.compile(r'tid=(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page=(\d+)')
         self.start_url = 'https://hackforums.net/index.php'
         self.output_path = output_path
+        self.avatar_path = avatar_path
         self.headers = {
             'referer': 'https://hackforums.net/member.php',
             'user-agent': USER_AGENT,
@@ -121,6 +122,27 @@ class HackForumsSpider(scrapy.Spider):
             f.write(response.text.encode('utf-8'))
             print(f'{topic_id}-{paginated_value} done..!')
 
+        avatars = response.xpath('//div[@class="author_avatar"]/a/img')
+        for avatar in avatars:
+            avatar_url = avatar.xpath('@src').extract_first()
+            user_id = avatar.xpath('@alt').extract_first()
+            name_match = self.avatar_name_pattern.findall(avatar_url)
+            if not name_match:
+                continue
+            name = name_match[0]
+            file_name = '{}/{}'.format(self.avatar_path, name)
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta={
+                    'file_name': file_name,
+                    'user_id': user_id
+                }
+            )
+
         next_page = response.xpath('//a[@class="pagination_next"]')
         if next_page:
             next_page_url = next_page.xpath('@href').extract_first()
@@ -133,6 +155,12 @@ class HackForumsSpider(scrapy.Spider):
                 meta={'topic_id': topic_id}
             )
 
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            print(f"Avatar for user {response.meta['user_id']} done..!")
+
 
 class HackForumsScrapper():
     def __init__(self, kwargs):
@@ -140,6 +168,12 @@ class HackForumsScrapper():
         self.proxy = kwargs.get('proxy') or None
         self.request_delay = 0.1
         self.no_of_threads = 16
+        self.ensure_avatar_path()
+
+    def ensure_avatar_path(self, ):
+        self.avatar_path = f'{self.output_path}/avatars'
+        if not os.path.exists(self.avatar_path):
+            os.makedirs(self.avatar_path)
 
     def do_scrape(self):
         settings = {
@@ -158,7 +192,7 @@ class HackForumsScrapper():
 
         }
         process = CrawlerProcess(settings)
-        process.crawl(HackForumsSpider, self.output_path)
+        process.crawl(HackForumsSpider, self.output_path, self.avatar_path)
         process.start()
 
 
