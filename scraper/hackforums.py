@@ -1,7 +1,7 @@
 import time
 import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
 import os
 import re
 import scrapy
@@ -10,8 +10,6 @@ import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
-COOKIE = ''
-
 
 def get_cookie():
     url = "https://hackforums.net/member.php?action=login"
@@ -19,9 +17,7 @@ def get_cookie():
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
 
-    browser = webdriver.Chrome(
-        chrome_options=options,
-    )
+    browser = webdriver.Firefox(options=options)
     browser.get(url)
     print('Waiting for cloudfare message to vanish')
     time.sleep(20)
@@ -58,8 +54,7 @@ class HackForumsSpider(scrapy.Spider):
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/75.0.3770.142 Safari/537.36',
-            # 'cookie': get_cookie(),
-            'cookie': COOKIE,
+            'cookie': get_cookie(),
         }
 
     def start_requests(self):
