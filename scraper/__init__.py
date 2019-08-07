@@ -48,6 +48,7 @@ from scraper.xss import XSSScrapper
 from scraper.hackforums import HackForumsScrapper
 from scraper.rstforums import RSTForumsScrapper
 from scraper.bhf_io import BHFIOScrapper
+from scraper.crdclub import CrdClubScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -101,4 +102,5 @@ SCRAPER_MAP = {
     'hackforums': HackForumsScrapper,
     'rstforums': RSTForumsScrapper,
     'bhfio': BHFIOScrapper,
+    'crdclub': CrdClubScrapper,
 }

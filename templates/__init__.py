@@ -70,6 +70,7 @@ from templates.raidforums_users_template import RaidForumsUserParser
 from templates.xss_template import XSSParser
 from templates.rstforums_template import RSTForumsParser
 from templates.bhfio_template import BHFIOParser
+from templates.crdclub_template import CrdClubParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -145,4 +146,5 @@ PARSER_MAP = {
     'xss': XSSParser,
     'rstforums': RSTForumsParser,
     'bhfio': BHFIOParser,
+    'crdclub': CrdClubParser,
 }
