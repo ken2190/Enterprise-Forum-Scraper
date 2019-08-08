@@ -9,9 +9,8 @@ from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
 
-COOKIE = '__cfduid=d2cdf4bb92536fc8853d5c198274107fa1565064627; mybb[lastvisit]=1565064627; mybb[lastactive]=1565064680; _ga=GA1.2.94449341.1565064629; _gid=GA1.2.144744003.1565064629; cf_clearance=f2c2ff5dffd86ad21f591ec997df616d8a474539-1565064639-604800-150; loginattempts=1; mybbuser=4254128_uhB1kF2Xk6bknXbbZrkF91ogn8CmOJO2DLI0PSchUPvFuP8Xoe; myalerts=MTgwOTc2MDUwNDAzODQ%3D; mybb[gdpr]=1; sid=ce232391ea141335b5186c8d7ff1b6dd; menutabs=0; _gat_gtag_UA_249290_34=1'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0'
-
+COOKIE = 'cf_clearance=be9c7a1b10b4ce4ade3730170d3957a0d6e36405-1564987632-604800-250; __cfduid=d99171b5f2b30aced444e1aff6b9dd06f1564987632; mybb[lastvisit]=1564987632; mybb[lastactive]=1564987658; sid=0683abda988e5be54b8df05bb1a9e62d; menutabs=0; _ga=GA1.2.1181972070.1564987633; _gid=GA1.2.209533211.1564987633; loginattempts=1; mybbuser=3875430_Ja4F1SHgIqHiBkcBoASZMsiaJosDcE2qD696kCwz9JtQQakmCE; myalerts=MTUwMTg5NTc2ODQ5MDA%3D; mybb[gdpr]=1'
+USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
 
 class HackForumsSpider(scrapy.Spider):
     name = 'hackforums_spider'
