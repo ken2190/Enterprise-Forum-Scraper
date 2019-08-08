@@ -50,6 +50,7 @@ from scraper.rstforums import RSTForumsScrapper
 from scraper.bhf_io import BHFIOScrapper
 from scraper.crdclub import CrdClubScrapper
 from scraper.carderhub import CarderHubScrapper
+from scraper.omerta import OmertaScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -105,4 +106,5 @@ SCRAPER_MAP = {
     'bhfio': BHFIOScrapper,
     'crdclub': CrdClubScrapper,
     'carderhub': CarderHubScrapper,
+    'omerta': OmertaScrapper,
 }

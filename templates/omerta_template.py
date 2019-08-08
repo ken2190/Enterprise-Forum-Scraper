@@ -25,7 +25,7 @@ class OmertaParser:
         self.pagination_pattern = re.compile(
             r'\d+-(\d+)\.html$'
         )
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+        self.avatar_name_pattern = re.compile(r'(\w+)\'s ')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -50,13 +50,25 @@ class OmertaParser:
     def get_pid(self, topic):
         return str(abs(hash(topic)) % (10 ** 6))
 
+    def get_html_response(self, template):
+        """
+        returns the html response from the `template` contents
+        """
+        with open(template, 'r') as f:
+            content = f.read()
+            try:
+                html_response = fromstring(content)
+            except ParserError as ex:
+                return
+            return html_response
+
     def main(self):
         comments = []
         output_file = None
         for index, template in enumerate(self.files):
             print(template)
             try:
-                html_response = utils.get_html_response(template)
+                html_response = self.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
@@ -111,7 +123,7 @@ class OmertaParser:
     def extract_comments(self, html_response):
         comments = list()
         comment_blocks = html_response.xpath(
-          '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
+          '//table[contains(@id, "post")]'
         )
 
         for index, comment_block in enumerate(comment_blocks, 1):
@@ -152,7 +164,7 @@ class OmertaParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
+                '//table[contains(@id, "post")]'
             )
             if not header:
                 return
@@ -180,7 +192,6 @@ class OmertaParser:
                     'img': avatar
                 })
             return {
-                
                 '_source': source
             }
         except:
@@ -188,17 +199,14 @@ class OmertaParser:
             raise BrokenPage(ex)
 
     def get_date(self, tag):
-        date = ""
         date_block = tag.xpath(
-            'table//td[1][@class="tcat"]'
-            '/a[@name]/following-sibling::text()'
+            'tr//a[contains(@name, "post")]/following-sibling::text()'
         )
+        date = ""
         if date_block:
-            date = date_block[0].strip()
-        if not date:
-            return ""
+            date = [d.strip() for d in date_block if d.strip()][0]
         try:
-            pattern = "%m-%d-%Y, %I:%M %p"
+            pattern = '%m-%d-%Y, %I:%M %p'
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
@@ -206,23 +214,15 @@ class OmertaParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            'table//a[@class="bigusername"]/span/text()'
+            'tr//a[@class="bigusername"]/text()'
         )
         if not author:
             author = tag.xpath(
-                'table//a[@class="bigusername"]/span/b/text()'
+                'tr//a[@class="bigusername"]/strike/text()'
             )
         if not author:
             author = tag.xpath(
-                'table//a[@class="bigusername"]/font/strike/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'table//a[@class="bigusername"]/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'table//a[@class="bigusername"]/font/text()'
+                'tr//a[@class="bigusername"]/font/text()'
             )
 
         author = author[0].strip() if author else None
@@ -230,15 +230,18 @@ class OmertaParser:
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//td[@class="navbar"]/strong/text()'
+            '//td[@class="navbar"]/a/strong/text()'
         )
+        if not title:
+            title = tag.xpath(
+                '//td[@class="navbar"]/strong/text()'
+            )
         title = title[0].strip() if title else None
         return title
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
-            'table//tr[@valign="top"]/td[@class="alt1" and @id]'
-            '/div[@id]/descendant::text()['
+            'tr//div[contains(@id, "post_message_")]/descendant::text()['
             'not(ancestor::div[@style="margin:20px; margin-top:5px; "])]'
         )
         post_text = " ".join([
@@ -248,21 +251,22 @@ class OmertaParser:
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            'table//a[contains(@href, "member.php")]/img/@src'
+            'tr//a[contains(@href, "member.php")]/img[@src]/@alt'
         )
         if not avatar_block:
             return ""
         name_match = self.avatar_name_pattern.findall(avatar_block[0])
         if not name_match:
             return ""
-        return name_match[0]
+        return name_match[0] + '.jpg'
 
     def get_comment_id(self, tag):
-        comment_id = ""
         comment_block = tag.xpath(
-            'table//td[2][@class="tcat"]/a/strong/text()'
-        )
-        # print(comment_block)
-        if comment_block:
-            comment_id = comment_block[0].strip().split('#')[-1]
-        return comment_id.replace(',', '').replace('.', '')
+            'tr//a[contains(@id, "postcount")]/strong/text()')
+        if not comment_block:
+            return ''
+        pattern = re.compile(r'\d+')
+        match = pattern.findall(comment_block[0])
+        if not match:
+            return
+        return match[0]
