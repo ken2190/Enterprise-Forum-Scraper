@@ -51,6 +51,7 @@ from scraper.bhf_io import BHFIOScrapper
 from scraper.crdclub import CrdClubScrapper
 from scraper.carderhub import CarderHubScrapper
 from scraper.omerta import OmertaScrapper
+from scraper.primeforums import PrimeForumsScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -107,4 +108,5 @@ SCRAPER_MAP = {
     'crdclub': CrdClubScrapper,
     'carderhub': CarderHubScrapper,
     'omerta': OmertaScrapper,
+    'primeforums': PrimeForumsScrapper,
 }
