@@ -38,7 +38,7 @@ from scraper.blackhatworld import BlackHatWorldScrapper
 from scraper.thecc import TheCCScrapper
 from scraper.prtship import PrtShipScrapper
 from scraper.carding_school import CardingSchoolScrapper
-from scraper.darknet import DarknetScrapper
+from scraper.l33t import L33TScrapper
 from scraper.verified_v2 import Verifiedv2Scrapper
 from scraper.lcpcc import LCPScrapper
 from scraper.raidforums import RaidForumsScrapper
@@ -93,7 +93,7 @@ SCRAPER_MAP = {
     'thecc': TheCCScrapper,
     'prtship': PrtShipScrapper,
     'carding_school': CardingSchoolScrapper,
-    'darknet': DarknetScrapper,
+    'l33t': L33TScrapper,
     'verifiedv2': Verifiedv2Scrapper,
     'lcpcc': LCPScrapper,
     'raidforums': RaidForumsScrapper,

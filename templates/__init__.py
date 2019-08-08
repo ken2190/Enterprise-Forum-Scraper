@@ -61,7 +61,7 @@ from templates.blackhatworld_template import BlackHatWorldParser
 from templates.thecc_template import TheCCParser
 from templates.prtship_template import PrtShipParser
 from templates.cardingschool_template import CardingSchoolParser
-from templates.darknet_template import DarknetParser
+from templates.l33t_template import L33TParser
 from templates.raidforums_template import RaidForumsParser
 from templates.marviher_template import MarviherParser
 from templates.lcpcc_template import LCPCCParser
@@ -138,7 +138,7 @@ PARSER_MAP = {
     'thecc': TheCCParser,
     'prtship': PrtShipParser,
     'carding_school': CardingSchoolParser,
-    'darknet': DarknetParser,
+    'l33t': L33TParser,
     'raidforums': RaidForumsParser,
     'marviher': MarviherParser,
     'lcpcc': LCPCCParser,

@@ -13,8 +13,8 @@ PROXY = "socks5h://localhost:9050"
 PROXY = 'http://127.0.0.1:8118'
 
 
-class DarknetSpider(scrapy.Spider):
-    name = 'darknet_spider'
+class L33TSpider(scrapy.Spider):
+    name = 'l33t_spider'
 
     def __init__(self, output_path, proxy):
         self.start_url = self.base_url = "http://c6dc3lkh34gyxagq.onion"
@@ -130,7 +130,7 @@ class DarknetSpider(scrapy.Spider):
             )
 
 
-class DarknetScrapper():
+class L33TScrapper():
     def __init__(self, kwargs):
         self.output_path = kwargs.get('output')
         self.proxy = kwargs.get('proxy') or PROXY
@@ -148,7 +148,7 @@ class DarknetScrapper():
 
         }
         process = CrawlerProcess(settings)
-        process.crawl(DarknetSpider, self.output_path, self.proxy)
+        process.crawl(L33TSpider, self.output_path, self.proxy)
         process.start()
 
 if __name__ == '__main__':
