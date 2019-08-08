@@ -46,8 +46,6 @@ class OmertaSpider(scrapy.Spider):
             '//tr[@align="center"]//a[contains(@href, "forumdisplay.php?f=")]')
         for forum in forums:
             url = forum.xpath('@href').extract_first()
-            if 'f=35' not in url:
-                continue
             if self.base_url not in url:
                 url = self.base_url + url
             yield Request(
