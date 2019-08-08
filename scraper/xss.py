@@ -26,7 +26,7 @@ class XSSSpider(scrapy.Spider):
         self.headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) "
                           "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/75.0.3770.142 Safari/537.36",
+                          "Chrome/76.0.3809.87 Safari/537.36",
         }
 
     def start_requests(self):
@@ -136,9 +136,10 @@ class XSSScrapper():
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,
             'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
+            'RETRY_HTTP_CODES': [429, 500, 503],
             'RETRY_TIMES': 10,
             'LOG_ENABLED': True,
+            'HTTPERROR_ALLOWED_CODES': [403],
 
         }
         if self.proxy:
