@@ -1,12 +1,11 @@
 # -- coding: utf-8 --
 import os
 import re
-from collections import OrderedDict
 import traceback
-# import locale
 import json
-import utils
 import datetime
+import utils
+import dateutil.parser as dparser
 from lxml.html import fromstring
 
 
@@ -14,9 +13,8 @@ class BrokenPage(Exception):
     pass
 
 
-class OmertaParser:
+class CrdClubParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = parser_name
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
@@ -37,18 +35,17 @@ class OmertaParser:
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
+                lambda x: self.thread_name_pattern.search(
+                    x.split('/')[-1]) is not None,
                 files
             )
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+            key=lambda x: int(self.thread_name_pattern.search(
+                x.split('/')[-1]).group(1)))
 
         return sorted_files
-
-    def get_pid(self, topic):
-        return str(abs(hash(topic)) % (10 ** 6))
 
     def get_html_response(self, template):
         """
@@ -68,7 +65,8 @@ class OmertaParser:
         for index, template in enumerate(self.files):
             print(template)
             try:
-                html_response = self.get_html_response(template)
+                html_response = self.get_html_response(
+                    template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
@@ -91,7 +89,7 @@ class OmertaParser:
                         html_response, template)
                     if not data or not pagination == 1:
                         comments.extend(
-                            self.extract_comments(html_response))
+                            self.extract_comments(html_response, pagination))
                         continue
                     self.distinct_files.add(self.thread_id)
 
@@ -104,7 +102,7 @@ class OmertaParser:
                     utils.write_json(file_pointer, data)
                 # extract comments
                 comments.extend(
-                    self.extract_comments(html_response))
+                    self.extract_comments(html_response, pagination))
 
                 if final:
                     utils.write_comments(file_pointer, comments, output_file)
@@ -120,43 +118,41 @@ class OmertaParser:
                 traceback.print_exc()
                 continue
 
-    def extract_comments(self, html_response):
+    def extract_comments(self, html_response, pagination):
         comments = list()
         comment_blocks = html_response.xpath(
           '//table[contains(@id, "post")]'
         )
-
-        for index, comment_block in enumerate(comment_blocks, 1):
-            try:
-                user = self.get_author(comment_block)
-                comment_text = self.get_post_text(comment_block)
-                comment_date = self.get_date(comment_block)
-                pid = self.thread_id
-                avatar = self.get_avatar(comment_block)
-                comment_id = self.get_comment_id(comment_block)
-                if not comment_id or comment_id == "1":
-                    continue
-                source = {
-                    'forum': self.parser_name,
-                    'pid': pid,
-                    'message': comment_text.strip(),
-                    'cid': comment_id,
-                    'author': user,
-                }
-                if comment_date:
-                    source.update({
-                        'date': comment_date
-                    })
-                if avatar:
-                    source.update({
-                        'img': avatar
-                    })
-                comments.append({
-                    
-                    '_source': source,
-                })
-            except:
+        comment_blocks = comment_blocks[1:]\
+            if pagination == 1 else comment_blocks
+        for comment_block in comment_blocks:
+            user = self.get_author(comment_block)
+            comment_id = self.get_comment_id(comment_block)
+            if not comment_id:
                 continue
+            comment_text = self.get_post_text(comment_block)
+            comment_date = self.get_date(comment_block)
+            pid = self.thread_id
+            avatar = self.get_avatar(comment_block)
+
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                'message': comment_text.strip(),
+                'cid': comment_id,
+                'author': user,
+            }
+            if comment_date:
+                source.update({
+                    'date': comment_date
+                })
+            if avatar:
+                source.update({
+                    'img': avatar
+                })
+            comments.append({
+                '_source': source,
+            })
         return comments
 
     def header_data_extract(self, html_response, template):
@@ -167,6 +163,7 @@ class OmertaParser:
                 '//table[contains(@id, "post")]'
             )
             if not header:
+                print('no header')
                 return
             if not self.get_comment_id(header[0]) == "1":
                 return
@@ -200,13 +197,14 @@ class OmertaParser:
 
     def get_date(self, tag):
         date_block = tag.xpath(
-            'tr//a[contains(@name, "post")]/following-sibling::text()'
+            'tr//td[@class="thead"]/text()'
         )
         date = ""
         if date_block:
             date = [d.strip() for d in date_block if d.strip()][0]
+
         try:
-            pattern = '%m-%d-%Y, %I:%M %p'
+            pattern = '%d-%m-%Y, %H:%M'
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
@@ -220,10 +218,6 @@ class OmertaParser:
             author = tag.xpath(
                 'tr//a[@class="bigusername"]/strike/text()'
             )
-        if not author:
-            author = tag.xpath(
-                'tr//a[@class="bigusername"]/font/text()'
-            )
 
         author = author[0].strip() if author else None
         return author
@@ -232,10 +226,6 @@ class OmertaParser:
         title = tag.xpath(
             '//td[@class="navbar"]/a/strong/text()'
         )
-        if not title:
-            title = tag.xpath(
-                '//td[@class="navbar"]/strong/text()'
-            )
         title = title[0].strip() if title else None
         return title
 
@@ -262,7 +252,7 @@ class OmertaParser:
 
     def get_comment_id(self, tag):
         comment_block = tag.xpath(
-            'tr//a[contains(@id, "postcount")]/strong/text()')
+            'tr//td[@class="thead" and @align="right"]/a/strong/text()')
         if not comment_block:
             return ''
         pattern = re.compile(r'\d+')

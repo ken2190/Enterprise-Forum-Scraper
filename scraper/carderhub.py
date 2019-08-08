@@ -8,25 +8,26 @@ from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
-USER = 'cyrax'
-PASS = 'Night#Xss007'
+USER = 'darkcylon'
+PASS = 'yFz8gxHJG7ccnLb'
 
 
-class XSSSpider(scrapy.Spider):
-    name = 'xss_spider'
+class CarderHubSpider(scrapy.Spider):
+    name = 'carderhub_spider'
 
-    def __init__(self, output_path):
-        self.base_url = "https://xss.is"
+    def __init__(self, output_path, avatar_path):
+        self.base_url = "https://carderhub.com"
         self.start_url = '{}/forums/'.format(self.base_url)
-        self.topic_pattern = re.compile(r'threads/(\d+)/$')
+        self.topic_pattern = re.compile(r'threads/.*\.(\d+)/$')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)$')
-        self.start_url = 'https://xss.is/'
+        self.start_url = 'https://carderhub.com/'
         self.output_path = output_path
+        self.avatar_path = avatar_path
         self.headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) "
                           "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/76.0.3809.87 Safari/537.36",
+                          "Chrome/75.0.3770.142 Safari/537.36",
         }
 
     def start_requests(self):
@@ -43,11 +44,11 @@ class XSSSpider(scrapy.Spider):
             'login': USER,
             'password': PASS,
             "remember": '1',
-            '_xfRedirect': 'https://xss.is/',
+            '_xfRedirect': 'https://carderhub.com/',
             '_xfToken': token
         }
         yield FormRequest(
-            url="https://xss.is/login/login",
+            url="https://carderhub.com/login/login",
             callback=self.parse_main_page,
             formdata=params,
             headers=self.headers,
@@ -110,6 +111,27 @@ class XSSSpider(scrapy.Spider):
             f.write(response.text.encode('utf-8'))
             print(f'{topic_id}-{paginated_value} done..!')
 
+        avatars = response.xpath('//a[@class="avatar avatar--m"]/img')
+        for avatar in avatars:
+            avatar_url = avatar.xpath('@src').extract_first()
+            if self.base_url not in avatar_url:
+                avatar_url = self.base_url + avatar_url
+            user_id = avatar.xpath('@alt').re(r'(\w+)')
+            if not user_id:
+                continue
+            file_name = '{}/{}.jpg'.format(self.avatar_path, user_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta={
+                    'file_name': file_name,
+                    'user_id': user_id[0]
+                }
+            )
+
         next_page = response.xpath(
             '//a[@class="pageNav-jump pageNav-jump--next"]')
         if next_page:
@@ -123,40 +145,45 @@ class XSSSpider(scrapy.Spider):
                 meta={'topic_id': topic_id}
             )
 
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            print(f"Avatar for user {response.meta['user_id']} done..!")
 
-class XSSScrapper():
+
+class CarderHubScrapper():
     def __init__(self, kwargs):
         self.output_path = kwargs.get('output')
         self.proxy = kwargs.get('proxy') or None
         self.request_delay = 0.1
         self.no_of_threads = 16
+        self.ensure_avatar_path()
+
+    def ensure_avatar_path(self, ):
+        self.avatar_path = f'{self.output_path}/avatars'
+        if not os.path.exists(self.avatar_path):
+            os.makedirs(self.avatar_path)
 
     def do_scrape(self):
         settings = {
+            "DOWNLOADER_MIDDLEWARES": {
+                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
+            },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,
             'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [429, 500, 503],
+            'RETRY_HTTP_CODES': [403, 429, 500, 503],
             'RETRY_TIMES': 10,
             'LOG_ENABLED': True,
-            'HTTPERROR_ALLOWED_CODES': [403],
 
         }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
         process = CrawlerProcess(settings)
-        process.crawl(XSSSpider, self.output_path)
+        process.crawl(CarderHubSpider, self.output_path, self.avatar_path)
         process.start()
+
 
 if __name__ == '__main__':
     run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')

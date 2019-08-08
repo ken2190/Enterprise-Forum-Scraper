@@ -3,7 +3,6 @@ import os
 import re
 from collections import OrderedDict
 import traceback
-# import locale
 import json
 import utils
 import datetime
@@ -14,9 +13,8 @@ class BrokenPage(Exception):
     pass
 
 
-class OmertaParser:
+class CarderhubParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = parser_name
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
@@ -25,7 +23,7 @@ class OmertaParser:
         self.pagination_pattern = re.compile(
             r'\d+-(\d+)\.html$'
         )
-        self.avatar_name_pattern = re.compile(r'(\w+)\'s ')
+        self.avatar_name_pattern = re.compile(r'(\w+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -47,28 +45,13 @@ class OmertaParser:
 
         return sorted_files
 
-    def get_pid(self, topic):
-        return str(abs(hash(topic)) % (10 ** 6))
-
-    def get_html_response(self, template):
-        """
-        returns the html response from the `template` contents
-        """
-        with open(template, 'r') as f:
-            content = f.read()
-            try:
-                html_response = fromstring(content)
-            except ParserError as ex:
-                return
-            return html_response
-
     def main(self):
         comments = []
         output_file = None
         for index, template in enumerate(self.files):
             print(template)
             try:
-                html_response = self.get_html_response(template)
+                html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
@@ -123,40 +106,36 @@ class OmertaParser:
     def extract_comments(self, html_response):
         comments = list()
         comment_blocks = html_response.xpath(
-          '//table[contains(@id, "post")]'
+          '//div[@class="message-inner"]'
         )
-
+        # print(comment_blocks)
         for index, comment_block in enumerate(comment_blocks, 1):
-            try:
-                user = self.get_author(comment_block)
-                comment_text = self.get_post_text(comment_block)
-                comment_date = self.get_date(comment_block)
-                pid = self.thread_id
-                avatar = self.get_avatar(comment_block)
-                comment_id = self.get_comment_id(comment_block)
-                if not comment_id or comment_id == "1":
-                    continue
-                source = {
-                    'forum': self.parser_name,
-                    'pid': pid,
-                    'message': comment_text.strip(),
-                    'cid': comment_id,
-                    'author': user,
-                }
-                if comment_date:
-                    source.update({
-                        'date': comment_date
-                    })
-                if avatar:
-                    source.update({
-                        'img': avatar
-                    })
-                comments.append({
-                    
-                    '_source': source,
-                })
-            except:
+            user = self.get_author(comment_block)
+            comment_text = self.get_post_text(comment_block)
+            comment_date = self.get_date(comment_block)
+            pid = self.thread_id
+            avatar = self.get_avatar(comment_block)
+            comment_id = self.get_comment_id(comment_block)
+            if not comment_id or comment_id == "1":
                 continue
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                'message': comment_text.strip(),
+                'cid': comment_id,
+                'author': user,
+            }
+            if comment_date:
+                source.update({
+                    'date': comment_date
+                })
+            if avatar:
+                source.update({
+                    'img': avatar
+                })
+            comments.append({
+                '_source': source,
+            })
         return comments
 
     def header_data_extract(self, html_response, template):
@@ -164,7 +143,7 @@ class OmertaParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//table[contains(@id, "post")]'
+                '//div[@class="message-inner"]'
             )
             if not header:
                 return
@@ -199,50 +178,35 @@ class OmertaParser:
             raise BrokenPage(ex)
 
     def get_date(self, tag):
-        date_block = tag.xpath(
-            'tr//a[contains(@name, "post")]/following-sibling::text()'
+        date = tag.xpath(
+            'div//div[@class="message-attribution-main"]/a/time/@data-time'
         )
-        date = ""
-        if date_block:
-            date = [d.strip() for d in date_block if d.strip()][0]
-        try:
-            pattern = '%m-%d-%Y, %I:%M %p'
-            date = datetime.datetime.strptime(date, pattern).timestamp()
-            return str(date)
-        except:
-            return ""
+        return date[0] if date else ''
 
     def get_author(self, tag):
         author = tag.xpath(
-            'tr//a[@class="bigusername"]/text()'
+            'div//div[@class="message-userDetails"]/h4/a/text()'
         )
         if not author:
             author = tag.xpath(
-                'tr//a[@class="bigusername"]/strike/text()'
+                'div//div[@class="message-userDetails"]/h4/a/span/text()'
             )
-        if not author:
-            author = tag.xpath(
-                'tr//a[@class="bigusername"]/font/text()'
-            )
-
         author = author[0].strip() if author else None
         return author
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//td[@class="navbar"]/a/strong/text()'
+            '//h1[@class="p-title-value"]/text()'
         )
-        if not title:
-            title = tag.xpath(
-                '//td[@class="navbar"]/strong/text()'
-            )
         title = title[0].strip() if title else None
         return title
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
-            'tr//div[contains(@id, "post_message_")]/descendant::text()['
-            'not(ancestor::div[@style="margin:20px; margin-top:5px; "])]'
+            'div//article/div[@class="bbWrapper"]'
+            '/descendant::text()[not(ancestor::div'
+            '[contains(@class, "bbCodeBlock bbCodeBlock--expandable '
+            'bbCodeBlock--quote")])]'
         )
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
@@ -251,22 +215,20 @@ class OmertaParser:
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            'tr//a[contains(@href, "member.php")]/img[@src]/@alt'
+            'div//div[@class="message-avatar-wrapper"]/a/img/@alt'
         )
         if not avatar_block:
             return ""
         name_match = self.avatar_name_pattern.findall(avatar_block[0])
-        if not name_match:
-            return ""
-        return name_match[0] + '.jpg'
+        return f'{name_match[0]}.jpg' if name_match else ''
 
     def get_comment_id(self, tag):
+        comment_id = ""
         comment_block = tag.xpath(
-            'tr//a[contains(@id, "postcount")]/strong/text()')
-        if not comment_block:
-            return ''
-        pattern = re.compile(r'\d+')
-        match = pattern.findall(comment_block[0])
-        if not match:
-            return
-        return match[0]
+            'div//ul[@class="message-attribution-opposite '
+            'message-attribution-opposite--list"]/li/a/text()'
+        )
+        if comment_block:
+            comment_id = comment_block[-1].strip().split('#')[-1]
+
+        return comment_id.replace(',', '')

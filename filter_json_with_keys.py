@@ -20,18 +20,27 @@ GYFCAT_FIELDS = [
     'password',
 ]
 
-PIPL_FIELDS = [
-    'firstname',
-    'lastname',
-    'street',
-    'city',
-    'zip',
-    'dateOfBirth',
-    'court',
-    'professionalLicense',
-    'emails',
-    'phone',
-    'socialUrls'
+PIPL_FIELDS = {
+    'firstname': 'fn',
+    'lastname': 'ln',
+    'middlename': 'mn',
+    'street': 'a1',
+    'city': 'a2',
+    'zip': 'a3',
+    'dateOfBirth': 'dob',
+    'phone': 't',
+}
+TO_REMOVE_PIPL = [
+    '_id',
+    'id',
+    'title',
+    'age',
+    'dateUpdated',
+    'gender',
+    'politicalParty',
+    'race',
+    'religion',
+    'aka'
 ]
 
 FIELD_MAPS = {
@@ -56,32 +65,41 @@ class Parser:
         return self.parser.parse_args()
 
 
-def process_pipl(out_file, single_json, fields):
+def process_pipl(out_file, single_json):
     single_json = re.sub(r'ObjectId\((.*?)\)', '\\1', single_json)
     single_json = re.sub(r'NumberInt\((.*?)\)', '\\1', single_json)
     json_response = json.loads(single_json)
     filtered_json = dict()
     for key, value in json_response.items():
-        if key not in fields:
+        if key in TO_REMOVE_PIPL:
             continue
         if not value:
             continue
         if key == 'emails':
             for index, email in enumerate(value, 1):
-                filtered_json.update({'email{}'.format(index): email})
-        elif key == 'court' and value.get('civilCourtRecordCount'):
-            filtered_json.update({
-                'civilCourtRecordCount': value['civilCourtRecordCount']
-            })
+                filtered_json.update({'e{}'.format(index): email})
         elif key == 'socialUrls':
-            fb_url = None
             for social in value:
                 if social['domain'] == 'facebook.com' and\
                    '/people/' not in social['url']:
-                    fb_url = social['url']
-                    break
-            if fb_url:
-                filtered_json.update({'facebookURL': fb_url})
+                    filtered_json.update({'fb': social['url']})
+
+                elif social['domain'] == 'linkedin.com':
+                    filtered_json.update({'linkedin': social['url']})
+
+                elif social['domain'] == 'twitter.com':
+                    filtered_json.update({'twitter': social['url']})
+
+                elif social['domain'] == 'amazon.com':
+                    filtered_json.update({'amazon': social['url']})
+
+                elif social['domain'].lower() == '10digits.us':
+                    filtered_json.update({'10digits': social['url']})
+                elif social['domain'].lower() == 'pinterest.com':
+                    filtered_json.update({'pinterest': social['url']})
+
+        elif key in PIPL_FIELDS:
+            filtered_json.update({PIPL_FIELDS[key]: value})
         else:
             filtered_json.update({key: value})
     out_file.write(json.dumps(filtered_json)+'\n')
@@ -117,7 +135,7 @@ def process_file(args):
                     if not args.type == 'pipl':
                         process_line(out_file, single_json, args.type)
                     else:
-                        process_pipl(out_file, single_json, FIELD_MAPS['pipl'])
+                        process_pipl(out_file, single_json)
                     print('Writing line number:', line_number)
                 except:
                     print('Error in line number:', line_number)
