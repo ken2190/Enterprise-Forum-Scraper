@@ -2,14 +2,19 @@ import time
 import requests
 import os
 import re
+import json
 import scrapy
 from math import ceil
+from urllib.parse import urlencode
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from lxml.html import fromstring
 
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36'
+USER = 'thecreator'
+PASS = 'Night#Creator1'
 
 
 class PrimeForumsSpider(scrapy.Spider):
@@ -32,7 +37,42 @@ class PrimeForumsSpider(scrapy.Spider):
         yield Request(
             url=self.start_url,
             headers=self.headers,
-            callback=self.parse
+            callback=self.get_token
+        )
+
+    def get_token(self, response):
+        match = re.findall(r'csrf: \'(.*?)\'', response.text)
+        params = {
+            '_xfRequestUri': '/',
+            '_xfWithData': '1',
+            '_xfToken': match[0],
+            '_xfResponseType': 'json'
+        }
+        token_url = 'https://www.primeforums.net/login/?' + urlencode(params)
+        yield Request(
+            url=token_url,
+            headers=self.headers,
+            callback=self.proceed_for_login
+        )
+
+    def proceed_for_login(self, response):
+        json_response = json.loads(response.text)
+        html_response = fromstring(json_response['html']['content'])
+        token = html_response.xpath(
+            '//input[@name="_xfToken"]/@value')[0]
+        params = {
+            'login': USER,
+            'password': PASS,
+            "remember": '1',
+            '_xfToken': token
+        }
+        login_url = 'https://www.primeforums.net/login/login'
+        yield scrapy.FormRequest(
+            login_url,
+            callback=self.parse,
+            formdata=params,
+            headers=self.headers,
+            dont_filter=True,
         )
 
     def parse(self, response):
@@ -163,7 +203,7 @@ class PrimeForumsScrapper():
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
                 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
+                # 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
                 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
