@@ -102,7 +102,36 @@ def process_pipl(out_file, single_json):
             filtered_json.update({PIPL_FIELDS[key]: value})
         else:
             filtered_json.update({key: value})
+    process_address(filtered_json)
+    process_name(filtered_json)
     out_file.write(json.dumps(filtered_json)+'\n')
+
+
+def process_address(filtered_json):
+    address = ''
+    if 'a1' in filtered_json:
+        address = filtered_json.pop('a1')
+    if 'a2' in filtered_json:
+        address = f"{address} {filtered_json.pop('a2')}"
+    if 'state' in filtered_json:
+        address = f"{address} {filtered_json.pop('state')}"
+    if 'a3' in filtered_json:
+        address = f"{address} {filtered_json.pop('a3')}"
+    if address:
+        filtered_json.update({'a': address})
+
+
+def process_name(filtered_json):
+    name = ''
+    if 'fn' in filtered_json:
+        name = filtered_json.pop('fn')
+    if 'mn' in filtered_json:
+        name = f"{name} {filtered_json.pop('mn')}"
+    if 'ln' in filtered_json:
+        name = f"{name} {filtered_json.pop('ln')}"
+    if name:
+        filtered_json.update({'n': name})
+    pass
 
 
 def process_line(out_file, single_json, _type):

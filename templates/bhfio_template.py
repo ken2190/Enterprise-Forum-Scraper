@@ -233,4 +233,4 @@ class BHFIOParser:
         if comment_block:
             comment_id = comment_block[-1].strip().split('#')[-1]
 
-        return comment_id.replace(',', '')
+        return comment_id.replace(',', '').replace('.', '')
