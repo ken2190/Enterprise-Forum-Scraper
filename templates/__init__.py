@@ -73,6 +73,7 @@ from templates.bhfio_template import BHFIOParser
 from templates.crdclub_template import CrdClubParser
 from templates.carderhub_template import CarderhubParser
 from templates.primeforums_template import PrimeForumsParser
+from templates.kriminala_template import KriminalaParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -151,4 +152,5 @@ PARSER_MAP = {
     'crdclub': CrdClubParser,
     'carderhub': CarderhubParser,
     'primeforums': PrimeForumsParser,
+    'kriminala': KriminalaParser,
 }
