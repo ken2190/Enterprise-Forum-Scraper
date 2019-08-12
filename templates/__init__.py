@@ -74,6 +74,8 @@ from templates.crdclub_template import CrdClubParser
 from templates.carderhub_template import CarderhubParser
 from templates.primeforums_template import PrimeForumsParser
 from templates.kriminala_template import KriminalaParser
+from templates.leakportal_template import LeakPortalParser
+from templates.hoxforum_template import HoxForumParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -153,4 +155,6 @@ PARSER_MAP = {
     'carderhub': CarderhubParser,
     'primeforums': PrimeForumsParser,
     'kriminala': KriminalaParser,
+    'leakportal': LeakPortalParser,
+    'hoxforum': HoxForumParser,
 }

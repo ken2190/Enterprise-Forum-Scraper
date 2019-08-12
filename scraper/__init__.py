@@ -52,6 +52,8 @@ from scraper.crdclub import CrdClubScrapper
 from scraper.carderhub import CarderHubScrapper
 from scraper.omerta import OmertaScrapper
 from scraper.primeforums import PrimeForumsScrapper
+from scraper.leakportal import LeakPortalScrapper
+from scraper.hoxforum import HoxForumScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -109,4 +111,6 @@ SCRAPER_MAP = {
     'carderhub': CarderHubScrapper,
     'omerta': OmertaScrapper,
     'primeforums': PrimeForumsScrapper,
+    'leakportal': LeakPortalScrapper,
+    'hoxforum': HoxForumScrapper,
 }
