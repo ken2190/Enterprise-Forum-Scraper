@@ -76,6 +76,7 @@ from templates.primeforums_template import PrimeForumsParser
 from templates.kriminala_template import KriminalaParser
 from templates.leakportal_template import LeakPortalParser
 from templates.hoxforum_template import HoxForumParser
+from templates.scrapeboxforum_template import ScrapeBoxForumParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -157,4 +158,5 @@ PARSER_MAP = {
     'kriminala': KriminalaParser,
     'leakportal': LeakPortalParser,
     'hoxforum': HoxForumParser,
+    'scrapeboxforum': ScrapeBoxForumParser,
 }

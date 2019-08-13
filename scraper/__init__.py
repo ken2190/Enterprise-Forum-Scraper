@@ -54,6 +54,7 @@ from scraper.omerta import OmertaScrapper
 from scraper.primeforums import PrimeForumsScrapper
 from scraper.leakportal import LeakPortalScrapper
 from scraper.hoxforum import HoxForumScrapper
+from scraper.scrapeboxforum import ScrapeBoxForumScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -113,4 +114,5 @@ SCRAPER_MAP = {
     'primeforums': PrimeForumsScrapper,
     'leakportal': LeakPortalScrapper,
     'hoxforum': HoxForumScrapper,
+    'scrapeboxforum': ScrapeBoxForumScrapper,
 }
