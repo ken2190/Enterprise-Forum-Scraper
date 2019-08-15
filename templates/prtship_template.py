@@ -178,16 +178,10 @@ class PrtShipParser:
             raise BrokenPage(ex)
 
     def get_date(self, tag):
-        date_block = tag.xpath(
-            'div//header[@class="message-attribution"]/a/time/@title'
+        date = tag.xpath(
+            'div//div[@class="message-attribution-main"]/a/time/@data-time'
         )
-        date = date_block[0].strip() if date_block else ""
-        try:
-            pattern = "%b %d, %Y at %I:%M %p"
-            date = datetime.datetime.strptime(date, pattern).timestamp()
-            return str(date)
-        except:
-            return ""
+        return date[0] if date else ''
 
     def get_author(self, tag):
         author = tag.xpath(
@@ -233,9 +227,10 @@ class PrtShipParser:
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            'div//header[@class="message-attribution"]/div/a/text()'
+            'div//ul[@class="message-attribution-opposite '
+            'message-attribution-opposite--list"]/li/a/text()'
         )
         if comment_block:
-            comment_id = comment_block[0].split('#')[-1]
+            comment_id = comment_block[-1].strip().split('#')[-1]
 
-        return comment_id.replace(',', '')
+        return comment_id.replace(',', '').replace('.', '')
