@@ -77,6 +77,8 @@ from templates.kriminala_template import KriminalaParser
 from templates.leakportal_template import LeakPortalParser
 from templates.hoxforum_template import HoxForumParser
 from templates.scrapeboxforum_template import ScrapeBoxForumParser
+from templates.blackhatindia_template import BlackHatIndiaParser
+from templates.crackx_template import CrackXParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -159,4 +161,6 @@ PARSER_MAP = {
     'leakportal': LeakPortalParser,
     'hoxforum': HoxForumParser,
     'scrapeboxforum': ScrapeBoxForumParser,
+    'blackhatindia': BlackHatIndiaParser,
+    'crackx': CrackXParser,
 }

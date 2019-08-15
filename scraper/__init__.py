@@ -55,6 +55,8 @@ from scraper.primeforums import PrimeForumsScrapper
 from scraper.leakportal import LeakPortalScrapper
 from scraper.hoxforum import HoxForumScrapper
 from scraper.scrapeboxforum import ScrapeBoxForumScrapper
+from scraper.blackhatindia import BlackHatIndiaScrapper
+from scraper.crackx import CrackXScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -115,4 +117,6 @@ SCRAPER_MAP = {
     'leakportal': LeakPortalScrapper,
     'hoxforum': HoxForumScrapper,
     'scrapeboxforum': ScrapeBoxForumScrapper,
+    'blackhatindia': BlackHatIndiaScrapper,
+    'crackx': CrackXScrapper,
 }
