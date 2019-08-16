@@ -219,12 +219,27 @@ class CrdClubParser:
                 'tr//a[@class="bigusername"]/strike/text()'
             )
 
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/s/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/span/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/font/text()'
+            )
+
         author = author[0].strip() if author else None
         return author
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//td[@class="navbar"]/a/strong/text()'
+            '//td[@class="navbar"]/a/following-sibling::strong[1]/text()'
         )
         title = title[0].strip() if title else None
         return title
