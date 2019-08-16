@@ -13,6 +13,7 @@ from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
 
 
+COOKIE = '__cfduid=dbdbeb0650da2e413f0f58b9b2c75eaf31565924481; xf_csrf=d03E_EFzdgY4WiWB; _ga=GA1.2.842163880.1565924490; _gid=GA1.2.1604312718.1565924490; cf_clearance=0592abbd070214348a2b168ab06759a20ea72575-1565924535-57600-150; xf_notice_dismiss=-1; xf_user=36079%2CIJmPwBbq9nBCBxAi2D2Txt-o0diiv1HZ6UURwi3L; xf_session=W_zYfW5H5uFGhT5Ui2cghdEH8Lyh_xwy; _gat_gtag_UA_139732498_1=1'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
 USER = 'Cyrax_011'
 PASS = 'Night#India065'
@@ -30,15 +31,19 @@ class BlackHatIndiaSpider(scrapy.Spider):
         self.output_path = output_path
         self.avatar_path = avatar_path
         self.headers = {
-            'referer': 'https://forum.blackhatindia.ru',
             'user-agent': USER_AGENT,
+            'cookie': COOKIE,
+            'referer': 'https://forum.blackhatindia.ru/',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1'
         }
 
     def start_requests(self):
         yield Request(
             url=self.start_url,
             headers=self.headers,
-            callback=self.get_token
+            callback=self.parse
         )
 
     def get_token(self, response):
