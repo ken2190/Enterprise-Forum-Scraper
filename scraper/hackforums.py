@@ -179,6 +179,16 @@ class HackForumsScrapper():
             'LOG_ENABLED': True,
 
         }
+        if self.proxy:
+            settings['DOWNLOADER_MIDDLEWARES'].update({
+                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+            })
+            settings.update({
+                'ROTATING_PROXY_LIST': self.proxy,
+
+            })
         process = CrawlerProcess(settings)
         process.crawl(HackForumsSpider, self.output_path, self.avatar_path, self.urlsonly)
         process.start()
