@@ -9,13 +9,13 @@ from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
 
-COOKIE = 'cf_clearance=be9c7a1b10b4ce4ade3730170d3957a0d6e36405-1564987632-604800-250; __cfduid=d99171b5f2b30aced444e1aff6b9dd06f1564987632; mybb[lastvisit]=1564987632; mybb[lastactive]=1564987658; sid=0683abda988e5be54b8df05bb1a9e62d; menutabs=0; _ga=GA1.2.1181972070.1564987633; _gid=GA1.2.209533211.1564987633; loginattempts=1; mybbuser=3875430_Ja4F1SHgIqHiBkcBoASZMsiaJosDcE2qD696kCwz9JtQQakmCE; myalerts=MTUwMTg5NTc2ODQ5MDA%3D; mybb[gdpr]=1'
-USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
+COOKIE = '__cfduid=d30df78b7fd802d297c19258776181c311566274296; mybb[lastvisit]=1566274296; sid=ef8f492a923d907d509550b01b6307af; menutabs=0; _ga=GA1.2.1618531161.1566274299; _gid=GA1.2.1953645279.1566274299; _gat_gtag_UA_249290_34=1; cf_clearance=be4b1557e50d1fce23d2e26184021bcae1dc17f2-1566274306-604800-150; mybb[lastactive]=1566274314; loginattempts=1; mybbuser=4254128_uhB1kF2Xk6bknXbbZrkF91ogn8CmOJO2DLI0PSchUPvFuP8Xoe; myalerts=MTgwOTc2MDUwNDAzODQ%3D; mybb[gdpr]=1'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
 
 class HackForumsSpider(scrapy.Spider):
     name = 'hackforums_spider'
 
-    def __init__(self, output_path, avatar_path):
+    def __init__(self, output_path, avatar_path, urlsonly):
         self.base_url = "https://hackforums.net/"
         self.topic_pattern = re.compile(r'tid=(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
@@ -23,6 +23,7 @@ class HackForumsSpider(scrapy.Spider):
         self.start_url = 'https://hackforums.net/index.php'
         self.output_path = output_path
         self.avatar_path = avatar_path
+        self.urlsonly = urlsonly
         self.headers = {
             'referer': 'https://hackforums.net/member.php',
             'user-agent': USER_AGENT,
@@ -30,11 +31,32 @@ class HackForumsSpider(scrapy.Spider):
         }
 
     def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
-        )
+        if self.urlsonly:
+            self.output_url_file = open(self.output_path + '/urls.txt', 'w')
+            yield Request(
+                url=self.start_url,
+                headers=self.headers,
+                callback=self.parse
+            )
+        else:
+            input_file = self.output_path + '/urls.txt'
+            if not os.path.exists(input_file):
+                print('URL File not found. Exiting!!')
+                return
+            for thread_url in open(input_file, 'r'):
+                thread_url = thread_url.strip()
+                topic_id = self.topic_pattern.findall(thread_url)
+                if not topic_id:
+                    continue
+                file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
+                if os.path.exists(file_name):
+                    continue
+                yield Request(
+                    url=thread_url,
+                    headers=self.headers,
+                    callback=self.parse_thread,
+                    meta={'topic_id': topic_id[0]}
+                )
 
     def parse(self, response):
         forums = response.xpath(
@@ -43,6 +65,8 @@ class HackForumsSpider(scrapy.Spider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = self.base_url + url
+            if 'fid=400' not in url:
+                continue
             yield Request(
                 url=url,
                 headers=self.headers,
@@ -52,7 +76,8 @@ class HackForumsSpider(scrapy.Spider):
     def parse_forum(self, response):
         print('next_page_url: {}'.format(response.url))
         threads = response.xpath(
-            '//a[contains(@href, "showthread.php?tid=")]')
+            '//span[contains(@id, "tid_")]'
+            '/a[contains(@href, "showthread.php?tid=")]')
         for thread in threads:
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
@@ -60,15 +85,8 @@ class HackForumsSpider(scrapy.Spider):
             topic_id = self.topic_pattern.findall(thread_url)
             if not topic_id:
                 continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+            self.output_url_file.write(thread_url)
+            self.output_url_file.write('\n')
 
         next_page = response.xpath('//a[@class="pagination_next"]')
         if next_page:
@@ -137,6 +155,7 @@ class HackForumsScrapper():
         self.proxy = kwargs.get('proxy') or None
         self.request_delay = 0.1
         self.no_of_threads = 16
+        self.urlsonly = kwargs.get('urlsonly')
         self.ensure_avatar_path()
 
     def ensure_avatar_path(self, ):
@@ -161,7 +180,7 @@ class HackForumsScrapper():
 
         }
         process = CrawlerProcess(settings)
-        process.crawl(HackForumsSpider, self.output_path, self.avatar_path)
+        process.crawl(HackForumsSpider, self.output_path, self.avatar_path, self.urlsonly)
         process.start()
 
 
