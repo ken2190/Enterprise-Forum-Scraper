@@ -9,8 +9,8 @@ from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
 
-COOKIE = '__cfduid=d30df78b7fd802d297c19258776181c311566274296; mybb[lastvisit]=1566274296; sid=ef8f492a923d907d509550b01b6307af; menutabs=0; _ga=GA1.2.1618531161.1566274299; _gid=GA1.2.1953645279.1566274299; _gat_gtag_UA_249290_34=1; cf_clearance=be4b1557e50d1fce23d2e26184021bcae1dc17f2-1566274306-604800-150; mybb[lastactive]=1566274314; loginattempts=1; mybbuser=4254128_uhB1kF2Xk6bknXbbZrkF91ogn8CmOJO2DLI0PSchUPvFuP8Xoe; myalerts=MTgwOTc2MDUwNDAzODQ%3D; mybb[gdpr]=1'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
+COOKIE = '__cfduid=d08235920bb81ba0a497cd279c18a86721566270081; cf_clearance=650b9a413b9b8010e93b1de2f24b9fd21a7c0c84-1566270084-604800-250; mybb[lastvisit]=1566270084; mybb[lastactive]=1566270108; _ga=GA1.2.421571632.1566270085; _gid=GA1.2.1014853299.1566270085; loginattempts=1; mybbuser=4353313_cUau1qFER8nWSNHD5Br9LEz37EATcPO1Ziwd0DIOcvJ8zNzRsJ; myalerts=MTg5NTEzMzQwNzU5Njk%3D; mybb[gdpr]=1; sid=9e1487847fd780084732cd4129379709; menutabs=0; _gat_gtag_UA_249290_34=1'
+USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
 
 class HackForumsSpider(scrapy.Spider):
     name = 'hackforums_spider'
@@ -65,8 +65,6 @@ class HackForumsSpider(scrapy.Spider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = self.base_url + url
-            if 'fid=400' not in url:
-                continue
             yield Request(
                 url=url,
                 headers=self.headers,
