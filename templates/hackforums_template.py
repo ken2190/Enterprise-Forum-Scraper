@@ -213,6 +213,11 @@ class HackForumsParser:
         if not author:
             author = tag.xpath(
                 'div//div[@class="author_information"]'
+                '/strong/span/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="author_information"]'
                 '/strong/span/a/span/strong/text()'
             )
         if not author:
