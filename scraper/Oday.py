@@ -22,6 +22,7 @@ class OdaySpider(scrapy.Spider):
         self.topic_pattern = re.compile(r'.*thread-(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'-page-(\d+)')
+        self.username_pattern = re.compile(r'user-(\d+)')
         self.output_path = output_path
         self.avatar_path = avatar_path
         self.headers = {
@@ -33,6 +34,12 @@ class OdaySpider(scrapy.Spider):
             'Host': 'qzbkwswfv5k2oj5d.onion',
             'Referer': 'http://qzbkwswfv5k2oj5d.onion',
         }
+        self.set_users_path()
+
+    def set_users_path(self, ):
+        self.user_path = os.path.join(self.output_path, 'users')
+        if not os.path.exists(self.user_path):
+            os.makedirs(self.user_path)
 
     def start_requests(self):
         formdata = {
@@ -144,6 +151,28 @@ class OdaySpider(scrapy.Spider):
                 }
             )
 
+        users = response.xpath('//span[@class="largetext"]/a')
+        for user in users:
+            user_url = user.xpath('@href').extract_first()
+            if self.base_url not in user_url:
+                user_url = self.base_url + user_url
+            user_id = self.username_pattern.findall(user_url)
+            if not user_id:
+                continue
+            file_name = '{}/{}.html'.format(self.user_path, user_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=user_url,
+                headers=self.headers,
+                callback=self.parse_user,
+                meta={
+                    'file_name': file_name,
+                    'user_id': user_id[0],
+                    'proxy': self.proxy,
+                }
+            )
+
         next_page = response.xpath(
             '//div[@class="pagination"]/a[@class="pagination_next"]')
         if next_page:
@@ -156,6 +185,12 @@ class OdaySpider(scrapy.Spider):
                 headers=self.headers,
                 meta={'topic_id': topic_id, 'proxy': self.proxy}
             )
+
+    def parse_user(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            print(f"User {response.meta['user_id']} done..!")
 
     def parse_avatar(self, response):
         file_name = response.meta['file_name']
