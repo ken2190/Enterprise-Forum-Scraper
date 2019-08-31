@@ -218,9 +218,16 @@ class BlackHatWorldParser:
             'descendant::text()['
             'not(ancestor::div[@class="bbCodeBlock bbCodeQuote"])]'
         )
+        protected_email = tag.xpath(
+            'div//div[@class="messageContent"]/article/blockquote/'
+            'descendant::span[@class="__cf_email__"]/@data-cfemail'
+        )
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
         ])
+        if protected_email:
+            decoded_value = utils.get_decoded_email(protected_email[0])
+            post_text = re.sub(r'\[email\s+protected\]', decoded_value, post_text)
         return post_text.strip()
 
     def get_avatar(self, tag):

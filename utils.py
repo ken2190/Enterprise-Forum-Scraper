@@ -96,3 +96,10 @@ def is_file_final(current_template, template_pattern, files, index):
         return True
     except:
         return True
+
+def get_decoded_email(email):
+    r = int(email[:2],16)
+    email = ''.join([
+        chr(int(email[i:i+2], 16) ^ r)
+        for i in range(2, len(email), 2)])
+    return email
