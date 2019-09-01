@@ -209,9 +209,22 @@ class HoxForumParser:
             'div//div[@class="post_body scaleimages"]'
             '/descendant::text()[not(ancestor::blockquote)]'
         )
+        protected_email = tag.xpath(
+            'div//div[@class="post_body scaleimages"]/'
+            'descendant::*[@class="__cf_email__"]/@data-cfemail'
+        )
         post_text = "".join([
             post_text.strip() for post_text in post_text_block
         ])
+        if protected_email:
+            decoded_values = [utils.get_decoded_email(e) for e in protected_email]
+            for decoded_value in decoded_values:
+                post_text = re.sub(
+                    r'\[email.*?protected\]',
+                    decoded_value,
+                    post_text,
+                    count=1
+                )
         return post_text.strip()
 
     def get_avatar(self, tag):
