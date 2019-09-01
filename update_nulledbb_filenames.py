@@ -1,7 +1,7 @@
 import re
 import os
 import glob
-folder_path = '/Users/PathakUmesh/Programming_stuffs/DataViper/files_to_rename'
+folder_path = '/home/processing/forums/nulledbb'
 
 def update_names():
     for file in glob.glob(folder_path+'/*'):
