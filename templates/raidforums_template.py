@@ -216,9 +216,22 @@ class RaidForumsParser:
             '/descendant::text()['
             'not(ancestor::blockquote)]'
         )
+        protected_email = tag.xpath(
+            'div//div[@class="post_body scaleimages"]/'
+            'descendant::*[@class="__cf_email__"]/@data-cfemail'
+        )
         post_text = "\n".join(
             [text.strip() for text in post_text]
         ) if post_text else ""
+        if protected_email:
+            decoded_values = [utils.get_decoded_email(e) for e in protected_email]
+            for decoded_value in decoded_values:
+                post_text = re.sub(
+                    r'\[email.*?protected\]',
+                    decoded_value,
+                    post_text,
+                    count=1
+                )
         return post_text
 
     def get_avatar(self, tag):
