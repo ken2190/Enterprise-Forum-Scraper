@@ -11,7 +11,8 @@ from scrapy.crawler import CrawlerProcess
 USER = "darkcylon1@protonmail.com"
 PASS = "Night#Kgg2"
 COOKIE = 'G_ENABLED_IDPS=google; _ym_uid=1567302698765321515; _ym_d=1567302698; _ym_isad=1; _ym_visorc_51992225=w; xf_id=712c5ffd68383395d1997185552c8e02; xf_user=382549%2C854191992b95fa6bb89faab3ebf427810b08fe5f; xf_logged_in=1; xf_session=0dcb35f09fe9ff8ea45e63136704202e'
-USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+
 
 class LolzSpider(scrapy.Spider):
     name = 'lolz_spider'
@@ -34,7 +35,7 @@ class LolzSpider(scrapy.Spider):
             "sec-fetch-user": "?1",
             "cookie": COOKIE,
             'if-modified-since': 'Sun, 01 Sep 2019 01:58:13 GMT',
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36"
+            "user-agent": USER_AGENT
         }
 
     def start_requests(self):
@@ -52,23 +53,24 @@ class LolzSpider(scrapy.Spider):
             url=self.base_url,
             headers=self.headers,
         )
-        
 
     def parse(self, response):
-        
         forums = response.xpath(
-            '//ol[@class="nodeList"]//h3[@class="nodeTitle"]/a[contains(@href, "forums/")]')
+            '//ol[@class="nodeList"]//h3[@class="nodeTitle"]'
+            '/a[contains(@href, "forums/")]')
         subforums = response.xpath(
-            '//ol[@class="nodeList"]//h4[@class="nodeTitle"]/a[contains(@href, "forums/")]')
+            '//ol[@class="nodeList"]//h4[@class="nodeTitle"]'
+            '/a[contains(@href, "forums/")]')
         forums.extend(subforums)
         for forum in forums:
             url = forum.xpath('@href').extract_first()
+            if 'forums/586/' not in url:
+                continue
             if self.base_url not in url:
                 url = self.base_url + url
 
             yield Request(
                 url=url,
-              
                 headers=self.headers,
                 callback=self.parse_forum
             )
@@ -95,11 +97,10 @@ class LolzSpider(scrapy.Spider):
                 meta={'topic_id': topic_id[0]}
             )
 
-        next_page = response.xpath(
+        next_page_url = response.xpath(
             '//nav/a[contains(@class,"currentPage")]'
-            '/following-sibling::a[1]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
+            '/following-sibling::a[1]/@href').extract_first()
+        if next_page_url:
             if self.base_url not in next_page_url:
                 next_page_url = self.base_url + next_page_url
             yield Request(
@@ -118,10 +119,14 @@ class LolzSpider(scrapy.Spider):
             f.write(response.text.encode('utf-8'))
             print(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath('//div[@class="author_avatar"]/a/img')
+        avatars = response.xpath(
+            '//div[@class="avatarHolder"]/a/span[@style and @class]')
         for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            user_id = avatar.xpath('@alt').extract_first()
+            avatar_url = avatar.xpath('@style').re(r'url\(\'(.*?)\'\)')
+            if not avatar_url:
+                continue
+            if self.base_url not in avatar_url[0]:
+                avatar_url = self.base_url + avatar_url[0]
             name_match = self.avatar_name_pattern.findall(avatar_url)
             if not name_match:
                 continue
@@ -135,15 +140,13 @@ class LolzSpider(scrapy.Spider):
                 callback=self.parse_avatar,
                 meta={
                     'file_name': file_name,
-                    'user_id': user_id
                 }
             )
 
-        next_page = response.xpath(
+        next_page_url = response.xpath(
             '//nav/a[contains(@class,"currentPage")]'
-            '/following-sibling::a[1]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
+            '/following-sibling::a[1]/@href').extract_first()
+        if next_page_url:
             if self.base_url not in next_page_url:
                 next_page_url = self.base_url + next_page_url
             yield Request(
@@ -155,9 +158,10 @@ class LolzSpider(scrapy.Spider):
 
     def parse_avatar(self, response):
         file_name = response.meta['file_name']
+        file_name_only = file_name.rsplit('/', 1)[-1]
         with open(file_name, 'wb') as f:
             f.write(response.body)
-            print(f"Avatar for user {response.meta['user_id']} done..!")
+            print(f"Avatar {file_name_only} done..!")
 
 
 class LolzScrapper():
@@ -192,7 +196,6 @@ class LolzScrapper():
         if self.proxy:
             settings['DOWNLOADER_MIDDLEWARES'].update({
                 'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
                 'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
             })
