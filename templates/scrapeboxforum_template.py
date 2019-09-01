@@ -250,7 +250,6 @@ class ScrapeBoxForumParser:
         if protected_email:
             decoded_values = [utils.get_decoded_email(e) for e in protected_email]
             for decoded_value in decoded_values:
-                continue
                 post_text = re.sub(
                     r'\[email.*?protected\]',
                     decoded_value,
