@@ -1,227 +1,193 @@
-import re
-import os
 import time
-import traceback
 import requests
-from requests import Session
-from scraper.base_scrapper import BaseScrapper
+import os
+import re
+import scrapy
+from math import ceil
+import configparser
+from scrapy.http import Request, FormRequest
+from scrapy.crawler import CrawlerProcess
+
+COOKIE = '__cfduid=db30372c5cfd52f51055e2f827e39b6941559539109; _ga=GA1.2.73025486.1559539374; mybb[lastvisit]=1559540977; coppadob=11-4-1986; mybb[lastactive]=1564478511; mybbuser=1271838_fnY3vEdoam10xfLfL3lNJhuFbw6D5G0eCRxhE4wLtZA2FQdwRb; loginattempts=1; identifier=v3rm5d400e37ba2a1; cf_clearance=aeb0e67513fac0aa094f969103cd7687dc6215a1-1567491640-14400-250; sid=4306ec1d599dae4c253ad2ac674ad7b1; _gid=GA1.2.1297305583.1567491642'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+REQUEST_DELAY = 0.75
+NO_OF_THREADS = 5
 
 
-CF = "edf0f8b003d8cb5c7af7d575e7b43d965d2f3689-1551660061-14400-250"
-USER = "1051283_F3TDNNCODArcckKdXBZNabZ3ZC6kfa75sXCAv8a2EiPK1BwI6V"
+class V3RMillionSpider(scrapy.Spider):
+    name = 'v3rmillion_spider'
 
-
-class V3RMillionScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(V3RMillionScrapper, self).__init__(kwargs)
+    def __init__(self, output_path, avatar_path):
         self.base_url = 'https://v3rmillion.net/'
-        self.start_url = "https://v3rmillion.net/index.php"
         self.topic_pattern = re.compile(r'tid=(\d+)')
-        self.comment_pattern = re.compile(r'(\<\!--.*?--\!\>)')
-        self.cloudfare_error = None
+        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+        self.pagination_pattern = re.compile(r'.*page=(\d+)')
+        self.start_url = 'https://v3rmillion.net/'
+        self.output_path = output_path
+        self.avatar_path = avatar_path
         self.headers = {
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1',
             'referer': 'https://v3rmillion.net/',
-            'origin': 'https://v3rmillion.net',
-            'cookie': f'cf_clearance={CF}; mybbuser={USER}; ',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) '
-                          'AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/72.0.3626.119 Safari/537.36'
+            'user-agent': USER_AGENT,
+            'cookie': COOKIE,
         }
 
-    def get_page_content(self, url):
-        time.sleep(self.wait_time)
-        try:
-            response = requests.get(url, headers=self.headers)
-            content = response.content
-            html_response = self.get_html_response(content)
-            if html_response.xpath('//div[@class="errorwrap"]'):
-                return
-            return content
-        except:
-            traceback.print_exc()
-            return
-
-    def save_avatar(self, name, url):
-        avatar_file = f'{self.avatar_path}/{name}'
-        if os.path.exists(avatar_file):
-            return
-        content = self.get_page_content(url)
-        if not content:
-            return
-        with open(avatar_file, 'wb') as f:
-            f.write(content)
-
-    def process_first_page(self, topic_url):
-        topic = self.topic_pattern.findall(topic_url)
-        if not topic:
-            return
-        topic = topic[0]
-        initial_file = f'{self.output_path}/{topic}-1.html'
-        if os.path.exists(initial_file):
-            return
-        content = self.get_page_content(topic_url)
-        if not content:
-            print(f'No data for url: {topic_url}')
-            return
-        with open(initial_file, 'wb') as f:
-            f.write(content)
-        print(f'{topic}-1 done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        if html_response.xpath(
-            '//font[contains(text(), "Verifying your browser, please wait")]'
-        ):
-            print('DDOS identified. Retyring after a min')
-            time.sleep(60)
-            return self.process_first_page(topic_url)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return html_response
-
-    def process_topic(self, topic_url):
-        html_response = self.process_first_page(topic_url)
-        if html_response is None:
-            return
-        while True:
-            response = self.write_paginated_data(html_response)
-            if response is None:
-                return
-            topic_url, html_response = response
-
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//div[@class="pagination"]/a[@class="pagination_next"]/@href'
+    def start_requests(self):
+        yield Request(
+            url=self.start_url,
+            headers=self.headers,
+            callback=self.parse
         )
-        if not next_page_block:
-            return
-        next_page_url = next_page_block[0]
-        next_page_url = self.base_url + next_page_url\
-            if self.base_url not in next_page_url else next_page_url
-        pattern = re.compile(r'tid=(\d+).*page=(\d+)')
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
-        content = self.get_page_content(next_page_url)
-        if not content:
-            return
-        paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
 
-        print(f'{topic}-{pagination_value} done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return next_page_url, html_response
-
-    def process_forum(self, url):
-        while True:
-            print(f"Forum URL: {url}")
-            forum_content = self.get_page_content(url)
-            if not forum_content:
-                print(f'No data for url: {forum_content}')
-                return
-            forum_content = self.comment_pattern.sub('', str(forum_content))
-            html_response = self.get_html_response(forum_content)
-            topic_urls = html_response.xpath(
-                '//span[@id and contains(@class, " subject_")]/a/@href'
+    def parse(self, response):
+        forums = response.xpath(
+            '//td[@class="trow1" or @class="trow2"]/strong'
+            '/a[contains(@href, "forumdisplay.php?fid=")]')
+        subforums = response.xpath(
+            '//span[@class="sub_control"]'
+            '/a[contains(@href, "forumdisplay.php?fid=")]')
+        forums.extend(subforums)
+        for forum in forums:
+            url = forum.xpath('@href').extract_first()
+            if self.base_url not in url:
+                url = self.base_url + url
+            if 'fid=21' not in url:
+                continue
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_forum
             )
-            for topic_url in topic_urls:
-                topic_url = self.base_url + topic_url\
-                    if self.base_url not in topic_url else topic_url
-                self.process_topic(topic_url)
-            forum_pagination_url = html_response.xpath(
-                '//a[@class="pagination_next"]/@href'
+
+    def parse_forum(self, response):
+        print('next_page_url: {}'.format(response.url))
+        threads = response.xpath(
+            '//span[contains(@id, "tid_")]'
+            '/a[contains(@href, "showthread.php?tid=")]')
+        for thread in threads:
+            thread_url = thread.xpath('@href').extract_first()
+            if self.base_url not in thread_url:
+                thread_url = self.base_url + thread_url
+            topic_id = self.topic_pattern.findall(thread_url)
+            if not topic_id:
+                continue
+            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=thread_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={'topic_id': topic_id[0]}
             )
-            if not forum_pagination_url:
-                return
-            url = forum_pagination_url[0]
-            url = self.base_url + url\
-                if self.base_url not in url else url
 
-    def get_forum_urls(self, html_response):
-        urls = set()
-        extracted_urls = html_response.xpath(
-            '//td[(@class="trow1" or @class="trow2") and not(@align)]'
-            '/strong/a/@href'
-        )
-        for _url in extracted_urls:
-            if self.base_url not in _url:
-                urls.add(self.base_url + _url)
-            else:
-                urls.add(_url)
-        urls = sorted(
-            urls,
-            key=lambda x: int(x.split('fid=')[-1]))
-        return urls
+        next_page = response.xpath('//a[@class="pagination_next"]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_forum
+            )
 
-    def clear_cookies(self,):
-        self.session.cookies.clear()
+    def parse_thread(self, response):
+        topic_id = response.meta['topic_id']
+        pagination = self.pagination_pattern.findall(response.url)
+        paginated_value = pagination[0] if pagination else 1
+        file_name = '{}/{}-{}.html'.format(
+            self.output_path, topic_id, paginated_value)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            print(f'{topic_id}-{paginated_value} done..!')
 
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//div[@class="author_avatar"]/a/img/@src'
-        )
-        for url in urls:
-            url = self.base_url + url\
-                if not url.startswith('http') else url
-            if "image.php" in url:
-                avatar_name_pattern = re.compile(r'uid=(\d+)')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = f'{name_match[0]}.jpg'
-            else:
-                avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = name_match[0]
+        avatars = response.xpath('//div[@class="author_avatar"]/a/img')
+        for avatar in avatars:
+            avatar_url = avatar.xpath('@src').extract_first()
+            if not avatar_url.startswith('http'):
+                avatar_url = self.base_url + avatar_url
+            name_match = self.avatar_name_pattern.findall(avatar_url)
+            if not name_match:
+                continue
+            name = name_match[0]
+            file_name = '{}/{}'.format(self.avatar_path, name)
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta={
+                    'file_name': file_name,
+                }
+            )
 
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
+        next_page = response.xpath(
+            '//div[@class="pagination"]'
+            '/a[@class="pagination_next"]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={'topic_id': topic_id}
+            )
 
-    def do_rescan(self,):
-        print('**************  Rescanning  **************')
-        print('Broken Topics found')
-        broken_topics = self.get_broken_file_topics()
-        print(broken_topics)
-        if not broken_topics:
-            return
-        for topic in broken_topics:
-            file_path = "{}/{}-1.html".format(self.output_path, topic)
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            topic_url = f'https://v3rmillion.net/showthread.php?tid={topic}'
-            self.process_topic(topic_url)
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        file_name_only = file_name.rsplit('/', 1)[-1]
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            print(f"Avatar {file_name_only} done..!")
+
+
+class V3RMillionScrapper():
+    def __init__(self, kwargs):
+        self.output_path = kwargs.get('output')
+        self.proxy = kwargs.get('proxy') or None
+        self.ensure_avatar_path()
+
+    def ensure_avatar_path(self, ):
+        self.avatar_path = f'{self.output_path}/avatars'
+        if not os.path.exists(self.avatar_path):
+            os.makedirs(self.avatar_path)
 
     def do_scrape(self):
-        print('************  V3RMillionScrapper Started  ************\n')
-        main_content = self.get_page_content(self.start_url)
-        if not main_content:
-            print(f'No data for url: {self.start_url}')
-            return
-        html_response = self.get_html_response(main_content)
-        forum_urls = self.get_forum_urls(html_response)
-        # print(forum_urls)
-        # return
-        # forum_urls = ['https://v3rmillion.net/forumdisplay.php?fid=4']
-        for forum_url in forum_urls:
-            self.process_forum(forum_url)
+        settings = {
+            "DOWNLOADER_MIDDLEWARES": {
+                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
+                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
+            },
+            'DOWNLOAD_DELAY': REQUEST_DELAY,
+            'CONCURRENT_REQUESTS': NO_OF_THREADS,
+            'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            'RETRY_HTTP_CODES': [403, 429, 500, 503],
+            'RETRY_TIMES': 10,
+            'LOG_ENABLED': True,
 
+        }
+        if self.proxy:
+            settings['DOWNLOADER_MIDDLEWARES'].update({
+                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+            })
+            settings.update({
+                'ROTATING_PROXY_LIST': self.proxy,
 
-def main():
-    template = V3RMillionScrapper()
-    template.do_scrape()
+            })
+        process = CrawlerProcess(settings)
+        process.crawl(V3RMillionSpider, self.output_path, self.avatar_path)
+        process.start()
 
 
 if __name__ == '__main__':
-    main()
+    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
