@@ -53,8 +53,6 @@ class V3RMillionSpider(scrapy.Spider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = self.base_url + url
-            if 'fid=21' not in url:
-                continue
             yield Request(
                 url=url,
                 headers=self.headers,
