@@ -20,7 +20,7 @@ from scraper.carder import CarderScrapper
 from scraper.ccc_mn import CCCMNScrapper
 from scraper.cracked_to import CrackedToScrapper
 from scraper.sky_fraud import SkyFraudScrapper
-from scraper.nulled import NulledScrapper
+from scraper.nulled_to import NulledToScrapper
 from scraper.dark_skies import DarkSkiesScrapper
 from scraper.procrd import ProcrdScrapper
 from scraper.hydra import HydraScrapper
@@ -82,7 +82,7 @@ SCRAPER_MAP = {
     'ccc_mn': CCCMNScrapper,
     'cracked_to': CrackedToScrapper,
     'sky_fraud': SkyFraudScrapper,
-    'nulled': NulledScrapper,
+    'nulled_to': NulledToScrapper,
     'dark_skies': DarkSkiesScrapper,
     'procrd': ProcrdScrapper,
     'hydra': HydraScrapper,

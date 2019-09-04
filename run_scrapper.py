@@ -42,6 +42,8 @@ class Scraper:
             action='store_true')
         parser.add_argument(
             '-s', '--start_date', help='Scrape from the given dates', required=False)
+        parser.add_argument(
+            '-b', '--banlist', help='Scrape the ban list', action='store_true')
         args = parser.parse_args()
         return args._get_kwargs()
         # return args.template, args.output, args.proxy, args.user, args.password
