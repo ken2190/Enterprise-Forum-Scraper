@@ -193,14 +193,10 @@ class LolzTeamParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            'div//span[@class="nickStatus"]/a/span/text()'
-        )
+            'div//div[@class="userText"]/span/a/span/text()')
         if not author:
             author = tag.xpath(
-                'div//div[@class="author_information"]'
-                '//span[@class="largetext"]/a/span/strong/text()'
-            )
-
+                'div//div[@class="userText"]/span/a/text()')
         author = author[0].strip() if author else None
         return author
 

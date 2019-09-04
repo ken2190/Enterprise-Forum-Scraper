@@ -10,8 +10,8 @@ from scrapy.crawler import CrawlerProcess
 
 USER = "darkcylon1@protonmail.com"
 PASS = "Night#Kgg2"
-COOKIE = 'G_ENABLED_IDPS=google; _ym_uid=1567302698765321515; _ym_d=1567302698; _ym_isad=1; _ym_visorc_51992225=w; xf_id=712c5ffd68383395d1997185552c8e02; xf_user=382549%2C854191992b95fa6bb89faab3ebf427810b08fe5f; xf_logged_in=1; xf_session=0dcb35f09fe9ff8ea45e63136704202e'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+COOKIE = '_ym_uid=1567310450846594086; _ym_d=1567310450; G_ENABLED_IDPS=google; xf_user=382549%2C854191992b95fa6bb89faab3ebf427810b08fe5f; xf_logged_in=1; xf_id=44e73a4e69648fe3add69b0c046c0e6a; xf_session=ec00815c2dc963355cd795f8c7dbcf94; _ym_isad=1; _ym_visorc_51992225=w'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
 
 
 class LolzSpider(scrapy.Spider):
@@ -64,8 +64,6 @@ class LolzSpider(scrapy.Spider):
         forums.extend(subforums)
         for forum in forums:
             url = forum.xpath('@href').extract_first()
-            if 'forums/586/' not in url:
-                continue
             if self.base_url not in url:
                 url = self.base_url + url
 
