@@ -58,6 +58,7 @@ from scraper.scrapeboxforum import ScrapeBoxForumScrapper
 from scraper.blackhatindia import BlackHatIndiaScrapper
 from scraper.crackx import CrackXScrapper
 from scraper.Oday import OdayScrapper
+from scraper.hashkiller import HashKillerScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -121,4 +122,5 @@ SCRAPER_MAP = {
     'blackhatindia': BlackHatIndiaScrapper,
     'crackx': CrackXScrapper,
     '0day': OdayScrapper,
+    'hashkiller': HashKillerScrapper,
 }
