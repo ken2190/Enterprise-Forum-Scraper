@@ -35,7 +35,7 @@ from templates.lolzteam_template import LolzTeamParser
 from templates.galaxy2_template import Galaxy2Parser
 from templates.genesis_template import GenesisParser
 from templates.hell_template import HellParser
-from templates.nulled_template import NulledParser
+from templates.nulled_to_template import NulledToParser
 from templates.badkarma_template import BadKarmaParser
 from templates.outlawmarket_template import OutLawMarketParser
 from templates.alphabay_template import AlphaBayParser
@@ -119,7 +119,7 @@ PARSER_MAP = {
     'galaxy2': Galaxy2Parser,
     'genesis': GenesisParser,
     'hell': HellParser,
-    'nulled': NulledParser,
+    'nulled_to': NulledToParser,
     'badkarma': BadKarmaParser,
     'outlawmarket': OutLawMarketParser,
     'alphabay': AlphaBayParser,
