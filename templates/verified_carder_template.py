@@ -25,7 +25,7 @@ class VerifiedCarderParser:
         self.pagination_pattern = re.compile(
             r'\d+-(\d+)\.html$'
         )
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
+        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -101,7 +101,7 @@ class VerifiedCarderParser:
                     self.error_folder,
                     ex
                 )
-            except:
+            except Exception:
                 traceback.print_exc()
                 continue
 
@@ -136,7 +136,6 @@ class VerifiedCarderParser:
                     'img': avatar
                 })
             comments.append({
-                
                 '_source': source,
             })
         return comments
@@ -174,29 +173,30 @@ class VerifiedCarderParser:
                     'img': avatar
                 })
             return {
-                
                 '_source': source
             }
-        except:
+        except Exception:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
 
     def get_date(self, tag):
-        date_block = tag.xpath(
-            'div//header[@class="message-attribution"]/a/time/@title'
+        date = tag.xpath(
+            'div//div[@class="message-attribution-main"]/a/time/@data-time'
         )
-        date = date_block[0].strip() if date_block else ""
-        try:
-            pattern = "%b %d, %Y at %I:%M %p"
-            date = datetime.datetime.strptime(date, pattern).timestamp()
-            return str(date)
-        except:
-            return ""
+        return date[0] if date else ''
 
     def get_author(self, tag):
         author = tag.xpath(
             'div//div[@class="message-userDetails"]/h4/a/text()'
         )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/span/text()'
+            )
         author = author[0].strip() if author else None
         return author
 
@@ -221,7 +221,7 @@ class VerifiedCarderParser:
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            'div//div[@class="message-avatar-wrapper"]/a/img/@src'
+            'div//div[@class="message-avatar-wrapper"]/span/img/@src'
         )
         if not avatar_block:
             return ""
@@ -233,9 +233,10 @@ class VerifiedCarderParser:
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            'div//header[@class="message-attribution"]/div/a/text()'
+            'div//ul[@class="message-attribution-opposite '
+            'message-attribution-opposite--list"]/li/a/text()'
         )
         if comment_block:
-            comment_id = comment_block[0].split('#')[-1]
+            comment_id = comment_block[-1].strip().split('#')[-1]
 
-        return comment_id.replace(',', '')
+        return comment_id.replace(',', '').replace('.', '')

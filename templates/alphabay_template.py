@@ -17,10 +17,7 @@ class AlphaBayParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = parser_name
         self.output_folder = output_folder
-        self.thread_name_pattern_1 = re.compile(
-            r'listing\.php.*id=(\d+)$'
-        )
-        self.thread_name_pattern_2 = re.compile(
+        self.thread_name_pattern = re.compile(
             r'(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
@@ -35,25 +32,15 @@ class AlphaBayParser:
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern_1.search(x) is not None,
+                lambda x: self.thread_name_pattern.search(x) is not None,
                 files
             )
         )
-        sorted_files_1 = sorted(
+        sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern_1.search(x).group(1)))
+            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
 
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern_2.search(x) is not None,
-                files
-            )
-        )
-        sorted_files_2 = sorted(
-            filtered_files,
-            key=lambda x: int(self.thread_name_pattern_2.search(x).group(1)))
-
-        return sorted_files_1 + sorted_files_2
+        return sorted_files
 
     def main(self):
         comments = []
@@ -63,9 +50,7 @@ class AlphaBayParser:
             try:
                 html_response = utils.get_html_response(template)
                 file_name_only = template.split('/')[-1]
-                match = self.thread_name_pattern_1.findall(file_name_only)
-                if not match:
-                    match = self.thread_name_pattern_2.findall(file_name_only)
+                match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
                 pid = self.thread_id = match[0]
@@ -76,7 +61,7 @@ class AlphaBayParser:
                     self.error_folder,
                     ex
                 )
-            except:
+            except Exception:
                 traceback.print_exc()
                 continue
 
@@ -99,17 +84,17 @@ class AlphaBayParser:
 
     def extract_page_info(self, html_response):
         data = dict()
-        title = html_response.xpath(
+        subject = html_response.xpath(
             '//div[@class="content2"]/div/h1[@class="std"]/text()')
-        if title:
+        if subject:
             data.update({
-                'title': title[0].strip()
+                'subject': subject[0].strip()
             })
-        seller = html_response.xpath(
+        author = html_response.xpath(
             '//p[contains(text(), "Sold by")]/a/text()')
-        if seller:
+        if author:
             data.update({
-                'seller': seller[0].strip()
+                'author': author[0].strip()
             })
 
         date = html_response.xpath(
@@ -120,11 +105,11 @@ class AlphaBayParser:
             })
         description_block = html_response.xpath(
             '//h2[text()="Product Description"]/following-sibling::p[1]')
-        description = "\n".join([
-            description.xpath('string()') for description in description_block
+        message = "\n".join([
+            m.xpath('string()') for m in description_block
         ])
-        if description:
+        if message:
             data.update({
-                'description': description.strip()
+                'message': message.strip()
             })
         return data

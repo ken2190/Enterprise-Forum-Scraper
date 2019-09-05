@@ -79,6 +79,7 @@ from templates.hoxforum_template import HoxForumParser
 from templates.scrapeboxforum_template import ScrapeBoxForumParser
 from templates.blackhatindia_template import BlackHatIndiaParser
 from templates.crackx_template import CrackXParser
+from templates.nulled_to_banlist import NulledToBanListParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -163,4 +164,5 @@ PARSER_MAP = {
     'scrapeboxforum': ScrapeBoxForumParser,
     'blackhatindia': BlackHatIndiaParser,
     'crackx': CrackXParser,
+    'nulled_to_banlist': NulledToBanListParser,
 }
