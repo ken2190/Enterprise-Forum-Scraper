@@ -80,6 +80,8 @@ from templates.scrapeboxforum_template import ScrapeBoxForumParser
 from templates.blackhatindia_template import BlackHatIndiaParser
 from templates.crackx_template import CrackXParser
 from templates.nulled_to_banlist import NulledToBanListParser
+from templates.hashkiller_template import HashKillerParser
+from templates.fuckav_template import FuckavParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -165,4 +167,6 @@ PARSER_MAP = {
     'blackhatindia': BlackHatIndiaParser,
     'crackx': CrackXParser,
     'nulled_to_banlist': NulledToBanListParser,
+    'hashkiller': HashKillerParser,
+    'fuckav': FuckavParser,
 }
