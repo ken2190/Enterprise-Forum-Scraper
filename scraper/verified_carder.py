@@ -13,8 +13,9 @@ from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
 
 
-COOKIE = 'rcksid=bt9wOR0KiG71HBM0gIb6uz6ttBhnftEMQr9FQ5HOJhSdj75FZF68gGtX1fjISXFe; BLAZINGFAST-WEB-PROTECT=28fe4079acfdcb0345c431be53a2e7c5; xf_csrf=ohspfV15nlYggYY6; _ga=GA1.2.619086770.1567671788; _gid=GA1.2.1330693096.1567671788; xf_sam_ad_views=%7B%2225%22%3A1567671724%2C%2216%22%3A1567671752%7D'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+COOKIE = 'rcksid=2muzIW6kQNcibfALPci0Yz2qjEb2ddoyYLUOgdyLpbYYwmGQujOQ2lQhro6o90dN; BLAZINGFAST-WEB-PROTECT=0d7286e827b3768d575051a93311208c; xf_csrf=3hAF9XY3c0g3-LDy; xf_sam_ad_views=%7B%2225%22%3A1567692149%2C%2216%22%3A1567692175%7D; _ga=GA1.2.1572881391.1567692241; _gid=GA1.2.2095938091.1567692241; _gat_gtag_UA_130514334_1=1'
+
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0'
 
 
 class VerifiedCarderSpider(scrapy.Spider):

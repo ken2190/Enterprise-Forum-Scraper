@@ -13,8 +13,9 @@ from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
 
 
-COOKIE = '__cfduid=d0eb09d1f4371aac293f1edb40345df281550158324; PHPSESSID=6vf9gf9ibkeftbnm3aapfqn315; _ga=GA1.2.1983188853.1567315364; nulledmodtids=%2C; _gid=GA1.2.1229133662.1567677721; cf_clearance=fef3e6e9016044fdf5a71c62ad5e99a8bda0117e-1567687299-86400-150; nulledsession_id=7e464b3f92f20112fa4d717c92f95ff5; _gat=1'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+COOKIE = '__cfduid=dc9024d1e263a42aca3be0ec879e14ee81567498330; _ga=GA1.2.882200545.1567498338; nulledmember_id=2864575; nulledpass_hash=0ce8307c5a89f209dcd1635c03ec70e8; ipsconnect_4ac7fd4073b08692edf97bb68b9b88dd=1; nulledmember_id=2864575; nulledpass_hash=0ce8307c5a89f209dcd1635c03ec70e8; cf_clearance=ebe5d0e66db59c0d8daa3972642a36c4136703d4-1567793880-86400-150; PHPSESSID=31sss46apedkmhm8rqqrcplsd2; nulledsession_id=1bec061af690b59d0bc22209e316a348; _gid=GA1.2.414405257.1567793883; _gat=1'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0'
+
 FORUMS = [
     'https://www.nulled.to/forum/2-announcements/',
     'https://www.nulled.to/forum/209-releases/',

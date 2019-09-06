@@ -68,7 +68,6 @@ class NulledToBanListParser:
             decoded_email = utils.get_decoded_email(email)
             data.append({
                 'username': username.strip(),
-                'reason': reason.strip(),
                 'ip': ip.replace('-', '').strip(),
                 'email': decoded_email
             })
