@@ -13,7 +13,7 @@ class PasteBinScrapper:
         self.start_url = 'https://psbdmp.ws/api/dump/getbydate'
         self.dump_url = 'https://psbdmp.ws/archive/{}'
         self.output_path = kwargs.get('output')
-        self.date_format = '%d.%m.%Y'
+        self.date_format = '%Y-%m-%d'
         self.start_date = datetime.datetime.strptime(kwargs.get('start_date'), self.date_format)
 
     def save_file(self, dump_id, output_path):

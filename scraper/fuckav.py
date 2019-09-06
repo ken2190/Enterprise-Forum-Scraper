@@ -8,8 +8,8 @@ import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
-COOKIE = 'sessionhash=eb81fafe525209dc8578df85a3a5d90d; avsessionhash=3154e75c799162ede6b750846e87a2c5; avlastvisit=1567762217; avlastactivity=0; avforum_view=3458b5f693bbbbcf81a5c2804de817e4e2cee349a-1-%7Bi-6_i-1567762239_%7D'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+COOKIE = 'sessionhash=b62788d1156eb79f461f029d2308abdf; avsessionhash=3ff4c75d34ac69faaa1bc58d9c9305fa; avlastvisit=1567796137; avlastactivity=0'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0'
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 20
 
