@@ -1,12 +1,11 @@
 # -- coding: utf-8 --
 import os
 import re
-from collections import OrderedDict
 import traceback
-import locale
 import json
-import utils
 import datetime
+import utils
+import dateutil.parser as dparser
 from lxml.html import fromstring
 
 
@@ -14,9 +13,8 @@ class BrokenPage(Exception):
     pass
 
 
-class DarkWebsParser:
+class FuckavParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = parser_name
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
@@ -25,7 +23,7 @@ class DarkWebsParser:
         self.pagination_pattern = re.compile(
             r'\d+-(\d+)\.html$'
         )
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
+        self.avatar_name_pattern = re.compile(r'u=(\d+)')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.distinct_files = set()
@@ -37,15 +35,29 @@ class DarkWebsParser:
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
+                lambda x: self.thread_name_pattern.search(
+                    x.split('/')[-1]) is not None,
                 files
             )
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+            key=lambda x: int(self.thread_name_pattern.search(
+                x.split('/')[-1]).group(1)))
 
         return sorted_files
+
+    def get_html_response(self, template):
+        """
+        returns the html response from the `template` contents
+        """
+        with open(template, 'r') as f:
+            content = f.read()
+            try:
+                html_response = fromstring(content)
+            except ParserError as ex:
+                return
+            return html_response
 
     def main(self):
         comments = []
@@ -53,7 +65,8 @@ class DarkWebsParser:
         for index, template in enumerate(self.files):
             print(template)
             try:
-                html_response = utils.get_html_response(template)
+                html_response = self.get_html_response(
+                    template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
@@ -76,7 +89,7 @@ class DarkWebsParser:
                         html_response, template)
                     if not data or not pagination == 1:
                         comments.extend(
-                            self.extract_comments(html_response))
+                            self.extract_comments(html_response, pagination))
                         continue
                     self.distinct_files.add(self.thread_id)
 
@@ -89,7 +102,7 @@ class DarkWebsParser:
                     utils.write_json(file_pointer, data)
                 # extract comments
                 comments.extend(
-                    self.extract_comments(html_response))
+                    self.extract_comments(html_response, pagination))
 
                 if final:
                     utils.write_comments(file_pointer, comments, output_file)
@@ -105,21 +118,23 @@ class DarkWebsParser:
                 traceback.print_exc()
                 continue
 
-    def extract_comments(self, html_response):
+    def extract_comments(self, html_response, pagination):
         comments = list()
         comment_blocks = html_response.xpath(
-          '//div[@class="message-inner"]'
+          '//table[contains(@id, "post")]'
         )
-        # print(comment_blocks)
-        for index, comment_block in enumerate(comment_blocks, 1):
+        comment_blocks = comment_blocks[1:]\
+            if pagination == 1 else comment_blocks
+        for comment_block in comment_blocks:
             user = self.get_author(comment_block)
+            comment_id = self.get_comment_id(comment_block)
+            if not comment_id:
+                continue
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             pid = self.thread_id
             avatar = self.get_avatar(comment_block)
-            comment_id = self.get_comment_id(comment_block)
-            if not comment_id or comment_id == "1":
-                continue
+
             source = {
                 'forum': self.parser_name,
                 'pid': pid,
@@ -145,7 +160,7 @@ class DarkWebsParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[@class="message-inner"]'
+                '//table[contains(@id, "post")]'
             )
             if not header:
                 return
@@ -181,11 +196,13 @@ class DarkWebsParser:
 
     def get_date(self, tag):
         date_block = tag.xpath(
-            'div//div[@class="message-attribution-main"]/a/time/@title'
-        )
-        date = date_block[0].strip() if date_block else ""
+            'tr//td[@class="alt1" and @align="right"]/div/text()')
+        date = ""
+        if date_block:
+            date = [d.strip() for d in date_block if d.strip()][0]
+
         try:
-            pattern = "%d.%m.%Y в %H:%M"
+            pattern = '%d-%m-%Y, %H:%M'
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
@@ -193,11 +210,36 @@ class DarkWebsParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            'div//div[@class="message-userDetails"]/h4/a/span/text()'
+            'tr//a[@class="bigusername"]/text()'
         )
         if not author:
             author = tag.xpath(
-                'div//div[@class="message-userDetails"]/h4/a/text()'
+                'tr//a[@class="bigusername"]/strike/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/i/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/s/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/span/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/span/i/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/font/text()'
             )
 
         author = author[0].strip() if author else None
@@ -205,17 +247,15 @@ class DarkWebsParser:
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//h1[@class="p-title-value"]/text()'
+            '//td[@class="navbar"]/a/following-sibling::strong[1]/text()'
         )
         title = title[0].strip() if title else None
         return title
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
-            'div//div[@class="bbWrapper"]'
-            '/descendant::text()[not(ancestor::div'
-            '[contains(@class, "bbCodeBlock bbCodeBlock--expandable '
-            'bbCodeBlock--quote")])]'
+            'tr//div[contains(@id, "post_message_")]/descendant::text()['
+            'not(ancestor::div[@style="margin:20px; margin-top:5px; "])]'
         )
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
@@ -224,22 +264,22 @@ class DarkWebsParser:
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            'div//div[@class="message-avatar-wrapper"]/a/img/@src'
+            'tr//a[contains(@href, "member.php")]/img/@src'
         )
         if not avatar_block:
             return ""
         name_match = self.avatar_name_pattern.findall(avatar_block[0])
         if not name_match:
             return ""
-        return name_match[0]
+        return name_match[0] + '.jpg'
 
     def get_comment_id(self, tag):
-        comment_id = ""
         comment_block = tag.xpath(
-            'div//header[@class="message-attribution message-'
-            'attribution--split"]//a/text()'
-        )
-        if comment_block:
-            comment_id = comment_block[-1].split('#')[-1]
-
-        return comment_id.replace(',', '').strip()
+            'tr//td[@class="alt1" and @align="right"]/a/strong/text()')
+        if not comment_block:
+            return ''
+        pattern = re.compile(r'\d+')
+        match = pattern.findall(comment_block[0])
+        if not match:
+            return
+        return match[0]
