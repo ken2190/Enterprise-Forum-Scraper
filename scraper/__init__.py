@@ -61,6 +61,7 @@ from scraper.Oday import OdayScrapper
 from scraper.hashkiller import HashKillerScrapper
 from scraper.darkwebs import DarkWebsScrapper
 from scraper.fuckav import FuckavScrapper
+from scraper.canadahq import CanadaHQScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -127,4 +128,5 @@ SCRAPER_MAP = {
     'hashkiller': HashKillerScrapper,
     'darkwebs': DarkWebsScrapper,
     'fuckav': FuckavScrapper,
+    'canadahq': CanadaHQScrapper,
 }
