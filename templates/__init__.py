@@ -83,6 +83,7 @@ from templates.nulled_to_banlist import NulledToBanListParser
 from templates.hashkiller_template import HashKillerParser
 from templates.fuckav_template import FuckavParser
 from templates.psbdmp_template import PsbdmpParser
+from templates.youhack_template import YouHackParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -171,4 +172,5 @@ PARSER_MAP = {
     'hashkiller': HashKillerParser,
     'fuckav': FuckavParser,
     'psbdmp': PsbdmpParser,
+    'youhack': YouHackParser,
 }
