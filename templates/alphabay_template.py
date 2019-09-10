@@ -6,6 +6,7 @@ import traceback
 import json
 import utils
 import datetime
+import dateutil.parser as dparser
 from lxml.html import fromstring
 
 
@@ -98,10 +99,11 @@ class AlphaBayParser:
             })
 
         date = html_response.xpath(
-            '//p[contains(string(), "sold since")]/i/text()')
+            '//text()[contains(.,"sold since")]'
+            '/following-sibling::i[1]/text()')
         if date:
             data.update({
-                'date': date[-1].strip()
+                'date': str(dparser.parse(date[0].strip()).timestamp())
             })
         description_block = html_response.xpath(
             '//h2[text()="Product Description"]/following-sibling::p[1]')
