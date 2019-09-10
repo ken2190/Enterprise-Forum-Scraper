@@ -84,6 +84,8 @@ from templates.hashkiller_template import HashKillerParser
 from templates.fuckav_template import FuckavParser
 from templates.psbdmp_template import PsbdmpParser
 from templates.youhack_template import YouHackParser
+from templates.wwhclub_template import WwhclubParser
+from templates.canadahq_template import CanadaHQParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -173,4 +175,6 @@ PARSER_MAP = {
     'fuckav': FuckavParser,
     'psbdmp': PsbdmpParser,
     'youhack': YouHackParser,
+    'wwhclub': WwhclubParser,
+    'canadahq': CanadaHQParser,
 }

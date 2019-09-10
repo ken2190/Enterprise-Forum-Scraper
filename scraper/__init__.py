@@ -63,6 +63,7 @@ from scraper.darkwebs import DarkWebsScrapper
 from scraper.fuckav import FuckavScrapper
 from scraper.canadahq import CanadaHQScrapper
 from scraper.youhack import YouHackScrapper
+from scraper.wwhclub import WwhClubScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -131,4 +132,5 @@ SCRAPER_MAP = {
     'fuckav': FuckavScrapper,
     'canadahq': CanadaHQScrapper,
     'youhack': YouHackScrapper,
+    'wwhclub': WwhClubScrapper,
 }
