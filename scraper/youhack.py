@@ -76,8 +76,7 @@ class YouHackSpider(scrapy.Spider):
             )
 
         next_page_url = response.xpath(
-            '//nav/a[contains(@class,"currentPage")]'
-            '/following-sibling::a[1]/@href').extract_first()
+            '//nav/a[text()="Вперёд >"]/@href').extract_first()
         if next_page_url:
             if self.base_url not in next_page_url:
                 next_page_url = self.base_url + next_page_url
@@ -122,8 +121,7 @@ class YouHackSpider(scrapy.Spider):
             )
 
         next_page_url = response.xpath(
-            '//nav/a[contains(@class,"currentPage")]'
-            '/following-sibling::a[1]/@href').extract_first()
+            '//nav/a[text()="Вперёд >"]/@href').extract_first()
         if next_page_url:
             if self.base_url not in next_page_url:
                 next_page_url = self.base_url + next_page_url
