@@ -30,6 +30,7 @@ class WwhClubSpider(scrapy.Spider):
         self.avatar_path = avatar_path
         self.headers = {
             'user-agent': USER_AGENT,
+            'cookie': COOKIE,
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1'
