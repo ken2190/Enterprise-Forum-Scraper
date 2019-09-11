@@ -64,6 +64,7 @@ from scraper.fuckav import FuckavScrapper
 from scraper.canadahq import CanadaHQScrapper
 from scraper.youhack import YouHackScrapper
 from scraper.wwhclub import WwhClubScrapper
+from scraper.korovka import KorovkaScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -133,4 +134,5 @@ SCRAPER_MAP = {
     'canadahq': CanadaHQScrapper,
     'youhack': YouHackScrapper,
     'wwhclub': WwhClubScrapper,
+    'korovka': KorovkaScrapper,
 }
