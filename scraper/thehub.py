@@ -1,239 +1,220 @@
-import re
-import os
 import time
-import traceback
 import requests
-from requests import Session
-from scraper.base_scrapper import BaseScrapper
+import os
+import re
+import scrapy
+from math import ceil
+import configparser
+import hashlib
+from scrapy.http import Request, FormRequest
+from scrapy.crawler import CrawlerProcess
 
-PROXY = "socks5h://localhost:9050"
-USERNAME = "vrx9"
-PASSWORD = "Night#Hub998"
+USER = "vrx9"
+PASS = "Night#Hub998"
+
+PROXY = 'http://127.0.0.1:8118'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0'
 
 
-class TheHubScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(TheHubScrapper, self).__init__(kwargs)
+class TheHubSpider(scrapy.Spider):
+    name = 'thehub_spider'
+
+    def __init__(self, output_path, avatar_path, proxy):
         self.base_url = 'http://thehub7xbw4dc5r2.onion/index.php'
         self.topic_pattern = re.compile(r'topic=(\d+)')
-        self.username = kwargs.get('user')
-        self.password = kwargs.get('password')
-        self.comment_pattern = re.compile(r'(\<\!--.*?--\!\>)')
-        self.proxy = kwargs.get('proxy') or PROXY
-        self.cloudfare_error = None
+        self.avatar_name_pattern = re.compile(r'attach=(\d+)')
+        self.pagination_pattern = re.compile(r'topic=\d+\.(\d+)')
+        self.output_path = output_path
+        self.avatar_path = avatar_path
+        self.proxy = proxy
+        self.headers = {
+            'Accept': 'text/html,application/xhtml+xm…plication/xml;q=0.9,*/*;q=0.8',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Host': 'thehub7xbw4dc5r2.onion',
+            'Referer': 'http://thehub7xbw4dc5r2.onion/',
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': USER_AGENT,
+        }
 
-    def get_page_content(self, url):
-        time.sleep(self.wait_time)
-        try:
-            response = self.session.get(url)
-            content = response.content
-            html_response = self.get_html_response(content)
-            if html_response.xpath('//div[@class="errorwrap"]'):
-                return
-            return content
-        except:
-            traceback.print_exc()
-            return
-
-    def save_avatar(self, name, url):
-        avatar_file = f'{self.avatar_path}/{name}'
-        if os.path.exists(avatar_file):
-            return
-        content = self.get_page_content(url)
-        if not content:
-            return
-        if 'Attachment Not Found' in str(content):
-            return
-        with open(avatar_file, 'wb') as f:
-            f.write(content)
-
-    def process_first_page(self, topic_url):
-        topic = self.topic_pattern.findall(topic_url)
-        if not topic:
-            return
-        topic = topic[0]
-        initial_file = f'{self.output_path}/{topic}-1.html'
-        if os.path.exists(initial_file):
-            return
-        content = self.get_page_content(topic_url)
-        if not content:
-            print(f'No data for url: {topic_url}')
-            return
-        with open(initial_file, 'wb') as f:
-            f.write(content)
-        print(f'{topic}-1 done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        if html_response.xpath(
-            '//font[contains(text(), "Verifying your browser, please wait")]'
-        ):
-            print('DDOS identified. Retyring after a min')
-            time.sleep(60)
-            return self.process_first_page(topic_url)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return html_response
-
-    def process_topic(self, topic_url):
-        html_response = self.process_first_page(topic_url)
-        if html_response is None:
-            return
-        while True:
-            response = self.write_paginated_data(html_response)
-            if response is None:
-                return
-            topic_url, html_response = response
-
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//div[@class="pagelinks floatleft"]/strong'
-            '/following-sibling::a[1]/@href'
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.process_login,
+            meta={'proxy': self.proxy}
         )
-        if not next_page_block:
-            return
-        next_page_url = next_page_block[0]
-        next_page_url = self.base_url + next_page_url\
-            if not next_page_url.startswith('http') else next_page_url
-        pattern = re.compile(r'topic=(\d+)\.(\d+)')
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
-        pagination_value = int(int(pagination_value)/20 + 1)
-        content = self.get_page_content(next_page_url)
-        if not content:
-            return
-        paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
 
-        print(f'{topic}-{pagination_value} done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return next_page_url, html_response
-
-    def process_forum(self, url):
-        while True:
-            print(f"Forum URL: {url}")
-            forum_content = self.get_page_content(url)
-            if not forum_content:
-                print(f'No data for url: {forum_content}')
-                return
-            forum_content = self.comment_pattern.sub('', str(forum_content))
-            html_response = self.get_html_response(forum_content)
-            topic_urls = html_response.xpath(
-                '//td[contains(@class, "subject ")]'
-                '//span[contains(@id, "msg_")]'
-                '/a/@href'
-            )
-            # print(len(topic_urls))
-            for topic_url in topic_urls:
-                topic_url = self.base_url + topic_url\
-                    if not topic_url.startswith('http') else topic_url
-                self.process_topic(topic_url)
-            forum_pagination_url = html_response.xpath(
-                '//div[@class="pagelinks floatleft"]/strong'
-                '/following-sibling::a[1]/@href'
-            )
-            if not forum_pagination_url:
-                return
-            url = forum_pagination_url[0]
-            url = self.base_url + url\
-                if not url.startswith('http') else url
-
-    def get_forum_urls(self, html_response):
-        urls = set()
-        extracted_urls = html_response.xpath(
-            '//td[@class="info"]/a[@class="subject"]/@href'
-        )
-        return extracted_urls
-
-    def clear_cookies(self,):
-        self.session.cookies.clear()
-
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//li[@class="avatar"]/a/img/@src'
-        )
-        for url in urls:
-            url = self.base_url + url\
-                if not url.startswith('http') else url
-            avatar_name_pattern = re.compile(r'attach=(\d+)')
-            name_match = avatar_name_pattern.findall(url)
-            if not name_match:
-                continue
-            name = f'{name_match[0]}.jpg'
-
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
-
-    def login(self):
-        password = self.password or PASSWORD
-        username = self.username or USERNAME
-        response = self.session.get(self.base_url).content
-        if not response:
-            return
-        html_response = self.get_html_response(response)
-        token = html_response.xpath(
+    def process_login(self, response):
+        token = response.xpath(
             '//p[@class="centertext smalltext"]/'
             'following-sibling::input[1]'
         )
         if not token:
             return
-        token_key = token[0].xpath('@name')[0]
-        token_value = token[0].xpath('@value')[0]
+        token_key = token[0].xpath('@name').extract_first()
+        token_value = token[0].xpath('@value').extract_first()
         form_data = {
             "cookieneverexp": "on",
             "hash_passwrd": "",
-            "passwrd": "Night#Hub998",
-            "user": "vrx9",
+            "passwrd": PASS,
+            "user": USER,
             token_key: token_value,
         }
-        params = {
-            'action': 'login2'
-        }
-        login_response = self.session.post(
-            self.base_url,
-            params=params,
-            data=form_data
+        login_url = f'{self.base_url}?action=login2'
+        yield FormRequest(
+            url=login_url,
+            headers=self.headers,
+            formdata=form_data,
+            callback=self.parse_main_page,
+            meta={'proxy': self.proxy},
+            dont_filter=True,
         )
-        html_response = self.get_html_response(login_response.content)
-        if html_response.xpath(
-           '//span[text()="Incorrect username and/or password."]'):
-            return
-        return html_response
+
+    def parse_main_page(self, response):
+        forums = response.xpath(
+            '//a[contains(@href, "index.php?board=")]')
+        for forum in forums:
+            url = forum.xpath('@href').extract_first()
+            url = url.strip('/')
+            if self.base_url not in url:
+                url = self.base_url + url
+            if '32.0' not in url:
+                continue
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta={'proxy': self.proxy}
+            )
+
+    def parse_forum(self, response):
+        print('next_page_url: {}'.format(response.url))
+        threads = response.xpath(
+            '//td[contains(@class, "subject ")]'
+            '//span[contains(@id, "msg_")]/a')
+        for thread in threads:
+            thread_url = thread.xpath('@href').extract_first()
+            if self.base_url not in thread_url:
+                thread_url = self.base_url + thread_url
+            topic_id = self.topic_pattern.findall(thread_url)
+            if not topic_id:
+                continue
+            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=thread_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={
+                    'topic_id': topic_id[0],
+                    'proxy': self.proxy
+                },
+            )
+
+        next_page = response.xpath('//div[@class="pagelinks floatleft"]/strong'
+                                   '/following-sibling::a[1]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta={'proxy': self.proxy}
+            )
+
+    def parse_thread(self, response):
+        topic_id = response.meta['topic_id']
+        pagination = self.pagination_pattern.findall(response.url)
+        if pagination:
+            paginated_value = int(int(pagination[0])/20 + 1)
+        else:
+            paginated_value = 1
+        file_name = '{}/{}-{}.html'.format(
+            self.output_path, topic_id, paginated_value)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            print(f'{topic_id}-{paginated_value} done..!')
+
+        avatars = response.xpath('//li[@class="avatar"]/a/img')
+        for avatar in avatars:
+            avatar_url = avatar.xpath('@src').extract_first()
+            if not avatar_url:
+                continue
+            avatar_url = self.base_url + avatar_url\
+                if not avatar_url.startswith('http') else avatar_url
+            user_id = self.avatar_name_pattern.findall(avatar_url)
+            if not user_id:
+                continue
+            file_name = '{}/{}.jpg'.format(self.avatar_path, user_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta={
+                    'file_name': file_name,
+                    'proxy': self.proxy
+                }
+            )
+
+        next_page = response.xpath('//div[@class="pagelinks floatleft"]/strong'
+                                   '/following-sibling::a[1]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={
+                    'topic_id': topic_id,
+                    'proxy': self.proxy
+                }
+            )
+
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        file_name_only = file_name.rsplit('/', 1)[-1]
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            print(f"Avatar {file_name_only} done..!")
+
+
+class TheHubScrapper():
+    def __init__(self, kwargs):
+        self.output_path = kwargs.get('output')
+        self.proxy = kwargs.get('proxy') or PROXY
+        self.request_delay = 0.1
+        self.no_of_threads = 16
+        self.ensure_avatar_path()
+
+    def ensure_avatar_path(self, ):
+        self.avatar_path = f'{self.output_path}/avatars'
+        if not os.path.exists(self.avatar_path):
+            os.makedirs(self.avatar_path)
 
     def do_scrape(self):
-        print('************  TheHubScrapper  Started  ************\n')
-        self.session.proxies.update({
-            'http': self.proxy,
-            'https': self.proxy,
-        })
-        html_response = self.login()
-        if html_response is None:
-            print('Login failed! Exiting...')
-            return
-        print('Login Successful!')
-        forum_urls = self.get_forum_urls(html_response)
-        print(forum_urls)
-        # return
-        # forum_urls = ['http://carder.me/forumdisplay.php?f=8']
-        for forum_url in forum_urls:
-            self.process_forum(forum_url)
+        settings = {
+            "DOWNLOADER_MIDDLEWARES": {
+                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
+            },
+            'DOWNLOAD_DELAY': self.request_delay,
+            'CONCURRENT_REQUESTS': self.no_of_threads,
+            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+            'RETRY_HTTP_CODES': [403, 429, 500, 503],
+            'RETRY_TIMES': 10,
+            'LOG_ENABLED': True,
 
-
-def main():
-    template = TheHubScrapper()
-    template.do_scrape()
-
-
-if __name__ == '__main__':
-    main()
+        }
+        process = CrawlerProcess(settings)
+        process.crawl(TheHubSpider, self.output_path, self.avatar_path, self.proxy)
+        process.start()
