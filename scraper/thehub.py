@@ -81,8 +81,6 @@ class TheHubSpider(scrapy.Spider):
             url = url.strip('/')
             if self.base_url not in url:
                 url = self.base_url + url
-            if '32.0' not in url:
-                continue
             yield Request(
                 url=url,
                 headers=self.headers,
