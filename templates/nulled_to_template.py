@@ -194,13 +194,25 @@ class NulledToParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            'div//span[@class="author vcard"]/a/span/span/text()'
+            'div[@class="author_info clearfix"]'
+            '//span[@class="author vcard"]/a/span/span/text()'
         )
         if not author:
             author = tag.xpath(
-                'div//span[@class="author vcard"]/s/text()'
+                'div[@class="author_info clearfix"]'
+                '//span[@class="author vcard"]/s/text()'
             )
-        author = author[0].strip() if author else None
+        if not author:
+            author = tag.xpath(
+                'div[@class="author_info clearfix"]'
+                '/div[@class="post_username"]/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div[@class="author_info clearfix"]'
+                '//span[@class="author vcard"]/descendant::text()'
+            )
+        author = ''.join(author).strip() if author else None
         return author
 
     def get_title(self, tag):
