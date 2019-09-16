@@ -87,6 +87,7 @@ from templates.youhack_template import YouHackParser
 from templates.wwhclub_template import WwhclubParser
 from templates.canadahq_template import CanadaHQParser
 from templates.korovka_template import KorovkaParser
+from templates.enclave_template import EnclaveParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -179,4 +180,5 @@ PARSER_MAP = {
     'wwhclub': WwhclubParser,
     'canadahq': CanadaHQParser,
     'korovka': KorovkaParser,
+    'enclave': EnclaveParser,
 }
