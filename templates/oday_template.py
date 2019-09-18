@@ -208,6 +208,7 @@ class OdayParser:
     def get_post_text(self, tag):
         post_text = tag.xpath(
             'tr[1]/td[2]/table//div[@class="post_body"]/descendant::text()'
+            '[not(ancestor::blockquote)]'
         )
 
         post_text = "\n".join(
