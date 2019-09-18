@@ -66,6 +66,7 @@ from scraper.youhack import YouHackScrapper
 from scraper.wwhclub import WwhClubScrapper
 from scraper.korovka import KorovkaScrapper
 from scraper.enclave import EnclaveScrapper
+from scraper.crimemarket import CrimeMarketScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -137,4 +138,5 @@ SCRAPER_MAP = {
     'wwhclub': WwhClubScrapper,
     'korovka': KorovkaScrapper,
     'enclave': EnclaveScrapper,
+    'crimemarket': CrimeMarketScrapper,
 }
