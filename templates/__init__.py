@@ -89,6 +89,7 @@ from templates.canadahq_template import CanadaHQParser
 from templates.korovka_template import KorovkaParser
 from templates.enclave_template import EnclaveParser
 from templates.crimemarket_template import CrimeMarketParser
+from templates.phreaker_template import PhreakerParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -183,4 +184,5 @@ PARSER_MAP = {
     'korovka': KorovkaParser,
     'enclave': EnclaveParser,
     'crimemarket': CrimeMarketParser,
+    'phreaker': PhreakerParser,
 }
