@@ -68,6 +68,7 @@ from scraper.korovka import KorovkaScrapper
 from scraper.enclave import EnclaveScrapper
 from scraper.crimemarket import CrimeMarketScrapper
 from scraper.phreaker import PhreakerScrapper
+from scraper.prologic import ProLogicScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -141,4 +142,5 @@ SCRAPER_MAP = {
     'enclave': EnclaveScrapper,
     'crimemarket': CrimeMarketScrapper,
     'phreaker': PhreakerScrapper,
+    'prologic': ProLogicScrapper,
 }

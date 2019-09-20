@@ -90,6 +90,7 @@ from templates.korovka_template import KorovkaParser
 from templates.enclave_template import EnclaveParser
 from templates.crimemarket_template import CrimeMarketParser
 from templates.phreaker_template import PhreakerParser
+from templates.prologic_template import ProLogicParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -185,4 +186,5 @@ PARSER_MAP = {
     'enclave': EnclaveParser,
     'crimemarket': CrimeMarketParser,
     'phreaker': PhreakerParser,
+    'prologic': ProLogicParser,
 }
