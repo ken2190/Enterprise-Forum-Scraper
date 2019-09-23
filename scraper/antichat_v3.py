@@ -9,9 +9,11 @@ from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) "\
-             "AppleWebKit/537.36 (KHTML, like Gecko) "\
-             "Chrome/75.0.3770.142 Safari/537.36"
+
+USER = 'blacklotus2000@protonmail.com'
+PASS = 'Night#Anti999'
+COOKIE = '__cfduid=da377ef4062fd7cfceaf88587b185e2441547044333; _ym_uid=1564475724504070551; _ym_d=1564475724; _ga=GA1.2.2097138322.1564475724; _gid=GA1.2.2134569859.1569167431; _ym_isad=1; _ym_wasSynced=%7B%22time%22%3A1569167432227%2C%22params%22%3A%7B%22eu%22%3A0%7D%2C%22bkParams%22%3A%7B%7D%7D; anti_logged_in=1; anti_dbtech_security_session=7dda136c4e46d6aa6189303212e0e96a; anti_session=1dcef4d9aecb4a14fb926dddd95a9ac1; _gat=1'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
 
 
 class AntichatSpider(scrapy.Spider):
@@ -25,20 +27,50 @@ class AntichatSpider(scrapy.Spider):
         self.cloudfare_error = None
         self.output_path = output_path
         self.headers = {
-            "User-Agent": USER_AGENT
+            'origin': 'https://forum.antichat.ru',
+            'referer': 'https://forum.antichat.ru/',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'cookie': COOKIE,
+            'content-type': 'application/x-www-form-urlencoded',
+            'user-agent': USER_AGENT
         }
 
     def start_requests(self):
         yield Request(
             url=self.base_url,
+            callback=self.parse,
             headers=self.headers,
-            callback=self.parse
         )
+
+    def proceed_for_login(self):
+        login_url = 'https://forum.antichat.ru/login/login'
+        params = {
+            'login': USER,
+            'password': PASS,
+            'register': '0',
+            "remember": '1',
+            'cookie_check': '1',
+            'redirect': 'https://forum.antichat.ru/',
+            '_xfToken': ''
+        }
+        yield FormRequest(
+            url=login_url,
+            callback=self.parse,
+            formdata=params,
+            headers=self.headers,
+            dont_filter=True,
+            )
 
     def parse(self, response):
         forums = response.xpath(
             '//div[@class="nodelistBlock nodeText"]'
             '/h3[@class="nodeTitle"]/a')
+        subforums = response.xpath(
+            '//ol[@class="subForumList"]'
+            '//h4[@class="nodeTitle"]/a')
+        forums.extend(subforums)
         for forum in forums:
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
@@ -122,6 +154,12 @@ class Antichatv3Scrapper():
 
     def do_scrape(self):
         settings = {
+            "DOWNLOADER_MIDDLEWARES": {
+                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
+                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
+            },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,
             'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
@@ -131,14 +169,12 @@ class Antichatv3Scrapper():
 
         }
         if self.proxy:
+            settings['DOWNLOADER_MIDDLEWARES'].update({
+                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+            })
             settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
                 'ROTATING_PROXY_LIST': self.proxy,
 
             })
