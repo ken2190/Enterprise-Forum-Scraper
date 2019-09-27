@@ -91,6 +91,9 @@ from templates.enclave_template import EnclaveParser
 from templates.crimemarket_template import CrimeMarketParser
 from templates.phreaker_template import PhreakerParser
 from templates.prologic_template import ProLogicParser
+from templates.dreammarket_template import DreamMarketParser
+from templates.ogusers_template import OgUsersParser
+from templates.ogusers_users_template import OgUsersUserParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -187,4 +190,7 @@ PARSER_MAP = {
     'crimemarket': CrimeMarketParser,
     'phreaker': PhreakerParser,
     'prologic': ProLogicParser,
+    'dreammarket': DreamMarketParser,
+    'ogusers': OgUsersParser,
+    'ogusers_users': OgUsersUserParser,
 }
