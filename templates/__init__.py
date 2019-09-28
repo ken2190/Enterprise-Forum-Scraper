@@ -94,6 +94,7 @@ from templates.prologic_template import ProLogicParser
 from templates.dreammarket_template import DreamMarketParser
 from templates.ogusers_template import OgUsersParser
 from templates.ogusers_users_template import OgUsersUserParser
+from templates.center_club_template import CenterClubParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -193,4 +194,5 @@ PARSER_MAP = {
     'dreammarket': DreamMarketParser,
     'ogusers': OgUsersParser,
     'ogusers_users': OgUsersUserParser,
+    'center_club': CenterClubParser,
 }
