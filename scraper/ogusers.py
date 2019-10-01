@@ -6,17 +6,18 @@ import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 
-USER = 'nightlion'
-PASS = 'Night#Og111'
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 20
+USER = 'Exabyte'
+PASS = 'Night#OG009'
+REQUEST_DELAY = 1
+NO_OF_THREADS = 10
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
+COOKIE = '__cfduid=d64a71c2e1fbec7f8d6d83bb784702da91569490254; mybb[threadread]=a%3A2%3A%7Bi%3A53495%3Bi%3A1569490279%3Bi%3A448758%3Bi%3A1569558885%3B%7D; loginattempts=1; mybb[lastvisit]=1569558976; mybb[lastactive]=1569930109; mybbuser=158805_tFL8dFFeuwYGoojyOYMlnYwoxGZjwIKSCk7ZOJmqSuEFm1owqX; sid=5a8b4d2077f7b945aff466648ae7f5ab; cf_clearance=3c637a9ed592d35e287c082cd1d5d7b006d7b218-1569937154-2700-150'
 
 
 class OgUsersSpider(scrapy.Spider):
     name = 'ogusers_spider'
 
-    def __init__(self, output_path, avatar_path, useronly):
+    def __init__(self, output_path, avatar_path, useronly, firstrun):
         self.base_url = "https://ogusers.com/"
         self.pagination_pattern = re.compile(r'.*page=(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
@@ -24,10 +25,13 @@ class OgUsersSpider(scrapy.Spider):
         self.output_path = output_path
         self.avatar_path = avatar_path
         self.useronly = useronly
+        self.firstrun = firstrun
         self.headers = {
-            'origin': 'https://ogusers.com',
-            'sec-fetch-mode': 'cors',
+            'referer': 'https://ogusers.com',
+            'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'cookie': COOKIE,
             'user-agent': USER_AGENT,
         }
         self.set_users_path()
@@ -38,11 +42,39 @@ class OgUsersSpider(scrapy.Spider):
             os.makedirs(self.user_path)
 
     def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.proceed_for_login
-        )
+        if self.firstrun:
+            self.output_url_file = open(self.output_path + '/urls.txt', 'w')
+            yield Request(
+                url=self.start_url,
+                headers=self.headers,
+                callback=self.parse
+            )
+        else:
+            input_file = self.output_path + '/urls.txt'
+            if os.path.exists(input_file):
+                for thread_url in open(input_file, 'r'):
+                    thread_url = thread_url.strip()
+                    topic_id = str(
+                        int.from_bytes(
+                            thread_url.encode('utf-8'), byteorder='big'
+                        ) % (10 ** 7)
+                    )
+                    file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
+                    if os.path.exists(file_name):
+                        continue
+                    yield Request(
+                        url=thread_url,
+                        headers=self.headers,
+                        callback=self.parse_thread,
+                        meta={'topic_id': topic_id}
+                    )
+            else:
+                self.output_url_file = None
+                yield Request(
+                    url=self.start_url,
+                    headers=self.headers,
+                    callback=self.parse
+                )
 
     def proceed_for_login(self, response):
         my_post_key = response.xpath(
@@ -85,8 +117,8 @@ class OgUsersSpider(scrapy.Spider):
                     url = self.base_url + url
                 forum_urls.append(url)
         for url in forum_urls:
-            # if 'Forum-Vices' not in url:
-            #     continue
+            if 'Forum-Vices' not in url:
+                continue
             yield Request(
                 url=url,
                 headers=self.headers,
@@ -101,20 +133,24 @@ class OgUsersSpider(scrapy.Spider):
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            topic_id = str(
-                int.from_bytes(
-                    thread_url.encode('utf-8'), byteorder='big'
-                ) % (10 ** 7)
-            )
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
+            if self.output_url_file:
+                self.output_url_file.write(thread_url)
+                self.output_url_file.write('\n')
+            else:
+                topic_id = str(
+                    int.from_bytes(
+                        thread_url.encode('utf-8'), byteorder='big'
+                    ) % (10 ** 7)
+                )
+                file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
+                if os.path.exists(file_name):
+                    continue
+                yield Request(
+                    url=thread_url,
+                    headers=self.headers,
+                    callback=self.parse_thread,
+                    meta={'topic_id': topic_id}
+                )
 
         next_page = response.xpath('//a[@class="pagination_next"]')
         if next_page:
@@ -234,6 +270,7 @@ class OgUsersScrapper():
         self.output_path = kwargs.get('output')
         self.useronly = kwargs.get('useronly')
         self.proxy = kwargs.get('proxy') or None
+        self.firstrun = kwargs.get('firstrun')
         self.ensure_avatar_path()
 
     def ensure_avatar_path(self, ):
@@ -243,6 +280,12 @@ class OgUsersScrapper():
 
     def do_scrape(self):
         settings = {
+            "DOWNLOADER_MIDDLEWARES": {
+                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
+                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
+            },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,
             'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
@@ -254,9 +297,6 @@ class OgUsersScrapper():
         if self.proxy:
             settings.update({
                 "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
                     'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
                     'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
                 },
@@ -265,5 +305,5 @@ class OgUsersScrapper():
             })
         process = CrawlerProcess(settings)
         process.crawl(OgUsersSpider, self.output_path,
-                      self.avatar_path, self.useronly)
+                      self.avatar_path, self.useronly, self.firstrun)
         process.start()

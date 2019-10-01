@@ -38,7 +38,7 @@ class Scraper:
             '-uo', '--useronly', help='Scrape only users page',
             action='store_true')
         parser.add_argument(
-            '-urlo', '--urlsonly', help='Scrape only URLs',
+            '-fr', '--firstrun', help='Scrape only URLs',
             action='store_true')
         parser.add_argument(
             '-s', '--start_date', help='Scrape from the given dates', required=False)
