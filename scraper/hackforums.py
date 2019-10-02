@@ -15,7 +15,7 @@ USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Fi
 class HackForumsSpider(scrapy.Spider):
     name = 'hackforums_spider'
 
-    def __init__(self, output_path, avatar_path, urlsonly):
+    def __init__(self, output_path, avatar_path, firstrun):
         self.base_url = "https://hackforums.net/"
         self.topic_pattern = re.compile(r'tid=(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
@@ -23,7 +23,7 @@ class HackForumsSpider(scrapy.Spider):
         self.start_url = 'https://hackforums.net/index.php'
         self.output_path = output_path
         self.avatar_path = avatar_path
-        self.urlsonly = urlsonly
+        self.firstrun = firstrun
         self.headers = {
             'referer': 'https://hackforums.net/member.php',
             'user-agent': USER_AGENT,
@@ -31,7 +31,7 @@ class HackForumsSpider(scrapy.Spider):
         }
 
     def start_requests(self):
-        if self.urlsonly:
+        if self.firstrun:
             self.output_url_file = open(self.output_path + '/urls.txt', 'w')
             yield Request(
                 url=self.start_url,
@@ -153,7 +153,7 @@ class HackForumsScrapper():
         self.proxy = kwargs.get('proxy') or None
         self.request_delay = 0.1
         self.no_of_threads = 16
-        self.urlsonly = kwargs.get('urlsonly')
+        self.firstrun = kwargs.get('firstrun')
         self.ensure_avatar_path()
 
     def ensure_avatar_path(self, ):
@@ -188,7 +188,7 @@ class HackForumsScrapper():
 
             })
         process = CrawlerProcess(settings)
-        process.crawl(HackForumsSpider, self.output_path, self.avatar_path, self.urlsonly)
+        process.crawl(HackForumsSpider, self.output_path, self.avatar_path, self.firstrun)
         process.start()
 
 
