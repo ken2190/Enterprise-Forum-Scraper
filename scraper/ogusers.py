@@ -11,7 +11,7 @@ PASS = 'Night#OG009'
 REQUEST_DELAY = 1
 NO_OF_THREADS = 10
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
-COOKIE = '__cfduid=d64a71c2e1fbec7f8d6d83bb784702da91569490254; mybb[threadread]=a%3A2%3A%7Bi%3A53495%3Bi%3A1569490279%3Bi%3A448758%3Bi%3A1569558885%3B%7D; loginattempts=1; mybb[lastvisit]=1569558976; mybb[lastactive]=1569930109; mybbuser=158805_tFL8dFFeuwYGoojyOYMlnYwoxGZjwIKSCk7ZOJmqSuEFm1owqX; sid=5a8b4d2077f7b945aff466648ae7f5ab; cf_clearance=3c637a9ed592d35e287c082cd1d5d7b006d7b218-1569937154-2700-150'
+COOKIE = '__cfduid=d64a71c2e1fbec7f8d6d83bb784702da91569490254; mybb[threadread]=a%3A2%3A%7Bi%3A53495%3Bi%3A1569490279%3Bi%3A448758%3Bi%3A1569558885%3B%7D; loginattempts=1; mybb[lastvisit]=1569558976; mybb[lastactive]=1569930109; mybbuser=158805_tFL8dFFeuwYGoojyOYMlnYwoxGZjwIKSCk7ZOJmqSuEFm1owqX; cf_clearance=1e930b2eb1755577a40e4c5abdec7cb1fdf4f900-1570008817-0-250; sid=3ffe4e7756d245e714a3f4ae5cbb7590'
 
 
 class OgUsersSpider(scrapy.Spider):
@@ -119,7 +119,7 @@ class OgUsersSpider(scrapy.Spider):
                 url=url,
                 headers=self.headers,
                 callback=self.parse_forum,
-                forum_name=url.rsplit('/', 1)[-1]
+                meta={'forum_name': url.rsplit('/', 1)[-1]}
             )
 
     def parse_forum(self, response):
@@ -163,7 +163,7 @@ class OgUsersSpider(scrapy.Spider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_forum,
-                forum_name=forum_name
+                meta={'forum_name': forum_name}
             )
 
     def parse_thread(self, response):
