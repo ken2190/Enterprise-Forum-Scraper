@@ -117,8 +117,8 @@ class OgUsersSpider(scrapy.Spider):
                     url = self.base_url + url
                 forum_urls.append(url)
         for url in forum_urls:
-            if 'Forum-Vices' not in url:
-                continue
+            # if 'Forum-Vices' not in url:
+            #     continue
             yield Request(
                 url=url,
                 headers=self.headers,
