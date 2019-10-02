@@ -119,7 +119,7 @@ class OgUsersSpider(scrapy.Spider):
                 url=url,
                 headers=self.headers,
                 callback=self.parse_forum,
-                forum_name=url.rsplit('/', 1)
+                forum_name=url.rsplit('/', 1)[-1]
             )
 
     def parse_forum(self, response):
