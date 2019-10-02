@@ -43,7 +43,6 @@ class OgUsersSpider(scrapy.Spider):
 
     def start_requests(self):
         if self.firstrun:
-            self.output_url_file = open(self.output_path + '/urls.txt', 'w')
             yield Request(
                 url=self.start_url,
                 headers=self.headers,
@@ -69,7 +68,6 @@ class OgUsersSpider(scrapy.Spider):
                         meta={'topic_id': topic_id}
                     )
             else:
-                self.output_url_file = None
                 yield Request(
                     url=self.start_url,
                     headers=self.headers,
@@ -117,15 +115,19 @@ class OgUsersSpider(scrapy.Spider):
                     url = self.base_url + url
                 forum_urls.append(url)
         for url in forum_urls:
-            # if 'Forum-Vices' not in url:
-            #     continue
             yield Request(
                 url=url,
                 headers=self.headers,
                 callback=self.parse_forum,
+                forum_name=url.rsplit('/', 1)
             )
 
     def parse_forum(self, response):
+        forum_name = response.meta['forum_name']
+        output_url_file = None
+        if self.firstrun:
+            output_url_file = open(
+                self.output_path + f'/{forum_name}.txt', 'a')
         print('next_page_url: {}'.format(response.url))
         threads = response.xpath(
             '//span[contains(@id, "tid_")]/a[contains(@href, "Thread-")]')
@@ -133,9 +135,9 @@ class OgUsersSpider(scrapy.Spider):
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            if self.output_url_file:
-                self.output_url_file.write(thread_url)
-                self.output_url_file.write('\n')
+            if output_url_file:
+                output_url_file.write(thread_url)
+                output_url_file.write('\n')
             else:
                 topic_id = str(
                     int.from_bytes(
@@ -160,7 +162,8 @@ class OgUsersSpider(scrapy.Spider):
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                forum_name=forum_name
             )
 
     def parse_thread(self, response):
