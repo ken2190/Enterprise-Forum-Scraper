@@ -8,10 +8,11 @@ from scrapy.crawler import CrawlerProcess
 
 USER = 'Exabyte'
 PASS = 'Night#OG009'
-REQUEST_DELAY = 1
-NO_OF_THREADS = 10
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
-COOKIE = '__cfduid=d64a71c2e1fbec7f8d6d83bb784702da91569490254; mybb[threadread]=a%3A2%3A%7Bi%3A53495%3Bi%3A1569490279%3Bi%3A448758%3Bi%3A1569558885%3B%7D; loginattempts=1; mybb[lastvisit]=1569558976; mybb[lastactive]=1569930109; mybbuser=158805_tFL8dFFeuwYGoojyOYMlnYwoxGZjwIKSCk7ZOJmqSuEFm1owqX; cf_clearance=1e930b2eb1755577a40e4c5abdec7cb1fdf4f900-1570008817-0-250; sid=3ffe4e7756d245e714a3f4ae5cbb7590'
+REQUEST_DELAY = .6
+NO_OF_THREADS = 20
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
+
+COOKIE = '__cfduid=d404d1323e9daf0d6901353cfd6b1939d1570002606; mybb[lastvisit]=1570002612; mybb[lastactive]=1570002626; loginattempts=1; mybbuser=158805_tFL8dFFeuwYGoojyOYMlnYwoxGZjwIKSCk7ZOJmqSuEFm1owqX; sid=caae78435600cd84809b288df5b6bf91'
 
 
 class OgUsersSpider(scrapy.Spider):
