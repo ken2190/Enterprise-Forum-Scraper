@@ -3,6 +3,8 @@ import os
 from glob import glob
 from scraper import SCRAPER_MAP
 
+UPDATE_DB_PATH = '/Users/PathakUmesh/forums.db'
+
 
 class Scraper:
     def __init__(self):
@@ -32,7 +34,7 @@ class Scraper:
             '-rs', '--rescan', help='Rescan the broken files and re-download',
             action='store_true')
         parser.add_argument(
-            '-d', '--daily', help='Scrape new posts for today',
+            '-up', '--update', help='Scrape new posts',
             action='store_true')
         parser.add_argument(
             '-uo', '--useronly', help='Scrape only users page',
@@ -50,6 +52,7 @@ class Scraper:
 
     def do_scrape(self):
         kwargs = {k: v for k, v in self.get_args()}
+        kwargs.update({'db_path': UPDATE_DB_PATH})
         output_folder = kwargs.get('output')
 
         # ------------make folder if not exist -----------------
@@ -63,8 +66,8 @@ class Scraper:
         scraper_obj = scraper(kwargs)
         if kwargs.get('rescan'):
             scraper_obj.do_rescan()
-        elif kwargs.get('daily'):
-            scraper_obj.do_new_posts_scrape()
+        # elif kwargs.get('update'):
+        #     scraper_obj.do_new_posts_scrape()
         else:
             scraper_obj.do_scrape()
 
