@@ -7,64 +7,35 @@ UPDATE_DB_PATH = '/Users/PathakUmesh/forums.db'
 
 
 class Scraper:
-    def __init__(self):
+    def __init__(self, kwargs):
         self.counter = 1
-
-    def get_args(self):
-        parser = argparse.ArgumentParser(
-            description='Scrapping Forums Framework')
-        parser.add_argument(
-            '-t', '--template', help='Template forum to scrape', required=True)
-        parser.add_argument(
-            '-o', '--output', help='output folder path', required=True)
-        parser.add_argument(
-            '-x', '--proxy', help='proxy to use', required=False)
-        parser.add_argument(
-            '-u', '--user', help='username to login', required=False)
-        parser.add_argument(
-            '-p', '--password', help='password to login', required=False)
-        parser.add_argument(
-            '-w', '--wait_time', help='wait time (in second) between '
-            'successive requests', required=False)
-        parser.add_argument(
-            '-ts', '--topic_start', help='starting topic no.', required=False)
-        parser.add_argument(
-            '-te', '--topic_end', help='ending topic no.', required=False)
-        parser.add_argument(
-            '-rs', '--rescan', help='Rescan the broken files and re-download',
-            action='store_true')
-        parser.add_argument(
-            '-up', '--update', help='Scrape new posts',
-            action='store_true')
-        parser.add_argument(
-            '-uo', '--useronly', help='Scrape only users page',
-            action='store_true')
-        parser.add_argument(
-            '-fr', '--firstrun', help='Scrape only URLs',
-            action='store_true')
-        parser.add_argument(
-            '-s', '--start_date', help='Scrape from the given dates', required=False)
-        parser.add_argument(
-            '-b', '--banlist', help='Scrape the ban list', action='store_true')
-        args = parser.parse_args()
-        return args._get_kwargs()
-        # return args.template, args.output, args.proxy, args.user, args.password
+        self.kwargs = kwargs
 
     def do_scrape(self):
-        kwargs = {k: v for k, v in self.get_args()}
-        kwargs.update({'db_path': UPDATE_DB_PATH})
-        output_folder = kwargs.get('output')
-
-        # ------------make folder if not exist -----------------
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-        template = kwargs.get('template')
+        if self.kwargs.get('list'):
+            print('Following scrapers are available')
+            for index, scraper in enumerate(SCRAPER_MAP.keys(), 1):
+                print(f'{index}. {scraper}')
+            return
+        template = self.kwargs.get('template')
+        if not template:
+            print('template (-t/--template) missing')
+            return
         scraper = SCRAPER_MAP.get(template.lower())
         if not scraper:
             print('Message: your target name is wrong..!')
             return
-        scraper_obj = scraper(kwargs)
-        if kwargs.get('rescan'):
+        output_folder = self.kwargs.get('output')
+        if not output_folder:
+            print('Output path missing')
+            return
+        self.kwargs.update({'db_path': UPDATE_DB_PATH})
+        # ------------make folder if not exist -----------------
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+
+        scraper_obj = scraper(self.kwargs)
+        if self.kwargs.get('rescan'):
             scraper_obj.do_rescan()
         # elif kwargs.get('update'):
         #     scraper_obj.do_new_posts_scrape()
