@@ -95,6 +95,7 @@ from templates.dreammarket_template import DreamMarketParser
 from templates.ogusers_template import OgUsersParser
 from templates.ogusers_users_template import OgUsersUserParser
 from templates.center_club_template import CenterClubParser
+from templates.crackingpro_template import CrackingProParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -195,4 +196,5 @@ PARSER_MAP = {
     'ogusers': OgUsersParser,
     'ogusers_users': OgUsersUserParser,
     'center_club': CenterClubParser,
+    'crackingpro': CrackingProParser,
 }

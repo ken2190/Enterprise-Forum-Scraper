@@ -71,6 +71,7 @@ from scraper.phreaker import PhreakerScrapper
 from scraper.prologic import ProLogicScrapper
 from scraper.ogusers import OgUsersScrapper
 from scraper.center_club import CenterClubScrapper
+from scraper.crackingpro import CrackingProScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -147,4 +148,5 @@ SCRAPER_MAP = {
     'prologic': ProLogicScrapper,
     'ogusers': OgUsersScrapper,
     'center_club': CenterClubScrapper,
+    'crackingpro': CrackingProScrapper,
 }
