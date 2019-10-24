@@ -96,6 +96,7 @@ from templates.ogusers_template import OgUsersParser
 from templates.ogusers_users_template import OgUsersUserParser
 from templates.center_club_template import CenterClubParser
 from templates.crackingpro_template import CrackingProParser
+from templates.xrpchat_template import XrpChatParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -197,4 +198,5 @@ PARSER_MAP = {
     'ogusers_users': OgUsersUserParser,
     'center_club': CenterClubParser,
     'crackingpro': CrackingProParser,
+    'xrpchat': XrpChatParser,
 }
