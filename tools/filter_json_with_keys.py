@@ -5,6 +5,16 @@ import json
 import traceback
 import argparse
 
+PDL_FIELDS = [
+    'first_name',
+    'last_name',
+    'url_profile',
+    'id_external_profile',
+    'emails',
+    'phone_numbers',
+    'lip_location'
+]
+
 PIZAP_FIELDS = [
     'UserName',
     'Name',
@@ -46,7 +56,8 @@ TO_REMOVE_PIPL = [
 FIELD_MAPS = {
     'pizap': PIZAP_FIELDS,
     'gyfcat': GYFCAT_FIELDS,
-    'pipl': PIPL_FIELDS
+    'pipl': PIPL_FIELDS,
+    'pdl': PDL_FIELDS,
 }
 
 
