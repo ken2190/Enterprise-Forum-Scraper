@@ -5,6 +5,18 @@ import json
 import traceback
 import argparse
 
+IG_FIELDS = [
+    'username',
+    'instagramId',
+    'fullName',
+    'id_external_profile',
+    'email',
+    'phoneNumber',
+    'streetAddress',
+    'cityName',
+    'zipCode'
+]
+
 PDL_FIELDS = [
     'first_name',
     'last_name',
@@ -58,6 +70,7 @@ FIELD_MAPS = {
     'gyfcat': GYFCAT_FIELDS,
     'pipl': PIPL_FIELDS,
     'pdl': PDL_FIELDS,
+    'ig': IG_FIELDS,
 }
 
 
@@ -118,6 +131,29 @@ def process_pipl(out_file, single_json):
     out_file.write(json.dumps(filtered_json)+'\n')
 
 
+def process_ig(out_file, single_json):
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    for key, value in json_response.items():
+        if not value:
+            continue
+        if key == 'business':
+            if value['email']:
+                filtered_json.update({'email': value['email']})
+            if value['phoneNumber']:
+                filtered_json.update({'phoneNumber': value['phoneNumber']})
+            if value['address']['streetAddress']:
+                filtered_json.update({'streetAddress': value['address']['streetAddress']})
+            if value['address']['cityName']:
+                filtered_json.update({'cityName': value['address']['cityName']})
+            if value['address']['zipCode']:
+                filtered_json.update({'zipCode': value['address']['zipCode']})
+
+        elif key in IG_FIELDS:
+            filtered_json.update({key: value})
+    out_file.write(json.dumps(filtered_json)+'\n')
+
+
 def process_address(filtered_json):
     address = ''
     if 'a1' in filtered_json:
@@ -172,10 +208,12 @@ def process_file(args):
         with open(input_file, 'r') as fp:
             for line_number, single_json in enumerate(fp, 1):
                 try:
-                    if not args.type == 'pipl':
-                        process_line(out_file, single_json, args.type)
-                    else:
+                    if args.type == 'pipl':
                         process_pipl(out_file, single_json)
+                    elif args.type == 'ig':
+                        process_ig(out_file, single_json)
+                    else:
+                        process_line(out_file, single_json, args.type)
                     print('Writing line number:', line_number)
                 except:
                     print('Error in line number:', line_number)
