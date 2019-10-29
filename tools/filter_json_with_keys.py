@@ -50,7 +50,7 @@ PIPL_FIELDS = {
     'city': 'a2',
     'zip': 'a3',
     'dateOfBirth': 'dob',
-    'phone': 't',
+    'phone': 't'
 }
 TO_REMOVE_PIPL = [
     '_id',
@@ -196,8 +196,11 @@ def process_line(out_file, single_json, _type):
         return
     filtered_json = dict()
     for key, value in json_response.items():
-        if key in fields:
-            filtered_json.update({key: list(value.values())[0]})
+        if value is not None and key in fields:
+            if isinstance(value, list):
+                filtered_json.update({key: list(value.values())[0]})
+            elif isinstance(value, str):
+                filtered_json.update({key: value})
     out_file.write(json.dumps(filtered_json)+'\n')
 
 
