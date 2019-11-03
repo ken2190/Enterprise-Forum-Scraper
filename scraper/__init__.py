@@ -73,6 +73,7 @@ from scraper.ogusers import OgUsersScrapper
 from scraper.center_club import CenterClubScrapper
 from scraper.crackingpro import CrackingProScrapper
 from scraper.xrpchat import XrpChatScrapper
+from scraper.carding_team import CardingTeamScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -151,4 +152,5 @@ SCRAPER_MAP = {
     'center_club': CenterClubScrapper,
     'crackingpro': CrackingProScrapper,
     'xrpchat': XrpChatScrapper,
+    'carding_team': CardingTeamScrapper,
 }
