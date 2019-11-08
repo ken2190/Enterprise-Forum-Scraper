@@ -98,6 +98,7 @@ from templates.center_club_template import CenterClubParser
 from templates.crackingpro_template import CrackingProParser
 from templates.xrpchat_template import XrpChatParser
 from templates.abusewith_template import AbuseWithParser
+from templates.carding_team_template import CardingTeamParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -201,4 +202,5 @@ PARSER_MAP = {
     'crackingpro': CrackingProParser,
     'xrpchat': XrpChatParser,
     'abusewith': AbuseWithParser,
+    'carding_team': CardingTeamParser,
 }

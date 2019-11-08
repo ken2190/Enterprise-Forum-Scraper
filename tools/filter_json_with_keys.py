@@ -176,6 +176,27 @@ def process_ig(out_file, single_json):
     out_file.write(json.dumps(filtered_json)+'\n')
 
 
+def process_pdl(out_file, single_json):
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    for key, value in json_response.items():
+        if not value:
+            continue
+        if key == 'emails':
+            email_data = dict()
+            for index, email in enumerate(value.split(','), 1):
+                email_data.update({'e{}'.format(index): email})
+            filtered_json.update({'e': email_data})
+        elif key == 'phone_numbers':
+            ph_data = dict()
+            for index, ph in enumerate(value.split(','), 1):
+                ph_data.update({'t{}'.format(index): ph})
+            filtered_json.update({'t': ph_data})
+        elif key in PDL_FIELDS:
+            filtered_json.update({key: value})
+    out_file.write(json.dumps(filtered_json)+'\n')
+
+
 def process_address(filtered_json):
     address = ''
     if 'a1' in filtered_json:
@@ -237,6 +258,8 @@ def process_file(args):
                         process_pipl(out_file, single_json)
                     elif args.type == 'ig':
                         process_ig(out_file, single_json)
+                    elif args.type == 'pdl':
+                        process_pdl(out_file, single_json)
                     else:
                         process_line(out_file, single_json, args.type)
                     print('Writing line number:', line_number)
