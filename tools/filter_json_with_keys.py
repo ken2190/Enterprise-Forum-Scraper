@@ -28,18 +28,40 @@ PDL_FIELDS = [
 ]
 
 PIZAP_FIELDS = [
-    'UserName',
-    'Name',
-    'Email',
-    'FBUserID',
-    'ProfileImage',
-    'Password',
-    'CountryCode'
+    'donor_name',
+    'donor_dob',
+    'donor_mobile_no',
+    'donor_telephone_no',
+    'donor_email_id',
+    'bb_city',
+    'bb_pincode',
+    'bb_address',
+    'bb_contact_no'
 ]
 GYFCAT_FIELDS = [
-    'username',
+    'phone',
+    'city',
+    'site_url',
+    'state',
     'email',
-    'password',
+    'user_ip',
+    'firstname',
+    'lastname',
+    'zip',
+    'company_name',
+    'contact_name',
+    'title',
+    'address',
+    'phone',
+    'company_website',
+    'firstname',
+    'lastname',
+    'ip',
+    'url',
+    'fname',
+    'lname',
+    'mobile',
+    'dob',
 ]
 
 PIPL_FIELDS = {
