@@ -5,6 +5,23 @@ import json
 import traceback
 import argparse
 
+POSH_FIELDS = [
+    'first_name',
+    'last_name',
+    'url',
+    'city',
+    'state',
+    'website',
+    'email',
+    'passwd_hash',
+    'pnuser',
+    'pnid',
+    'fbid',
+    'fbuser',
+    'twid',
+    'twuser',
+]
+
 IG_FIELDS = [
     'username',
     'instagramId',
@@ -93,6 +110,7 @@ FIELD_MAPS = {
     'pipl': PIPL_FIELDS,
     'pdl': PDL_FIELDS,
     'ig': IG_FIELDS,
+    'posh': POSH_FIELDS,
 }
 
 
@@ -197,6 +215,57 @@ def process_pdl(out_file, single_json):
     out_file.write(json.dumps(filtered_json)+'\n')
 
 
+def process_posh(out_file, single_json):
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    for key, value in json_response.items():
+        if not value:
+            continue
+        if key == 'surl':
+            filtered_json.update({'url': value})
+        elif key == 'profile':
+            if value.get('city'):
+                filtered_json.update({
+                    'city': value['city']
+                })
+            if value.get('state'):
+                filtered_json.update({
+                    'state': value['state']
+                })
+            if value.get('website'):
+                filtered_json.update({
+                    'website': value['website']
+                })
+        elif key == 'fb_info':
+            filtered_json.update({
+                'fbid': value['ext_user_id'],
+            })
+            if value.get('ext_username'):
+                filtered_json.update({
+                    'fbuser': value['ext_username']
+                })
+        elif key == 'pn_info':
+            filtered_json.update({
+                'pnid': value['ext_user_id'],
+            })
+            if value.get('ext_username'):
+                filtered_json.update({
+                    'pnuser': value['ext_username']
+                })
+        elif key == 'tw_info':
+            filtered_json.update({
+                'twid': value['ext_user_id'],
+            })
+            if value.get('ext_username'):
+                filtered_json.update({
+                    'twuser': value['ext_username']
+                })
+
+        elif key in POSH_FIELDS:
+            filtered_json.update({key: value})
+    out_file.write(json.dumps(filtered_json)+'\n')
+
+
 def process_address(filtered_json):
     address = ''
     if 'a1' in filtered_json:
@@ -258,6 +327,8 @@ def process_file(args):
                         process_pipl(out_file, single_json)
                     elif args.type == 'ig':
                         process_ig(out_file, single_json)
+                    elif args.type == 'posh':
+                        process_posh(out_file, single_json)
                     elif args.type == 'pdl':
                         process_pdl(out_file, single_json)
                     else:
