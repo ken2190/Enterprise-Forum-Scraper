@@ -237,25 +237,28 @@ def process_posh(out_file, single_json):
                     'website': value['website']
                 })
         elif key == 'fb_info':
-            filtered_json.update({
-                'fbid': value['ext_user_id'],
-            })
+            if value.get('ext_user_id'):
+                filtered_json.update({
+                    'fbid': value['ext_user_id'],
+                })
             if value.get('ext_username'):
                 filtered_json.update({
                     'fbuser': value['ext_username']
                 })
         elif key == 'pn_info':
-            filtered_json.update({
-                'pnid': value['ext_user_id'],
-            })
+            if value.get('ext_user_id'):
+                filtered_json.update({
+                    'pnid': value['ext_user_id'],
+                })
             if value.get('ext_username'):
                 filtered_json.update({
                     'pnuser': value['ext_username']
                 })
         elif key == 'tw_info':
-            filtered_json.update({
-                'twid': value['ext_user_id'],
-            })
+            if value.get('ext_user_id'):
+                filtered_json.update({
+                    'twid': value['ext_user_id'],
+                })
             if value.get('ext_username'):
                 filtered_json.update({
                     'twuser': value['ext_username']
