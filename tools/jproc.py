@@ -12,7 +12,7 @@ class Parser:
         self.parser.add_argument(
             '-o', '--output', help='Output File', required=True)
         self.parser.add_argument(
-            '-k', '--keep', help='list of fields/values to keep (comma separated). Everything else will be removed.', required=True)
+            '-k', '--keep', help='list of fields/values to keep (comma separated). Everything else will be removed.', required=False)
         self.parser.add_argument(
             '-d', '--domain', help='add domain field from email', action='store_true')
         self.parser.add_argument(
