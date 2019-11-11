@@ -4,15 +4,17 @@ import csv
 import json
 import traceback
 COLUMNS = [
-    'donor_name',
-    'donor_dob',
-    'donor_mobile_no',
-    'donor_telephone_no',
-    'donor_email_id',
-    'bb_city',
-    'bb_pincode',
-    'bb_address',
-    'bb_contact_no'
+    'first_name',
+    'last_name',
+    'url',
+    'ext_username',
+    'city',
+    'state',
+    'website',
+    'fb_user_id',
+    'ext_user_id',
+    'email',
+    'passwd_hash',
 ]
 
 
