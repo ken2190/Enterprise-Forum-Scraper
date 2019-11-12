@@ -1,9 +1,9 @@
 import json
 import pandas as pd
 
-JSON_FILE = '/Users/umeshpathak/Desktop/sample.json'
-CSV_FILE = '/Users/umeshpathak/Desktop/sample.csv'
-OUTPUT_FILE = '/Users/umeshpathak/Desktop/output.csv'
+JSON_FILE = 'poshmark.json'
+CSV_FILE = 'poshmark.csv'
+OUTPUT_FILE = 'remaining.csv'
 
 JSON_FIELD = 'email'
 CSV_COL = 'e'

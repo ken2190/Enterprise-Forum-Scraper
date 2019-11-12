@@ -42,10 +42,10 @@ def process_line(out_file, single_json, args):
             continue
         if key in ['email', 'e'] and args.domain:
             domain = value.split('@')[-1]
-            final_data.update({'domain': domain})
+            final_data.update({'d': domain})
         if key in ['city', 'state', 'zip'] and args.address_merge:
             address = address.replace(key, value)
-            final_data.update({'address': address})  
+            final_data.update({'a': address})  
             continue
         if key in ['fn', 'ln'] and args.name_merge:
             name = name.replace(key, value)

@@ -7,14 +7,17 @@ COLUMNS = [
     'first_name',
     'last_name',
     'url',
-    'ext_username',
     'city',
     'state',
     'website',
-    'fb_user_id',
-    'ext_user_id',
     'email',
     'passwd_hash',
+    'pnuser',
+    'pnid',
+    'fbid',
+    'fbuser',
+    'twid',
+    'twuser',
 ]
 
 
