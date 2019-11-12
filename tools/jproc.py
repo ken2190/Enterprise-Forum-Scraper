@@ -53,6 +53,8 @@ def process_line(out_file, single_json, args):
             continue
 
         final_data.update({key: value})
+    if final_data.get('a'):
+        final_data['a'] = final_data['a'].replace('zip', '').strip()
     if args.format:
         filtered_json = {'_source': final_data}
     else:
