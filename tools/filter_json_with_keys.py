@@ -103,6 +103,13 @@ TO_REMOVE_PIPL = [
     'religion',
     'aka'
 ]
+SCRAPE_FIELDS = {
+    'firstName',
+    'lastName',
+    'email',
+    'address',
+    'phone'
+}
 
 FIELD_MAPS = {
     'pizap': PIZAP_FIELDS,
@@ -111,6 +118,7 @@ FIELD_MAPS = {
     'pdl': PDL_FIELDS,
     'ig': IG_FIELDS,
     'posh': POSH_FIELDS,
+    'scrape': SCRAPE_FIELDS,
 }
 
 
@@ -305,7 +313,7 @@ def process_line(out_file, single_json, _type):
         return
     try:
         json_response = json.loads(match[0])
-    except:
+    except Exception:
         print('Following line is not valid JSON')
         print(single_json)
         return
@@ -316,6 +324,28 @@ def process_line(out_file, single_json, _type):
                 filtered_json.update({key: list(value.values())[0]})
             elif isinstance(value, str):
                 filtered_json.update({key: value})
+    out_file.write(json.dumps(filtered_json)+'\n')
+
+
+def process_scrape(out_file, single_json):
+    print(single_json)
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    for key, value in json_response.items():
+        if not value:
+            continue
+        if key == 'email':
+            if value and value[0]:
+                filtered_json.update({'email': value[0]})
+            else:
+                continue
+        elif key == 'company':
+            filtered_json.update(value['address'])
+            phone = value['phone']
+            if phone:
+                filtered_json.update({'phone': phone[0]['phoneNumber']})
+        elif key in SCRAPE_FIELDS:
+            filtered_json.update({key: value})
     out_file.write(json.dumps(filtered_json)+'\n')
 
 
@@ -334,10 +364,12 @@ def process_file(args):
                         process_posh(out_file, single_json)
                     elif args.type == 'pdl':
                         process_pdl(out_file, single_json)
+                    elif args.type == 'scrape':
+                        process_scrape(out_file, single_json)
                     else:
                         process_line(out_file, single_json, args.type)
                     print('Writing line number:', line_number)
-                except:
+                except Exception:
                     print('Error in line number:', line_number)
                     traceback.print_exc()
                     break
