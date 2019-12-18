@@ -111,6 +111,13 @@ SCRAPE_FIELDS = {
     'phone'
 }
 
+VEDANTU_FIELDS = {
+    'fullName',
+    'password',
+    'gender',
+    'email',
+}
+
 FIELD_MAPS = {
     'pizap': PIZAP_FIELDS,
     'gyfcat': GYFCAT_FIELDS,
@@ -119,6 +126,7 @@ FIELD_MAPS = {
     'ig': IG_FIELDS,
     'posh': POSH_FIELDS,
     'scrape': SCRAPE_FIELDS,
+    'vedantu': VEDANTU_FIELDS,
 }
 
 
@@ -349,6 +357,28 @@ def process_scrape(out_file, single_json):
     out_file.write(json.dumps(filtered_json)+'\n')
 
 
+def process_vedantu(out_file, single_json):
+    print(single_json)
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    for key, value in json_response.items():
+        if not value:
+            continue
+        if key == 'phones':
+            if value and value[0]:
+                phone = f'{value[0]["phoneCode"]}-{value[0]["number"]}'
+                filtered_json.update({'phone': phone})
+            else:
+                continue
+        elif key == 'studentInfo' and value['parentEmails']:
+            filtered_json.update({'parentEmails': value['parentEmails'][0]})
+        elif key == 'locationInfo':
+            filtered_json.update(value)
+        elif key in VEDANTU_FIELDS:
+            filtered_json.update({key: value})
+    out_file.write(json.dumps(filtered_json)+'\n')
+
+
 def process_file(args):
     input_file = args.input
     output_file = args.output
@@ -366,6 +396,8 @@ def process_file(args):
                         process_pdl(out_file, single_json)
                     elif args.type == 'scrape':
                         process_scrape(out_file, single_json)
+                    elif args.type == 'vedantu':
+                        process_vedantu(out_file, single_json)
                     else:
                         process_line(out_file, single_json, args.type)
                     print('Writing line number:', line_number)
