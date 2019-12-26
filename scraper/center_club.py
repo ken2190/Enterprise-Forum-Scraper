@@ -7,13 +7,10 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
-COOKIE = '__cfduid=dcd8ed2662383431872c04d461e610a691569573037; xf_csrf=Fz9oSTCzAmfypaE5; _ym_uid=1569573052714406052; _ym_d=1569573052; cf_clearance=fffc943f3eebb5839d6059e5ca9f39591bdf26ce-1569649227-14400-150; _ym_isad=1; _ym_visorc_53481787=w; xf_sam_ad_views=%7B%223%22%3A1569573050%2C%224%22%3A1569649243%7D'
-
-
-class CenterClubSpider(scrapy.Spider):
+class CenterClubSpider(BypassCloudfareSpider):
     name = 'centerclub_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -28,8 +25,7 @@ class CenterClubSpider(scrapy.Spider):
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1',
-            'cookie': COOKIE,
-            'user-agent': USER_AGENT,
+            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
         }
 
     def start_requests(self):
@@ -161,10 +157,7 @@ class CenterClubScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,

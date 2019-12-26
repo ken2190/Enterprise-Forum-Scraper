@@ -11,13 +11,10 @@ import configparser
 from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
 
-COOKIE = '__cfduid=db7eeaedd1001689fde35f3a8a54c5d811559808690; _ga=GA1.2.1023046404.1559808702; mybb[announcements]=0; mybb[threadread]=a%3A2%3A%7Bi%3A132089%3Bi%3A1559808712%3Bi%3A132653%3Bi%3A1560491249%3B%7D; mybb[forumread]=a%3A2%3A%7Bi%3A258%3Bi%3A1560656349%3Bi%3A158%3Bi%3A1560652972%3B%7D; cf_clearance=363688678f676687d7fc309cdf9ae1b2baecd9ee-1567486595-1800-150; mybb[lastvisit]=1564481983; sid=7abae4a5b92d1bea42eaf152e9af6e25; _gid=GA1.2.1005372150.1567486601; mybb[lastactive]=1567486726'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
-
-
-class NulledBBSpider(scrapy.Spider):
+class NulledBBSpider(BypassCloudfareSpider):
     name = 'nulledbb_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -28,8 +25,7 @@ class NulledBBSpider(scrapy.Spider):
         self.output_path = output_path
         self.avatar_path = avatar_path
         self.headers = {
-            'user-agent': USER_AGENT,
-            'cookie': COOKIE,
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
             'referer': 'https://nulledbb.com/',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
@@ -165,10 +161,7 @@ class NulledBBScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,

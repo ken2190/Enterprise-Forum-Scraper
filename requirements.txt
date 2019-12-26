@@ -4,3 +4,4 @@ requests[socks]
 scrapy
 selenium
 python-dateutil
+cloudscraper

@@ -11,24 +11,47 @@ class Scraper:
         self.counter = 1
         self.kwargs = kwargs
 
+    def is_blank(self):
+        values = [
+            value for value in self.kwargs.values()
+            if value
+        ]
+        return len(values) == 0
+
+    def print_list_template(self):
+        print('Following scrapers are available')
+        for index, scraper in enumerate(SCRAPER_MAP.keys(), 1):
+            print(f'{index}. {scraper}')
+
     def do_scrape(self):
-        if self.kwargs.get('list'):
-            print('Following scrapers are available')
-            for index, scraper in enumerate(SCRAPER_MAP.keys(), 1):
-                print(f'{index}. {scraper}')
+        if self.is_blank():
+            print(
+                "Require parameter:\n"
+                "- -t/--template: template name\n"
+                "- -o/--output: output folder"
+            )
             return
+
+        if self.kwargs.get('list'):
+            self.print_list_template()
+            return
+
         template = self.kwargs.get('template')
+
         if not template:
             print('template (-t/--template) missing')
             return
         scraper = SCRAPER_MAP.get(template.lower())
         if not scraper:
-            print('Message: your target name is wrong..!')
+            print('Not found template!')
+            self.print_list_template()
             return
+
         output_folder = self.kwargs.get('output')
         if not output_folder:
             print('Output path missing')
             return
+
         self.kwargs.update({'db_path': UPDATE_DB_PATH})
         # ------------make folder if not exist -----------------
         if not os.path.exists(output_folder):

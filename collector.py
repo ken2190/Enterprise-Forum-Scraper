@@ -3,7 +3,7 @@ import argparse
 
 class Collector:
 
-    def get_args(self):
+    def __init__(self):
         parser = argparse.ArgumentParser(
             description='Scrapping Forums Framework')
         parser.add_argument(
@@ -26,7 +26,7 @@ class Collector:
             '-pwd', '--password', help='password to login', required=False)
         parser.add_argument(
             '-w', '--wait_time', help='wait time (in second) between '
-            'successive requests', required=False)
+                                      'successive requests', required=False)
         parser.add_argument(
             '-ts', '--topic_start', help='starting topic no.', required=False)
         parser.add_argument(
@@ -49,7 +49,10 @@ class Collector:
             '-b', '--banlist', help='Scrape the ban list', action='store_true')
         parser.add_argument(
             '-lst', '--list', help='List scrapers', action='store_true')
-        args = parser.parse_args()
+        self.parser = parser
+
+    def get_args(self):
+        args = self.parser.parse_args()
         return args._get_kwargs()
 
     def start(self):
@@ -60,6 +63,8 @@ class Collector:
         elif kwargs.get('scrape'):
             from run_scrapper import Scraper
             Scraper(kwargs).do_scrape()
+        else:
+            self.parser.print_help()
 
 
 if __name__ == '__main__':

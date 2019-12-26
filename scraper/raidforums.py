@@ -1,22 +1,19 @@
 import os
 import re
-import scrapy
 import datetime
 import sqlite3
 import dateutil.parser as dparser
-from scrapy.http import Request, FormRequest
+from scrapy.http import Request
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
 
-USER = 'Exabyte'
-PASS = 'Night#OG009'
-COOKIE = '__cfduid=db2303582a7ede39865a028f11d1b61c91563521404; _ga=GA1.2.1495549154.1563521411; RFLovesYou_mybb[announcements]=0; RFLovesYou_mybb[forumread]=a%3A1%3A%7Bi%3A160%3Bi%3A1563527733%3B%7D; RFLovesYou_mybb[lastvisit]=1564568704; PHPSESSID=a3fjq9k0gkp2j6efvtj3jopqrc; _gid=GA1.2.170778148.1570857899; RFLovesYou_mybb[threadread]=a%3A12%3A%7Bi%3A15001%3Bi%3A1563522160%3Bi%3A54324%3Bi%3A1563522298%3Bi%3A53926%3Bi%3A1563522557%3Bi%3A40121%3Bi%3A1563522548%3Bi%3A18289%3Bi%3A1563523175%3Bi%3A60174%3Bi%3A1563522835%3Bi%3A51921%3Bi%3A1563522927%3Bi%3A33471%3Bi%3A1563523388%3Bi%3A4351%3Bi%3A1563528662%3Bi%3A64835%3Bi%3A1563769104%3Bi%3A66244%3Bi%3A1563943991%3Bi%3A74398%3Bi%3A1570857947%3B%7D; RFLovesYou_coppadob=5-4-1986; RFLovesYou_mybb[lastactive]=1570858671; RFLovesYou_loginattempts=1; RFLovesYou_mybbuser=121666013_6R4EF1BhfXFtxdUF5nDJkS1Dchsrp06UBGGNVgTBLItDnQ96xO; RFLovesYou_sid=8e9c5d51f5f88982d9b91f9b29ccabb8'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
 REQUEST_DELAY = 0.3
 NO_OF_THREADS = 10
 
 
-class RaidForumsSpider(scrapy.Spider):
+class RaidForumsSpider(BypassCloudfareSpider):
+
     name = 'raidforums_spider'
 
     def __init__(self, output_path, useronly, update, db_path, avatar_path):
@@ -31,7 +28,7 @@ class RaidForumsSpider(scrapy.Spider):
         self.db_path = db_path
         self.avatar_path = avatar_path
         self.headers = {
-            "user-agent": USER_AGENT
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
         self.set_users_path()
 
@@ -57,8 +54,7 @@ class RaidForumsSpider(scrapy.Spider):
                 'sec-fetch-mode': 'navigate',
                 'sec-fetch-site': 'same-origin',
                 'sec-fetch-user': '?1',
-                'cookie': COOKIE,
-                'user-agent': USER_AGENT
+                'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
             }
             yield Request(
                 url=update_url,
@@ -72,11 +68,8 @@ class RaidForumsSpider(scrapy.Spider):
                 url = forum.xpath('@href').extract_first()
                 if self.base_url not in url:
                     url = self.base_url + url
-                # if 'Forum-General--187' not in url:
-                #     continue
                 yield Request(
                     url=url,
-                    headers=self.headers,
                     callback=self.parse_forum
                 )
 
@@ -280,10 +273,7 @@ class RaidForumsScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,

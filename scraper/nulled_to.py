@@ -11,10 +11,8 @@ import configparser
 from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
-
-COOKIE = '__cfduid=dc9024d1e263a42aca3be0ec879e14ee81567498330; _ga=GA1.2.882200545.1567498338; nulledmember_id=2864575; nulledpass_hash=0ce8307c5a89f209dcd1635c03ec70e8; ipsconnect_4ac7fd4073b08692edf97bb68b9b88dd=1; nulledmember_id=2864575; nulledpass_hash=0ce8307c5a89f209dcd1635c03ec70e8; cf_clearance=ebe5d0e66db59c0d8daa3972642a36c4136703d4-1567793880-86400-150; PHPSESSID=31sss46apedkmhm8rqqrcplsd2; nulledsession_id=1bec061af690b59d0bc22209e316a348; _gid=GA1.2.414405257.1567793883; _gat=1'
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0'
 
 FORUMS = [
     'https://www.nulled.to/forum/2-announcements/',
@@ -130,7 +128,7 @@ FORUMS = [
 ]
 
 
-class NulledSpider(scrapy.Spider):
+class NulledSpider(BypassCloudfareSpider):
     name = 'nulled_spider'
 
     def __init__(self, output_path, avatar_path=None, urlsonly=None):
@@ -143,8 +141,7 @@ class NulledSpider(scrapy.Spider):
         self.avatar_path = avatar_path
         self.urlsonly = urlsonly
         self.headers = {
-            'user-agent': USER_AGENT,
-            'cookie': COOKIE,
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
             'referer': 'https://www.nulled.to/',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
@@ -331,10 +328,7 @@ class NulledToScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,

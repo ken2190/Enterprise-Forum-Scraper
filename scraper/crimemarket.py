@@ -5,14 +5,14 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
-COOKIE = '__cfduid=d934c02818c13d215b30a1d0225240cc21565155430; ips4_IPSSessionFront=31mhfnk670608aa1dui547i7e7; cf_clearance=63a940f0d88def19662afa167ee17e5caccd61e7-1568785110-1800-150'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 20
 
 
-class CrimeMarketSpider(scrapy.Spider):
+class CrimeMarketSpider(BypassCloudfareSpider):
     name = 'crimemarket_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -33,8 +33,7 @@ class CrimeMarketSpider(scrapy.Spider):
             'sec-fetch-user': '?1',
             'referer': 'https://crimemarket.to/index.php',
             'upgrade-insecure-requests': '1',
-            'user-agent': USER_AGENT,
-            'cookie': COOKIE,
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
 
     def start_requests(self):
@@ -161,10 +160,7 @@ class CrimeMarketScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,
