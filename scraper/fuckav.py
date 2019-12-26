@@ -7,14 +7,14 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
-COOKIE = 'sessionhash=b62788d1156eb79f461f029d2308abdf; avsessionhash=3ff4c75d34ac69faaa1bc58d9c9305fa; avlastvisit=1567796137; avlastactivity=0'
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0'
+
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 20
 
 
-class FuckavSpider(scrapy.Spider):
+class FuckavSpider(BypassCloudfareSpider):
     name = 'fuckav_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -30,8 +30,7 @@ class FuckavSpider(scrapy.Spider):
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1',
             'referer': 'https://fuckav.ru/',
-            'user-agent': USER_AGENT,
-            'cookie': COOKIE,
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
 
     def start_requests(self):
@@ -156,10 +155,7 @@ class FuckavScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,

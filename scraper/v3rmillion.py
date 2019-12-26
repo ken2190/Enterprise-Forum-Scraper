@@ -7,14 +7,14 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
-COOKIE = '__cfduid=db30372c5cfd52f51055e2f827e39b6941559539109; _ga=GA1.2.73025486.1559539374; mybb[lastvisit]=1559540977; coppadob=11-4-1986; mybb[lastactive]=1564478511; mybbuser=1271838_fnY3vEdoam10xfLfL3lNJhuFbw6D5G0eCRxhE4wLtZA2FQdwRb; loginattempts=1; identifier=v3rm5d400e37ba2a1; cf_clearance=aeb0e67513fac0aa094f969103cd7687dc6215a1-1567491640-14400-250; sid=4306ec1d599dae4c253ad2ac674ad7b1; _gid=GA1.2.1297305583.1567491642'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+
 REQUEST_DELAY = 0.75
 NO_OF_THREADS = 5
 
 
-class V3RMillionSpider(scrapy.Spider):
+class V3RMillionSpider(BypassCloudfareSpider):
     name = 'v3rmillion_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -30,8 +30,7 @@ class V3RMillionSpider(scrapy.Spider):
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1',
             'referer': 'https://v3rmillion.net/',
-            'user-agent': USER_AGENT,
-            'cookie': COOKIE,
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
 
     def start_requests(self):
@@ -159,10 +158,7 @@ class V3RMillionScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,

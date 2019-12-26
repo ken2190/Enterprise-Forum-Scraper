@@ -7,14 +7,14 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
-COOKIE = '__ddg_=755558FABCADE1F8F10969E75BF27DB70291B405; __ddgu=1d34d8d5658519d7affbd73006789864.3239521790; XSRF-TOKEN=eyJpdiI6IkR1am1EVktvZkZDRGJTNTdWeithRkE9PSIsInZhbHVlIjoiMHA0SlB0RTByajlhNStrekdTWFphK0RlakZXbVkxZTdqRitxWnAyMFZRZ2FzS09HdGh4SjZZc2p0TnVBQWUzaSIsIm1hYyI6ImVkZWQwYzI1MzAzNTY2MDk0MTBiMTBiYjFlYjEwZjMyMGRiOTU2MDU2MTI0ZTBkMzAxYjQzOTQzNDcxMDBiMzgifQ%3D%3D; JSESSIONID=eyJpdiI6ImxzUXVET1luRzN4RVBLSVwva1VLODBBPT0iLCJ2YWx1ZSI6IjU2QkFxc1pwekdneWZVZ0dUaTNYXC9zank5NlI4NHdQS2QydDY0Sk95VmY4NXhXNHp5ZkdBRUpLUDJBUVRYNGRQIiwibWFjIjoiMDdmZTI0NGE3MzQ5MWQ1ZDI5YTQwMmU0ZjE2OTE3YTVhYjcyYjkxZDViMTcyMzk3MGZiYWI4NTMyYzhiNWE4ZSJ9'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 20
 
 
-class CanadaHQSpider(scrapy.Spider):
+class CanadaHQSpider(BypassCloudfareSpider):
     name = 'canadahq_spider'
 
     def __init__(self, output_path, user_path, avatar_path):
@@ -31,8 +31,7 @@ class CanadaHQSpider(scrapy.Spider):
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1',
             'referer': 'https://fuckav.ru/',
-            'user-agent': USER_AGENT,
-            'cookie': COOKIE,
+            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
         }
 
     def start_requests(self):

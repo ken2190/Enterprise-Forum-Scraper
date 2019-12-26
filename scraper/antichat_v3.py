@@ -8,15 +8,14 @@ import configparser
 from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
 
 USER = 'blacklotus2000@protonmail.com'
 PASS = 'Night#Anti999'
-COOKIE = '__cfduid=da377ef4062fd7cfceaf88587b185e2441547044333; _ym_uid=1564475724504070551; _ym_d=1564475724; _ga=GA1.2.2097138322.1564475724; _gid=GA1.2.2134569859.1569167431; _ym_isad=1; _ym_wasSynced=%7B%22time%22%3A1569167432227%2C%22params%22%3A%7B%22eu%22%3A0%7D%2C%22bkParams%22%3A%7B%7D%7D; anti_logged_in=1; anti_dbtech_security_session=7dda136c4e46d6aa6189303212e0e96a; anti_session=1dcef4d9aecb4a14fb926dddd95a9ac1; _gat=1'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
 
 
-class AntichatSpider(scrapy.Spider):
+class AntichatSpider(BypassCloudfareSpider):
     name = 'antichat_spider'
 
     def __init__(self, output_path):
@@ -32,9 +31,8 @@ class AntichatSpider(scrapy.Spider):
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'same-origin',
             'sec-fetch-user': '?1',
-            'cookie': COOKIE,
             'content-type': 'application/x-www-form-urlencoded',
-            'user-agent': USER_AGENT
+            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
 
     def start_requests(self):

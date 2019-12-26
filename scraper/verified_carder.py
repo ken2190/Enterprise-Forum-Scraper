@@ -11,14 +11,10 @@ import configparser
 from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
 
-COOKIE = 'rcksid=2muzIW6kQNcibfALPci0Yz2qjEb2ddoyYLUOgdyLpbYYwmGQujOQ2lQhro6o90dN; BLAZINGFAST-WEB-PROTECT=0d7286e827b3768d575051a93311208c; xf_csrf=3hAF9XY3c0g3-LDy; xf_sam_ad_views=%7B%2225%22%3A1567692149%2C%2216%22%3A1567692175%7D; _ga=GA1.2.1572881391.1567692241; _gid=GA1.2.2095938091.1567692241; _gat_gtag_UA_130514334_1=1'
-
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0'
-
-
-class VerifiedCarderSpider(scrapy.Spider):
+class VerifiedCarderSpider(BypassCloudfareSpider):
     name = 'verifiedcarder_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -30,12 +26,11 @@ class VerifiedCarderSpider(scrapy.Spider):
         self.output_path = output_path
         self.avatar_path = avatar_path
         self.headers = {
-            'user-agent': USER_AGENT,
-            'cookie': COOKIE,
             'referer': 'https://verifiedcarder.ws/',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1'
+            'sec-fetch-user': '?1',
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
 
     def start_requests(self):
@@ -164,10 +159,7 @@ class VerifiedCarderScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,

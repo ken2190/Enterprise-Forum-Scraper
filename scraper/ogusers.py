@@ -5,17 +5,16 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
+
 
 USER = 'Exabyte'
 PASS = 'Night#OG009'
 REQUEST_DELAY = .6
 NO_OF_THREADS = 20
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
-
-COOKIE = '__cfduid=d404d1323e9daf0d6901353cfd6b1939d1570002606; mybb[lastvisit]=1570002612; mybb[lastactive]=1570002626; loginattempts=1; mybbuser=158805_tFL8dFFeuwYGoojyOYMlnYwoxGZjwIKSCk7ZOJmqSuEFm1owqX; sid=caae78435600cd84809b288df5b6bf91'
 
 
-class OgUsersSpider(scrapy.Spider):
+class OgUsersSpider(BypassCloudfareSpider):
     name = 'ogusers_spider'
 
     def __init__(self, output_path, avatar_path, useronly, firstrun):
@@ -32,8 +31,7 @@ class OgUsersSpider(scrapy.Spider):
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'same-origin',
             'sec-fetch-user': '?1',
-            'cookie': COOKIE,
-            'user-agent': USER_AGENT,
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
         self.set_users_path()
 
@@ -285,10 +283,7 @@ class OgUsersScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,

@@ -5,14 +5,14 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
-COOKIE = 'ips4_ipsTimezone=Asia/Katmandu; ips4_hasJS=true; ips4_device_key=9fe458008094ea72f31f27709129b0a9; ips4_announcement_11=true; ips4_guestTime=1571459078; ips4_IPSSessionFront=8a322ab92e57bea0c431d1da95df791f; ips4_member_id=145208; ips4_login_key=a52cc3edb52b21e4c8430f14dccdb4bb; ips4_loggedIn=1'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
+
 REQUEST_DELAY = 3
 NO_OF_THREADS = 5
 
 
-class CrackingProSpider(scrapy.Spider):
+class CrackingProSpider(BypassCloudfareSpider):
     name = 'crackingpro_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -28,8 +28,7 @@ class CrackingProSpider(scrapy.Spider):
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'same-origin',
             'sec-fetch-user': '?1',
-            'cookie': COOKIE,
-            'user-agent': USER_AGENT,
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
 
     def start_requests(self):
@@ -160,10 +159,7 @@ class CrackingProScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,

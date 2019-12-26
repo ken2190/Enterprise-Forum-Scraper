@@ -7,12 +7,10 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
-
-COOKIE = '_ym_uid=1567310450846594086; _ym_d=1567310450; G_ENABLED_IDPS=google; xf_user=382549%2C854191992b95fa6bb89faab3ebf427810b08fe5f; xf_logged_in=1; xf_id=44e73a4e69648fe3add69b0c046c0e6a; xf_session=ec00815c2dc963355cd795f8c7dbcf94; _ym_isad=1; _ym_visorc_51992225=w'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+from scraper.base_scrapper import BypassCloudfareSpider
 
 
-class YouHackSpider(scrapy.Spider):
+class YouHackSpider(BypassCloudfareSpider):
     name = 'youhack_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -26,7 +24,7 @@ class YouHackSpider(scrapy.Spider):
             "sec-fetch-mode": "navigate",
             "sec-fetch-site": 'none',
             "sec-fetch-user": "?1",
-            "user-agent": USER_AGENT
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
 
     def start_requests(self):
@@ -156,10 +154,7 @@ class YouHackScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,

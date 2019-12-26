@@ -9,24 +9,48 @@ class Parser:
         self.counter = 1
         self.kwargs = kwargs
 
+    def is_blank(self):
+        values = [
+            value for value in self.kwargs.values()
+            if value
+        ]
+        return len(values) == 1
+
+    def print_list_template(self):
+        print('Following parsers are available')
+        for index, scraper in enumerate(PARSER_MAP.keys(), 1):
+            print(f'{index}. {scraper}')
+
     def start(self):
-        if self.kwargs.get('list'):
-            print('Following parsers are available')
-            for index, parser in enumerate(PARSER_MAP.keys(), 1):
-                print(f'{index}. {parser}')
+        if self.is_blank():
+            print(
+                "Require parameter:\n"
+                "- -t/--template: template name\n"
+                "- -p/--path: input folder\n"
+                "- -o/--output: ouput folder"
+            )
             return
+
+        if self.kwargs.get('list'):
+            self.print_list_template()
+            return
+
         parser_name = self.kwargs.get('template')
         if not parser_name:
             print('Parser (-t/--template) missing')
             return
+
         parser = PARSER_MAP.get(parser_name.lower())
         if not parser:
-            print('Message: your target name is wrong..!')
+            print('Not found template!')
+            self.print_list_template()
             return
+
         folder_path = self.kwargs.get('path')
         if not folder_path:
             print('Input Path missing')
             return
+
         # -----------filter files which user want to parse --------------
         files = []
         for filee in glob(folder_path+'/*'):
@@ -37,6 +61,7 @@ class Parser:
         if not output_folder:
             print('Output Path missing')
             return
+
         # ------------make folder if not exist -----------------
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)

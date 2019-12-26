@@ -5,14 +5,13 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import BypassCloudfareSpider
 
-COOKIE = '__cfduid=d79daaae20279c7878c65a82f2911eca41572761787; vDDoS=0fc7da5ed7711e620eca775e5cbc3173; mybb[lastvisit]=1572761789; _ga=GA1.2.2120464920.1572761797; _gid=GA1.2.1903450472.1572761797; mybb[lastactive]=1572763315; sid=95a1baee554ebda61364268e64392734; mybb[threadread]=a%3A3%3A%7Bi%3A27677%3Bi%3A1572763245%3Bi%3A25654%3Bi%3A1572763269%3Bi%3A22749%3Bi%3A1572763315%3B%7D; mybb[forumread]=a%3A1%3A%7Bi%3A82%3Bi%3A1572763315%3B%7D; _gat_gtag_UA_121055138_2=1'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36'
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
 
 
-class CardingTeamSpider(scrapy.Spider):
+class CardingTeamSpider(BypassCloudfareSpider):
     name = 'cardingteam_spider'
 
     def __init__(self, output_path, avatar_path):
@@ -26,8 +25,7 @@ class CardingTeamSpider(scrapy.Spider):
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'same-origin',
             'sec-fetch-user': '?1',
-            'cookie': COOKIE,
-            'user-agent': USER_AGENT,
+            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
         }
 
     def start_requests(self):
@@ -158,16 +156,12 @@ class CardingTeamScrapper():
     def do_scrape(self):
         settings = {
             "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
             },
             'DOWNLOAD_DELAY': REQUEST_DELAY,
             'CONCURRENT_REQUESTS': NO_OF_THREADS,
             'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
             'RETRY_HTTP_CODES': [403, 429, 500, 503, 520],
-            # 'HTTPERROR_ALLOWED_CODES': [520],
             'RETRY_TIMES': 10,
             'LOG_ENABLED': True,
 

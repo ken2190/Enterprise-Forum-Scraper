@@ -1,9 +1,10 @@
-
 import os
 import re
 import time
 import datetime
 import traceback
+import scrapy
+
 from glob import glob
 from requests import Session
 from lxml.html import fromstring
@@ -171,3 +172,15 @@ class BaseScrapper:
             return
         with open(avatar_file, 'wb') as f:
             f.write(content)
+
+
+class BypassCloudfareSpider(scrapy.Spider):
+    custom_settings = {
+        "DOWNLOADER_MIDDLEWARES": {
+            "middlewares.middlewares.LuminatyProxyMiddleware": 100,
+            "middlewares.middlewares.BypassCloudfareMiddleware": 200
+        },
+        "DEFAULT_REQUEST_HEADERS": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"
+        }
+    }
