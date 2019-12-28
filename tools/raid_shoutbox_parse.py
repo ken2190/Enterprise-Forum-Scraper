@@ -2,16 +2,19 @@ import re
 import json
 import os
 import csv
+import argparse
+
 from lxml.html import fromstring
 from lxml.etree import ParserError
 from glob import glob
+
 
 PATH = '/Users/umeshpathak/Downloads/RF_LOGS'
 
 
 def parse_file(f):
     value = re.findall(r'\((\d+_\d+)\)', f)[0]
-    with open(f, 'r') as fp:
+    with open(f, 'r', encoding="utf-8") as fp:
         raw_content = fp.read()
         try:
             html_response = fromstring(raw_content)
@@ -76,39 +79,81 @@ def write_json(file_pointer, data):
     file_pointer.write('\n')
 
 
-def get_files():
+def get_files(folder_path):
     files = []
-    for filee in glob(PATH+'/*'):
-        if os.path.isfile(filee):
-            files.append(filee)
+    for file in glob("%s/*" % folder_path):
+        if os.path.isfile(file):
+            files.append(file)
 
-    pattern = re.compile(r'log\((\d+)_\d+\)')
+    pattern = re.compile(
+        r'log\((\d+)_\d+\)',
+        re.IGNORECASE
+    )
 
     sorted_files = sorted(
         files,
-        key=lambda x: int(pattern.search(x).group(1)))
+        key=lambda x: int(pattern.search(x).group(1))
+    )
 
     filtered_files = list()
     seen = set()
+
     for x in sorted_files:
-        value = re.findall(r'\((\d+_\d+)\)', x)[0]
+        value = re.findall(
+            r'\((\d+_\d+)\)',
+            x
+        )[0]
         if value not in seen:
             seen.add(value)
             filtered_files.append(x)
+
     return filtered_files
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description="Shoutbox Parser Tools"
+    )
+    parser.add_argument(
+        "-i", "--input",
+        help="Input folder path",
+        required=True
+    )
+    parser.add_argument(
+        "-o", "--output",
+        help="Output file, json or csv",
+        required=True
+    )
+    parser.add_argument(
+        "-f", "--field",
+        help="Field to process, seperate by comma",
+        required=False
+    )
+
+    return {
+        key: value for key, value in
+        parser.parse_args()._get_kwargs()
+    }
+
+
 def main():
-    files = get_files()
-    fields = ['user', 'message', 'f_name']
-    with open('output.json', 'w') as jsonfile:
-        # writer = csv.DictWriter(csvfile, fieldnames=fields)
-        # writer.writeheader()
-        for f in files:
-            data = parse_file(f)
-            # writer.writerows(data)
-            for d in data:
-                write_json(jsonfile, d)
+    kwargs = parse_arguments()
+    input_path = kwargs.get("input")
+    output_path = kwargs.get("output")
+    files = get_files(input_path)
+
+    if ("csv" not in output_path.lower()
+            and "json" not in output_path):
+        raise ValueError(
+            "Output file must be either csv or json"
+        )
+
+    if "json" in output_path.lower():
+        with open(output_path, 'w', encoding="utf-8") as json_file:
+            for f in files:
+                data = parse_file(f)
+                for d in data:
+                    write_json(json_file, d)
 
 
 if __name__ == '__main__':
