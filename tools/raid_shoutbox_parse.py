@@ -6,6 +6,7 @@ import argparse
 
 from lxml.html import fromstring
 from lxml.etree import ParserError
+from csv import DictWriter
 from glob import glob
 
 
@@ -124,11 +125,6 @@ def parse_arguments():
         help="Output file, json or csv",
         required=True
     )
-    parser.add_argument(
-        "-f", "--field",
-        help="Field to process, seperate by comma",
-        required=False
-    )
 
     return {
         key: value for key, value in
@@ -142,18 +138,31 @@ def main():
     output_path = kwargs.get("output")
     files = get_files(input_path)
 
-    if ("csv" not in output_path.lower()
-            and "json" not in output_path):
-        raise ValueError(
-            "Output file must be either csv or json"
-        )
+    if ("json" in output_path.lower()) or ("csv" in output_path.lower()):
+        with open(
+            file=output_path,
+            mode='w+',
+            encoding="utf-8",
+            newline=""
+        ) as output_file:
+            if "csv" in output_path.lower():
+                writer = csv.DictWriter(
+                    output_file,
+                    fieldnames=["user", "message"]
+                )
+                writer.writeheader()
 
-    if "json" in output_path.lower():
-        with open(output_path, 'w', encoding="utf-8") as json_file:
             for f in files:
                 data = parse_file(f)
                 for d in data:
-                    write_json(json_file, d)
+                    if "json" in output_path:
+                        write_json(output_file, d)
+                    elif "csv" in output_path:
+                        writer.writerow(d.get("_source"))
+    else:
+        raise ValueError(
+            "Only accept json or csv output"
+        )
 
 
 if __name__ == '__main__':
