@@ -24,7 +24,6 @@ def parse_file(f):
             '//div[contains(@class, "msgShout msglog")]'
         )
         data = list()
-        rows.reverse()
         for row in rows:
             user = row.xpath(
                 'span[@class="username_msgShout"]/'
