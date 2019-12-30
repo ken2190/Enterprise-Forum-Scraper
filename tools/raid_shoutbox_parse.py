@@ -24,6 +24,7 @@ def parse_file(f):
             '//div[contains(@class, "msgShout msglog")]'
         )
         data = list()
+        rows.reverse()
         for row in rows:
             user = row.xpath(
                 'span[@class="username_msgShout"]/'
@@ -92,7 +93,8 @@ def get_files(folder_path):
 
     sorted_files = sorted(
         files,
-        key=lambda x: int(pattern.search(x).group(1))
+        key=lambda x: int(pattern.search(x).group(1)),
+        reverse=True
     )
 
     filtered_files = list()
