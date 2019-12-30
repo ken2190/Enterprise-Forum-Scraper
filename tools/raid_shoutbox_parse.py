@@ -6,7 +6,6 @@ import argparse
 
 from lxml.html import fromstring
 from lxml.etree import ParserError
-from csv import DictWriter
 from glob import glob
 
 
@@ -22,8 +21,8 @@ def parse_file(f):
         except ParserError:
             return []
         rows = html_response.xpath(
-            '//div[contains(@class, "msgShout msglog")]')
-        rows.reverse()
+            '//div[contains(@class, "msgShout msglog")]'
+        )
         data = list()
         for row in rows:
             user = row.xpath(
@@ -61,11 +60,11 @@ def parse_file(f):
                 'span[@class="content_msgShout"]/descendant::text()'))
             if message.startswith('posted new thread'):
                 continue
-            # data.append({'user': ' '.join(user), 'message': message, 'f_name': value})
             data.append({
                 '_source': {
                     'user': ' '.join(user),
-                    'message': message
+                    'message': message,
+                    'index': value
                 }
             })
         return data
@@ -148,7 +147,7 @@ def main():
             if "csv" in output_path.lower():
                 writer = csv.DictWriter(
                     output_file,
-                    fieldnames=["user", "message"]
+                    fieldnames=["user", "message", "index"]
                 )
                 writer.writeheader()
 
