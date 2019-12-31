@@ -24,7 +24,7 @@ def parse_file(f):
             '//div[contains(@class, "msgShout msglog")]'
         )
         data = list()
-        for row in rows:
+        for index, row in enumerate(rows):
             user = row.xpath(
                 'span[@class="username_msgShout"]/'
                 'span[@class="god-hex" or @class="vip-hex" '
@@ -60,13 +60,18 @@ def parse_file(f):
                 'span[@class="content_msgShout"]/descendant::text()'))
             if message.startswith('posted new thread'):
                 continue
-            data.append({
+            item = {
                 '_source': {
                     'user': ' '.join(user),
                     'message': message,
                     'index': value
                 }
-            })
+            }
+
+            if index == 0 or index == len(rows) - 1:
+                item['_source']['consequential'] = True
+
+            data.append(item)
         return data
 
 
@@ -148,7 +153,7 @@ def main():
             if "csv" in output_path.lower():
                 writer = csv.DictWriter(
                     output_file,
-                    fieldnames=["user", "message", "index"]
+                    fieldnames=["user", "message", "index", "consequential"]
                 )
                 writer.writeheader()
 
