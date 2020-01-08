@@ -5,16 +5,23 @@ import requests
 import time
 import traceback
 from lxml.html import fromstring
+from scraper.base_scrapper import BypassCloudfareSpider
 
 
-class PasteBinScrapper:
+class PasteBinScrapper(BypassCloudfareSpider):
+
     def __init__(self, kwargs):
         self.base_url = 'https://psbdmp.ws'
         self.start_url = 'https://psbdmp.ws/api/dump/getbydate'
         self.dump_url = 'https://psbdmp.ws/archive/{}'
         self.output_path = kwargs.get('output')
         self.date_format = '%Y-%m-%d'
-        self.start_date = datetime.datetime.strptime(kwargs.get('start_date'), self.date_format)
+        self.start_date = None
+        if kwargs.get("start_date"):
+            self.start_date = datetime.datetime.strptime(
+                kwargs.get('start_date'),
+                self.date_format
+            )
 
     def save_file(self, dump_id, output_path):
         dump_file = '{}/{}.txt'.format(
@@ -35,6 +42,11 @@ class PasteBinScrapper:
 
     def do_scrape(self):
         print('************  Pastebin Scrapper Started  ************\n')
+
+        if not self.start_date:
+            print('Parameter missing: -s/--start_date')
+            return
+
         while self.start_date < datetime.datetime.now():
             try:
                 _from = self.start_date.strftime(self.date_format)

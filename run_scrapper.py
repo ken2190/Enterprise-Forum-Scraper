@@ -60,8 +60,6 @@ class Scraper:
         scraper_obj = scraper(self.kwargs)
         if self.kwargs.get('rescan'):
             scraper_obj.do_rescan()
-        # elif kwargs.get('update'):
-        #     scraper_obj.do_new_posts_scrape()
         else:
             scraper_obj.do_scrape()
 
