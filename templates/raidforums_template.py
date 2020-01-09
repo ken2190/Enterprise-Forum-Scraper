@@ -122,7 +122,7 @@ class RaidForumsParser:
             avatar = self.get_avatar(comment_block)
 
             source = {
-                'forum': self.parser_name,
+                'forum': "raidforums.com",
                 'pid': pid,
                 'message': comment_text.strip(),
                 'cid': comment_id,
@@ -159,7 +159,7 @@ class RaidForumsParser:
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
             source = {
-                'forum': self.parser_name,
+                'forum': "raidforums.com",
                 'pid': pid,
                 'subject': title,
                 'author': author,
