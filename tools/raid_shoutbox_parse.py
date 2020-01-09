@@ -6,7 +6,6 @@ import argparse
 
 from lxml.html import fromstring
 from lxml.etree import ParserError
-from csv import DictWriter
 from glob import glob
 
 
@@ -22,10 +21,10 @@ def parse_file(f):
         except ParserError:
             return []
         rows = html_response.xpath(
-            '//div[contains(@class, "msgShout msglog")]')
-        rows.reverse()
+            '//div[contains(@class, "msgShout msglog")]'
+        )
         data = list()
-        for row in rows:
+        for index, row in enumerate(rows):
             user = row.xpath(
                 'span[@class="username_msgShout"]/'
                 'span[@class="god-hex" or @class="vip-hex" '
@@ -61,13 +60,18 @@ def parse_file(f):
                 'span[@class="content_msgShout"]/descendant::text()'))
             if message.startswith('posted new thread'):
                 continue
-            # data.append({'user': ' '.join(user), 'message': message, 'f_name': value})
-            data.append({
+            item = {
                 '_source': {
                     'user': ' '.join(user),
-                    'message': message
+                    'message': message,
+                    'index': value
                 }
-            })
+            }
+
+            if index == 0 or index == len(rows) - 1:
+                item['_source']['consequential'] = True
+
+            data.append(item)
         return data
 
 
@@ -93,7 +97,8 @@ def get_files(folder_path):
 
     sorted_files = sorted(
         files,
-        key=lambda x: int(pattern.search(x).group(1))
+        key=lambda x: int(pattern.search(x).group(1)),
+        reverse=True
     )
 
     filtered_files = list()
@@ -148,7 +153,7 @@ def main():
             if "csv" in output_path.lower():
                 writer = csv.DictWriter(
                     output_file,
-                    fieldnames=["user", "message"]
+                    fieldnames=["user", "message", "index", "consequential"]
                 )
                 writer.writeheader()
 

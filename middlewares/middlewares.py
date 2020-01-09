@@ -18,11 +18,20 @@ class LuminatyProxyMiddleware(object):
 
         # Check session
         session = request.meta.get("cookiejar")
+        country = request.meta.get("country")
         if not session:
             session = uuid.uuid1().hex
 
+        if country:
+            username = "%s-country-%s" % (
+                self.username,
+                country
+            )
+        else:
+            username = self.username
+
         request.meta["proxy"] = self.super_proxy_url % (
-            self.username,
+            username,
             session,
             self.password
         )
