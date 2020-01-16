@@ -6,7 +6,7 @@ import random
 import traceback
 from requests import Session
 from lxml.html import fromstring
-from scraper.base_scrapper import BaseScrapper
+from scraper.base_scrapper import BaseTorScrapper
 
 
 # Credentials
@@ -18,12 +18,10 @@ PASSWORD = "Night#Vrx099"
 TOPIC_START_COUNT = 70
 TOPIC_END_COUNT = 100000
 
-PROXY = "socks5h://localhost:9050"
 
-
-class VerifiedScrapper(BaseScrapper):
+class VerifiedScrapper(BaseTorScrapper):
     def __init__(self, kwargs):
-        super(VerifiedScrapper, self).__init__(kwargs)
+        super().__init__(kwargs)
         self.site_link = "http://verified2ebdpvms.onion/"
         self.login_url = self.site_link + "login.php?do=login"
         self.topic_url = self.site_link + "showthread.php?t={}"
@@ -35,9 +33,8 @@ class VerifiedScrapper(BaseScrapper):
                       'bbpassword=edc7e2c6b7bfe17463f5f875c244d79c; '
                       'bbsessionhash=b44349dc1940d57af030efc8c58472c3'
         })
-        self.proxy = kwargs.get('proxy') or PROXY
-        self.username = kwargs.get('user')
-        self.password = kwargs.get('password')
+        self.username = kwargs.get('user') or USERNAME
+        self.password = kwargs.get('password') or PASSWORD
         self.ignore_xpath = '//div[contains(text(), "No Thread specified")]'
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
 
@@ -154,10 +151,7 @@ class VerifiedScrapper(BaseScrapper):
 
     def do_scrape(self):
         print('**************  Started verified Scrapper **************\n')
-        # if not self.login():
-        #     print('Login failed! Exiting...')
-        #     return
-        # print('Login Successful!')
+
         if not self.session.proxies.get('http'):
             self.session.proxies.update({
                 'http': self.proxy,

@@ -5,10 +5,18 @@ import datetime
 import traceback
 import scrapy
 
+from scrapy import Request
 from glob import glob
 from requests import Session
 from lxml.html import fromstring
 from requests.exceptions import ConnectionError
+from scrapy.crawler import CrawlerProcess
+from copy import deepcopy
+
+
+###############################################################################
+# Base Scraper
+###############################################################################
 
 
 class BaseScrapper:
@@ -174,6 +182,83 @@ class BaseScrapper:
             f.write(content)
 
 
+class BaseTorScrapper(BaseScrapper):
+    def __init__(self, kwargs):
+        super().__init__(kwargs)
+        self.proxy = kwargs.get("proxy")
+        if self.proxy is None:
+            raise ValueError(
+                "Tor scraper require tor proxy parameter. -x or --proxy"
+            )
+
+
+class SiteMapScrapper:
+
+    settings = {
+        "DOWNLOADER_MIDDLEWARES": {
+            "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
+        },
+        "RETRY_HTTP_CODES": [403, 406, 429, 500, 503],
+        "RETRY_TIMES": 10,
+        "LOG_ENABLED": True,
+    }
+
+    time_format = "%Y-%m-%d"
+
+    spider_class = None
+
+    def __init__(self, kwargs):
+        self.output_path = kwargs.get("output")
+        self.useronly = kwargs.get("useronly")
+        self.start_date = kwargs.get("start_date")
+        self.ensure_avatar_path()
+
+        if self.start_date:
+            try:
+                self.start_date = datetime.datetime.strptime(
+                    self.start_date,
+                    self.time_format
+                )
+            except Exception as err:
+                raise ValueError(
+                    "Wrong date format. Correct format is: %s. Detail: %s" % (
+                        self.time_format,
+                        err
+                    )
+                )
+
+    def load_settings(self):
+        return deepcopy(self.settings)
+
+    def load_spider_kwargs(self):
+        return {
+            "output_path": self.output_path,
+            "useronly": self.useronly,
+            "avatar_path": self.avatar_path,
+            "start_date": self.start_date
+        }
+
+    def ensure_avatar_path(self, ):
+        self.avatar_path = f'{self.output_path}/avatars'
+        if not os.path.exists(self.avatar_path):
+            os.makedirs(self.avatar_path)
+
+    def do_scrape(self):
+        process = CrawlerProcess(
+            self.load_settings()
+        )
+        process.crawl(
+            self.spider_class,
+            **self.load_spider_kwargs()
+        )
+        process.start()
+
+
+###############################################################################
+# Base Spider
+###############################################################################
+
+
 class BypassCloudfareSpider(scrapy.Spider):
     custom_settings = {
         "DOWNLOADER_MIDDLEWARES": {
@@ -184,3 +269,39 @@ class BypassCloudfareSpider(scrapy.Spider):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"
         }
     }
+
+
+class SitemapSpider(BypassCloudfareSpider):
+
+    # Url stuffs
+    base_url = None
+    sitemap_url = None
+
+    # Format stuff
+    sitemap_datetime_format = "%Y-%m-%dT%H:%MZ"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.output_path = kwargs.get("output_path")
+        self.useronly = kwargs.get("useronly")
+        self.avatar_path = kwargs.get("avatar_path")
+        self.start_date = kwargs.get("start_date")
+        self.headers = {
+            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
+        }
+
+    def start_requests(self):
+        if self.start_date:
+            yield scrapy.Request(
+                url=self.sitemap_url,
+                headers=self.headers,
+                callback=self.parse_sitemap
+            )
+        else:
+            yield Request(
+                url=self.base_url,
+                headers=self.headers
+            )
+
+    def parse_sitemap(self, response):
+        pass

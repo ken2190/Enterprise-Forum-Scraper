@@ -1,89 +1,137 @@
 import os
 import re
-import datetime
 import sqlite3
 import dateutil.parser as dparser
 from scrapy.http import Request
 from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+from datetime import datetime
+from scrapy import Selector
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
 REQUEST_DELAY = 0.3
 NO_OF_THREADS = 10
 
 
-class RaidForumsSpider(BypassCloudfareSpider):
+class RaidForumsSpider(SitemapSpider):
 
     name = 'raidforums_spider'
 
-    def __init__(self, output_path, useronly, update, db_path, avatar_path):
-        self.base_url = "https://raidforums.com/"
-        self.pagination_pattern = re.compile(r'.*page=(\d+)')
-        self.username_pattern = re.compile(r'User-(.*)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.start_url = 'https://raidforums.com/'
-        self.output_path = output_path
-        self.useronly = useronly
-        self.update = update
-        self.db_path = db_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
-        }
+    # Url stuffs
+    base_url = "https://raidforums.com/"
+    start_urls = ["https://raidforums.com/"]
+    sitemap_url = "https://raidforums.com/sitemap-index.xml"
+
+    # Regex stuffs
+    pagination_pattern = re.compile(
+        r'.*page=(\d+)',
+        re.IGNORECASE
+    )
+    username_pattern = re.compile(
+        r'User-(.*)',
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r'.*/(\S+\.\w+)',
+        re.IGNORECASE
+    )
+
+    # Xpath stuffs
+    forum_xpath = "//sitemap[loc[contains(text(),\"sitemap-threads.xml\")]]/loc/text()"
+    thread_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.set_users_path()
 
     def set_users_path(self, ):
-        self.user_path = os.path.join(self.output_path, 'users')
+        self.user_path = os.path.join(
+            self.output_path,
+            'users'
+        )
         if not os.path.exists(self.user_path):
             os.makedirs(self.user_path)
 
-    def start_requests(self):
+    def parse_sitemap(self, response):
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load forum
+        all_forum = selector.xpath(self.forum_xpath).extract()
+
+        for forum in all_forum:
+            yield Request(
+                url=forum,
+                headers=self.headers,
+                callback=self.parse_sitemap_forum
+            )
+
+    def parse_sitemap_forum(self, response):
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load thread
+        all_threads = selector.xpath(self.thread_xpath).extract()
+
+        for thread in all_threads:
+            yield from self.parse_sitemap_thread(thread)
+
+    def parse_sitemap_thread(self, thread):
+
+        # Load selector
+        selector = Selector(text=thread)
+
+        # Load thread url and update
+        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
+        thread_date = datetime.strptime(
+            selector.xpath(self.thread_date_xpath).extract_first(),
+            self.sitemap_datetime_format
+        )
+
+        if self.start_date > thread_date:
+            self.logger.info(
+                "Thread %s ignored because last update in the past. Detail: %s" % (
+                    thread_url,
+                    thread_date
+                )
+            )
+            return
+
+        topic_id = str(
+            int.from_bytes(
+                thread_url.encode('utf-8'),
+                byteorder='big'
+            ) % (10 ** 7)
+        )
         yield Request(
-            url=self.start_url,
+            url=thread_url,
             headers=self.headers,
-            callback=self.parse
+            meta={
+                "topic_id": topic_id
+            },
+            callback=self.parse_thread
         )
 
     def parse(self, response):
-        if self.update:
-            if not self.update_required():
-                return
-            update_url = 'https://raidforums.com/search.php?action=getdaily'
-            self.headers = {
-                'referer': 'https://raidforums.com/',
-                'sec-fetch-mode': 'navigate',
-                'sec-fetch-site': 'same-origin',
-                'sec-fetch-user': '?1',
-                'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
-            }
-            yield Request(
-                url=update_url,
-                headers=self.headers,
-                callback=self.parse_new_posts
-            )
-        else:
-            forums = response.xpath(
-                '//a[contains(@href, "Forum-")]')
-            for forum in forums:
-                url = forum.xpath('@href').extract_first()
-                if self.base_url not in url:
-                    url = self.base_url + url
-                yield Request(
-                    url=url,
-                    callback=self.parse_forum
-                )
 
-    def update_required(self, ):
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
-        check_query = "SELECT last_scraped from forum_info WHERE name='raidforums'"
-        result = self.cursor.execute(check_query)
-        scraped_date = dparser.parse(result.fetchone()[0]).date()
-        self.conn.close()
-        if datetime.datetime.now().date() <= scraped_date:
-            print('INFO: last_scraped date in db is same as today\'s date')
-            return False
-        return True
+        forums = response.xpath(
+            '//a[contains(@href, "Forum-")]')
+
+        for forum in forums:
+            url = forum.xpath('@href').extract_first()
+            if self.base_url not in url:
+                url = self.base_url + url
+            yield Request(
+                url=url,
+                callback=self.parse_forum
+            )
 
     def parse_new_posts(self, response):
         threads = response.xpath(
@@ -201,13 +249,9 @@ class RaidForumsSpider(BypassCloudfareSpider):
 
     def parse_thread(self, response):
         topic_id = response.meta['topic_id']
-        if self.update:
-            pagination = response.xpath(
-                '//span[@class="pagination_current"]/text()').extract_first()
-            paginated_value = pagination if pagination else 1
-        else:
-            pagination = self.pagination_pattern.findall(response.url)
-            paginated_value = pagination[0] if pagination else 1
+
+        pagination = self.pagination_pattern.findall(response.url)
+        paginated_value = pagination[0] if pagination else 1
         file_name = '{}/{}-{}.html'.format(
             self.output_path, topic_id, paginated_value)
         with open(file_name, 'wb') as f:
@@ -256,67 +300,20 @@ class RaidForumsSpider(BypassCloudfareSpider):
             print(f"Avatar {file_name_only} done..!")
 
 
-class RaidForumsScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.useronly = kwargs.get('useronly')
-        self.update = kwargs.get('update')
-        self.db_path = kwargs.get('db_path')
-        self.proxy = kwargs.get('proxy') or None
-        self.ensure_avatar_path()
+class RaidForumsScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = RaidForumsSpider
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': REQUEST_DELAY,
-            'CONCURRENT_REQUESTS': NO_OF_THREADS,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            'RETRY_HTTP_CODES': [403, 406, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(
-            RaidForumsSpider,
-            self.output_path,
-            self.useronly,
-            self.update,
-            self.db_path,
-            self.avatar_path
+    def load_settings(self):
+        spider_settings = super().load_settings()
+        spider_settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
+            }
         )
-        process.start()
-        if self.update:
-            self.update_db()
-
-    def update_db(self, ):
-        print('.....FINISHED.....UDPATING DB')
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
-        today = datetime.datetime.now().date()
-        update_query = "UPDATE forum_info SET last_scraped='{}' WHERE name='raidforums'".format(today)
-        result = self.cursor.execute(update_query)
-        print(result.fetchone())
-        self.conn.commit()
-        self.conn.close()
 
 
 if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+    print("Success!")

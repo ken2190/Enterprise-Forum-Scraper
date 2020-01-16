@@ -13,6 +13,8 @@ PROXY = 'http://127.0.0.1:8118'
 
 bbsessionhash = 'eca9eeeea77333dd0826e8e0d6b1e8c8'
 IDstack = 'cfbd60bf5d729ff52adc6a91d82cc4f7afdce4bd5fbf6943dea016b2bb35e16b'
+
+
 class VerifiedSpider(scrapy.Spider):
     name = 'verified_spider'
 
