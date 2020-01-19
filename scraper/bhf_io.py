@@ -5,34 +5,107 @@ import re
 import scrapy
 from math import ceil
 import configparser
-from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36'
 
 
-class BHFIOSpider(scrapy.Spider):
+class BHFIOSpider(SitemapSpider):
     name = 'bhfio_spider'
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://bhf.io"
-        self.topic_pattern = re.compile(r'threads/(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)')
-        self.start_url = 'https://bhf.io'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            'referer': 'https://bhf.io/',
-            'user-agent': USER_AGENT,
-        }
+    # Url stuffs
+    base_url = 'https://bhf.io'
+    sitemap_url = "https://raidforums.com/sitemap-index.xml"
 
-    def start_requests(self):
+    # Regex stuffs
+    topic_pattern = re.compile(r'threads/(\d+)')
+    avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+    pagination_pattern = re.compile(r'.*page-(\d+)')
+
+    # Xpath stuffs
+    forum_xpath = "//sitemap/loc/text()"
+    thread_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                'referer': 'https://bhf.io/',
+            }
+        )
+
+    def parse_sitemap(self, response):
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load forum
+        all_forum = selector.xpath(self.forum_xpath).extract()
+
+        for forum in all_forum:
+            yield Request(
+                url=forum,
+                headers=self.headers,
+                callback=self.parse_sitemap_forum
+            )
+
+    def parse_sitemap_forum(self, response):
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load thread
+        all_threads = selector.xpath(self.thread_xpath).extract()
+
+        for thread in all_threads:
+            yield from self.parse_sitemap_thread(thread)
+
+    def parse_sitemap_thread(self, thread):
+
+        # Load selector
+        selector = Selector(text=thread)
+
+        # Load thread url and update
+        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
+        thread_date = datetime.strptime(
+            selector.xpath(self.thread_date_xpath).extract_first(),
+            self.sitemap_datetime_format
+        )
+
+        if self.start_date > thread_date:
+            self.logger.info(
+                "Thread %s ignored because last update in the past. Detail: %s" % (
+                    thread_url,
+                    thread_date
+                )
+            )
+            return
+
+        topic_id = str(
+            int.from_bytes(
+                thread_url.encode('utf-8'),
+                byteorder='big'
+            ) % (10 ** 7)
+        )
         yield Request(
-            url=self.start_url,
+            url=thread_url,
             headers=self.headers,
-            callback=self.parse
+            meta={
+                "topic_id": topic_id
+            },
+            callback=self.parse_thread
         )
 
     def parse(self, response):

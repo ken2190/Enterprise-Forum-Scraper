@@ -8,35 +8,53 @@ from math import ceil
 from copy import deepcopy
 from urllib.parse import urlencode
 import configparser
-from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
+from scrapy import (
+    Request,
+    FormRequest
+)
 
 
-class NulledBBSpider(BypassCloudfareSpider):
+class NulledBBSpider(SitemapSpider):
+
     name = 'nulledbb_spider'
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://nulledbb.com/"
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page=(\d+)')
-        self.start_url = 'https://nulledbb.com'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
-            'referer': 'https://nulledbb.com/',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1'
-        }
+    # Url stuffs
+    base_url = "https://nulledbb.com/"
+    start_urls = ["https://nulledbb.com/"]
+    sitemap_url = "https://nulledbb.com/sitemap-index.xml"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+    # Regex stuffs
+    avatar_name_pattern = re.compile(
+        r'.*/(\S+\.\w+)',
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r'.*page=(\d+)',
+        re.IGNORECASE
+    )
+
+    # Xpath stuffs
+    forum_xpath = "//sitemap[loc[contains(text(),\"sitemap-threads.xml\")]]/loc/text()"
+    thread_xpath = "//url[loc[contains(text(),\"/thread-\")] and lastmod]"
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                'referer': 'https://nulledbb.com/',
+                'sec-fetch-mode': 'navigate',
+                'sec-fetch-site': 'none',
+                'sec-fetch-user': '?1'
+            }
         )
 
     def parse(self, response):
@@ -64,11 +82,7 @@ class NulledBBSpider(BypassCloudfareSpider):
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            topic_id = str(
-                    int.from_bytes(
-                        thread_url.encode('utf-8'), byteorder='big'
-                    ) % (10 ** 7)
-                )
+            topic_id = self.get_topic_id(thread_url)
             file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
             if os.path.exists(file_name):
                 continue
@@ -145,35 +159,21 @@ class NulledBBSpider(BypassCloudfareSpider):
             print(f"Avatar {file_name_only} done..!")
 
 
-class NulledBBScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class NulledBBScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    request_delay = 0.1
+    no_of_threads = 16
+    spider_class = NulledBBSpider
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(NulledBBSpider, self.output_path, self.avatar_path)
-        process.start()
+    def load_settings(self):
+        spider_settings = super().load_settings()
+        spider_settings.update(
+            {
+                'DOWNLOAD_DELAY': self.request_delay,
+                'CONCURRENT_REQUESTS': self.no_of_threads,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+            }
+        )
 
 
 if __name__ == '__main__':

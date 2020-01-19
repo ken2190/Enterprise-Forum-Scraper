@@ -3,33 +3,61 @@ import re
 import scrapy
 from math import ceil
 import configparser
-from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from datetime import datetime
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
+from scrapy import (
+    Request,
+    FormRequest
+)
 
 
-class XrpChatSpider(scrapy.Spider):
+class XrpChatSpider(SitemapSpider):
+
     name = 'xrpchat_spider'
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://www.xrpchat.com/"
-        self.topic_pattern = re.compile(r'topic/(\d+)-')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*/page/(\d+)/')
-        self.start_url = 'https://www.xrpchat.com/'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            "user-agent": USER_AGENT,
-        }
+    # Url stuffs
+    base_url = "https://www.xrpchat.com/"
+    start_urls = ["https://www.xrpchat.com/"]
+    sitemap_url = "https://www.xrpchat.com/sitemap.php"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse,
-            dont_filter=True,
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r'topic/(\d+)-',
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r'.*/(\S+\.\w+)',
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r'.*/page/(\d+)/',
+        re.IGNORECASE
+    )
+
+    # Xpath stuffs
+    forum_xpath = "//sitemap[loc[contains(text(),\"content_forums\")]]/loc/text()"
+    thread_xpath = "//url[loc[contains(text(),\"/topic/\")] and lastmod]"
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
+
+    # Other settings
+    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+
+    def get_topic_id(self, url=None):
+        topic_id = self.topic_pattern.findall(url)
+        if not topic_id:
+            return
+        return topic_id[0]
+
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date[:-6],
+            self.sitemap_datetime_format
         )
 
     def parse(self, response):
@@ -60,17 +88,17 @@ class XrpChatSpider(scrapy.Spider):
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
+            topic_id = self.get_topic_id(thread_url)
             if not topic_id:
                 continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
+            file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
             if os.path.exists(file_name):
                 continue
             yield Request(
                 url=thread_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
+                meta={'topic_id': topic_id}
             )
 
         next_page = response.xpath('//li[@class="ipsPagination_next"]/a')
@@ -137,41 +165,18 @@ class XrpChatSpider(scrapy.Spider):
             print(f"Avatar {file_name_only} done..!")
 
 
-class XrpChatScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class XrpChatScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    request_delay = 0.1
+    no_of_threads = 16
+    spider_class = XrpChatSpider
 
-    def do_scrape(self):
-        settings = {
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(XrpChatSpider, self.output_path, self.avatar_path)
-        process.start()
+    def load_settings(self):
+        spider_settings = super().load_settings()
+        spider_settings.update(
+            {
+                'DOWNLOAD_DELAY': self.request_delay,
+                'CONCURRENT_REQUESTS': self.no_of_threads,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+            }
+        )

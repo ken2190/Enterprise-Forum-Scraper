@@ -1,17 +1,20 @@
 import os
 import re
 import time
-import datetime
-import traceback
 import scrapy
 
-from scrapy import Request
 from glob import glob
 from requests import Session
 from lxml.html import fromstring
 from requests.exceptions import ConnectionError
 from scrapy.crawler import CrawlerProcess
 from copy import deepcopy
+from datetime import datetime
+
+from scrapy import (
+    Request,
+    Selector
+)
 
 
 ###############################################################################
@@ -47,7 +50,7 @@ class BaseScrapper:
             self.ensure_daily_output_path()
 
     def ensure_daily_output_path(self,):
-        folder_name = datetime.datetime.now().date().isoformat()
+        folder_name = datetime.now().date().isoformat()
         self.output_path = f'{self.output_path}/{folder_name}'
         if not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
@@ -215,7 +218,7 @@ class SiteMapScrapper:
 
         if self.start_date:
             try:
-                self.start_date = datetime.datetime.strptime(
+                self.start_date = datetime.strptime(
                     self.start_date,
                     self.time_format
                 )
@@ -280,6 +283,12 @@ class SitemapSpider(BypassCloudfareSpider):
     # Format stuff
     sitemap_datetime_format = "%Y-%m-%dT%H:%MZ"
 
+    # Xpath stuffs
+    forum_xpath = None
+    thread_xpath = None
+    thread_url_xpath = None
+    thread_date_xpath = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.output_path = kwargs.get("output_path")
@@ -303,5 +312,76 @@ class SitemapSpider(BypassCloudfareSpider):
                 headers=self.headers
             )
 
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date,
+            self.sitemap_datetime_format
+        )
+
     def parse_sitemap(self, response):
-        pass
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load forum
+        all_forum = selector.xpath(self.forum_xpath).extract()
+
+        for forum in all_forum:
+            yield Request(
+                url=forum,
+                headers=self.headers,
+                callback=self.parse_sitemap_forum
+            )
+
+    def parse_sitemap_forum(self, response):
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load thread
+        all_threads = selector.xpath(self.thread_xpath).extract()
+
+        for thread in all_threads:
+            yield from self.parse_sitemap_thread(thread)
+
+    def parse_sitemap_thread(self, thread):
+
+        # Load selector
+        selector = Selector(text=thread)
+
+        # Load thread url and update
+        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
+        thread_date = self.parse_thread_date(
+            selector.xpath(self.thread_date_xpath).extract_first()
+        )
+
+        if self.start_date > thread_date:
+            self.logger.info(
+                "Thread %s ignored because last update in the past. Detail: %s" % (
+                    thread_url,
+                    thread_date
+                )
+            )
+            return
+
+        topic_id = self.get_topic_id(thread_url)
+        if not topic_id:
+            return
+
+        yield Request(
+            url=thread_url,
+            headers=self.headers,
+            callback=self.parse_thread,
+            meta={
+                "topic_id": topic_id
+            }
+        )
+
+    def get_topic_id(self, url=None):
+        topic_id = str(
+            int.from_bytes(
+                url.encode('utf-8'),
+                byteorder='big'
+            ) % (10 ** 7)
+        )
+        return topic_id

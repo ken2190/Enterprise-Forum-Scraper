@@ -7,30 +7,100 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-class YouHackSpider(BypassCloudfareSpider):
+class YouHackSpider(SitemapSpider):
+
     name = 'youhack_spider'
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://youhack.ru/"
-        self.topic_pattern = re.compile(r'threads/(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)')
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": 'none',
-            "sec-fetch-user": "?1",
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
-        }
+    base_url = "https://youhack.ru/"
+    sitemap_url = "https://youhack.ru/sitemap.php"
 
-    def start_requests(self):
+    # Xpath stuffs
+    forum_xpath = "//sitemap[loc[contains(text(),\"sitemap-threads.xml\")]]/loc/text()"
+    thread_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
+
+    # Regex stuffs
+    topic_pattern = re.compile(r'threads/(\d+)')
+    avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+    pagination_pattern = re.compile(r'.*page-(\d+)')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": 'none',
+                "sec-fetch-user": "?1",
+            }
+        )
+
+    def parse_sitemap(self, response):
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load forum
+        all_forum = selector.xpath(self.forum_xpath).extract()
+
+        for forum in all_forum:
+            yield Request(
+                url=forum,
+                headers=self.headers,
+                callback=self.parse_sitemap_forum
+            )
+
+    def parse_sitemap_forum(self, response):
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load thread
+        all_threads = selector.xpath(self.thread_xpath).extract()
+
+        for thread in all_threads:
+            yield from self.parse_sitemap_thread(thread)
+
+    def parse_sitemap_thread(self, thread):
+
+        # Load selector
+        selector = Selector(text=thread)
+
+        # Load thread url and update
+        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
+        thread_date = datetime.strptime(
+            selector.xpath(self.thread_date_xpath).extract_first(),
+            self.sitemap_datetime_format
+        )
+
+        if self.start_date > thread_date:
+            self.logger.info(
+                "Thread %s ignored because last update in the past. Detail: %s" % (
+                    thread_url,
+                    thread_date
+                )
+            )
+            return
+
+        topic_id = str(
+            int.from_bytes(
+                thread_url.encode('utf-8'),
+                byteorder='big'
+            ) % (10 ** 7)
+        )
         yield Request(
-            url=self.base_url,
+            url=thread_url,
             headers=self.headers,
+            meta={
+                "topic_id": topic_id
+            },
+            callback=self.parse_thread
         )
 
     def parse(self, response):
@@ -138,42 +208,19 @@ class YouHackSpider(BypassCloudfareSpider):
             print(f"Avatar {file_name_only} done..!")
 
 
-class YouHackScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class YouHackScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = YouHackSpider
+    request_delay = 0.1
+    no_of_threads = 16
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings['DOWNLOADER_MIDDLEWARES'].update({
-                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-            })
-            settings.update({
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(YouHackSpider, self.output_path, self.avatar_path)
-        process.start()
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': self.request_delay,
+                'CONCURRENT_REQUESTS': self.no_of_threads,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+            }
+        )
+        return settings

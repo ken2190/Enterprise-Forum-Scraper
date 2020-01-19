@@ -57,68 +57,6 @@ class RaidForumsSpider(SitemapSpider):
         if not os.path.exists(self.user_path):
             os.makedirs(self.user_path)
 
-    def parse_sitemap(self, response):
-
-        # Load selector
-        selector = Selector(text=response.text)
-
-        # Load forum
-        all_forum = selector.xpath(self.forum_xpath).extract()
-
-        for forum in all_forum:
-            yield Request(
-                url=forum,
-                headers=self.headers,
-                callback=self.parse_sitemap_forum
-            )
-
-    def parse_sitemap_forum(self, response):
-
-        # Load selector
-        selector = Selector(text=response.text)
-
-        # Load thread
-        all_threads = selector.xpath(self.thread_xpath).extract()
-
-        for thread in all_threads:
-            yield from self.parse_sitemap_thread(thread)
-
-    def parse_sitemap_thread(self, thread):
-
-        # Load selector
-        selector = Selector(text=thread)
-
-        # Load thread url and update
-        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
-        thread_date = datetime.strptime(
-            selector.xpath(self.thread_date_xpath).extract_first(),
-            self.sitemap_datetime_format
-        )
-
-        if self.start_date > thread_date:
-            self.logger.info(
-                "Thread %s ignored because last update in the past. Detail: %s" % (
-                    thread_url,
-                    thread_date
-                )
-            )
-            return
-
-        topic_id = str(
-            int.from_bytes(
-                thread_url.encode('utf-8'),
-                byteorder='big'
-            ) % (10 ** 7)
-        )
-        yield Request(
-            url=thread_url,
-            headers=self.headers,
-            meta={
-                "topic_id": topic_id
-            },
-            callback=self.parse_thread
-        )
-
     def parse(self, response):
 
         forums = response.xpath(
@@ -141,11 +79,7 @@ class RaidForumsSpider(SitemapSpider):
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            topic_id = str(
-                int.from_bytes(
-                    thread_url.encode('utf-8'), byteorder='big'
-                ) % (10 ** 7)
-            )
+            topic_id = self.get_topic_id(thread_url)
             yield Request(
                 url=thread_url,
                 headers=self.headers,
