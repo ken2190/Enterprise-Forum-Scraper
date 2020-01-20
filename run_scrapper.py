@@ -41,6 +41,7 @@ class Scraper:
         if not template:
             print('template (-t/--template) missing')
             return
+
         scraper = SCRAPER_MAP.get(template.lower())
         if not scraper:
             print('Not found template!')
@@ -52,7 +53,6 @@ class Scraper:
             print('Output path missing')
             return
 
-        self.kwargs.update({'db_path': UPDATE_DB_PATH})
         # ------------make folder if not exist -----------------
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
@@ -60,6 +60,14 @@ class Scraper:
         scraper_obj = scraper(self.kwargs)
         if self.kwargs.get('rescan'):
             scraper_obj.do_rescan()
+        elif self.kwargs.get("start_date"):
+            try:
+                scraper_obj.do_scrape_from_date()
+            except Exception as err:
+                print(
+                    "Error running do scrape from date: %s" % err
+                )
+                scraper_obj.do_scrape()
         else:
             scraper_obj.do_scrape()
 

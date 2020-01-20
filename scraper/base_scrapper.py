@@ -23,6 +23,7 @@ from scrapy import (
 
 
 class BaseScrapper:
+
     def __init__(self, kwargs):
         self.topic_start_count = int(kwargs.get('topic_start'))\
             if kwargs.get('topic_start') else None
@@ -235,10 +236,10 @@ class SiteMapScrapper:
 
     def load_spider_kwargs(self):
         return {
-            "output_path": self.output_path,
-            "useronly": self.useronly,
-            "avatar_path": self.avatar_path,
-            "start_date": self.start_date
+            "output_path": getattr(self, "output_path", None),
+            "useronly": getattr(self, "useronly", None),
+            "avatar_path": getattr(self, "avatar_path", None),
+            "start_date": getattr(self, "start_date", None)
         }
 
     def ensure_avatar_path(self, ):
@@ -257,6 +258,32 @@ class SiteMapScrapper:
         process.start()
 
 
+class FromDateScrapper(BaseScrapper, SiteMapScrapper):
+
+    from_date_spider_class = None
+    time_format = "%Y-%m-%d"
+
+    def __init__(self, kwargs):
+        super().__init__(kwargs)
+        self.start_date = kwargs.get("start_date")
+        if self.start_date:
+            self.start_date = datetime.strptime(
+                self.start_date,
+                self.time_format
+            )
+
+    def do_scrape_from_date(self):
+        process = CrawlerProcess(
+            self.load_settings()
+        )
+        process.crawl(
+            self.from_date_spider_class,
+            **self.load_spider_kwargs()
+        )
+        process.start()
+
+
+
 ###############################################################################
 # Base Spider
 ###############################################################################
@@ -271,6 +298,24 @@ class BypassCloudfareSpider(scrapy.Spider):
         "DEFAULT_REQUEST_HEADERS": {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"
         }
+    }
+
+
+class BypassCloudfareNoProxySpider(scrapy.Spider):
+
+    download_delay = 0.3
+    download_thread = 10
+
+    custom_settings = {
+        "DOWNLOADER_MIDDLEWARES": {
+            "middlewares.middlewares.BypassCloudfareMiddleware": 200
+        },
+        "DEFAULT_REQUEST_HEADERS": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"
+        },
+        'DOWNLOAD_DELAY': download_delay,
+        'CONCURRENT_REQUESTS': download_thread,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': download_thread
     }
 
 
@@ -318,6 +363,9 @@ class SitemapSpider(BypassCloudfareSpider):
             self.sitemap_datetime_format
         )
 
+    def parse_thread_url(self, thread_url):
+        return thread_url
+
     def parse_sitemap(self, response):
 
         # Load selector
@@ -350,7 +398,9 @@ class SitemapSpider(BypassCloudfareSpider):
         selector = Selector(text=thread)
 
         # Load thread url and update
-        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
+        thread_url = self.parse_thread_url(
+            selector.xpath(self.thread_url_xpath).extract_first()
+        )
         thread_date = self.parse_thread_date(
             selector.xpath(self.thread_date_xpath).extract_first()
         )

@@ -3,9 +3,11 @@ import requests
 import os
 import re
 import scrapy
-from math import ceil
 import configparser
+
+from math import ceil
 from scrapy.crawler import CrawlerProcess
+from datetime import datetime
 
 from scrapy import (
     Request,
@@ -17,15 +19,13 @@ from scraper.base_scrapper import (
 )
 
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36'
-
-
 class BHFIOSpider(SitemapSpider):
     name = 'bhfio_spider'
 
     # Url stuffs
     base_url = 'https://bhf.io'
-    sitemap_url = "https://raidforums.com/sitemap-index.xml"
+    start_urls = ["https://bhf.io/"]
+    sitemap_url = "https://bhf.io/sitemap.php"
 
     # Regex stuffs
     topic_pattern = re.compile(r'threads/(\d+)')
@@ -34,9 +34,12 @@ class BHFIOSpider(SitemapSpider):
 
     # Xpath stuffs
     forum_xpath = "//sitemap/loc/text()"
-    thread_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
+    thread_xpath = "//url[loc[contains(text(),\"/tags/\")] and lastmod]"
     thread_url_xpath = "//loc/text()"
     thread_date_xpath = "//lastmod/text()"
+
+    # Other settings
+    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,67 +49,21 @@ class BHFIOSpider(SitemapSpider):
             }
         )
 
-    def parse_sitemap(self, response):
+    def get_topic_id(self, url=None):
+        topic_id = self.topic_pattern.findall(url)
+        try:
+            return topic_id[0]
+        except Exception as err:
+            return
 
-        # Load selector
-        selector = Selector(text=response.text)
-
-        # Load forum
-        all_forum = selector.xpath(self.forum_xpath).extract()
-
-        for forum in all_forum:
-            yield Request(
-                url=forum,
-                headers=self.headers,
-                callback=self.parse_sitemap_forum
-            )
-
-    def parse_sitemap_forum(self, response):
-
-        # Load selector
-        selector = Selector(text=response.text)
-
-        # Load thread
-        all_threads = selector.xpath(self.thread_xpath).extract()
-
-        for thread in all_threads:
-            yield from self.parse_sitemap_thread(thread)
-
-    def parse_sitemap_thread(self, thread):
-
-        # Load selector
-        selector = Selector(text=thread)
-
-        # Load thread url and update
-        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
-        thread_date = datetime.strptime(
-            selector.xpath(self.thread_date_xpath).extract_first(),
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date[:-6],
             self.sitemap_datetime_format
         )
 
-        if self.start_date > thread_date:
-            self.logger.info(
-                "Thread %s ignored because last update in the past. Detail: %s" % (
-                    thread_url,
-                    thread_date
-                )
-            )
-            return
-
-        topic_id = str(
-            int.from_bytes(
-                thread_url.encode('utf-8'),
-                byteorder='big'
-            ) % (10 ** 7)
-        )
-        yield Request(
-            url=thread_url,
-            headers=self.headers,
-            meta={
-                "topic_id": topic_id
-            },
-            callback=self.parse_thread
-        )
+    def parse_thread_url(self, thread_url):
+        return thread_url.replace(".vc", ".io")
 
     def parse(self, response):
         forums = response.xpath(
@@ -140,7 +97,7 @@ class BHFIOSpider(SitemapSpider):
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
+            topic_id = self.get_topic_id(thread_url)
             if not topic_id:
                 continue
             file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
@@ -219,38 +176,21 @@ class BHFIOSpider(SitemapSpider):
             print(f"Avatar for user {response.meta['user_id']} done..!")
 
 
-class BHFIOScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class BHFIOScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = BHFIOSpider
+    request_delay = 0.1
+    no_of_threads = 16
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(BHFIOSpider, self.output_path, self.avatar_path)
-        process.start()
+    def load_settings(self):
+        spider_settings = super().load_settings()
+        spider_settings.update(
+            {
+                'DOWNLOAD_DELAY': self.request_delay,
+                'CONCURRENT_REQUESTS': self.no_of_threads,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads
+            }
+        )
 
 
 if __name__ == '__main__':
