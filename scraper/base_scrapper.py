@@ -205,6 +205,7 @@ class SiteMapScrapper:
         "RETRY_HTTP_CODES": [403, 406, 429, 500, 503],
         "RETRY_TIMES": 10,
         "LOG_ENABLED": True,
+        "LOG_STDOUT": True
     }
 
     time_format = "%Y-%m-%d"

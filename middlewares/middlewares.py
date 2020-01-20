@@ -107,3 +107,50 @@ class BypassCloudfareMiddleware(object):
         )
 
         return request
+
+
+class BypassRecaptchaMiddleware(object):
+    allow_retry = 5
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    @staticmethod
+    def is_recaptcha_challenge(response):
+        """Test if the given response contains the recaptcha protection"""
+
+        return (
+                response.status in (503, 429, 403)
+                and response.headers.get("Server", "").startswith(b"cloudflare")
+                and 'jschl_vc' in response.text
+                and 'jschl_answer' in response.text
+        )
+
+    def __init__(self, crawler):
+        self.logger = crawler.spider.logger
+        self.api_token = "76228b91f256210cf20e6d8428818e23"
+
+    def process_response(self, request, response, spider):
+
+        if not self.is_cloudflare_challenge(response):
+            return response
+
+        cookies, user_agent = self.get_cftoken(
+            request.url,
+            proxy=request.meta.get("proxy")
+        )
+
+        request.cookies = cookies
+        request.headers["User-Agent"] = user_agent
+        request.dont_filter = True
+
+        self.logger.info(
+            "Header after cloudfare check: %s" % request.headers
+        )
+
+        self.logger.info(
+            "Cookies after cloudfare check: %s" % request.cookies
+        )
+
+        return request

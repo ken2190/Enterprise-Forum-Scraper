@@ -1,7 +1,6 @@
 from scraper.antichat import AntichatScrapper
 from scraper.breachforums import BreachForumsScrapper
 from scraper.exploit import ExploitScrapper
-from scraper.exploitv2 import ExploitV2Scrapper
 from scraper.exploit_private import ExploitPrivateScrapper
 from scraper.lolzteam import LolzScrapper
 from scraper.verified import VerifiedScrapper
@@ -120,7 +119,6 @@ SCRAPER_MAP = {
     'lcpcc': LCPScrapper,
     'raidforums': RaidForumsScrapper,
     'marviher': MarviherScrapper,
-    'exploitv2': ExploitV2Scrapper,
     'antichat_v3': Antichatv3Scrapper,
     'xss': XSSScrapper,
     'hackforums': HackForumsScrapper,
