@@ -216,7 +216,7 @@ class SiteMapScrapper:
         self.output_path = kwargs.get("output")
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
-        self.ensure_avatar_path()
+        self.ensure_avatar_path(kwargs.get("template"))
 
         if self.start_date:
             try:
@@ -243,8 +243,8 @@ class SiteMapScrapper:
             "start_date": getattr(self, "start_date", None)
         }
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
+    def ensure_avatar_path(self, template):
+        self.avatar_path = f'../avatars/{template}'
         if not os.path.exists(self.avatar_path):
             os.makedirs(self.avatar_path)
 
