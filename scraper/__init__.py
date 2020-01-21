@@ -74,6 +74,7 @@ from scraper.crackingpro import CrackingProScrapper
 from scraper.xrpchat import XrpChatScrapper
 from scraper.carding_team import CardingTeamScrapper
 from scraper.thebot import TheBotScrapper
+from scraper.italian_deep_web import ItalianDeepWebScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -151,4 +152,5 @@ SCRAPER_MAP = {
     'xrpchat': XrpChatScrapper,
     'carding_team': CardingTeamScrapper,
     'thebot': TheBotScrapper,
+    'italiandeepweb': ItalianDeepWebScrapper
 }
