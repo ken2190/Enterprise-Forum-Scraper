@@ -54,8 +54,8 @@ class ItalianDeepWebSpider(scrapy.Spider):
             return
         my_post_key = match[0]
         form_data = {
-            'username': 'Cyrax_011',
-            'password': 'Night#India065',
+            'username': USER,
+            'password': PASS,
             'remember': 'yes',
             'submit': 'Login',
             'action': 'do_login',
