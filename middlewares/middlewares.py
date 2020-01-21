@@ -65,6 +65,24 @@ class BypassCloudfareMiddleware(object):
     def __init__(self, crawler):
         self.logger = crawler.spider.logger
 
+    def load_cookies(self, request):
+        cookies = {}
+
+        # Load cookies bytes
+        cookie_bytes = request.headers.get("Cookie")
+
+        # Convert cookie byte
+        if cookie_bytes is not None:
+            cookie_string = cookie_bytes.decode("utf-8")
+            cookie_elements = [
+                element.strip().split("=") for element in cookie_string.split(";")
+            ]
+            cookies = {
+                element[0]: "=".join(element[1:]) for element in cookie_elements
+            }
+
+        return cookies
+
     def get_cftoken(self, url, delay=5, proxy=None):
         session = cloudscraper.create_scraper(delay=delay)
         request_args = {
@@ -94,7 +112,16 @@ class BypassCloudfareMiddleware(object):
             proxy=request.meta.get("proxy")
         )
 
-        request.cookies = cookies
+        # Load current cookies
+        existing_cookies = self.load_cookies(request)
+
+        # Update existing cookies
+        existing_cookies.update(cookies)
+
+        # Replace cookies
+        request.cookies = existing_cookies
+
+        # Replace user agent
         request.headers["User-Agent"] = user_agent
         request.dont_filter = True
 

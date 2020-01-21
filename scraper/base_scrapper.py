@@ -341,9 +341,31 @@ class SitemapSpider(BypassCloudfareSpider):
         self.useronly = kwargs.get("useronly")
         self.avatar_path = kwargs.get("avatar_path")
         self.start_date = kwargs.get("start_date")
+        self.cookies = kwargs.get("cookies")
         self.headers = {
             "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
         }
+
+        if self.cookies:
+            self.cookies = self.load_cookies(self.cookies)
+
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date,
+            self.sitemap_datetime_format
+        )
+
+    def parse_thread_url(self, thread_url):
+        return thread_url
+
+    def load_cookies(self, cookies_string):
+        cookies_elements = [
+            element.strip().split("=") for element in cookies_string.split(";")
+        ]
+        cookies = {
+            element[0]: "=".join(element[1:]) for element in cookies_elements
+        }
+        return cookies
 
     def start_requests(self):
         if self.start_date:
@@ -357,15 +379,6 @@ class SitemapSpider(BypassCloudfareSpider):
                 url=self.base_url,
                 headers=self.headers
             )
-
-    def parse_thread_date(self, thread_date):
-        return datetime.strptime(
-            thread_date,
-            self.sitemap_datetime_format
-        )
-
-    def parse_thread_url(self, thread_url):
-        return thread_url
 
     def parse_sitemap(self, response):
 
@@ -419,14 +432,19 @@ class SitemapSpider(BypassCloudfareSpider):
         if not topic_id:
             return
 
-        yield Request(
-            url=thread_url,
-            headers=self.headers,
-            callback=self.parse_thread,
-            meta={
+        # Load request arguments
+        request_arguments = {
+            "url": thread_url,
+            "headers": self.headers,
+            "callback": self.parse_thread,
+            "meta": {
                 "topic_id": topic_id
             }
-        )
+        }
+        if self.cookies:
+            request_arguments["cookies"] = self.cookies
+
+        yield Request(**request_arguments)
 
     def get_topic_id(self, url=None):
         topic_id = str(

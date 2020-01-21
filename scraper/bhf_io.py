@@ -19,6 +19,9 @@ from scraper.base_scrapper import (
 )
 
 
+COOKIES = "__cfduid=d6ef4439eab55f1bd4b26ed82ddb494701579398531; _ym_d=1579406014; _ym_uid=1579406014689608580; xf_csrf=SnAVgm9lZet0wXWE; _ym_isad=2; _ym_visorc_57012907=w; xf_user=300107%2Cv_paBr7XBsjxh8X61CX5rERie483RAXlzQqq3cru; xf_session=bRCBmLoWGgNB2uV2uoWGfK-tlFRZr2xU; evercookie_etag=undefined; evercookie_cache=undefined"
+
+
 class BHFIOSpider(SitemapSpider):
     name = 'bhfio_spider'
 
@@ -34,12 +37,26 @@ class BHFIOSpider(SitemapSpider):
 
     # Xpath stuffs
     forum_xpath = "//sitemap/loc/text()"
-    thread_xpath = "//url[loc[contains(text(),\"/tags/\")] and lastmod]"
+    thread_xpath = "//url[loc[contains(text(),\"/threads/\")] and lastmod]"
     thread_url_xpath = "//loc/text()"
     thread_date_xpath = "//lastmod/text()"
 
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    download_delay = 0.3
+    download_thread = 10
+
+    custom_settings = {
+        "DOWNLOADER_MIDDLEWARES": {
+            "middlewares.middlewares.BypassCloudfareMiddleware": 200
+        },
+        "DEFAULT_REQUEST_HEADERS": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"
+        },
+        'DOWNLOAD_DELAY': download_delay,
+        'CONCURRENT_REQUESTS': download_thread,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': download_thread
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -191,6 +208,11 @@ class BHFIOScrapper(SiteMapScrapper):
                 'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads
             }
         )
+
+    def load_spider_kwargs(self):
+        spider_kwargs = super().load_spider_kwargs()
+        spider_kwargs["cookies"] = COOKIES
+        return spider_kwargs
 
 
 if __name__ == '__main__':
