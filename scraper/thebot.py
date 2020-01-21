@@ -10,8 +10,8 @@ from scrapy.crawler import CrawlerProcess
 from scraper.base_scrapper import BypassCloudfareSpider
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 10
+REQUEST_DELAY = 0.2
+NO_OF_THREADS = 16
 
 
 class TheBotSpider(BypassCloudfareSpider):
