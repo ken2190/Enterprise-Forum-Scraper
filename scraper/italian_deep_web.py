@@ -150,7 +150,9 @@ class ItalianDeepWebSpider(scrapy.Spider):
                 }
             )
 
-        next_page = response.xpath('//a[@class="pagination_next"]')
+        next_page = response.xpath(
+            '//div[@class="pagination"]'
+            '/a[@class="pagination_next"]')
         if next_page:
             next_page_url = next_page.xpath('@href').extract_first()
             if self.base_url not in next_page_url:
