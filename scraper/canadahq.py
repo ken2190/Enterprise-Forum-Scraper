@@ -18,7 +18,7 @@ class CanadaHQSpider(BypassCloudfareSpider):
     name = 'canadahq_spider'
 
     def __init__(self, output_path, user_path, avatar_path):
-        self.base_url = 'https://canadahq.at/'
+        self.base_url = 'https://canadahq.net/'
         self.topic_pattern = re.compile(r't=(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page=(\d+)')

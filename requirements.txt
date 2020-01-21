@@ -5,3 +5,4 @@ scrapy
 selenium
 python-dateutil
 cloudscraper
+pandas
