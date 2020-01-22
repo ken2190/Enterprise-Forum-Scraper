@@ -1,10 +1,13 @@
 import time
 import requests
 import os
+import json
 import re
 import scrapy
 from math import ceil
 import configparser
+from urllib.parse import urlencode
+from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 from scraper.base_scrapper import BypassCloudfareSpider
@@ -13,12 +16,16 @@ from scraper.base_scrapper import BypassCloudfareSpider
 REQUEST_DELAY = 0.2
 NO_OF_THREADS = 16
 
+USER = 'vrx9@protonmail.com'
+PASS = 'Night#Bot000'
+
 
 class TheBotSpider(BypassCloudfareSpider):
     name = 'thebot_spider'
 
     def __init__(self, output_path, avatar_path):
         self.base_url = "https://thebot.net"
+        self.login_url = 'https://thebot.net/login/login'
         self.topic_pattern = re.compile(r'threads/.*\.(\d+)/')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*/page-(\d+)')
@@ -36,8 +43,43 @@ class TheBotSpider(BypassCloudfareSpider):
         yield Request(
             url=self.start_url,
             headers=self.headers,
-            callback=self.parse
+            callback=self.get_token
         )
+
+    def get_token(self, response):
+        match = re.findall(r'csrf: \'(.*?)\'', response.text)
+        params = {
+            '_xfRequestUri': '/',
+            '_xfWithData': '1',
+            '_xfToken': match[0],
+            '_xfResponseType': 'json'
+        }
+        token_url = 'https://thebot.net/login/?' + urlencode(params)
+        yield Request(
+            url=token_url,
+            headers=self.headers,
+            callback=self.proceed_for_login
+        )
+
+    def proceed_for_login(self, response):
+        json_response = json.loads(response.text)
+        html_response = fromstring(json_response['html']['content'])
+        token = html_response.xpath(
+            '//input[@name="_xfToken"]/@value')[0]
+        params = {
+            'login': USER,
+            'password': PASS,
+            "remember": '1',
+            '_xfRedirect': 'https://thebot.net/',
+            '_xfToken': token
+        }
+        yield FormRequest(
+            url="https://thebot.net/login/login",
+            callback=self.parse,
+            formdata=params,
+            headers=self.headers,
+            dont_filter=True,
+            )
 
     def parse(self, response):
         forums = response.xpath(
