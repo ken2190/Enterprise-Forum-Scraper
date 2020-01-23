@@ -77,6 +77,7 @@ from scraper.thebot import TheBotScrapper
 from scraper.italian_deep_web import ItalianDeepWebScrapper
 from scraper.dnm_avengers import DNMAvengersScrapper
 from scraper.oxsec import Ox00SecScrapper
+from scraper.rosa_negra import RosaNegraScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -157,4 +158,5 @@ SCRAPER_MAP = {
     'italiandeepweb': ItalianDeepWebScrapper,
     'dnmavengers': DNMAvengersScrapper,
     'oxsec': Ox00SecScrapper,
+    'rosanegra': RosaNegraScrapper
 }
