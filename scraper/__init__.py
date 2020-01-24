@@ -79,6 +79,7 @@ from scraper.dnm_avengers import DNMAvengersScrapper
 from scraper.oxsec import Ox00SecScrapper
 from scraper.rosa_negra import RosaNegraScrapper
 from scraper.envoy import EnvoyScrapper
+from scraper.bitshacking import BitsHackingScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -161,4 +162,5 @@ SCRAPER_MAP = {
     'oxsec': Ox00SecScrapper,
     'rosanegra': RosaNegraScrapper,
     'envoy': EnvoyScrapper,
+    'bitshacking': BitsHackingScrapper,
 }
