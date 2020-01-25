@@ -81,6 +81,8 @@ from scraper.rosa_negra import RosaNegraScrapper
 from scraper.envoy import EnvoyScrapper
 from scraper.bitshacking import BitsHackingScrapper
 from scraper.safetyskyhacks import SafetySkyHacksScrapper
+from scraper.skynetzone import SkyNetZoneScrapper
+from scraper.mashacker import MasHackerScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -165,4 +167,6 @@ SCRAPER_MAP = {
     'envoy': EnvoyScrapper,
     'bitshacking': BitsHackingScrapper,
     'safetyskyhacks': SafetySkyHacksScrapper,
+    'skynetzone': SkyNetZoneScrapper,
+    'mashacker': MasHackerScrapper,
 }
