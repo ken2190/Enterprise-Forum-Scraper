@@ -39,6 +39,7 @@ class TheCCSpider(scrapy.Spider):
             '//a[@class="subject"]')
         for forum in forums:
             url = forum.xpath('@href').extract_first()
+            url = url.split('/?PHPSESSID=')[0]
             yield Request(
                 url=url,
                 headers=self.headers,
@@ -51,6 +52,7 @@ class TheCCSpider(scrapy.Spider):
             '//td[contains(@class, "subject ")]//span/a')
         for thread in threads:
             thread_url = thread.xpath('@href').extract_first()
+            thread_url = thread_url.split('/?PHPSESSID=')[0]
             topic_id = str(
                 int.from_bytes(
                     thread_url.encode('utf-8'), byteorder='big'
