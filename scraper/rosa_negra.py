@@ -12,6 +12,9 @@ from scraper.base_scrapper import SiteMapScrapper
 USER = 'Cyrax_011'
 PASS = 'Night#India065'
 
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 16
+
 PROXY = 'http://127.0.0.1:8118'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
 
@@ -179,9 +182,9 @@ class RosaNegraScrapper(SiteMapScrapper):
         spider_settings = super().load_settings()
         spider_settings.update(
             {
-                'DOWNLOAD_DELAY': self.request_delay,
-                'CONCURRENT_REQUESTS': self.no_of_threads,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
             }
         )
         return spider_settings
