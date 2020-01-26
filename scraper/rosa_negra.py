@@ -173,9 +173,6 @@ class RosaNegraSpider(scrapy.Spider):
 
 class RosaNegraScrapper(SiteMapScrapper):
 
-    request_delay = 0.1
-    no_of_threads = 16
-
     spider_class = RosaNegraSpider
 
     def load_settings(self):
