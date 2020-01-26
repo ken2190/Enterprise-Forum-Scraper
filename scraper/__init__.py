@@ -83,6 +83,8 @@ from scraper.bitshacking import BitsHackingScrapper
 from scraper.safetyskyhacks import SafetySkyHacksScrapper
 from scraper.skynetzone import SkyNetZoneScrapper
 from scraper.mashacker import MasHackerScrapper
+from scraper.hackthissite import HackThisSiteScrapper
+from scraper.devilteam import DevilTeamScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -169,4 +171,6 @@ SCRAPER_MAP = {
     'safetyskyhacks': SafetySkyHacksScrapper,
     'skynetzone': SkyNetZoneScrapper,
     'mashacker': MasHackerScrapper,
+    'hackthissite': HackThisSiteScrapper,
+    'devilteam': DevilTeamScrapper,
 }
