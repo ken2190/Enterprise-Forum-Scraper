@@ -335,6 +335,7 @@ class BHFIOScrapper(SiteMapScrapper):
                 'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads
             }
         )
+        return spider_settings
 
 
 if __name__ == '__main__':

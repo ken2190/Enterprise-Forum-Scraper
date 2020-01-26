@@ -160,3 +160,4 @@ class MasHackerScrapper(SiteMapScrapper):
                 'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
             }
         )
+        return spider_settings

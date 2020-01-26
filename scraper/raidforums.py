@@ -247,6 +247,7 @@ class RaidForumsScrapper(SiteMapScrapper):
                 'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
             }
         )
+        return spider_settings
 
 
 if __name__ == '__main__':
