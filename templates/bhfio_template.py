@@ -184,14 +184,27 @@ class BHFIOParser:
         return date[0] if date else ''
 
     def get_author(self, tag):
-        author = tag.xpath(
-            'div//div[@class="message-userDetails"]/h4/a/text()'
+        author_block = tag.xpath(
+            './/div[@class="message-userDetails"]/h4/a/descendant::text()'
         )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="message-userDetails"]/h4/a/span/text()'
-            )
-        author = author[0].strip() if author else None
+        author = " ".join([
+            author.strip() for author in author_block
+        ])
+        protected_email = tag.xpath(
+            './/div[@class="message-userDetails"]/h4/a/'
+            'descendant::*[@class="__cf_email__"]/@data-cfemail'
+        )
+        if protected_email:
+            decoded_values = [
+                utils.get_decoded_email(e) for e in protected_email
+            ]
+            for decoded_value in decoded_values:
+                author = re.sub(
+                    r'\[email.*?protected\]',
+                    decoded_value,
+                    author,
+                    count=1
+                )
         return author
 
     def get_title(self, tag):
