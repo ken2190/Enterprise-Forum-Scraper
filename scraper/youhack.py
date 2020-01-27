@@ -1,12 +1,14 @@
-import time
-import requests
 import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+
+from datetime import datetime
+from scrapy.utils.gz import gunzip
+
+from scrapy import (
+    Request,
+    FormRequest,
+    Selector
+)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -21,8 +23,8 @@ class YouHackSpider(SitemapSpider):
     sitemap_url = "https://youhack.ru/sitemap.php"
 
     # Xpath stuffs
-    forum_xpath = "//sitemap[loc[contains(text(),\"sitemap-threads.xml\")]]/loc/text()"
-    thread_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
+    forum_xpath = "//sitemap/loc/text()"
+    thread_xpath = "//url[loc[contains(text(),\"/threads/\")] and lastmod]"
     thread_url_xpath = "//loc/text()"
     thread_date_xpath = "//lastmod/text()"
 
@@ -30,6 +32,9 @@ class YouHackSpider(SitemapSpider):
     topic_pattern = re.compile(r'threads/(\d+)')
     avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
     pagination_pattern = re.compile(r'.*page-(\d+)')
+
+    # Other settings
+    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,67 +46,29 @@ class YouHackSpider(SitemapSpider):
             }
         )
 
-    def parse_sitemap(self, response):
+    def get_topic_id(self, url=None):
 
-        # Load selector
-        selector = Selector(text=response.text)
+        try:
+            return self.topic_pattern.findall(url)[0]
+        except Exception as err:
+            return
 
-        # Load forum
-        all_forum = selector.xpath(self.forum_xpath).extract()
-
-        for forum in all_forum:
-            yield Request(
-                url=forum,
-                headers=self.headers,
-                callback=self.parse_sitemap_forum
-            )
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date[:-6],
+            self.sitemap_datetime_format
+        )
 
     def parse_sitemap_forum(self, response):
 
         # Load selector
-        selector = Selector(text=response.text)
+        selector = Selector(text=gunzip(response.body))
 
         # Load thread
         all_threads = selector.xpath(self.thread_xpath).extract()
 
         for thread in all_threads:
             yield from self.parse_sitemap_thread(thread)
-
-    def parse_sitemap_thread(self, thread):
-
-        # Load selector
-        selector = Selector(text=thread)
-
-        # Load thread url and update
-        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
-        thread_date = datetime.strptime(
-            selector.xpath(self.thread_date_xpath).extract_first(),
-            self.sitemap_datetime_format
-        )
-
-        if self.start_date > thread_date:
-            self.logger.info(
-                "Thread %s ignored because last update in the past. Detail: %s" % (
-                    thread_url,
-                    thread_date
-                )
-            )
-            return
-
-        topic_id = str(
-            int.from_bytes(
-                thread_url.encode('utf-8'),
-                byteorder='big'
-            ) % (10 ** 7)
-        )
-        yield Request(
-            url=thread_url,
-            headers=self.headers,
-            meta={
-                "topic_id": topic_id
-            },
-            callback=self.parse_thread
-        )
 
     def parse(self, response):
         forums = response.xpath(
@@ -123,24 +90,31 @@ class YouHackSpider(SitemapSpider):
             )
 
     def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
+        self.logger.info(
+            "Next_page_url: %s" % response.request.url
+        )
+
         threads = response.xpath(
-            '//ol[@class="discussionListItems"]/li//h3[@class="title"]/a')
+            '//ol[@class="discussionListItems"]/li//h3[@class="title"]/a'
+        )
+
         for thread in threads:
             thread_url = thread.xpath('@href').extract_first()
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
+
+            topic_id = self.get_topic_id(thread_url)
             if not topic_id:
                 continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
+
+            file_name = '{}/{}-1.html'.format(self.output_path, topic_id)
             if os.path.exists(file_name):
                 continue
             yield Request(
                 url=thread_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
+                meta={'topic_id': topic_id}
             )
 
         next_page_url = response.xpath(
