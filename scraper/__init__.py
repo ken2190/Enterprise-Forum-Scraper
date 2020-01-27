@@ -85,6 +85,7 @@ from scraper.skynetzone import SkyNetZoneScrapper
 from scraper.mashacker import MasHackerScrapper
 from scraper.hackthissite import HackThisSiteScrapper
 from scraper.devilteam import DevilTeamScrapper
+from scraper.devilgroup import DevilGroupScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -173,4 +174,5 @@ SCRAPER_MAP = {
     'mashacker': MasHackerScrapper,
     'hackthissite': HackThisSiteScrapper,
     'devilteam': DevilTeamScrapper,
+    'devilgroup': DevilGroupScrapper,
 }
