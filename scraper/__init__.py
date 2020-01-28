@@ -15,7 +15,7 @@ from scraper.antichat_v2 import Antichatv2Scrapper
 from scraper.sinister import SinisterScrapper
 from scraper.sentryMBA_v2 import SentryMBAv2Scrapper
 from scraper.verified_carder import VerifiedCarderScrapper
-from scraper.carder import CarderScrapper
+from scraper.carderme import CarderMeScrapper
 from scraper.ccc_mn import CCCMNScrapper
 from scraper.cracked_to import CrackedToScrapper
 from scraper.sky_fraud import SkyFraudScrapper
@@ -86,6 +86,7 @@ from scraper.mashacker import MasHackerScrapper
 from scraper.hackthissite import HackThisSiteScrapper
 from scraper.devilteam import DevilTeamScrapper
 from scraper.devilgroup import DevilGroupScrapper
+from scraper.demonforums import DemonForumsScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -105,7 +106,7 @@ SCRAPER_MAP = {
     'sinister': SinisterScrapper,
     'sentrymba_v2': SentryMBAv2Scrapper,
     'verified_carder': VerifiedCarderScrapper,
-    'carder': CarderScrapper,
+    'carder': CarderMeScrapper,
     'ccc_mn': CCCMNScrapper,
     'cracked_to': CrackedToScrapper,
     'sky_fraud': SkyFraudScrapper,
@@ -175,4 +176,5 @@ SCRAPER_MAP = {
     'hackthissite': HackThisSiteScrapper,
     'devilteam': DevilTeamScrapper,
     'devilgroup': DevilGroupScrapper,
+    'demonforums': DemonForumsScrapper,
 }
