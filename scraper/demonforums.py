@@ -11,35 +11,39 @@ import configparser
 from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider, SiteMapScrapper
+from scraper.base_scrapper import BypassCloudfareNoProxySpider, SiteMapScrapper
 
 
 REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
+NO_OF_THREADS = 3
 
 
-class DemonForumsSpider(scrapy.Spider):
+class DemonForumsSpider(BypassCloudfareNoProxySpider):
     name = 'demonforums_spider'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.start_url = 'https://demonforums.net/'
         self.headers = {
-            'referer': 'https://demonforums.net/',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
+            'Referer': 'https://demonforums.net/',
         }
 
     def start_requests(self):
         yield Request(
             url=self.start_url,
             headers=self.headers,
-            callback=self.parse
+            callback=self.parse,
+            meta={
+                "cookiejar": "123123"
+            }
         )
 
     def parse(self, response):
-        self.logger.info(response.text)
+
+        self.logger.info(
+            "Succesfully bypass cloudfare."
+        )
+
         return
 
 
@@ -54,10 +58,6 @@ class DemonForumsScrapper(SiteMapScrapper):
                 'DOWNLOAD_DELAY': REQUEST_DELAY,
                 'CONCURRENT_REQUESTS': NO_OF_THREADS,
                 'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-                'DEFAULT_REQUEST_HEADERS': BypassCloudfareSpider.
-                custom_settings['DEFAULT_REQUEST_HEADERS']
             }
         )
-        spider_settings['DOWNLOADER_MIDDLEWARES'].update(
-            BypassCloudfareSpider.custom_settings['DOWNLOADER_MIDDLEWARES'])
         return spider_settings

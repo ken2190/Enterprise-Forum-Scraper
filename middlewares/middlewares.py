@@ -1,6 +1,8 @@
 import cloudscraper
 import uuid
 
+from base64 import b64decode
+
 
 class LuminatyProxyMiddleware(object):
 
@@ -12,27 +14,35 @@ class LuminatyProxyMiddleware(object):
         self.logger = crawler.spider.logger
         self.username = 'lum-customer-hl_afe4c719-zone-zone1'
         self.password = '8jywfhrmovdh'
-        self.super_proxy_url = "http://%s-session-%s:%s@zproxy.lum-superproxy.io:22225"
+        self.super_proxy_url = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
     def process_request(self, request, spider):
 
         # Check session
-        session = request.meta.get("cookiejar")
+        session = (request.meta.get("cookiejar")
+                   or uuid.uuid1().hex)
         country = request.meta.get("country")
-        if not session:
-            session = uuid.uuid1().hex
 
+        # Init username
+        username = self.username
+
+        # Add session string to session if available
+        if session:
+            username = "%s-session-%s" % (
+                username,
+                session
+            )
+
+        # Add country to session if available
         if country:
             username = "%s-country-%s" % (
-                self.username,
+                username,
                 country
             )
-        else:
-            username = self.username
 
+        # Add proxy to request
         request.meta["proxy"] = self.super_proxy_url % (
             username,
-            session,
             self.password
         )
 
@@ -65,29 +75,32 @@ class BypassCloudfareMiddleware(object):
     def __init__(self, crawler):
         self.logger = crawler.spider.logger
 
-    def load_cookies(self, request):
+    def load_cookies(self, request, byte=True):
         cookies = {}
 
         # Load cookies bytes
-        cookie_bytes = request.headers.get("Cookie")
+        cookies_string = request.headers.get("Cookie")
+        if byte:
+            cookies_string = request.headers.get("Cookie").decode("utf-8")
 
         # Convert cookie byte
-        if cookie_bytes is not None:
-            cookie_string = cookie_bytes.decode("utf-8")
-            cookie_elements = [
-                element.strip().split("=") for element in cookie_string.split(";")
+        if cookies_string is not None:
+            cookies_elements = [
+                element.strip().split("=") for element in cookies_string.split(";")
             ]
             cookies = {
-                element[0]: "=".join(element[1:]) for element in cookie_elements
+                element[0]: "=".join(element[1:]) for element in cookies_elements
             }
 
         return cookies
 
     def get_cftoken(self, url, delay=5, proxy=None):
         session = cloudscraper.create_scraper(delay=delay)
+
         request_args = {
             "url": url
         }
+
         if proxy:
             request_args["proxies"] = {
                 "http": proxy,
@@ -95,34 +108,54 @@ class BypassCloudfareMiddleware(object):
             }
 
         response = session.get(**request_args)
+        response = session.get(**request_args)
 
-        user_agent = response.request.headers.get("User-Agent")
-        cookies = {
-            cookie.name: cookie.value for cookie in response.cookies
-        }
-        return cookies, user_agent
+        headers = response.request.headers
+        cookies = self.load_cookies(response.request, False)
+
+        return cookies, headers
 
     def process_response(self, request, response, spider):
 
         if not self.is_cloudflare_challenge(response):
             return response
 
-        cookies, user_agent = self.get_cftoken(
+        # Init request args
+        request_args = {}
+
+        # Add proxy if available
+        proxy = request.meta.get("proxy")
+        if proxy:
+            request_args["proxy"] = proxy
+
+        # Add proxy authen if available
+        basic_auth = request.headers.get("Proxy-Authorization")
+        if basic_auth:
+            basic_auth_encoded = basic_auth.decode("utf-8").split()[1]
+            username, password = b64decode(basic_auth_encoded).decode("utf-8").split(":")
+            root_proxy = proxy.replace(
+                "https://", ""
+            ).replace(
+                "http://", ""
+            )
+            request_args["proxy"] = "%s:%s@%s" % (
+                username,
+                password,
+                root_proxy
+            )
+
+        cookies, headers = self.get_cftoken(
             request.url,
-            proxy=request.meta.get("proxy")
+            **request_args
         )
 
-        # Load current cookies
-        existing_cookies = self.load_cookies(request)
-
-        # Update existing cookies
-        existing_cookies.update(cookies)
-
         # Replace cookies
-        request.cookies = existing_cookies
+        request.cookies.update(cookies.copy())
 
         # Replace user agent
-        request.headers["User-Agent"] = user_agent
+        request.headers.update(headers.copy())
+
+        # Dont filter this retry request
         request.dont_filter = True
 
         self.logger.info(
