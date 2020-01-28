@@ -13,11 +13,11 @@ class HashKillerSpider(scrapy.Spider):
     name = 'hashkiller_spider'
 
     def __init__(self, output_path, avatar_path):
-        self.base_url = "https://forum.hashkiller.co.uk/"
+        self.base_url = "https://forum.hashkiller.io/"
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.topic_pattern = re.compile(r'.*t=(\d+)')
         self.pagination_pattern = re.compile(r'.*p=(\d+)')
-        self.start_url = 'https://forum.hashkiller.co.uk/default.aspx'
+        self.start_url = 'https://forum.hashkiller.io/default.aspx'
         self.output_path = output_path
         self.avatar_path = avatar_path
         self.headers = {

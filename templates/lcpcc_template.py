@@ -14,7 +14,7 @@ class BrokenPage(Exception):
 
 class LCPCCParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = parser_name
+        self.parser_name = "lcp.cc"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'

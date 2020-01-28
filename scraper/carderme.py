@@ -10,7 +10,7 @@ RCKID = "f5XSM80a0rpu39WlOXmBB3BBY7mj8Ts3JibPn6Z8ezSTGPRMvWMhQsOinhML8c2K"
 BLAZINGFAST_WEB_PROTECT = "53b9998982df4d031165f522b027879c"
 
 
-class CarderScrapper(BaseScrapper):
+class CarderMeScrapper(BaseScrapper):
     def __init__(self, kwargs):
         super(CarderScrapper, self).__init__(kwargs)
         self.base_url = 'http://carder.me/'

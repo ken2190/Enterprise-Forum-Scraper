@@ -13,7 +13,7 @@ class BrokenPage(Exception):
 
 class BMRParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = parser_name
+        self.parser_name = "black market reloaded"
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
         self.data_dic = OrderedDict()

@@ -14,7 +14,7 @@ class BrokenPage(Exception):
 
 class UtopiaParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = parser_name
+        self.parser_name = "utopia market"
         self.output_folder = output_folder
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path

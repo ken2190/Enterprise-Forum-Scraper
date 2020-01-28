@@ -41,7 +41,7 @@ from templates.outlawmarket_template import OutLawMarketParser
 from templates.alphabay_template import AlphaBayParser
 from templates.sinister_template import SinisterParser
 from templates.verified_carder_template import VerifiedCarderParser
-from templates.carder_template import CarderParser
+from templates.carderme_template import CarderMeParser
 from templates.ccc_mn_template import CCCMNParser
 from templates.cracked_to_template import CrackedToParser
 from templates.sky_fraud_template import SkyFraudParser
@@ -146,7 +146,7 @@ PARSER_MAP = {
     'alphabay': AlphaBayParser,
     'sinister': SinisterParser,
     'verified_carder': VerifiedCarderParser,
-    'carder': CarderParser,
+    'carderme': CarderMeParser,
     'ccc_mn': CCCMNParser,
     'cracked_to': CrackedToParser,
     'sky_fraud': SkyFraudParser,

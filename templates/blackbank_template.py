@@ -14,7 +14,7 @@ class BrokenPage(Exception):
 
 class BlackBankParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = parser_name
+        self.parser_name = "blackbank market"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(r'viewtopic\.php.*id=(\d+)')
         self.files = self.get_filtered_files(files)

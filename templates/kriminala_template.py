@@ -16,7 +16,7 @@ class BrokenPage(Exception):
 class KriminalaParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-        self.parser_name = parser_name
+        self.parser_name = "kriminala.net"
         self.output_folder = output_folder
         self.date_pattern = re.compile(r'Добавлено:(.*)[ap]m', re.I)
         self.thread_name_pattern1 = re.compile(

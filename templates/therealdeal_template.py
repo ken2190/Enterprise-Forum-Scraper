@@ -13,7 +13,7 @@ class BrokenPage(Exception):
 
 class TheRealDealParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = parser_name
+        self.parser_name = "therealdeal market"
         self.thread_name_pattern = re.compile(r'index\.php\?topic=(\d+)')
         self.order_info_pattern = re.compile(r'^(\d+)$')
         self.files = self.get_filtered_files(files)

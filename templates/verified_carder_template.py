@@ -17,7 +17,7 @@ class BrokenPage(Exception):
 class VerifiedCarderParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-        self.parser_name = parser_name
+        self.parser_name = "verifiedcarder.ws"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'

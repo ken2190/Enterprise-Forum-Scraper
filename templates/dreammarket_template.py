@@ -18,7 +18,7 @@ class BrokenPage(Exception):
 
 class DreamMarketParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.output_folder = output_folder
+        self.output_folder = "dream market"
         self.folder_path = folder_path
         # main function
         self.main()

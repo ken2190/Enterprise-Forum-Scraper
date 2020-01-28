@@ -15,7 +15,7 @@ class BrokenPage(Exception):
 
 class SilkRoad1Parser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = parser_name
+        self.parser_name = "silk road"
         self.output_folder = output_folder
         self.thread_name_pattern1 = re.compile(
             r'thread_(\d+).*html'

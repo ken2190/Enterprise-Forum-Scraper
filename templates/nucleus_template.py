@@ -14,7 +14,7 @@ class BrokenPage(Exception):
 
 class NucleusParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = parser_name
+        self.parser_name = "nucleus forum"
         self.output_folder = output_folder
         self.thread_name_pattern_1 = re.compile(r'viewtopic\.php\?pid=(\d+)')
         self.thread_name_pattern_2 = re.compile(r'viewtopic\.php\?id=(\d+)')
