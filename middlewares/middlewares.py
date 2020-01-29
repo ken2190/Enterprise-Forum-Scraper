@@ -22,22 +22,30 @@ class LuminatyProxyMiddleware(object):
         session = (request.meta.get("cookiejar")
                    or uuid.uuid1().hex)
         country = request.meta.get("country")
+        ip = request.meta.get("ip")
 
         # Init username
         username = self.username
 
         # Add session string to session if available
-        if session:
+        if session and not ip:
             username = "%s-session-%s" % (
                 username,
                 session
             )
 
         # Add country to session if available
-        if country:
+        if country and not ip:
             username = "%s-country-%s" % (
                 username,
                 country
+            )
+
+        # If has ip meta, make it priority over session
+        if ip:
+            username = "%s-ip-%s" % (
+                username,
+                ip
             )
 
         # Add proxy to request
@@ -45,6 +53,10 @@ class LuminatyProxyMiddleware(object):
             username,
             self.password
         )
+
+        # Remove old authorization if exist
+        if request.headers.get("Proxy-Authorization"):
+            del request.headers["Proxy-Authorization"]
 
         self.logger.info(
             'Process request %s with proxy %s' % (
@@ -96,6 +108,7 @@ class BypassCloudfareMiddleware(object):
 
     def get_cftoken(self, url, delay=5, proxy=None):
         session = cloudscraper.create_scraper(delay=delay)
+        ip = None
 
         request_args = {
             "url": url
@@ -106,6 +119,10 @@ class BypassCloudfareMiddleware(object):
                 "http": proxy,
                 "https": proxy
             }
+            ip = session.get(
+                url="https://api.ipify.org/?format=json",
+                proxies=request_args.get("proxies")
+            ).json().get("ip")
 
         response = session.get(**request_args)
         response = session.get(**request_args)
@@ -113,7 +130,7 @@ class BypassCloudfareMiddleware(object):
         headers = response.request.headers
         cookies = self.load_cookies(response.request, False)
 
-        return cookies, headers
+        return cookies, headers, ip
 
     def process_response(self, request, response, spider):
 
@@ -144,7 +161,7 @@ class BypassCloudfareMiddleware(object):
                 root_proxy
             )
 
-        cookies, headers = self.get_cftoken(
+        cookies, headers, ip = self.get_cftoken(
             request.url,
             **request_args
         )
@@ -157,6 +174,10 @@ class BypassCloudfareMiddleware(object):
 
         # Dont filter this retry request
         request.dont_filter = True
+
+        # Add ip meta if exist
+        if ip:
+            request.meta["ip"] = ip
 
         self.logger.info(
             "Header after cloudfare check: %s" % request.headers

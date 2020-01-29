@@ -1,8 +1,14 @@
 import os
 import re
 import scrapy
+import uuid
+
 from scrapy.http import Request, FormRequest
-from scraper.base_scrapper import BypassCloudfareNoProxySpider, SiteMapScrapper
+from scraper.base_scrapper import (
+    BypassCloudfareNoProxySpider,
+    BypassCloudfareSpider,
+    SiteMapScrapper
+)
 
 
 REQUEST_DELAY = 0.3
@@ -12,7 +18,7 @@ USER = 'Cyrax_011'
 PASS = 'Night#India065'
 
 
-class DemonForumsSpider(BypassCloudfareNoProxySpider):
+class DemonForumsSpider(BypassCloudfareSpider):
     name = 'demonforums_spider'
 
     def __init__(self, *args, **kwargs):
@@ -32,9 +38,6 @@ class DemonForumsSpider(BypassCloudfareNoProxySpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.process_login,
-            meta={
-                "cookiejar": "123123"
-            }
         )
 
     def process_login(self, response):
