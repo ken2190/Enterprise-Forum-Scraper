@@ -349,6 +349,7 @@ def process_scrape(out_file, single_json):
                 continue
         elif key == 'company':
             filtered_json.update(value['address'])
+            filtered_json.update({'company': value['name']})
             phone = value['phone']
             if phone:
                 filtered_json.update({'phone': phone[0]['phoneNumber']})
