@@ -87,6 +87,7 @@ from scraper.hackthissite import HackThisSiteScrapper
 from scraper.devilteam import DevilTeamScrapper
 from scraper.devilgroup import DevilGroupScrapper
 from scraper.demonforums import DemonForumsScrapper
+from scraper.crack_community import CrackCommunityScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -177,4 +178,5 @@ SCRAPER_MAP = {
     'devilteam': DevilTeamScrapper,
     'devilgroup': DevilGroupScrapper,
     'demonforums': DemonForumsScrapper,
+    'crackcommunity': CrackCommunityScrapper,
 }
