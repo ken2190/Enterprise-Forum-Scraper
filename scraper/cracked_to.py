@@ -7,32 +7,33 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 
 
-class CrackedToSpider(scrapy.Spider):
+class CrackedToSpider(SitemapSpider):
     name = 'cracked_spider'
+    sitemap_url = 'https://cracked.to/sitemap-index.xml'
+    # Xpath stuffs
+    forum_xpath = '//sitemap/loc[contains(text(), "sitemap-threads.xml")]/text()'
+    thread_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
 
-    def __init__(self, output_path, avatar_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.base_url = 'https://cracked.to/'
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page=(\d+)')
         self.start_url = 'https://cracked.to/'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
         self.headers = {
             'referer': 'https://cracked.to/',
             'user-agent': USER_AGENT,
         }
-
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
-        )
 
     def parse(self, response):
         forums = response.xpath(
@@ -52,7 +53,7 @@ class CrackedToSpider(scrapy.Spider):
             )
 
     def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
+        self.logger.info('next_page_url: {}'.format(response.url))
         threads = response.xpath(
             '//span[contains(@class, "subject_new")]/a')
         for thread in threads:
@@ -94,7 +95,7 @@ class CrackedToSpider(scrapy.Spider):
             self.output_path, topic_id, paginated_value)
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
+            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
         avatars = response.xpath(
             '//div[@class="author_avatar"]/a/img')
@@ -136,42 +137,20 @@ class CrackedToSpider(scrapy.Spider):
         file_name_only = file_name.rsplit('/', 1)[-1]
         with open(file_name, 'wb') as f:
             f.write(response.body)
-            print(f"Avatar {file_name_only} done..!")
+            self.logger.info(f"Avatar {file_name_only} done..!")
 
 
-class CrackedToScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class CrackedToScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = CrackedToSpider
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(CrackedToSpider, self.output_path, self.avatar_path)
-        process.start()
-
-
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            }
+        )
+        return settings
