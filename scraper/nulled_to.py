@@ -1,17 +1,21 @@
-import time
-import requests
 import os
-import json
 import re
-import scrapy
-from math import ceil
-from copy import deepcopy
-from urllib.parse import urlencode
-import configparser
-from scrapy.http import Request, FormRequest
-from lxml.html import fromstring
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+import uuid
+
+from datetime import (
+    datetime,
+    timedelta
+)
+
+from scrapy import (
+    Request,
+    FormRequest,
+    Selector
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
 FORUMS = [
@@ -128,25 +132,61 @@ FORUMS = [
 ]
 
 
-class NulledSpider(BypassCloudfareSpider):
+class NulledSpider(SitemapSpider):
     name = 'nulled_spider'
 
-    def __init__(self, output_path, avatar_path=None, urlsonly=None):
-        self.base_url = "https://www.nulled.to"
-        self.topic_pattern = re.compile(r'topic/(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)')
-        self.start_url = 'https://www.nulled.to'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.urlsonly = urlsonly
-        self.headers = {
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
-            'referer': 'https://www.nulled.to/',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1'
-        }
+    # Url stuffs
+    base_url = "https://www.nulled.to"
+    start_url = 'https://www.nulled.to'
+
+    # Xpath stuffs
+    thread_xpath = "//tr[contains(@id,\"trow\")]"
+    thread_lastmod_xpath = "//td[@class=\"col_f_post\"]/ul/li[contains(@class,\"blend_links\")]/a/text()"
+    thread_url_xpath = "//a[@itemprop=\"url\" and contains(@id, \"tid-link-\")]/@href"
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r'topic/(\d+)',
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r'.*/(\S+\.\w+)',
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r'.*page-(\d+)',
+        re.IGNORECASE
+    )
+
+    # Other settings
+    sitemap_datetime_format = "%d %b, %Y"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "referer": "https://www.nulled.to/",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": "none",
+                "sec-fetch-user": "?1"
+            }
+        )
+
+    def parse_thread_date(self, thread_date):
+        if "Today" in thread_date:
+            return datetime.today()
+        elif "Yesterday" in thread_date:
+            return datetime.today() - timedelta(days=1)
+        return datetime.strptime(
+            thread_date,
+            self.sitemap_datetime_format
+        )
+
+    def get_topic_id(self, url=None):
+        try:
+            return self.topic_pattern.findall(url)[0]
+        except Exception as err:
+            return
 
     def start_requests(self):
         # Proceed for banlist
@@ -158,36 +198,15 @@ class NulledSpider(BypassCloudfareSpider):
                 callback=self.parse_ban_list,
                 meta={'pagination': 1}
             )
-        elif self.urlsonly:
-            for forum_url in FORUMS:
-                identifier = re.findall(r'forum/(.*)/', forum_url)[0]
-                file_name = f'{self.output_path}/{identifier}.txt'
-                if not os.path.exists(file_name):
-                    self.output_url_file = open(file_name, 'w')
-                    yield Request(
-                        url=forum_url,
-                        headers=self.headers,
-                        callback=self.parse_forum
-                    )
-                    break
         else:
-            input_file = self.output_path + '/urls.txt'
-            if not os.path.exists(input_file):
-                print('URL File not found. Exiting!!')
-                return
-            for thread_url in open(input_file, 'r'):
-                thread_url = thread_url.strip()
-                topic_id = self.topic_pattern.findall(thread_url)
-                if not topic_id:
-                    continue
-                file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-                if os.path.exists(file_name):
-                    continue
+            for forum_url in FORUMS:
                 yield Request(
-                    url=thread_url,
+                    url=forum_url,
                     headers=self.headers,
-                    callback=self.parse_thread,
-                    meta={'topic_id': topic_id[0]}
+                    callback=self.parse_forum,
+                    meta={
+                        "cookiejar": uuid.uuid1().hex
+                    }
                 )
 
     def parse_ban_list(self, response):
@@ -223,19 +242,67 @@ class NulledSpider(BypassCloudfareSpider):
                 url = self.base_url + url
             print(url)
 
+    def extract_thread_stats(self, thread):
+        # Load selector
+        selector = Selector(text=thread)
+
+        # Load stats
+        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
+        thread_lastmod = selector.xpath(self.thread_lastmod_xpath).extract_first()
+
+        return thread_url.strip(), self.parse_thread_date(thread_lastmod.strip())
+
     def parse_forum(self, response):
         print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[@itemprop="url" and contains(@id, "tid-link-")]')
+
+        threads = response.xpath(self.thread_xpath).extract()
+        lastmod_pool = []
+
         for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
+            thread_url, thread_lastmod = self.extract_thread_stats(thread)
+            lastmod_pool.append(thread_lastmod)
+
+            if self.start_date and thread_lastmod < self.start_date:
+                self.logger.info(
+                    "Thread %s last updated is %s before start date %s. Ignored." % (
+                        thread_url, thread_lastmod, self.start_date
+                    )
+                )
+                continue
+
             if self.base_url not in thread_url:
                 thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
+
+            topic_id = self.get_topic_id(thread_url)
+
             if not topic_id:
                 continue
-            self.output_url_file.write(thread_url)
-            self.output_url_file.write('\n')
+
+            yield Request(
+                url=thread_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={
+                    "topic_id": topic_id,
+                    "cookiejar": topic_id
+                }
+            )
+
+        # Pagination
+        if not lastmod_pool:
+            self.logger.info(
+                "Forum without thread, exit."
+            )
+            return
+
+        if self.start_date and self.start_date > max(lastmod_pool):
+            self.logger.info(
+                "Found no more thread update later than %s in forum %s. Exit." % (
+                    self.start_date,
+                    response.url
+                )
+            )
+            return
 
         next_page = response.xpath('//li[@class="next"]/a')
         if next_page:
@@ -301,54 +368,33 @@ class NulledSpider(BypassCloudfareSpider):
             print(f"Avatar {file_name_only} done..!")
 
 
-class NulledToScrapper():
+class NulledToScrapper(SiteMapScrapper):
+
+    request_delay = 0.1
+    no_of_threads = 16
+    spider_class = NulledSpider
+
     def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.urlsonly = kwargs.get('urlsonly')
-        self.banlist_path = None
-        self.avatar_path = None
+        super().__init__(kwargs)
         if kwargs.get('banlist'):
             self.ensure_ban_path()
-        else:
-            self.ensure_avatar_path()
 
     def ensure_ban_path(self, ):
         self.banlist_path = f'{self.output_path}/banlist'
         if not os.path.exists(self.banlist_path):
             os.makedirs(self.banlist_path)
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
-
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503, 504],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        if self.banlist_path:
-            process.crawl(
-                NulledSpider, self.banlist_path,
-            )
-        else:
-            process.crawl(
-                NulledSpider, self.output_path,
-                self.avatar_path, self.urlsonly
-            )
-        process.start()
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': self.request_delay,
+                'CONCURRENT_REQUESTS': self.no_of_threads,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+                'RETRY_HTTP_CODES': [403, 429, 500, 503, 504],
+            }
+        )
+        return settings
 
 
 if __name__ == '__main__':

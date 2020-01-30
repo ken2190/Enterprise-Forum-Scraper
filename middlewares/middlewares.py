@@ -68,6 +68,8 @@ class LuminatyProxyMiddleware(object):
 class BypassCloudfareMiddleware(object):
 
     allow_retry = 5
+    captcha_provider = "2captcha"
+    captcha_token = "76228b91f256210cf20e6d8428818e23"
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -77,12 +79,19 @@ class BypassCloudfareMiddleware(object):
     def is_cloudflare_challenge(response):
         """Test if the given response contains the cloudflare's anti-bot protection"""
 
-        return (
-                response.status in (503, 429, 403)
-                and response.headers.get("Server", "").startswith(b"cloudflare")
-                and 'jschl_vc' in response.text
-                and 'jschl_answer' in response.text
-        )
+        first_cloudfare_text = "jschl_vc"
+        second_cloudfare_text = "jschl_answer"
+        recaptcha_text = "Why do I have to complete a CAPTCHA"
+
+        cloudfare_test = ((response.status in (503, 429, 403)
+                           and response.headers.get("Server", "").startswith(b"cloudflare")
+                           and first_cloudfare_text in response.text
+                           and second_cloudfare_text in response.text)
+                          or (response.status in (503, 429, 403)
+                              and recaptcha_text in response.text
+                              and response.headers.get("Cookie", "").startswith(b"__cfduid")))
+
+        return cloudfare_test
 
     def __init__(self, crawler):
         self.logger = crawler.spider.logger
@@ -107,7 +116,13 @@ class BypassCloudfareMiddleware(object):
         return cookies
 
     def get_cftoken(self, url, delay=5, proxy=None):
-        session = cloudscraper.create_scraper(delay=delay)
+        session = cloudscraper.create_scraper(
+            delay=delay,
+            recaptcha={
+                "provider": self.captcha_provider,
+                "api_key": self.captcha_token
+            }
+        )
         ip = None
 
         request_args = {
