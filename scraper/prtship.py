@@ -23,14 +23,13 @@ class PrtShipSpider(SitemapSpider):
     sitemap_url = 'https://prtship.com/sitemap.xml'
     # Xpath stuffs
     forum_xpath = '//sitemap/loc[contains(text(), "sitemap_topics.xml")]/text()'
-    thread_xpath = '//url[loc[contains(text(),"/topic/")] and lastmod]'
+    thread_xpath = '//url[loc[contains(text(),"/threads/")] and lastmod]'
     thread_url_xpath = "//loc/text()"
     thread_date_xpath = "//lastmod/text()"
     sitemap_datetime_format = "%Y-%m-%d"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self.base_url = "https://prtship.com"
         self.start_url = '{}/forums/'.format(self.base_url)
         self.topic_pattern = re.compile(r'.*\.(\d+)/$')
@@ -38,9 +37,11 @@ class PrtShipSpider(SitemapSpider):
         self.pagination_pattern = re.compile(r'.*page-(\d+)$')
         self.start_url = 'https://prtship.com'
         self.headers = {
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/74.0.3729.169 Safari/537.36",
+            "user-agent": USER_AGENT,
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
         }
 
     def start_requests(self):
