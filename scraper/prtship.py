@@ -6,7 +6,16 @@ from math import ceil
 import configparser
 from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+from scrapy import Selector
+from scrapy.utils.gz import gunzip
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+
+
+USER = 'vrx9'
+PASS = 'Night#Pro000'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+REQUEST_DELAY = 0.2
+NO_OF_THREADS = 10
 
 
 class PrtShipSpider(SitemapSpider):
