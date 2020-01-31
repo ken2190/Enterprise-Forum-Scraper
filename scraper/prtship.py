@@ -6,42 +6,24 @@ from math import ceil
 import configparser
 from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
-from scrapy import Selector
-from scrapy.utils.gz import gunzip
-from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+from scrapy.crawler import CrawlerProcess
 
 
-USER = 'vrx9'
-PASS = 'Night#Pro000'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
-REQUEST_DELAY = 0.2
-NO_OF_THREADS = 10
-
-
-class PrtShipSpider(SitemapSpider):
+class PrtShipSpider(scrapy.Spider):
     name = 'prtship_spider'
-    sitemap_url = 'https://prtship.com/sitemap.xml'
-    # Xpath stuffs
-    forum_xpath = '//sitemap/loc[contains(text(), "sitemap_topics.xml")]/text()'
-    thread_xpath = '//url[loc[contains(text(),"/threads/")] and lastmod]'
-    thread_url_xpath = "//loc/text()"
-    thread_date_xpath = "//lastmod/text()"
-    sitemap_datetime_format = "%Y-%m-%d"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, output_path):
         self.base_url = "https://prtship.com"
         self.start_url = '{}/forums/'.format(self.base_url)
         self.topic_pattern = re.compile(r'.*\.(\d+)/$')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)$')
         self.start_url = 'https://prtship.com'
+        self.output_path = output_path
         self.headers = {
-            "user-agent": USER_AGENT,
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'upgrade-insecure-requests': '1',
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/74.0.3729.169 Safari/537.36",
         }
 
     def start_requests(self):
@@ -67,27 +49,24 @@ class PrtShipSpider(SitemapSpider):
             headers=self.headers
             )
 
-    def parse_sitemap_forum(self, response):
-
-        # Load selector
-        text = gunzip(response.body)
-        selector = Selector(text=gunzip(response.body))
-
-        # Load thread
-        all_threads = selector.xpath(self.thread_xpath).extract()
-        for thread in all_threads:
-            yield from self.parse_sitemap_thread(thread)
-
     def parse_main_page(self, response):
-        if self.start_date:
-            yield scrapy.Request(
-                url=self.sitemap_url,
+        json_response = json.loads(response.text)
+        html_response = json_response['html']['content']
+        response = fromstring(html_response)
+        forums = response.xpath(
+            '//h3[@class="node-title"]/a')
+        for forum in forums:
+            url = forum.xpath('@href')[0]
+            if self.base_url not in url:
+                url = self.base_url + url
+            yield Request(
+                url=url,
                 headers=self.headers,
-                callback=self.parse_sitemap
+                callback=self.parse_forum
             )
 
     def parse_forum(self, response):
-        self.logger.info('next_page_url: {}'.format(response.url))
+        print('next_page_url: {}'.format(response.url))
         threads = response.xpath(
             '//a[@data-preview-url]')
         for thread in threads:
@@ -127,7 +106,7 @@ class PrtShipSpider(SitemapSpider):
             self.output_path, topic_id, paginated_value)
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
+            print(f'{topic_id}-{paginated_value} done..!')
 
         next_page = response.xpath(
             '//a[@class="pageNav-jump pageNav-jump--next"]')
@@ -142,25 +121,39 @@ class PrtShipSpider(SitemapSpider):
                 meta={'topic_id': topic_id}
             )
 
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar {file_name_only} done..!")
 
+class PrtShipScrapper():
+    def __init__(self, kwargs):
+        self.output_path = kwargs.get('output')
+        self.proxy = kwargs.get('proxy') or None
+        self.request_delay = 0.1
+        self.no_of_threads = 16
 
-class PrtShipScrapper(SiteMapScrapper):
+    def do_scrape(self):
+        settings = {
+            'DOWNLOAD_DELAY': self.request_delay,
+            'CONCURRENT_REQUESTS': self.no_of_threads,
+            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+            'RETRY_HTTP_CODES': [403, 429, 500, 503],
+            'RETRY_TIMES': 10,
+            'LOG_ENABLED': True,
 
-    spider_class = PrtShipSpider
+        }
+        if self.proxy:
+            settings.update({
+                "DOWNLOADER_MIDDLEWARES": {
+                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+                },
+                'ROTATING_PROXY_LIST': self.proxy,
 
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            }
-        )
-        return settings
+            })
+        process = CrawlerProcess(settings)
+        process.crawl(PrtShipSpider, self.output_path)
+        process.start()
+
+if __name__ == '__main__':
+    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
