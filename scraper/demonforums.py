@@ -11,8 +11,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 3
+REQUEST_DELAY = 0.2
+NO_OF_THREADS = 10
 
 USER = 'Cyrax_011'
 PASS = 'Night#India065'

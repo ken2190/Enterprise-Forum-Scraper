@@ -37,7 +37,6 @@ class PrtShipSpider(SitemapSpider):
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)$')
         self.start_url = 'https://prtship.com'
-        self.output_path = output_path
         self.headers = {
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) "
                           "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -152,7 +151,7 @@ class PrtShipSpider(SitemapSpider):
 
 class PrtShipScrapper(SiteMapScrapper):
 
-    spider_class = ProLogicSpider
+    spider_class = PrtShipSpider
 
     def load_settings(self):
         settings = super().load_settings()
