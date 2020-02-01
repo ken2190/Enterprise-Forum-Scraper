@@ -1,18 +1,20 @@
-import time
-import requests
 import os
 import json
 import re
 import scrapy
-from math import ceil
-from copy import deepcopy
-from urllib.parse import urlencode
-import configparser
-from scrapy.http import Request, FormRequest
-from lxml.html import fromstring
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
+from urllib.parse import urlencode
+from lxml.html import fromstring
+
+from scrapy import (
+    Request, 
+    FormRequest,
+    Selector
+)
+from scraper.base_scrapper import (
+    SitemapSpider, 
+    SiteMapScrapper
+)
 
 USER = 'Cyrax_011'
 PASS = 'Night#India065'
@@ -23,27 +25,36 @@ NO_OF_THREADS = 5
 
 class BlackHatIndiaSpider(SitemapSpider):
     name = 'blackhatindia_spider'
+    
+    # Url stuffs
+    base_url = "https://fraudstercrew.su"
+    
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"threads/.*\.(\d+)/",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r"members/(.*?)/",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page-(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = "https://fraudstercrew.su"
-        self.topic_pattern = re.compile(r'threads/.*\.(\d+)/')
-        self.avatar_name_pattern = re.compile(r'members/(.*?)/')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)')
-        self.start_url = self.base_url
-        self.headers = {
-            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
-            'referer': 'https://fraudstercrew.su',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1'
-        }
-
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+        self.headers.update(
+            {
+                "Referer": "https://fraudstercrew.su",
+                "Sec-fetch-mode": "navigate",
+                "Sec-fetch-site": "none",
+                "Sec-fetch-user": "?1"
+            }
         )
 
     def get_token(self, response):
@@ -54,8 +65,6 @@ class BlackHatIndiaSpider(SitemapSpider):
             '_xfToken': match[0],
             '_xfResponseType': 'json'
         }
-        print('params')
-        print(params)
         token_url = 'https://forum.blackhatindia.ru/login/?' + urlencode(params)
         yield Request(
             url=token_url,
