@@ -16,6 +16,7 @@ USER = 'blacklotus2000@protonmail.com'
 PASS = 'Night#Anti999'
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
 class AntichatSpider(SitemapSpider):
@@ -41,7 +42,7 @@ class AntichatSpider(SitemapSpider):
             'sec-fetch-site': 'same-origin',
             'sec-fetch-user': '?1',
             'content-type': 'application/x-www-form-urlencoded',
-            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
+            'user-agent': USER_AGENT,
         }
 
     def parse_thread_date(self, thread_date):
