@@ -1,149 +1,195 @@
-import re
+import sys
 import os
-import random
-import traceback
-from scraper.base_scrapper import BaseScrapper
+import re
+import json
+import scrapy
+from math import ceil
+import configparser
+from lxml.html import fromstring
+from scrapy.http import Request, FormRequest
+from scrapy.crawler import CrawlerProcess
+from datetime import datetime
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-# Topic Counter
-TOPIC_START_COUNT = 56700
-TOPIC_END_COUNT = 56800
+
+USER = 'blacklotus2000@protonmail.com'
+PASS = 'Night#Anti999'
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 
 
-class AntichatScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(AntichatScrapper, self).__init__(kwargs)
-        self.site_link = "https://forum.antichat.ru/"
-        self.topic_url = self.site_link + "threads/{}/"
-        self.ignore_xpath = '//label[contains(text(),'\
-                            '"The requested thread could not be found")]'
+class AntichatSpider(SitemapSpider):
+    name = 'antichat_spider'
+    sitemap_url = 'https://forum.antichat.ru/sitemap.php'
+    # Xpath stuffs
+    forum_xpath = "//loc/text()"
+    thread_url_xpath = "//loc/text()"
+    thread_xpath = "//url[lastmod]"
+    thread_date_xpath = "//lastmod/text()"
+    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.base_url = 'https://forum.antichat.ru/'
+        self.topic_pattern = re.compile(r'/threads/(\d+)/')
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
+        self.pagination_pattern = re.compile(r'page-(\d+)')
+        self.headers = {
+            'origin': 'https://forum.antichat.ru',
+            'referer': 'https://forum.antichat.ru/',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'content-type': 'application/x-www-form-urlencoded',
+            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
+        }
 
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//a[contains(@class,"currentPage")]'
-            '/following-sibling::a[1]/@href'
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date.split('+')[0],
+            self.sitemap_datetime_format
         )
-        if not next_page_block:
-            return
-        next_page_url = self.site_link + next_page_block[0]\
-            if self.site_link not in next_page_block[0]\
-            else next_page_block[0]
-        pattern = re.compile(r"threads/(\d+)/page-(\d+)")
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
 
-        content = self.get_page_content(
-            next_page_url, self.ignore_xpath
-        )
-        if not content:
-            return
-
-        paginated_file = '{}/{}-{}.html'.format(
-            self.output_path, topic, pagination_value
-        )
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
-
-        print('{}-{} done..!'.format(topic, pagination_value))
-        return content
-
-    def clear_cookies(self,):
-        self.session.cookies['topicsread'] = ''
-
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//div[@class="uix_avatarHolderInner"]/a/img/@src'
-        )
-        for url in urls:
-            if self.site_link not in url:
-                url = self.site_link + url
-            name_match = self.avatar_name_pattern.findall(url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
-
-    def process_topic(self, topic):
-        try:
-            response = self.process_first_page(
-                topic, self.ignore_xpath
+    def proceed_for_login(self):
+        login_url = 'https://forum.antichat.ru/login/login'
+        params = {
+            'login': USER,
+            'password': PASS,
+            'register': '0',
+            "remember": '1',
+            'cookie_check': '1',
+            'redirect': 'https://forum.antichat.ru/',
+            '_xfToken': ''
+        }
+        yield FormRequest(
+            url=login_url,
+            callback=self.parse,
+            formdata=params,
+            headers=self.headers,
+            dont_filter=True,
             )
-            if response is None:
-                return
 
-            avatar_info = self.get_avatar_info(response)
-            for name, url in avatar_info.items():
-                self.save_avatar(name, url)
-            # ------------clear cookies without logout--------------
-            self.clear_cookies()
-        except:
-            traceback.print_exc()
-            return
-        self.process_pagination(response)
+    def parse(self, response):
+        forums = response.xpath(
+            '//div[@class="nodelistBlock nodeText"]'
+            '/h3[@class="nodeTitle"]/a')
+        subforums = response.xpath(
+            '//ol[@class="subForumList"]'
+            '//h4[@class="nodeTitle"]/a')
+        forums.extend(subforums)
+        for forum in forums:
+            url = forum.xpath('@href').extract_first()
+            if self.base_url not in url:
+                url = f'{self.base_url}{url}'
 
-    def do_new_posts_scrape(self,):
-        print('**************  New posts scan  **************')
-        new_post_url = self.site_link + "find-new/posts"
-        while True:
-            print('Url: {}'.format(new_post_url))
-            content = self.get_page_content(new_post_url)
-            if not content:
-                print('New posts not found')
-                return
-            new_topics = list()
-            html_response = self.get_html_response(content)
-            urls = html_response.xpath('//a[@class="PreviewTooltip"]/@href')
-            pattern = re.compile(r"threads/(\d+)")
-            for url in urls:
-                match = pattern.findall(url)
-                if not match:
-                    continue
-                new_topics.append(match[0])
-            for topic in new_topics:
-                file_path = "{}/{}.html".format(self.output_path, topic)
-                # if os.path.exists(file_path):
-                #     os.remove(file_path)
-                self.process_topic(topic)
-            next_url = html_response.xpath('//link[@rel="next"]/@href')
-            if not next_url:
-                return
-            new_post_url = self.site_link + next_url[0]
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_forum,
+            )
 
-    def do_rescan(self,):
-        print('**************  Rescanning  **************')
-        print('Broken Topics found')
-        broken_topics = self.get_broken_file_topics()
-        print(broken_topics)
-        if not broken_topics:
-            return
-        for topic in broken_topics:
-            file_path = "{}/{}.html".format(self.output_path, topic)
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            self.process_topic(topic)
+    def parse_forum(self, response):
+        topic_blocks = response.xpath(
+            '//ol[@class="discussionListItems"]/li[@id]')
+        if not topic_blocks:
+            topic_blocks = response.xpath(
+                '//div[@class="uix_stickyThreads"]/li')
+        for topic in topic_blocks:
+            thread_url = topic.xpath(
+                'div//h3[@class="title"]/a[@data-previewurl]/'
+                '@href').extract_first()
+            if self.base_url not in thread_url:
+                thread_url = f'{self.base_url}{thread_url}'
+            match = self.topic_pattern.findall(thread_url)
+            if not match:
+                continue
+            file_name = '{}/{}-1.html'.format(self.output_path, match[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=thread_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={'topic_id': match[0]}
+            )
+        next_page = response.xpath(
+            '//a[@class="text" and text()="Next >"]'
+            )
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_forum,
+            )
 
-    def do_scrape(self):
-        print('**************  Antichat Scrapper Started  **************\n')
-        # ----------------go to topic ------------------
-        ts = self.topic_start_count or TOPIC_START_COUNT
-        te = self.topic_end_count or TOPIC_END_COUNT + 1
-        topic_list = list(range(ts, te))
-        # random.shuffle(topic_list)
-        for topic in topic_list:
-            self.process_topic(topic)
+    def parse_thread(self, response):
+        topic_id = response.meta['topic_id']
+        pagination = self.pagination_pattern.findall(response.url)
+        paginated_value = pagination[0] if pagination else 1
+        file_name = '{}/{}-{}.html'.format(
+            self.output_path, topic_id, paginated_value)
+        with open(file_name, 'wb') as f:
+            # f.write(response.text.encode('cp1252'))
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(f'{topic_id}-{paginated_value} done..!')
+
+        avatars = response.xpath(
+            '//a[@data-avatarhtml="true"]/img')
+        for avatar in avatars:
+            avatar_url = avatar.xpath('@src').extract_first()
+            if not avatar_url.startswith('http'):
+                avatar_url = self.base_url + avatar_url
+            match = self.avatar_name_pattern.findall(avatar_url)
+            if not match:
+                continue
+            file_name = '{}/{}'.format(self.avatar_path, match[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta={
+                    'file_name': file_name,
+                }
+            )
+
+        next_page = response.xpath(
+            '//a[@class="text" and text()="Next >"]'
+            )
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={'topic_id': topic_id}
+            )
+
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        file_name_only = file_name.rsplit('/', 1)[-1]
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            self.logger.info(f"Avatar {file_name_only} done..!")
 
 
-def main():
-    template = AntichatScrapper()
-    template.do_scrape()
+class AntichatScrapper(SiteMapScrapper):
 
+    spider_class = AntichatSpider
 
-if __name__ == '__main__':
-    main()
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            }
+        )
+        return settings

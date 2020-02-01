@@ -11,7 +11,6 @@ from scraper.wallstreet import WallStreetScrapper
 from scraper.kickass import KickAssScrapper
 from scraper.galaxy3 import Galaxy3Scrapper
 from scraper.badkarma import BadKarmaScrapper
-from scraper.antichat_v2 import Antichatv2Scrapper
 from scraper.sinister import SinisterScrapper
 from scraper.sentryMBA_v2 import SentryMBAv2Scrapper
 from scraper.verified_carder import VerifiedCarderScrapper
@@ -42,7 +41,6 @@ from scraper.verified import VerifiedScrapper
 from scraper.lcpcc import LCPScrapper
 from scraper.raidforums import RaidForumsScrapper
 from scraper.marviher import MarviherScrapper
-from scraper.antichat_v3 import Antichatv3Scrapper
 from scraper.xss import XSSScrapper
 from scraper.hackforums import HackForumsScrapper
 from scraper.rstforums import RSTForumsScrapper
@@ -103,7 +101,6 @@ SCRAPER_MAP = {
     'kickass': KickAssScrapper,
     'galaxy3': Galaxy3Scrapper,
     'badkarma': BadKarmaScrapper,
-    'antichat_v2': Antichatv2Scrapper,
     'sinister': SinisterScrapper,
     'sentrymba_v2': SentryMBAv2Scrapper,
     'verified_carder': VerifiedCarderScrapper,
@@ -133,7 +130,6 @@ SCRAPER_MAP = {
     'lcpcc': LCPScrapper,
     'raidforums': RaidForumsScrapper,
     'marviher': MarviherScrapper,
-    'antichat_v3': Antichatv3Scrapper,
     'xss': XSSScrapper,
     'hackforums': HackForumsScrapper,
     'rstforums': RSTForumsScrapper,
