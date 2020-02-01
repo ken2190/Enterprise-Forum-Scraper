@@ -20,7 +20,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36
 
 class LolzSpider(SitemapSpider):
     name = 'lolz_spider'
-    sitemap_url = 'https://www.blackhatworld.com/sitemap.xml'
+    sitemap_url = 'https://www.lolzteam.online/sitemap.xml'
     # Xpath stuffs
     forum_xpath = "//loc/text()"
     thread_url_xpath = "//loc/text()"
