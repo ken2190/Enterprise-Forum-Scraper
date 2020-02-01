@@ -33,7 +33,7 @@ class BlackHatIndiaSpider(SitemapSpider):
         self.start_url = self.base_url
         self.headers = {
             'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
-            'referer': 'https://forum.blackhatindia.ru/',
+            'referer': 'https://fraudstercrew.su',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1'
