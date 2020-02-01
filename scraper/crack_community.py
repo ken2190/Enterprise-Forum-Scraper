@@ -5,7 +5,6 @@ import uuid
 
 from scrapy.http import Request, FormRequest
 from scraper.base_scrapper import (
-    BypassCloudfareNoProxySpider,
     BypassCloudfareSpider,
     SiteMapScrapper
 )

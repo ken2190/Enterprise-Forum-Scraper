@@ -217,6 +217,7 @@ class SiteMapScrapper:
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
         self.ensure_avatar_path(kwargs.get("template"))
+        self.set_users_path()
 
         if self.start_date:
             try:
@@ -240,8 +241,17 @@ class SiteMapScrapper:
             "output_path": getattr(self, "output_path", None),
             "useronly": getattr(self, "useronly", None),
             "avatar_path": getattr(self, "avatar_path", None),
-            "start_date": getattr(self, "start_date", None)
+            "start_date": getattr(self, "start_date", None),
+            "user_path": getattr(self, "user_path", None)
         }
+
+    def set_users_path(self):
+        self.user_path = os.path.join(
+            self.output_path,
+            'users'
+        )
+        if not os.path.exists(self.user_path):
+            os.makedirs(self.user_path)
 
     def ensure_avatar_path(self, template):
         self.avatar_path = f'../avatars/{template}'
@@ -291,33 +301,61 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
 
 
 class BypassCloudfareSpider(scrapy.Spider):
-    custom_settings = {
-        "DOWNLOADER_MIDDLEWARES": {
-            "middlewares.middlewares.LuminatyProxyMiddleware": 100,
-            "middlewares.middlewares.BypassCloudfareMiddleware": 200
-        },
-        "DEFAULT_REQUEST_HEADERS": {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"
-        }
-    }
 
-
-class BypassCloudfareNoProxySpider(scrapy.Spider):
-
+    use_proxy = True
     download_delay = 0.3
     download_thread = 10
+    default_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) " \
+                        "Gecko/20100101 Firefox/71.0"
 
-    custom_settings = {
-        "DOWNLOADER_MIDDLEWARES": {
-            "middlewares.middlewares.BypassCloudfareMiddleware": 200
-        },
-        "DEFAULT_REQUEST_HEADERS": {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"
-        },
-        'DOWNLOAD_DELAY': download_delay,
-        'CONCURRENT_REQUESTS': download_thread,
-        'CONCURRENT_REQUESTS_PER_DOMAIN': download_thread
-    }
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        if (crawler.settings.frozen):
+            crawler.settings.frozen = False
+
+            # Default settings
+            crawler.settings.set(
+                "DEFAULT_REQUEST_HEADERS",
+                {
+                    "User-Agent": cls.default_useragent
+                }
+            )
+
+            # Proxy settings
+            if cls.use_proxy:
+                crawler.settings.set(
+                    "DOWNLOADER_MIDDLEWARES",
+                    {
+                        "middlewares.middlewares.LuminatyProxyMiddleware": 100,
+                        "middlewares.middlewares.BypassCloudfareMiddleware": 200
+                    },
+                )
+            else:
+                crawler.settings.set(
+                    "DOWNLOADER_MIDDLEWARES",
+                    {
+                        "middlewares.middlewares.BypassCloudfareMiddleware": 200
+                    },
+                )
+                crawler.settings.set(
+                    "DOWNLOAD_DELAY",
+                    cls.download_delay
+                )
+                crawler.settings.set(
+                    "CONCURRENT_REQUESTS",
+                    cls.download_thread
+                )
+                crawler.settings.set(
+                    "CONCURRENT_REQUESTS_PER_DOMAIN",
+                    cls.download_thread
+                )
+
+            # Free settings
+            crawler.settings.freeze()
+
+        spider = cls(*args, **kwargs)
+        spider._set_crawler(crawler)
+        return spider
 
 
 class SitemapSpider(BypassCloudfareSpider):
@@ -340,25 +378,78 @@ class SitemapSpider(BypassCloudfareSpider):
         self.output_path = kwargs.get("output_path")
         self.useronly = kwargs.get("useronly")
         self.avatar_path = kwargs.get("avatar_path")
+        self.user_path = kwargs.get("user_path")
         self.start_date = kwargs.get("start_date")
         self.cookies = kwargs.get("cookies")
         self.headers = {
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
+            "User-Agent": self.default_useragent
         }
 
         if self.cookies:
             self.cookies = self.load_cookies(self.cookies)
 
+    def synchronize_headers(self, response):
+        self.headers.update(
+            {
+                "User-Agent": response.request.headers.get("User-Agent")
+            }
+        )
+
+    def extract_thread_stats(self, thread):
+        """
+        :param thread: str => thread html contain url and last mod
+        :return: thread url: str, thread lastmod: datetime
+        """
+        # Load selector
+        selector = Selector(text=thread)
+
+        # Load stats
+        thread_url = selector.xpath(
+            self.thread_url_xpath
+        ).extract_first()
+
+        thread_lastmod = selector.xpath(
+            self.thread_lastmod_xpath
+        ).extract_first()
+
+        return self.parse_thread_url(thread_url), self.parse_thread_date(thread_lastmod)
+
     def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
         return datetime.strptime(
-            thread_date,
+            thread_date.strip(),
             self.sitemap_datetime_format
         )
 
     def parse_thread_url(self, thread_url):
-        return thread_url
+        """
+        :param thread_url: str => thread url as string
+        :return: str => thread url as string
+        """
+        return thread_url.strip()
+
+    def get_topic_id(self, url=None):
+        """
+        :param url: str => thread url
+        :return: str => extracted topic id from thread url
+        """
+        topic_id = str(
+            int.from_bytes(
+                url.encode('utf-8'),
+                byteorder='big'
+            ) % (10 ** 7)
+        )
+        return topic_id
 
     def load_cookies(self, cookies_string):
+        """
+        :param cookies_string: str => Cookie string as in browser header
+        :return: dict => Cookies as dict type, using in scrapy request
+        """
         cookies_elements = [
             element.strip().split("=") for element in cookies_string.split(";")
         ]
@@ -368,19 +459,29 @@ class SitemapSpider(BypassCloudfareSpider):
         return cookies
 
     def start_requests(self):
-        if self.start_date:
+        """
+        :return: => request start urls if no sitemap url or no start date
+                 => request sitemap url if sitemap url and start date
+        """
+        if self.start_date and self.sitemap_url:
             yield scrapy.Request(
                 url=self.sitemap_url,
                 headers=self.headers,
-                callback=self.parse_sitemap
+                callback=self.parse_sitemap,
+                dont_filter=True
             )
         else:
             yield Request(
                 url=self.base_url,
-                headers=self.headers
+                headers=self.headers,
+                dont_filter=True
             )
 
     def parse_sitemap(self, response):
+        """
+        :param response: scrapy response => Level 1, forum sitemap
+        :return:
+        """
 
         # Load selector
         selector = Selector(text=response.text)
@@ -396,7 +497,10 @@ class SitemapSpider(BypassCloudfareSpider):
             )
 
     def parse_sitemap_forum(self, response):
-
+        """
+        :param response: scrapy response => Level 2, thread sitemap
+        :return:
+        """
         # Load selector
         selector = Selector(text=response.text)
 
@@ -407,6 +511,10 @@ class SitemapSpider(BypassCloudfareSpider):
             yield from self.parse_sitemap_thread(thread)
 
     def parse_sitemap_thread(self, thread):
+        """
+        :param thread: str => thread html include url and last mod
+        :return:
+        """
 
         # Load selector
         selector = Selector(text=thread)
@@ -445,12 +553,3 @@ class SitemapSpider(BypassCloudfareSpider):
             request_arguments["cookies"] = self.cookies
 
         yield Request(**request_arguments)
-
-    def get_topic_id(self, url=None):
-        topic_id = str(
-            int.from_bytes(
-                url.encode('utf-8'),
-                byteorder='big'
-            ) % (10 ** 7)
-        )
-        return topic_id

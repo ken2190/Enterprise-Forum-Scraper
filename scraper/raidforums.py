@@ -47,15 +47,6 @@ class RaidForumsSpider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.set_users_path()
-
-    def set_users_path(self, ):
-        self.user_path = os.path.join(
-            self.output_path,
-            'users'
-        )
-        if not os.path.exists(self.user_path):
-            os.makedirs(self.user_path)
 
     def parse(self, response):
 
