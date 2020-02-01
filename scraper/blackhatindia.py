@@ -11,24 +11,26 @@ import configparser
 from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
 USER = 'Cyrax_011'
 PASS = 'Night#India065'
 
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 
-class BlackHatIndiaSpider(BypassCloudfareSpider):
+
+class BlackHatIndiaSpider(SitemapSpider):
     name = 'blackhatindia_spider'
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://forum.blackhatindia.ru"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.base_url = "https://fraudstercrew.su"
         self.topic_pattern = re.compile(r'threads/.*\.(\d+)/')
         self.avatar_name_pattern = re.compile(r'members/(.*?)/')
         self.pagination_pattern = re.compile(r'.*page-(\d+)')
-        self.start_url = 'https://forum.blackhatindia.ru'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
+        self.start_url = self.base_url
         self.headers = {
             'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
             'referer': 'https://forum.blackhatindia.ru/',
@@ -54,16 +56,10 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
         }
         print('params')
         print(params)
-        headers = deepcopy(self.headers)
-        headers.update({
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-origin',
-            'accept': 'application/json, text/javascript, */*; q=0.01'
-        })
         token_url = 'https://forum.blackhatindia.ru/login/?' + urlencode(params)
         yield Request(
             url=token_url,
-            headers=headers,
+            headers=response.request.headers,
             callback=self.proceed_for_login
         )
 
@@ -83,7 +79,7 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
             login_url,
             callback=self.parse,
             formdata=params,
-            headers=self.headers,
+            headers=response.request.headers,
             dont_filter=True,
         )
 
@@ -96,7 +92,7 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
                 url = self.base_url + url
             yield Request(
                 url=url,
-                headers=self.headers,
+                headers=response.request.headers,
                 callback=self.parse_forum
             )
         sub_forums = response.xpath(
@@ -107,7 +103,7 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
                 url = self.base_url + url
             yield Request(
                 url=url,
-                headers=self.headers,
+                headers=response.request.headers,
                 callback=self.parse_forum
             )
 
@@ -127,7 +123,7 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
                 continue
             yield Request(
                 url=thread_url,
-                headers=self.headers,
+                headers=response.request.headers,
                 callback=self.parse_thread,
                 meta={'topic_id': topic_id[0]}
             )
@@ -140,7 +136,7 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
                 next_page_url = self.base_url + next_page_url
             yield Request(
                 url=next_page_url,
-                headers=self.headers,
+                headers=response.request.headers,
                 callback=self.parse_forum
             )
 
@@ -171,7 +167,7 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
                 continue
             yield Request(
                 url=avatar_url,
-                headers=self.headers,
+                headers=response.request.headers,
                 callback=self.parse_avatar,
                 meta={
                     'file_name': file_name,
@@ -187,7 +183,7 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
                 next_page_url = self.base_url + next_page_url
             yield Request(
                 url=next_page_url,
-                headers=self.headers,
+                headers=response.request.headers,
                 callback=self.parse_thread,
                 meta={'topic_id': topic_id}
             )
@@ -199,38 +195,18 @@ class BlackHatIndiaSpider(BypassCloudfareSpider):
             print(f"Avatar for user {response.meta['user_id']} done..!")
 
 
-class BlackHatIndiaScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class BlackHatIndiaScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = BlackHatIndiaSpider
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(BlackHatIndiaSpider, self.output_path, self.avatar_path)
-        process.start()
-
-
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+                'RETRY_HTTP_CODES': [403, 429, 500, 503, 504],
+            }
+        )
+        return settings
