@@ -7,34 +7,45 @@ from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+from datetime import datetime
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
 USER = "darkcylon1@protonmail.com"
 PASS = "Night#Kgg2"
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
-class LolzSpider(BypassCloudfareSpider):
+class LolzSpider(SitemapSpider):
     name = 'lolz_spider'
+    sitemap_url = 'https://www.blackhatworld.com/sitemap.xml'
+    # Xpath stuffs
+    forum_xpath = "//loc/text()"
+    thread_url_xpath = "//loc/text()"
+    thread_xpath = '//url[loc[contains(text(), "/threads/")] and lastmod]'
+    thread_date_xpath = "//lastmod/text()"
+    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://lolzteam.net/"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.base_url = "https://lolzteam.online"
         self.topic_pattern = re.compile(r'threads/(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)')
-        self.output_path = output_path
-        self.avatar_path = avatar_path
+
         self.headers = {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
-            "accept-encoding": "gzip, deflate, br",
-            "accept-language": "en-US,en;q=0.9,hi;q=0.8",
-            "content-type": "content-type: application/x-www-form-urlencoded",
-            "origin": "https://lolzteam.net",
-            "referer": "https://lolzteam.net",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            'if-modified-since': 'Sun, 01 Sep 2019 01:58:13 GMT',
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'en-US,en;q=0.9,hi;q=0.8,ru;q=0.7',
+            'cache-control': 'max-age=0',
+            'referer': 'https://lolzteam.online/',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'if-modified-since': 'Sat, 01 Feb 2020 06:43:24 GMT',
+            "user-agent": USER_AGENT,
         }
 
     def start_requests(self):
@@ -45,15 +56,25 @@ class LolzSpider(BypassCloudfareSpider):
             "stopfuckingbrute1337": "1",
             "cookie_check": "1",
             "_xfToken": "",
-            "redirect": "https://lolzteam.net"
+            "redirect": "https://lolzteam.online/"
         }
-        login_url = 'https://lolzteam.net/login/login'
+        login_url = 'https://lolzteam.online/login/login'
         yield Request(
             url=self.base_url,
             headers=self.headers,
         )
 
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date.split('+')[0],
+            self.sitemap_datetime_format
+        )
+
     def parse(self, response):
+        # ---------------------------------------
+        # Getting wrong value here...
+        print(response.text)
+        # ---------------------------------------
         forums = response.xpath(
             '//ol[@class="nodeList"]//h3[@class="nodeTitle"]'
             '/a[contains(@href, "forums/")]')
@@ -65,7 +86,8 @@ class LolzSpider(BypassCloudfareSpider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = self.base_url + url
-
+            print(url)
+            continue
             yield Request(
                 url=url,
                 headers=self.headers,
@@ -73,7 +95,7 @@ class LolzSpider(BypassCloudfareSpider):
             )
 
     def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
+        self.logger.info('next_page_url: {}'.format(response.url))
         threads = response.xpath(
             '//div[@class="discussionListItem--Wrapper"]'
             '/a[contains(@href, "")]')
@@ -114,7 +136,7 @@ class LolzSpider(BypassCloudfareSpider):
             self.output_path, topic_id, paginated_value)
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
+            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
         avatars = response.xpath(
             '//div[@class="avatarHolder"]/a/span[@style and @class]')
@@ -158,49 +180,20 @@ class LolzSpider(BypassCloudfareSpider):
         file_name_only = file_name.rsplit('/', 1)[-1]
         with open(file_name, 'wb') as f:
             f.write(response.body)
-            print(f"Avatar {file_name_only} done..!")
+            self.logger.info(f"Avatar {file_name_only} done..!")
 
 
-class LolzScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class LolzScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = LolzSpider
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings['DOWNLOADER_MIDDLEWARES'].update({
-                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-            })
-            settings.update({
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(LolzSpider, self.output_path, self.avatar_path)
-        process.start()
-
-
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            }
+        )
+        return settings
