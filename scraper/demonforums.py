@@ -5,7 +5,6 @@ import uuid
 
 from scrapy.http import Request, FormRequest
 from scraper.base_scrapper import (
-    BypassCloudfareNoProxySpider,
     BypassCloudfareSpider,
     SiteMapScrapper
 )
@@ -20,6 +19,8 @@ PASS = 'Night#India065'
 
 class DemonForumsSpider(BypassCloudfareSpider):
     name = 'demonforums_spider'
+
+    use_proxy = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

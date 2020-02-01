@@ -165,10 +165,10 @@ class NulledSpider(SitemapSpider):
         super().__init__(*args, **kwargs)
         self.headers.update(
             {
-                "referer": "https://www.nulled.to/",
-                "sec-fetch-mode": "navigate",
-                "sec-fetch-site": "none",
-                "sec-fetch-user": "?1"
+                "Referer": "https://www.nulled.to/",
+                "Sec-fetch-mode": "navigate",
+                "Sec-fetch-site": "none",
+                "Sec-fetch-user": "?1",
             }
         )
 
@@ -178,7 +178,7 @@ class NulledSpider(SitemapSpider):
         elif "Yesterday" in thread_date:
             return datetime.today() - timedelta(days=1)
         return datetime.strptime(
-            thread_date,
+            thread_date.strip(),
             self.sitemap_datetime_format
         )
 
@@ -241,16 +241,6 @@ class NulledSpider(SitemapSpider):
             if self.base_url not in url:
                 url = self.base_url + url
             print(url)
-
-    def extract_thread_stats(self, thread):
-        # Load selector
-        selector = Selector(text=thread)
-
-        # Load stats
-        thread_url = selector.xpath(self.thread_url_xpath).extract_first()
-        thread_lastmod = selector.xpath(self.thread_lastmod_xpath).extract_first()
-
-        return thread_url.strip(), self.parse_thread_date(thread_lastmod.strip())
 
     def parse_forum(self, response):
         print('next_page_url: {}'.format(response.url))
