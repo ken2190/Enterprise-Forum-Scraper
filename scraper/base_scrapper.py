@@ -595,13 +595,13 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
             )
             return
-        if self.topic_pattern and self.topic_pattern.search(thread_url):
-            topic_id = self.topic_pattern.search(thread_url).group(1)
-        else:
-            topic_id = self.get_topic_id(thread_url)
+
+        # Get topic id
+        topic_id = self.get_topic_id(thread_url)
         if not topic_id:
             return
 
+        # Check existing file
         existing_file_date = self.get_existing_file_date(topic_id)
         if existing_file_date and existing_file_date >= self.start_date:
             self.logger.info(

@@ -158,6 +158,9 @@ class OgUsersSpider(SitemapSpider):
         # Synchronize headers user agent with cloudfare middleware
         self.synchronize_headers(response)
 
+        # Load topic_id
+        topic_id = response.meta.get("topic_id")
+
         # Check current page to scrape from last page
         current_page = response.xpath(self.thread_page_xpath).extract_first()
         last_page = response.xpath(self.thread_last_xpath).extract_first()
