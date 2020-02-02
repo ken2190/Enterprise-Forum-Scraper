@@ -475,18 +475,34 @@ class SitemapSpider(BypassCloudfareSpider):
         :param url: str => thread url
         :return: str => extracted topic id from thread url
         """
+        if getattr(self, "topic_pattern", None):
+            try:
+                return self.topic_pattern.findall(url)[0]
+            except Exception as err:
+                return
+
         topic_id = str(
             int.from_bytes(
                 url.encode('utf-8'),
                 byteorder='big'
             ) % (10 ** 7)
         )
+
         return topic_id
     
     def get_existing_file_date(self, topic_id):
-        file_name = f'{self.output_path}/{topic_id}-1.html'
+
+        # Load first page file name
+        file_name = os.path.join(
+            self.output_path,
+            "%s-1.html" % topic_id
+        )
+
+        # If file name exist then return
         if not os.path.exists(file_name):
             return
+
+        # Else return time stamp
         created_ts = os.stat(file_name).st_ctime
         return datetime.fromtimestamp(created_ts)
 
@@ -599,15 +615,6 @@ class SitemapSpider(BypassCloudfareSpider):
         # Get topic id
         topic_id = self.get_topic_id(thread_url)
         if not topic_id:
-            return
-
-        # Check existing file
-        existing_file_date = self.get_existing_file_date(topic_id)
-        if existing_file_date and existing_file_date >= self.start_date:
-            self.logger.info(
-                f"Thread {thread_url} ignored because existing "
-                f"file is already latest. Last Scraped: {existing_file_date}"
-            )
             return
 
         # Load request arguments
