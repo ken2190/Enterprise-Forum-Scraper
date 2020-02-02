@@ -482,6 +482,13 @@ class SitemapSpider(BypassCloudfareSpider):
             ) % (10 ** 7)
         )
         return topic_id
+    
+    def get_existing_file_date(self, topic_id):
+        file_name = f'{self.output_path}/{topic_id}-1.html'
+        if not os.path.exists(file_name):
+            return
+        created_ts = os.stat(file_name).st_ctime
+        return datetime.fromtimestamp(created_ts)
 
     def load_cookies(self, cookies_string):
         """
@@ -588,9 +595,19 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
             )
             return
-
-        topic_id = self.get_topic_id(thread_url)
+        if self.topic_pattern and self.topic_pattern.search(thread_url):
+            topic_id = self.topic_pattern.search(thread_url).group(1)
+        else:
+            topic_id = self.get_topic_id(thread_url)
         if not topic_id:
+            return
+
+        existing_file_date = self.get_existing_file_date(topic_id)
+        if existing_file_date and existing_file_date >= self.start_date:
+            self.logger.info(
+                f"Thread {thread_url} ignored because existing "
+                f"file is already latest. Last Scraped: {existing_file_date}"
+            )
             return
 
         # Load request arguments
@@ -610,6 +627,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         yield Request(**request_arguments)
 
+<<<<<<< scraper/base_scrapper.py
     def parse_captcha(self, failure):
         # Load response, request
         response = failure.value.response
@@ -756,3 +774,11 @@ class SitemapSpider(BypassCloudfareSpider):
                     }
                 )
             )
+=======
+    def get_existing_file_date(self, topic_id):
+        file_name = f'{self.output_path}/{topic_id}-1.html'
+        if not os.path.exists(file_name):
+            return
+        created_ts = os.stat(file_name).st_ctime
+        return datetime.fromtimestamp(created_ts)
+>>>>>>> scraper/base_scrapper.py
