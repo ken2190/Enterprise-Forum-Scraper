@@ -1,6 +1,7 @@
 import os
 import re
 import scrapy
+import uuid
 
 from datetime import datetime
 
@@ -38,15 +39,19 @@ class OgUsersSpider(SitemapSpider):
     thread_xpath = "//tr[contains(@class, \"thread_row\")]"
     thread_url_xpath = "//span[contains(@class,\"subject\")]/a[contains(@href,\"Thread-\")]/@href"
     thread_lastmod_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
-                           "//span[@class=\"lastpost smalltext\"]/br/following-sibling::text()"
+                           "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
+    thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
+    thread_last_xpath = "//div[@class=\"pagination\"]/a[@class=\"pagination_last\"]/@href|" \
+                        "//div[@class=\"pagination\"]/a[@class=\"pagination_next\"]/preceding-sibling::a"
+    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
+    post_date_xpath = "//div[@class=\"inline pb_date smalltext\"]/text()[contains(.,\"-\")]|" \
+                      "//div[@class=\"inline pb_date smalltext\"]/span[@title]/@title"
 
     # Regex stuffs
-    pagination_pattern = re.compile(r'.*page=(\d+)')
     avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
 
     # Other settings
-    use_proxy = False
     sitemap_datetime_format = "%m-%d-%Y"
 
     def __init__(self, *args, **kwargs):
@@ -64,7 +69,7 @@ class OgUsersSpider(SitemapSpider):
         :return: datetime => thread date as datetime converted from string,
                             using class sitemap_datetime_format
         """
-        if "seconds" in thread_date:
+        if thread_date is None:
             return datetime.today()
 
         return datetime.strptime(
@@ -72,17 +77,48 @@ class OgUsersSpider(SitemapSpider):
             self.sitemap_datetime_format
         )
 
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+
+        if post_date is None:
+            return datetime.today()
+
+        return datetime.strptime(
+            post_date.strip()[:10],
+            self.sitemap_datetime_format
+        )
+
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            },
+            callback=self.parse,
+            errback=self.parse_captcha
+        )
+
     def parse(self, response):
+        # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
+
         yield Request(
             url=self.login_url,
             dont_filter=True,
             headers=self.headers,
-            callback=self.parse_login
+            callback=self.parse_login,
+            meta=self.synchronize_meta(response)
         )
 
     def parse_login(self, response):
+        # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
+
         yield FormRequest.from_response(
             response,
             formcss=self.login_form_css,
@@ -94,14 +130,17 @@ class OgUsersSpider(SitemapSpider):
             },
             headers=self.headers,
             dont_filter=True,
-            callback=self.parse_start
+            callback=self.parse_start,
+            meta=self.synchronize_meta(response)
         )
 
     def parse_start(self, response):
 
+        # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
-        all_forums = response.css(self.forum_css).extract()
 
+        # Load all forums
+        all_forums = response.css(self.forum_css).extract()
         for forum in all_forums:
 
             if self.base_url not in forum:
@@ -110,74 +149,8 @@ class OgUsersSpider(SitemapSpider):
             yield Request(
                 url=forum,
                 headers=self.headers,
-                callback=self.parse_forum
-            )
-
-    def parse_forum(self, response):
-
-        # Synchronize header user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        self.logger.info(
-            "Next_page_url: %s" % response.url
-        )
-
-        threads = response.xpath(self.thread_xpath).extract()
-        lastmod_pool = []
-
-        for thread in threads:
-            thread_url, thread_lastmod = self.extract_thread_stats(thread)
-            lastmod_pool.append(thread_lastmod)
-
-            # If start date, check last mod
-            if self.start_date and thread_lastmod < self.start_date:
-                self.logger.info(
-                    "Thread %s last updated is %s before start date %s. Ignored." % (
-                        thread_url, thread_lastmod, self.start_date
-                    )
-                )
-                continue
-
-            # Standardize thread url
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-
-            # Parse topic id
-            topic_id = self.get_topic_id(thread_url)
-            if not topic_id:
-                continue
-
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={"topic_id": topic_id}
-            )
-
-        # Pagination
-        if not lastmod_pool:
-            self.logger.info(
-                "Forum without thread, exit."
-            )
-            return
-
-        if self.start_date and self.start_date > max(lastmod_pool):
-            self.logger.info(
-                "Found no more thread update later than %s in forum %s. Exit." % (
-                    self.start_date,
-                    response.url
-                )
-            )
-            return
-
-        next_page = response.xpath(self.pagination_xpath).extract_first()
-        if next_page:
-            if self.base_url not in next_page:
-                next_page = self.base_url + next_page
-            yield Request(
-                url=next_page,
-                headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
@@ -185,20 +158,28 @@ class OgUsersSpider(SitemapSpider):
         # Synchronize headers user agent with cloudfare middleware
         self.synchronize_headers(response)
 
-        # Get topic id
-        topic_id = response.meta.get("topic_id")
+        # Check current page to scrape from last page
+        current_page = response.xpath(self.thread_page_xpath).extract_first()
+        last_page = response.xpath(self.thread_last_xpath).extract_first()
+        if current_page == "1":
 
-        # Save thread content
-        if not self.useronly:
-            pagination = self.pagination_pattern.findall(response.url)
-            paginated_value = pagination[0] if pagination else 1
-            file_name = '{}/{}-{}.html'.format(
-                self.output_path, topic_id, paginated_value)
-            with open(file_name, 'wb') as f:
-                f.write(response.text.encode('utf-8'))
-                self.logger.info(
-                    f'{topic_id}-{paginated_value} done..!'
+            if self.base_url not in last_page:
+                last_page = self.base_url + last_page
+
+            yield Request(
+                url=last_page,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
                 )
+            )
+
+        # Parse main thread
+        yield from super().parse_thread(response)
 
         # Save user content
         users = response.xpath("//div[@class=\"postbitdetail\"]/span/a")
@@ -218,10 +199,13 @@ class OgUsersSpider(SitemapSpider):
                 url=user_url,
                 headers=self.headers,
                 callback=self.parse_user,
-                meta={
-                    "file_name": file_name,
-                    "user_name": user_name
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name,
+                        "user_name": user_name,
+                    }
+                )
             )
 
         # Save avatar content
@@ -241,30 +225,19 @@ class OgUsersSpider(SitemapSpider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    "file_name": file_name,
-                }
-            )
-
-        # Thread pagination
-        next_page = response.xpath(
-            "//div[@class=\"pagination\"]//a[@class=\"pagination_next\"]"
-        )
-        if next_page:
-            next_page_url = next_page.xpath("@href").extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={
-                    "topic_id": topic_id
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name,
+                    }
+                )
             )
 
     def parse_user(self, response):
+        # Synchronize headers
         self.synchronize_headers(response)
+
+        # Save user contents
         file_name = response.meta.get("file_name")
         user_name = response.meta.get("user_name")
         with open(file_name, 'wb') as f:
@@ -276,6 +249,8 @@ class OgUsersSpider(SitemapSpider):
         user_history = response.xpath(
             "//div[@class=\"usernamehistory\"]/a"
         )
+
+        # Parse user history
         if user_history:
             history_url = user_history.xpath("@href").extract_first()
 
@@ -286,9 +261,12 @@ class OgUsersSpider(SitemapSpider):
                 url=history_url,
                 headers=self.headers,
                 callback=self.parse_user_history,
-                meta={
-                    "user_name": user_name
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "user_name": user_name,
+                    }
+                )
             )
 
     def parse_user_history(self, response):

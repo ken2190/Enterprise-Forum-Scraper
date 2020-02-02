@@ -2,6 +2,7 @@ import os
 import re
 import time
 import scrapy
+import uuid
 
 from glob import glob
 from requests import Session
@@ -364,14 +365,30 @@ class SitemapSpider(BypassCloudfareSpider):
     base_url = None
     sitemap_url = None
 
+    # Payload stuffs
+    post_headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
     # Format stuff
     sitemap_datetime_format = "%Y-%m-%dT%H:%MZ"
+    post_datetime_format = "%m-%d-%Y"
 
     # Xpath stuffs
+
+    # Forum xpath #
     forum_xpath = None
+    pagination_xpath = None
+
+    # Thread xpath #
     thread_xpath = None
     thread_url_xpath = None
     thread_date_xpath = None
+    thread_page_xpath = None
+    thread_pagination_xpath = None
+
+    # Post xpath #
+    post_date_xpath = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -384,6 +401,7 @@ class SitemapSpider(BypassCloudfareSpider):
         self.headers = {
             "User-Agent": self.default_useragent
         }
+        self.post_headers.update(self.headers)
 
         if self.cookies:
             self.cookies = self.load_cookies(self.cookies)
@@ -394,6 +412,15 @@ class SitemapSpider(BypassCloudfareSpider):
                 "User-Agent": response.request.headers.get("User-Agent")
             }
         )
+
+    def synchronize_meta(self, response, default_meta={}):
+        default_meta.update(
+            {
+                key: response.meta.get(key) for key in ["cookiejar", "ip"]
+                if response.meta.get(key)
+            }
+        )
+        return default_meta
 
     def extract_thread_stats(self, thread):
         """
@@ -423,6 +450,17 @@ class SitemapSpider(BypassCloudfareSpider):
         return datetime.strptime(
             thread_date.strip(),
             self.sitemap_datetime_format
+        )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        return datetime.strptime(
+            post_date.strip(),
+            self.post_datetime_format
         )
 
     def parse_thread_url(self, thread_url):
@@ -468,7 +506,10 @@ class SitemapSpider(BypassCloudfareSpider):
                 url=self.sitemap_url,
                 headers=self.headers,
                 callback=self.parse_sitemap,
-                dont_filter=True
+                dont_filter=True,
+                meta={
+                    "cookiejar": uuid.uuid1().hex
+                }
             )
         else:
             yield Request(
@@ -483,6 +524,9 @@ class SitemapSpider(BypassCloudfareSpider):
         :return:
         """
 
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
         # Load selector
         selector = Selector(text=response.text)
 
@@ -493,7 +537,8 @@ class SitemapSpider(BypassCloudfareSpider):
             yield Request(
                 url=forum,
                 headers=self.headers,
-                callback=self.parse_sitemap_forum
+                callback=self.parse_sitemap_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_sitemap_forum(self, response):
@@ -501,6 +546,10 @@ class SitemapSpider(BypassCloudfareSpider):
         :param response: scrapy response => Level 2, thread sitemap
         :return:
         """
+
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
         # Load selector
         selector = Selector(text=response.text)
 
@@ -508,11 +557,15 @@ class SitemapSpider(BypassCloudfareSpider):
         all_threads = selector.xpath(self.thread_xpath).extract()
 
         for thread in all_threads:
-            yield from self.parse_sitemap_thread(thread)
+            yield from self.parse_sitemap_thread(
+                thread,
+                response
+            )
 
-    def parse_sitemap_thread(self, thread):
+    def parse_sitemap_thread(self, thread, response):
         """
         :param thread: str => thread html include url and last mod
+        :param response: scrapy response => scrapy response
         :return:
         """
 
@@ -545,11 +598,161 @@ class SitemapSpider(BypassCloudfareSpider):
             "url": thread_url,
             "headers": self.headers,
             "callback": self.parse_thread,
-            "meta": {
-                "topic_id": topic_id
-            }
+            "meta": self.synchronize_meta(
+                response,
+                default_meta={
+                    "topic_id": topic_id
+                }
+            )
         }
         if self.cookies:
             request_arguments["cookies"] = self.cookies
 
         yield Request(**request_arguments)
+
+    def parse_captcha(self, failure):
+        # Load response, request
+        response = failure.value.response
+        request = failure.request
+
+        # Load status
+        status = getattr(response, "status", None)
+
+        if ((status is None)
+            or (status == 403 and "Cloudfare" not in response.text)):
+            request.dont_filter = True
+            request.meta["cookiejar"] = uuid.uuid1().hex
+            yield request
+
+    def parse_forum(self, response):
+
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        self.logger.info(
+            "Next_page_url: %s" % response.url
+        )
+
+        threads = response.xpath(self.thread_xpath).extract()
+        lastmod_pool = []
+
+        for thread in threads:
+            thread_url, thread_lastmod = self.extract_thread_stats(thread)
+            lastmod_pool.append(thread_lastmod)
+
+            # If start date, check last mod
+            if self.start_date and thread_lastmod < self.start_date:
+                self.logger.info(
+                    "Thread %s last updated is %s before start date %s. Ignored." % (
+                        thread_url, thread_lastmod, self.start_date
+                    )
+                )
+                continue
+
+            # Standardize thread url
+            if self.base_url not in thread_url:
+                thread_url = self.base_url + thread_url
+
+            # Parse topic id
+            topic_id = self.get_topic_id(thread_url)
+            if not topic_id:
+                continue
+
+            yield Request(
+                url=thread_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
+            )
+
+        # Pagination
+        if not lastmod_pool:
+            self.logger.info(
+                "Forum without thread, exit."
+            )
+            return
+
+        if self.start_date and self.start_date > max(lastmod_pool):
+            self.logger.info(
+                "Found no more thread update later than %s in forum %s. Exit." % (
+                    self.start_date,
+                    response.url
+                )
+            )
+            return
+
+        next_page = response.xpath(self.pagination_xpath).extract_first()
+        if next_page:
+            if self.base_url not in next_page:
+                next_page = self.base_url + next_page
+            yield Request(
+                url=next_page,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
+            )
+
+    def parse_thread(self, response):
+
+        # Load all post date
+        post_dates = [
+            self.parse_post_date(post_date) for post_date in
+            response.xpath(self.post_date_xpath).extract()
+        ]
+        if self.start_date and max(post_dates) < self.start_date:
+            self.logger.info(
+                "No more post to update."
+            )
+            return
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Get topic id
+        topic_id = response.meta.get("topic_id")
+
+        # Save thread content
+        if not self.useronly:
+            current_page = response.xpath(
+                self.thread_page_xpath
+            ).extract_first() or "1"
+            with open(
+                file=os.path.join(
+                    self.output_path,
+                    "%s-%s.html" % (
+                        topic_id,
+                        current_page
+                    )
+                ),
+                mode="w+",
+                encoding="utf-8"
+            ) as file:
+                file.write(response.text)
+                self.logger.info(
+                    f'{topic_id}-{current_page} done..!'
+                )
+
+        # Thread pagination
+        next_page = response.xpath(self.thread_pagination_xpath).extract_first()
+        if next_page:
+
+            if self.base_url not in next_page:
+                next_page = self.base_url + next_page
+
+            yield Request(
+                url=next_page,
+                headers=self.headers,
+                callback=self.parse_thread,
+                dont_filter=True,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
+            )
