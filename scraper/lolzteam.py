@@ -8,6 +8,7 @@ import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 from datetime import datetime
+from selenium import webdriver
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
@@ -27,14 +28,28 @@ class LolzSpider(SitemapSpider):
     thread_xpath = '//url[loc[contains(text(), "/threads/")] and lastmod]'
     thread_date_xpath = "//lastmod/text()"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None
+        }
+    }
+
+    def get_cookies(self,):
+        browser = webdriver.Chrome()
+        browser.get(self.base_url)
+        time.sleep(1)
+        cookies = browser.get_cookies()
+        return '; '.join([
+            f"{c['name']}={c['value']}" for c in cookies
+        ])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = "https://lolzteam.online"
+        self.base_url = "https://lolzteam.online/"
         self.topic_pattern = re.compile(r'threads/(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)')
-
+        cookies = self.get_cookies()
         self.headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
             'accept-encoding': 'gzip, deflate, br',
@@ -44,11 +59,11 @@ class LolzSpider(SitemapSpider):
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'same-origin',
             'sec-fetch-user': '?1',
-            'if-modified-since': 'Sat, 01 Feb 2020 06:43:24 GMT',
+            'cookie': cookies,
             "user-agent": USER_AGENT,
         }
 
-    def start_requests(self):
+    def proceed_for_login(self):
         data = {
             "login": USER,
             "password": PASS,
@@ -59,8 +74,9 @@ class LolzSpider(SitemapSpider):
             "redirect": "https://lolzteam.online/"
         }
         login_url = 'https://lolzteam.online/login/login'
-        yield Request(
-            url=self.base_url,
+        yield FormRequest(
+            url=login_url,
+            formdata=data,
             headers=self.headers,
         )
 
@@ -71,10 +87,6 @@ class LolzSpider(SitemapSpider):
         )
 
     def parse(self, response):
-        # ---------------------------------------
-        # Getting wrong value here...
-        print(response.text)
-        # ---------------------------------------
         forums = response.xpath(
             '//ol[@class="nodeList"]//h3[@class="nodeTitle"]'
             '/a[contains(@href, "forums/")]')
@@ -86,8 +98,6 @@ class LolzSpider(SitemapSpider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = self.base_url + url
-            print(url)
-            continue
             yield Request(
                 url=url,
                 headers=self.headers,
