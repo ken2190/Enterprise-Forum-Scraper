@@ -4,6 +4,7 @@ import os
 import json
 import re
 import scrapy
+import uuid
 from math import ceil
 from copy import deepcopy
 from urllib.parse import urlencode
@@ -50,14 +51,19 @@ class NulledBBSpider(SitemapSpider):
         super().__init__(*args, **kwargs)
         self.headers.update(
             {
-                'referer': 'https://nulledbb.com/',
-                'sec-fetch-mode': 'navigate',
-                'sec-fetch-site': 'none',
-                'sec-fetch-user': '?1'
+                "Referer": "https://nulledbb.com/",
+                "Sec-fetch-mode": "navigate",
+                "Sec-fetch-site": "none",
+                "Sec-fetch-user": "?1"
             }
         )
 
     def parse(self, response):
+
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Loop all forum and sub forums
         forums = response.xpath(
             '//div[@class="forums-row"]//div[@class="title"]/a')
         sub_forums = response.xpath(
@@ -70,11 +76,21 @@ class NulledBBSpider(SitemapSpider):
             yield Request(
                 url=url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta={
+                    "cookiejar": uuid.uuid1().hex
+                }
             )
 
     def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
+
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        self.logger.info(
+            "next_page_url: {}".format(response.url)
+        )
+
         threads = response.xpath(
             '//span[contains(@id, "tid_")]'
             '/a[contains(@href, "thread-")]')
@@ -90,7 +106,12 @@ class NulledBBSpider(SitemapSpider):
                 url=thread_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
             )
 
         next_page = response.xpath('//a[@class="pagination_next"]')
@@ -101,11 +122,19 @@ class NulledBBSpider(SitemapSpider):
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
+
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load topic id
+        topic_id = response.meta.get("topic_id")
+
+        # Save thread content
         pagination = self.pagination_pattern.findall(response.url)
         paginated_value = pagination[0] if pagination else 1
         file_name = '{}/{}-{}.html'.format(
@@ -114,6 +143,7 @@ class NulledBBSpider(SitemapSpider):
             f.write(response.text.encode('utf-8'))
             print(f'{topic_id}-{paginated_value} done..!')
 
+        # Save avatar content
         avatars = response.xpath(
             '//div[@class="author_avatar"]/a/img')
         for avatar in avatars:
@@ -132,11 +162,15 @@ class NulledBBSpider(SitemapSpider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                )
             )
 
+        # Pagination threads
         next_page = response.xpath(
             '//a[@class="pagination_next" '
             'and contains(@href, "thread-")]')
@@ -148,7 +182,12 @@ class NulledBBSpider(SitemapSpider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
             )
 
     def parse_avatar(self, response):
