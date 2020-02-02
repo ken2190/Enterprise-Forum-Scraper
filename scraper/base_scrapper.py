@@ -627,7 +627,6 @@ class SitemapSpider(BypassCloudfareSpider):
 
         yield Request(**request_arguments)
 
-<<<<<<< scraper/base_scrapper.py
     def parse_captcha(self, failure):
         # Load response, request
         response = failure.value.response
@@ -774,11 +773,4 @@ class SitemapSpider(BypassCloudfareSpider):
                     }
                 )
             )
-=======
-    def get_existing_file_date(self, topic_id):
-        file_name = f'{self.output_path}/{topic_id}-1.html'
-        if not os.path.exists(file_name):
-            return
-        created_ts = os.stat(file_name).st_ctime
-        return datetime.fromtimestamp(created_ts)
->>>>>>> scraper/base_scrapper.py
+
