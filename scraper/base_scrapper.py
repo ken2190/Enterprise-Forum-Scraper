@@ -617,6 +617,15 @@ class SitemapSpider(BypassCloudfareSpider):
         if not topic_id:
             return
 
+        # Check file exist
+        existing_file_date = self.get_existing_file_date(topic_id)
+        if existing_file_date and existing_file_date > thread_date:
+            self.logger.info(
+                f"Thread {thread_url} ignored because existing "
+                f"file is already latest. Last Scraped: {existing_file_date}"
+            )
+            return
+
         # Load request arguments
         request_arguments = {
             "url": thread_url,

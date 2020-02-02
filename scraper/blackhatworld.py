@@ -17,6 +17,7 @@ NO_OF_THREADS = 5
 class BlackHatWorldSpider(SitemapSpider):
     name = 'blackhatworld_spider'
     sitemap_url = 'https://www.blackhatworld.com/sitemap.xml'
+
     # Xpath stuffs
     forum_xpath = "//loc/text()"
     thread_url_xpath = "//loc/text()"
