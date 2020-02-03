@@ -4,30 +4,40 @@ import scrapy
 from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+from datetime import datetime
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-class MarviherSpider(scrapy.Spider):
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+REQUEST_DELAY = 0.2
+NO_OF_THREADS = 10
+
+
+class MarviherSpider(SitemapSpider):
     name = 'marviher_spider'
+    sitemap_url = 'https://marviher.com/sitemap.php'
+    # Xpath stuffs
+    forum_xpath = '//sitemap/loc[contains(text(), "sitemap_content_forums_Topic_")]/text()'
+    thread_xpath = '//url[loc[contains(text(),"/topic/")] and lastmod]'
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
+    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
-    def __init__(self, output_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.base_url = "https://marviher.com/"
         self.topic_pattern = re.compile(r'topic/(\d+)-')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*/page/(\d+)/')
         self.start_url = 'https://marviher.com/'
-        self.output_path = output_path
         self.headers = {
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/75.0.3770.142 Safari/537.36",
+            "user-agent": USER_AGENT
         }
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date.split('+')[0],
+            self.sitemap_datetime_format
         )
 
     def parse(self, response):
@@ -54,7 +64,7 @@ class MarviherSpider(scrapy.Spider):
             )
 
     def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
+        self.logger.info('next_page_url: {}'.format(response.url))
         threads = response.xpath(
             '//div[@class="ipsDataItem_main"]/h4//a')
         for thread in threads:
@@ -93,7 +103,28 @@ class MarviherSpider(scrapy.Spider):
             self.output_path, topic_id, paginated_value)
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
+            self.logger.info(f'{topic_id}-{paginated_value} done..!')
+
+        avatars = response.xpath('//li[@class="cAuthorPane_photo"]/a/img')
+        for avatar in avatars:
+            avatar_url = avatar.xpath('@src').extract_first()
+            if 'image/svg' in avatar_url:
+                continue
+            name_match = self.avatar_name_pattern.findall(avatar_url)
+            if not name_match:
+                continue
+            name = name_match[0]
+            file_name = '{}/{}'.format(self.avatar_path, name)
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta={
+                    'file_name': file_name,
+                }
+            )
 
         next_page = response.xpath('//li[@class="ipsPagination_next"]/a')
         if next_page:
@@ -107,39 +138,25 @@ class MarviherSpider(scrapy.Spider):
                 meta={'topic_id': topic_id}
             )
 
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        file_name_only = file_name.rsplit('/', 1)[-1]
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            self.logger.info(f"Avatar {file_name_only} done..!")
 
-class MarviherScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
 
-    def do_scrape(self):
-        settings = {
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
+class MarviherScrapper(SiteMapScrapper):
 
-        }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
+    spider_class = MarviherSpider
 
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(MarviherSpider, self.output_path)
-        process.start()
-
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            }
+        )
+        return settings

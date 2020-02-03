@@ -1,180 +1,164 @@
-import re
 import os
-import time
-import traceback
-import requests
-from requests import Session
-from scraper.base_scrapper import BaseScrapper
+import re
+import scrapy
+from math import ceil
+import configparser
+from scrapy.http import Request, FormRequest
+from scrapy import Selector
+from datetime import datetime
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-class SkyFraudScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(SkyFraudScrapper, self).__init__(kwargs)
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+REQUEST_DELAY = 0.2
+NO_OF_THREADS = 10
+
+
+class SkyFraudSpider(SitemapSpider):
+    name = 'skyfraud_spider'
+    sitemap_url = 'https://sky-fraud.ru/sitemap_forum_1.xml.gz'
+    # Xpath stuffs
+    thread_xpath = '//url[loc[contains(text(),"/showthread.php")] and lastmod]'
+    thread_url_xpath = "//loc/text()"
+    thread_date_xpath = "//lastmod/text()"
+    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.base_url = "https://sky-fraud.ru/"
-        self.topic_pattern = re.compile(r't=(\d+)')
+        self.topic_pattern = re.compile(r'.*t=(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.cloudfare_error = None
+        self.pagination_pattern = re.compile(r'&page=(\d+)')
+        self.start_url = self.base_url
+        self.headers = {
+            "user-agent": USER_AGENT
+        }
 
-    def get_page_content(self, url):
-        time.sleep(self.wait_time)
-        try:
-            response = requests.get(url)
-            content = response.content
-            html_response = self.get_html_response(content)
-            if html_response.xpath('//div[@class="errorwrap"]'):
-                return
-            return content
-        except:
-            return
+    def parse_sitemap(self, response):
+        # Load selector
+        selector = Selector(text=response.text)
 
-    def save_avatar(self, name, url):
-        avatar_file = f'{self.avatar_path}/{name}'
-        if os.path.exists(avatar_file):
-            return
-        content = self.get_page_content(url)
-        if not content:
-            return
-        with open(avatar_file, 'wb') as f:
-            f.write(content)
+        # Load forum
+        all_threads = selector.xpath(self.thread_xpath).extract()
 
-    def process_first_page(self, topic_url):
-        topic = self.topic_pattern.findall(topic_url)
-        if not topic:
-            return
-        topic = topic[0]
-        initial_file = f'{self.output_path}/{topic}-1.html'
-        if os.path.exists(initial_file):
-            return
-        content = self.get_page_content(topic_url)
-        if not content:
-            print(f'No data for url: {topic_url}')
-            return
-        with open(initial_file, 'wb') as f:
-            f.write(content)
-        print(f'{topic}-1 done..!')
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return html_response
+        for thread in all_threads:
+            yield from self.parse_sitemap_thread(thread)
 
-    def process_topic(self, topic_url):
-        html_response = self.process_first_page(topic_url)
-        if html_response is None:
-            return
-        while True:
-            response = self.write_paginated_data(html_response)
-            if response is None:
-                return
-            topic_url, html_response = response
-
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//td/a[@rel="next"]/@href'
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date.split('+')[0],
+            self.sitemap_datetime_format
         )
-        if not next_page_block:
-            return
-        next_page_url = next_page_block[0]
-        next_page_url = self.base_url + next_page_url\
-            if self.base_url not in next_page_url else next_page_url
-        pattern = re.compile(r't=(\d+).*page=(\d+)')
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
-        content = self.get_page_content(next_page_url)
-        if not content:
-            return
-        paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
 
-        print(f'{topic}-{pagination_value} done..!')
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return next_page_url, html_response
-
-    def process_forum(self, url):
-        while True:
-            print(f"Forum URL: {url}")
-            forum_content = self.get_page_content(url)
-            if not forum_content:
-                print(f'No data for url: {forum_content}')
-                return
-            html_response = self.get_html_response(forum_content)
-            topic_urls = html_response.xpath(
-                '//a[contains(@id, "thread_title_")]/@href')
-            for topic_url in topic_urls:
-                topic_url = self.base_url + topic_url\
-                    if self.base_url not in topic_url else topic_url
-                self.process_topic(topic_url)
-            forum_pagination_url = html_response.xpath(
-                '//td/a[@rel="next"]/@href'
+    def parse(self, response):
+        forums = response.xpath(
+            '//a[contains(@href, "forumdisplay.php?")]')
+        for forum in forums:
+            url = forum.xpath('@href').extract_first()
+            if self.base_url not in url:
+                url = self.base_url + url
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_forum
             )
-            if not forum_pagination_url:
-                return
-            url = forum_pagination_url[0]
-            url = self.base_url + url\
-                if self.base_url not in url else url
 
-    def get_forum_urls(self, html_response):
-        final_urls = list()
-        extracted_urls = html_response.xpath(
-            '//td[@class="alt2Active"]/div/h3/a/@href')
-        # headers = html_response.xpath(
-        #     '//td[@class="alt2Active"]/div/h3/a/strong/text()')
-        for _url in extracted_urls:
-            if self.base_url not in _url:
-                final_urls.append(self.base_url + _url)
-            else:
-                final_urls.append(_url)
-        return final_urls
-        # return final_urls, headers
+    def parse_forum(self, response):
+        self.logger.info('next_page_url: {}'.format(response.url))
+        threads = response.xpath(
+            '//a[contains(@id, "thread_title_")]')
+        for thread in threads:
+            thread_url = thread.xpath('@href').extract_first()
+            if self.base_url not in thread_url:
+                thread_url = self.base_url + thread_url
+            topic_id = self.topic_pattern.findall(thread_url)
+            if not topic_id:
+                continue
+            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=thread_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={'topic_id': topic_id[0]}
+            )
 
-    def clear_cookies(self,):
-        self.session.cookies.clear()
+        next_page = response.xpath('//a[@rel="next"]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_forum
+            )
 
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//a[contains(@href, "member.php")]/img/@src'
-        )
-        for url in urls:
-            name_match = self.avatar_name_pattern.findall(url)
+    def parse_thread(self, response):
+        topic_id = response.meta['topic_id']
+        pagination = self.pagination_pattern.findall(response.url)
+        paginated_value = pagination[0] if pagination else 1
+        file_name = '{}/{}-{}.html'.format(
+            self.output_path, topic_id, paginated_value)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(f'{topic_id}-{paginated_value} done..!')
+
+        avatars = response.xpath('//a[contains(@href, "member.php?")]/img')
+        for avatar in avatars:
+            avatar_url = avatar.xpath('@src').extract_first()
+            if 'image/svg' in avatar_url:
+                continue
+            name_match = self.avatar_name_pattern.findall(avatar_url)
             if not name_match:
                 continue
-            url = self.base_url + url\
-                if not url.startswith('http') else url
+            if self.base_url not in avatar_url:
+                avatar_url = self.base_url + avatar_url
             name = name_match[0]
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
+            file_name = '{}/{}'.format(self.avatar_path, name)
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta={
+                    'file_name': file_name,
+                }
+            )
 
-    def do_scrape(self):
-        print('**************  sky-fraud scrapper started  **************\n')
-        main_content = self.get_page_content(self.base_url)
-        if not main_content:
-            print(f'No data for url: {self.base_url}')
-            return
-        html_response = self.get_html_response(main_content)
-        forum_urls = self.get_forum_urls(html_response)
-        # forum_urls, headers = self.get_forum_urls(html_response)
-        # for url, header in zip(forum_urls, headers):
-        #     print(url, header)
-        # return
-        # forum_urls = ["http://www.badkarma.ru/forums/veschevoj-karding.68/"]
-        for forum_url in forum_urls[5:]:
-            self.process_forum(forum_url)
+        next_page = response.xpath('//a[@rel="next"]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta={'topic_id': topic_id}
+            )
+
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        file_name_only = file_name.rsplit('/', 1)[-1]
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            self.logger.info(f"Avatar {file_name_only} done..!")
 
 
-def main():
-    template = SkyFraudScrapper()
-    template.do_scrape()
+class SkyFraudScrapper(SiteMapScrapper):
 
+    spider_class = SkyFraudSpider
 
-if __name__ == '__main__':
-    main()
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            }
+        )
+        return settings
