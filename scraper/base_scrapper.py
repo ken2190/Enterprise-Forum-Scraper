@@ -643,20 +643,6 @@ class SitemapSpider(BypassCloudfareSpider):
 
         yield Request(**request_arguments)
 
-    def parse_captcha(self, failure):
-        # Load response, request
-        response = failure.value.response
-        request = failure.request
-
-        # Load status
-        status = getattr(response, "status", None)
-
-        if ((status is None)
-            or (status == 403 and "Cloudfare" not in response.text)):
-            request.dont_filter = True
-            request.meta["cookiejar"] = uuid.uuid1().hex
-            yield request
-
     def parse_forum(self, response):
 
         # Synchronize header user agent with cloudfare middleware
@@ -790,3 +776,14 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
             )
 
+    def parse_captcha(self, failure):
+        # Load response, request
+        response = failure.value.response
+        request = failure.request
+
+        # Load status
+        status = getattr(response, "status", None)
+
+        if (status == 403 and "Cloudfare" not in response.text):
+            with open(file="captcha_debug.html", mode="w+", encoding="utf-8") as file:
+                file.write(response.text)

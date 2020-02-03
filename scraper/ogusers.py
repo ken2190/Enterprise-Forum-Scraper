@@ -52,7 +52,9 @@ class OgUsersSpider(SitemapSpider):
     avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
 
     # Other settings
+    use_proxy = False
     sitemap_datetime_format = "%m-%d-%Y"
+    handle_httpstatus_list = [403]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -100,7 +102,6 @@ class OgUsersSpider(SitemapSpider):
                 "cookiejar": uuid.uuid1().hex
             },
             callback=self.parse,
-            errback=self.parse_captcha
         )
 
     def parse(self, response):

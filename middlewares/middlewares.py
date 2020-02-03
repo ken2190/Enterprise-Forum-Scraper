@@ -82,15 +82,20 @@ class BypassCloudfareMiddleware(object):
         first_cloudfare_text = "jschl_vc"
         second_cloudfare_text = "jschl_answer"
         third_cloudfare_text = "Cloudflare Ray ID"
-        recaptcha_text = "Why do I have to complete a CAPTCHA"
+        fourth_cloudfare_text = "cf.challenge.js"
+        first_recaptcha_text = "Why do I have to complete a CAPTCHA"
+        second_recaptcha_text = "cf_chl_captcha_tk"
 
         cloudfare_test = ((response.status in (503, 429, 403)
                            and response.headers.get("Server", "").startswith(b"cloudflare")
                            and first_cloudfare_text in response.text
                            and second_cloudfare_text in response.text)
                           or (response.status in (503, 429, 403)
-                              and recaptcha_text in response.text
-                              and third_cloudfare_text in response.text))
+                              and first_recaptcha_text in response.text
+                              and third_cloudfare_text in response.text)
+                          or (response.status in (503, 429, 403)
+                              and second_recaptcha_text in response.text
+                              and fourth_cloudfare_text in response.text))
 
         return cloudfare_test
 
