@@ -68,7 +68,7 @@ class YouHackSpider(SitemapSpider):
         all_threads = selector.xpath(self.thread_xpath).extract()
 
         for thread in all_threads:
-            yield from self.parse_sitemap_thread(thread)
+            yield from self.parse_sitemap_thread(thread, response)
 
     def parse(self, response):
         forums = response.xpath(
