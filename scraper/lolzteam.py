@@ -35,7 +35,12 @@ class LolzSpider(SitemapSpider):
     }
 
     def get_cookies(self,):
-        browser = webdriver.Chrome()
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--headless')
+        browser = webdriver.Chrome(
+            '/usr/local/bin/chromedriver',
+            chrome_options=chrome_options)
         browser.get(self.base_url)
         time.sleep(1)
         cookies = browser.get_cookies()
