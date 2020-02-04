@@ -43,7 +43,7 @@ class OgUsersSpider(SitemapSpider):
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_last_xpath = "//div[@class=\"pagination\"]/a[@class=\"pagination_last\"]/@href|" \
-                        "//div[@class=\"pagination\"]/a[@class=\"pagination_next\"]/preceding-sibling::a"
+                        "//div[@class=\"pagination\"]/a[@class=\"pagination_next\"]/preceding-sibling::a/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//div[@class=\"inline pb_date smalltext\"]/text()[contains(.,\"-\")]|" \
                       "//div[@class=\"inline pb_date smalltext\"]/span[@title]/@title"
@@ -173,7 +173,7 @@ class OgUsersSpider(SitemapSpider):
             yield Request(
                 url=last_page,
                 headers=self.headers,
-                callback=self.parse_thread,
+                callback=super().parse_thread,
                 meta=self.synchronize_meta(
                     response,
                     default_meta={
@@ -216,11 +216,17 @@ class OgUsersSpider(SitemapSpider):
         avatars = response.xpath("//div[@class=\"postbit-avatar\"]/a/img")
         for avatar in avatars:
             avatar_url = avatar.xpath("@src").extract_first()
+
+            if not avatar_url:
+                continue
+
             if "image/svg" in avatar_url:
                 continue
+
             name_match = self.avatar_name_pattern.findall(avatar_url)
             if not name_match:
                 continue
+
             name = name_match[0]
             file_name = '{}/{}'.format(self.avatar_path, name)
             if os.path.exists(file_name):
