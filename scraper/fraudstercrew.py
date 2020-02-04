@@ -24,8 +24,8 @@ REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
 
 
-class BlackHatIndiaSpider(SitemapSpider):
-    name = 'blackhatindia_spider'
+class FraudstercrewSpider(SitemapSpider):
+    name = 'fraudstercrew_spider'
     # Url stuffs
     base_url = "https://fraudstercrew.su"
     # Regex stuffs
@@ -235,9 +235,9 @@ class BlackHatIndiaSpider(SitemapSpider):
             self.logger.info(f"Avatar for user {response.meta['user_id']} done..!")
 
 
-class BlackHatIndiaScrapper(SiteMapScrapper):
+class FraudstercrewScrapper(SiteMapScrapper):
 
-    spider_class = BlackHatIndiaSpider
+    spider_class = FraudstercrewSpider
 
     def load_settings(self):
         settings = super().load_settings()

@@ -52,7 +52,7 @@ from scraper.primeforums import PrimeForumsScrapper
 from scraper.leakportal import LeakPortalScrapper
 from scraper.hoxforum import HoxForumScrapper
 from scraper.scrapeboxforum import ScrapeBoxForumScrapper
-from scraper.blackhatindia import BlackHatIndiaScrapper
+from scraper.fraudstercrew import FraudstercrewScrapper
 from scraper.crackx import CrackXScrapper
 from scraper.Oday import OdayScrapper
 from scraper.hashkiller import HashKillerScrapper

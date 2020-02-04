@@ -77,7 +77,7 @@ from templates.kriminala_template import KriminalaParser
 from templates.leakportal_template import LeakPortalParser
 from templates.hoxforum_template import HoxForumParser
 from templates.scrapeboxforum_template import ScrapeBoxForumParser
-from templates.blackhatindia_template import BlackHatIndiaParser
+from templates.fraudstercrew_template import FraudstercrewParser
 from templates.crackx_template import CrackXParser
 from templates.nulled_to_banlist import NulledToBanListParser
 from templates.hashkiller_template import HashKillerParser

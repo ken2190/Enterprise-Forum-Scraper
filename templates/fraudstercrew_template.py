@@ -13,7 +13,7 @@ class BrokenPage(Exception):
     pass
 
 
-class BlackHatIndiaParser:
+class FraudstercrewParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         self.parser_name = "fraudstercrew.su (blackhat india)"
         self.output_folder = output_folder
