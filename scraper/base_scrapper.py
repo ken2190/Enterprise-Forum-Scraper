@@ -767,7 +767,6 @@ class SitemapSpider(BypassCloudfareSpider):
                 url=next_page,
                 headers=self.headers,
                 callback=self.parse_thread,
-                dont_filter=True,
                 meta=self.synchronize_meta(
                     response,
                     default_meta={
