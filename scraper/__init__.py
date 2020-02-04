@@ -141,7 +141,7 @@ SCRAPER_MAP = {
     'leakportal': LeakPortalScrapper,
     'hoxforum': HoxForumScrapper,
     'scrapeboxforum': ScrapeBoxForumScrapper,
-    'blackhatindia': BlackHatIndiaScrapper,
+    'fraudstercrew': FraudstercrewScrapper,
     'crackx': CrackXScrapper,
     '0day': OdayScrapper,
     'hashkiller': HashKillerScrapper,
