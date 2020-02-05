@@ -3,42 +3,76 @@ import re
 import scrapy
 from math import ceil
 import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+from scrapy import (
+    Request,
+    FormRequest
+)
+
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SitemapScrapper
+)
 
 
-USER = "cyrax11"
-PASS = "Night#Verify098"
-PROXY = 'http://127.0.0.1:8118'
-
-bbsessionhash = 'eca9eeeea77333dd0826e8e0d6b1e8c8'
-IDstack = 'cfbd60bf5d729ff52adc6a91d82cc4f7afdce4bd5fbf6943dea016b2bb35e16b'
+USERNAME = "cyrax11"
+MD5PASS = "5d22b48847fe3b55982c52f75a34c9a3"
+PASSWORD = "Night#Verify098"
 
 
-class VerifiedScSpider(scrapy.Spider):
+class VerifiedScSpider(SitemapSpider):
+
     name = 'verifiedsc_spider'
 
-    def __init__(self, output_path, proxy):
-        self.start_url = self.base_url = "http://verified2ebdpvms.onion/"
-        self.proxy = proxy
-        self.topic_pattern = re.compile(r'.*t=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'&page=(\d+)')
-        self.output_path = output_path
-        self.headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0',
-            'Host': 'verified2ebdpvms.onion',
-            'Cookie': 'IDstack={}; bblastvisit=1562411502; bblastactivity=0; bbsessionhash={}'.format(IDstack, bbsessionhash),
-        }
+    # Url stuffs
+    base_url = "https://verified.sc/"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            callback=self.parse,
-            headers=self.headers,
-            meta={'proxy': self.proxy}
+    # Css stuffs
+    login_css_form = "form[action*=login]"
+
+    # Xpath stuffs
+    
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r".*t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r"&page=(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+
+    def parse(self, response):
+
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_css_form,
+            formdata={
+                "vb_login_username": USERNAME,
+                "vb_login_password": "",
+                "vb_login_md5password": MD5PASS,
+                "vb_login_md5password_utf": MD5PASS,
+                "cookieuser": None,
+                "s": "",
+                "url": "/",
+                "do": "login"
+            },
+            meta=self.synchronize_meta(response),
+            dont_filter=True,
+            callback=self.parse_login
         )
+
+    def parse_login(self, response):
+
 
     def parse(self, response):
         forums = response.xpath(

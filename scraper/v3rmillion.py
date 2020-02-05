@@ -1,182 +1,159 @@
-import time
-import requests
 import os
 import re
-import scrapy
-from glob import glob
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+
+from datetime import (
+    datetime,
+    timedelta
+)
+from scrapy import (
+    Request,
+    FormRequest
+)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
 
 
-REQUEST_DELAY = 0.75
-NO_OF_THREADS = 5
-
-USER = 'hackwithme123'
-PASS = '6VUZmjFzM2WtyjV'
-
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
+REQUEST_DELAY = 1
+NO_OF_THREADS = 1
+USER = "hackwithme123"
+PASS = "6VUZmjFzM2WtyjV"
 
 
 class V3RMillionSpider(SitemapSpider):
-    name = 'v3rmillion_spider'
-    new_posts_url = 'https://v3rmillion.net/search.php?action=getnew'
+    name = "v3rmillion_spider"
+
+    # Url stuffs
+    base_url = "https://v3rmillion.net/"
+
+    # Css stuffs
+    login_form_css = "form[action=\"member.php\"]"
+
+    # Xpath stuffs
+    forum_xpath = "//td[@class=\"trow1\" or @class=\"trow2\"]/strong/" \
+                  "a[contains(@href, \"forumdisplay.php?fid=\")]/@href|" \
+                  "//span[@class=\"sub_control\"]/" \
+                  "a[contains(@href, \"forumdisplay.php?fid=\")]/@href"
+    pagination_xpath = "//div[@class=\"pagination\"]/a[@class=\"pagination_next\"]/@href"
+
+    thread_xpath = "//tr[@class=\"inline_row\"]"
+    thread_url_xpath = "//td[contains(@class,\"forumdisplay\")]/div/span/span[@class=\"smalltext\"]/a[last()]/@href|" \
+                       "//span[contains(@id,\"tid\")]/a/@href"
+    thread_lastmod_xpath = "//td[contains(@class,\"forumdisplay\")]/span[@class=\"lastpost smalltext\"]/text()[1]"
+
+    thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
+    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
+    post_date_xpath = "//span[@class=\"post_date\"]/text()[1]"
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"tid=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page=(\d+)",
+        re.IGNORECASE
+    )
 
     # Other settings
     use_proxy = False
+    sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
+    post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = 'https://v3rmillion.net/'
-        self.topic_pattern = re.compile(r'tid=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page=(\d+)')
-        self.start_url = 'https://v3rmillion.net/'
-        self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'referer': 'https://v3rmillion.net/',
-            "user-agent": USER_AGENT
-        }
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        thread_date = thread_date.strip()
 
-    def start_requests(self):
-        formdata = {
-            'action': 'do_login',
-            'url': '/index.php',
-            'username': USER,
-            'password': PASS,
-            'code': '',
-            'remember': 'yes',
-            '_challenge': ''
-        }
-        login_url = 'https://v3rmillion.net/member.php'
-        yield FormRequest(
-            url=login_url,
-            formdata=formdata,
-            headers=self.headers,
-            callback=self.parse
-        )
+        if "minute" in thread_date.lower():
+            return datetime.today()
+        elif "hour" in thread_date.lower():
+            return datetime.today()
+        elif "yesterday" in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
+            )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        post_date = post_date.strip()
+
+        if "minute" in post_date.lower():
+            return datetime.today()
+        elif "hour" in post_date.lower():
+            return datetime.today()
+        elif "yesterday" in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
+            )
 
     def parse(self, response):
-        self.headers.update(response.request.headers)
-        if self.start_date:
-            yield scrapy.Request(
-                url=self.new_posts_url,
-                headers=self.headers,
-                callback=self.parse_new_posts,
-            )
-        else:
-            forums = response.xpath(
-                '//td[@class="trow1" or @class="trow2"]/strong'
-                '/a[contains(@href, "forumdisplay.php?fid=")]')
-            subforums = response.xpath(
-                '//span[@class="sub_control"]'
-                '/a[contains(@href, "forumdisplay.php?fid=")]')
-            forums.extend(subforums)
-            for forum in forums:
-                url = forum.xpath('@href').extract_first()
-                if self.base_url not in url:
-                    url = self.base_url + url
-                yield Request(
-                    url=url,
-                    headers=self.headers,
-                    callback=self.parse_forum
-                )
 
-    def parse_new_posts(self, response):
-        topics = response.xpath(
-            '//a[contains(@href, "showthread.php?tid=") '
-            'and contains(@id, "tid_")]')
-        for topic in topics:
-            # Get thread url
-            thread_url = topic.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = f'{self.base_url}{thread_url}'
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
 
-            # Get topic id
-            match = self.topic_pattern.findall(thread_url)
-            if not match:
-                continue
-            topic_id = match[0]
+        yield FormRequest.from_response(
+            response=response,
+            formcss=self.login_form_css,
+            formdata={
+                "username": USER,
+                "password": PASS,
+                "code": "",
+                "_challenge": ""
+            },
+            dont_filter=True,
+            headers=self.headers,
+            meta=self.synchronize_meta(response),
+            callback=self.parse_start
+        )
 
-            # Check existing saved paginated files and get  max paginated value
-            max_pagination = self.get_latest_pagination(topic_id)
-            self.logger.info(
-                f"Started downloading of TopicId {topic_id} from "
-                f"pagination {max_pagination}")
-            thread_url = f'{thread_url}&page={max_pagination}'
+    def parse_start(self, response):
+
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+
+        for forum_url in all_forums:
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=thread_url,
+                url=forum_url,
                 headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-        next_page = response.xpath('//a[@class="pagination_next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_new_posts,
-            )
-
-    def get_latest_pagination(self, topic_id):
-        pagination_pattern = re.compile(r'\d+-(\d+)')
-        existing_paginations = [
-            int(pagination_pattern.search(x).group(1))
-            for x in glob(f'{self.output_path}/{topic_id}-*.html')
-        ]
-        return max(existing_paginations) if existing_paginations else 1
-
-    def parse_forum(self, response):
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//span[contains(@id, "tid_")]'
-            '/a[contains(@href, "showthread.php?tid=")]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
-
-        next_page = response.xpath('//a[@class="pagination_next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response),
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Save avatar content
         avatars = response.xpath('//div[@class="author_avatar"]/a/img')
         for avatar in avatars:
             avatar_url = avatar.xpath('@src').extract_first()
@@ -193,34 +170,26 @@ class V3RMillionSpider(SitemapSpider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
-            )
-
-        next_page = response.xpath(
-            '//div[@class="pagination"]'
-            '/a[@class="pagination_next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                ),
             )
 
     def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
+        file_name = response.meta.get("file_name")
+        file_name_only = file_name.rsplit("/", 1)[-1]
+        with open(file_name, "wb") as f:
             f.write(response.body)
-            self.logger.info(f"Avatar {file_name_only} done..!")
+            self.logger.info(
+                f"Avatar {file_name_only} done..!"
+            )
 
 
 class V3RMillionScrapper(SiteMapScrapper):
+
     spider_class = V3RMillionSpider
 
     def load_settings(self):
@@ -230,7 +199,10 @@ class V3RMillionScrapper(SiteMapScrapper):
                 'DOWNLOAD_DELAY': REQUEST_DELAY,
                 'CONCURRENT_REQUESTS': NO_OF_THREADS,
                 'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-                'RETRY_HTTP_CODES': [403, 429, 500, 503, 504],
             }
         )
         return settings
+
+
+if __name__ == "__main__":
+    pass

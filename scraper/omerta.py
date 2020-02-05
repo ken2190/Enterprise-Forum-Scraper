@@ -1,103 +1,196 @@
-import time
-import requests
 import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
 
-COOKIE = 'bblastvisit=1564482506; bblastactivity=0; IDstack=%2C61402%2C; bbuserid=61402; bbpassword=0c0aba5bc4e8a4067e51991cff540eb0; bbsessionhash=9f0949f216a52be0ab21bccfc9168e21'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36'
+from datetime import (
+    datetime,
+    timedelta
+)
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-class OmertaSpider(scrapy.Spider):
+USERNAME = "darkcylon"
+PASSWORD = "Night#Omerta01"
+MD5PASS = "abb74c9967202f878f101cc9baa1f4be"
+
+
+class OmertaSpider(SitemapSpider):
     name = 'omerta_spider'
+    
+    # Url stuffs
+    base_url = "https://omerta.cc/"
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = 'https://omerta.cc/'
-        self.topic_pattern = re.compile(r't=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page=(\d+)')
-        self.start_url = 'https://omerta.cc/'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            'Connection': 'keep-alive',
-            'Host': 'omerta.cc',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Referer': 'https://omerta.cc/',
-            'User-Agent': USER_AGENT,
-            'Cookie': COOKIE,
-        }
+    # Css stuffs
+    login_form_css = "form[action*=login]"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+    # Xpath stuffs
+    forum_xpath = "//tr[@align=\"center\"]//a[contains(@href, \"forumdisplay.php?f=\")]/@href"
+    pagination_xpath = "//td[@class=\"pagenav_control\"]/a[@rel=\"next\"]/@href"
+
+    thread_xpath = "//tbody[contains(@id,\"threadbits_forum\")]/tr[not(@valign)]"
+    thread_url_xpath = "//td[contains(@id,\"td_threadtitle\")]/div/span[@class=\"smallfont\"]/a[last()]/@href|" \
+                       "//a[contains(@id,\"thread_title\")]/@href"
+    thread_lastmod_xpath = "//td[not(@nowrap)]/div/span[@class=\"time\"]/preceding-sibling::text()"
+
+    thread_pagination_xpath = "//td[@class=\"pagenav_control\"]/a[@rel=\"prev\"]/@href"
+    thread_page_xpath = "//span[contains(@title,\"Showing results\")]/strong/text()"
+    post_date_xpath = "//a[contains(@name,\"post\")]/following-sibling::text()[contains(.,\":\")]"
+
+    password_protect_xpath = "//div[@class=\"panel\"]/div/div/p[contains(text(),\"password protected\")]"
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page=(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    sitemap_datetime_format = "%m-%d-%Y"
+    post_datetime_format = "%m-%d-%Y, %I:%M %p"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "Connection": "keep-alive",
+                "Host": "omerta.cc",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Referer": "https://omerta.cc/",
+            }
         )
 
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        thread_date = thread_date.strip()
+
+        if "today" in thread_date.lower():
+            return datetime.today()
+        elif "yesterday" in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
+            )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        post_date = post_date.strip()
+
+        if "today" in post_date.lower():
+            return datetime.today()
+        elif "yesterday" in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
+            )
+
     def parse(self, response):
-        forums = response.xpath(
-            '//tr[@align="center"]//a[contains(@href, "forumdisplay.php?f=")]')
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
 
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//td[contains(@id, "td_threadtitle_")]'
-            '/div/a[contains(@href, "showthread.php?")]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
 
-        next_page = response.xpath('//a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+        yield FormRequest.from_response(
+            response=response,
+            meta=self.synchronize_meta(response),
+            formcss=self.login_form_css,
+            formdata={
+                "vb_login_username": USERNAME,
+                "vb_login_password": "",
+                "securitytoken": "guest",
+                "vb_login_md5password": MD5PASS,
+                "vb_login_md5password_utf": MD5PASS,
+                "do": "login",
+                "url": "/"
+            },
+            dont_filter=True,
+            callback=self.parse_login
+        )
+
+    def parse_login(self, response):
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            dont_filter=True,
+            callback=self.parse_start,
+            meta=self.synchronize_meta(response)
+        )
+
+    def parse_start(self, response):
+
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+
+                if forum_url[0] == "/":
+                    forum_url = forum_url[1:]
+
+                forum_url = self.base_url + forum_url
+
             yield Request(
-                url=next_page_url,
+                url=forum_url,
                 headers=self.headers,
+                meta=self.synchronize_meta(response),
                 callback=self.parse_forum
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath('//a[contains(@href, "member.php?")]/img')
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Check if password protected
+        password_protected = response.xpath(self.password_protect_xpath).extract_first()
+        if password_protected:
+            self.logger.info(
+                "Thread %s has been protected by password. Ignored." % response.url
+            )
+            return
+        
+        # Parse generic thread
+        yield from super().parse_thread(response)
+        
+        # Save avatars
+        avatars = response.xpath("//a[contains(@href,\"member.php?\")]/img")
         for avatar in avatars:
             avatar_url = avatar.xpath('@src').extract_first()
             if self.base_url not in avatar_url:
@@ -112,64 +205,41 @@ class OmertaSpider(scrapy.Spider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                    'user_id': user_id[0]
-                }
-            )
-
-        next_page = response.xpath('//a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name,
+                        "user_id": user_id[0]
+                    }
+                )
             )
 
     def parse_avatar(self, response):
-        file_name = response.meta['file_name']
+        file_name = response.meta.get("file_name")
         with open(file_name, 'wb') as f:
             f.write(response.body)
-            print(f"Avatar for user {response.meta['user_id']} done..!")
+            self.logger.info(
+                f"Avatar for user {response.meta['user_id']} done..!"
+            )
 
 
-class OmertaScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class OmertaScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    request_delay = 0.1
+    no_of_threads = 16
+    spider_class = OmertaSpider
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(OmertaSpider, self.output_path, self.avatar_path)
-        process.start()
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': self.request_delay,
+                'CONCURRENT_REQUESTS': self.no_of_threads,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
+            }
+        )
+        return settings
 
 
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+if __name__ == "__main__":
+    pass

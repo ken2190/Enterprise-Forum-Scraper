@@ -392,19 +392,52 @@ class SitemapSpider(BypassCloudfareSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Init stuffs
         self.output_path = kwargs.get("output_path")
         self.useronly = kwargs.get("useronly")
         self.avatar_path = kwargs.get("avatar_path")
         self.user_path = kwargs.get("user_path")
         self.start_date = kwargs.get("start_date")
-        self.cookies = kwargs.get("cookies")
+
+        # Handle headers
         self.headers = {
             "User-Agent": self.default_useragent
         }
         self.post_headers.update(self.headers)
 
+        # Handle cookies
+        self.cookies = kwargs.get("cookies")
         if self.cookies:
             self.cookies = self.load_cookies(self.cookies)
+
+        # Handle code file
+        self.backup_code_file = os.path.join(
+            os.getcwd(),
+            "code/%s" % self.name
+        )
+        if not os.path.exists(self.backup_code_file):
+            self.backup_code_file = None
+            self.backup_codes = []
+        else:
+            with open(
+                file=self.backup_code_file,
+                mode="r",
+                encoding="utf-8"
+            ) as file:
+                self.backup_codes = [
+                    code.strip() for code in file.read().split("\n")
+                ]
+
+    def write_backup_codes(self):
+        with open(
+            file=self.backup_code_file,
+            mode="w+",
+            encoding="utf-8"
+        ) as file:
+            file.write(
+                "\n".join(self.backup_codes)
+            )
 
     def synchronize_headers(self, response):
         self.headers.update(
@@ -439,7 +472,18 @@ class SitemapSpider(BypassCloudfareSpider):
             self.thread_lastmod_xpath
         ).extract_first()
 
-        return self.parse_thread_url(thread_url), self.parse_thread_date(thread_lastmod)
+        # Process stats
+        try:
+            thread_url = self.parse_thread_url(thread_url)
+        except Exception as err:
+            thread_url = None
+
+        try:
+            thread_lastmod = self.parse_thread_date(thread_lastmod)
+        except Exception as err:
+            thread_lastmod = None
+
+        return thread_url, thread_lastmod
 
     def parse_thread_date(self, thread_date):
         """
@@ -673,6 +717,13 @@ class SitemapSpider(BypassCloudfareSpider):
 
         for thread in threads:
             thread_url, thread_lastmod = self.extract_thread_stats(thread)
+
+            if self.start_date and thread_lastmod is None:
+                self.logger.info(
+                    "Thread %s has no last update in update scraping, so ignored." % thread_url
+                )
+                continue
+
             lastmod_pool.append(thread_lastmod)
 
             # If start date, check last mod
