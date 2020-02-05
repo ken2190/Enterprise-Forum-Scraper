@@ -70,7 +70,7 @@ class BHFIOSpider(SitemapSpider):
 
         # Load backup codes
         self.backup_code_file = os.path.join(
-            os.getcwd(),
+            #os.getcwd(),
             "code/%s" % self.name
         )
         with open(

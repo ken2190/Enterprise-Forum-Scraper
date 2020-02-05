@@ -182,7 +182,7 @@ PARSER_MAP = {
     'leakportal': LeakPortalParser,
     'hoxforum': HoxForumParser,
     'scrapeboxforum': ScrapeBoxForumParser,
-    'blackhatindia': BlackHatIndiaParser,
+    'fraudstercrew': FraudstercrewParser,
     'crackx': CrackXParser,
     'nulled_to_banlist': NulledToBanListParser,
     'hashkiller': HashKillerParser,

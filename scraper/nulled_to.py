@@ -360,8 +360,8 @@ class NulledSpider(SitemapSpider):
 
 class NulledToScrapper(SiteMapScrapper):
 
-    request_delay = 0.1
-    no_of_threads = 16
+    request_delay = 0.4
+    no_of_threads = 10
     spider_class = NulledSpider
 
     def __init__(self, kwargs):
