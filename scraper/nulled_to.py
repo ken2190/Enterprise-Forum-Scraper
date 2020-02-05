@@ -142,24 +142,31 @@ class NulledSpider(SitemapSpider):
     # Xpath stuffs
     thread_xpath = "//tr[contains(@id,\"trow\")]"
     thread_lastmod_xpath = "//td[@class=\"col_f_post\"]/ul/li[contains(@class,\"blend_links\")]/a/text()"
-    thread_url_xpath = "//a[@itemprop=\"url\" and contains(@id, \"tid-link-\")]/@href"
+    thread_url_xpath = "//ul[contains(@class,\"mini_pagination\")]/li[last()]/a/@href|" \
+                       "//a[@itemprop=\"url\" and contains(@id, \"tid-link-\")]/@href"
+
+    pagination_xpath = "//li[@class=\"next\"]/a/@href"
+    thread_pagination_xpath = "//li[@class=\"prev\"]/a/@href"
+    thread_page_xpath = "//li[@class=\"page active\"]/text()"
+    post_date_xpath = "//div[@class=\"post_body\"]/div[@class=\"post_date\"]/abbr[@class=\"published\"]/@title"
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r'topic/(\d+)',
+        r"topic/(\d+)",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
-        r'.*/(\S+\.\w+)',
+        r".*/(\S+\.\w+)",
         re.IGNORECASE
     )
     pagination_pattern = re.compile(
-        r'.*page-(\d+)',
+        r".*page-(\d+)",
         re.IGNORECASE
     )
 
     # Other settings
     sitemap_datetime_format = "%d %b, %Y"
+    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -182,11 +189,11 @@ class NulledSpider(SitemapSpider):
             self.sitemap_datetime_format
         )
 
-    def get_topic_id(self, url=None):
-        try:
-            return self.topic_pattern.findall(url)[0]
-        except Exception as err:
-            return
+    def parse_post_date(self, post_date):
+        return datetime.strptime(
+            post_date.strip()[:-6],
+            self.sitemap_datetime_format
+        )
 
     def start_requests(self):
         # Proceed for banlist
@@ -210,17 +217,26 @@ class NulledSpider(SitemapSpider):
                 )
 
     def parse_ban_list(self, response):
-        pagination = response.meta['pagination']
-        file_name = '{}/page-{}.html'.format(
-            self.output_path, pagination)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'page-{pagination} done..!')
-        last_page = response.xpath('//li[@class="last"]/a')
+        # Load pagination
+        pagination = response.meta.get("pagination")
+
+        # Write content
+        file_name = "%s/page-%s.html" % (
+            self.output_path,
+            pagination
+        )
+        with open(file_name, "wb") as f:
+            f.write(response.text.encode("utf-8"))
+            self.logger.info(
+                "page-%s done..!" % pagination
+            )
+            
+        # Pagination
+        last_page = response.xpath("//li[@class=\"last\"]/a")
         if last_page and pagination == 1:
-            last_page_index = last_page.xpath('@href').re(r'st=(\d+)')
+            last_page_index = last_page.xpath("@href").re(r"st=(\d+)")
             for st in range(50, int(last_page_index[0]) + 50, 50):
-                url = f'https://www.nulled.to/ban-list.php?&st={st}'
+                url = "https://www.nulled.to/ban-list.php?&st=%s" % st
                 pagination += 1
                 yield Request(
                     url=url,
@@ -243,7 +259,12 @@ class NulledSpider(SitemapSpider):
             print(url)
 
     def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+        
+        self.logger.info(
+            "next_page_url: {}".format(response.url)
+        )
 
         threads = response.xpath(self.thread_xpath).extract()
         lastmod_pool = []
@@ -272,10 +293,12 @@ class NulledSpider(SitemapSpider):
                 url=thread_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={
-                    "topic_id": topic_id,
-                    "cookiejar": topic_id
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
             )
 
         # Pagination
@@ -302,11 +325,19 @@ class NulledSpider(SitemapSpider):
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
+
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load topic id
         topic_id = response.meta['topic_id']
+
+        # Save thread contents
         pagination = self.pagination_pattern.findall(response.url)
         paginated_value = pagination[0] if pagination else 1
         file_name = '{}/{}-{}.html'.format(
