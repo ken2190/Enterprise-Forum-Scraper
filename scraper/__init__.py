@@ -3,7 +3,7 @@ from scraper.breachforums import BreachForumsScrapper
 from scraper.exploit import ExploitScrapper
 from scraper.exploit_private import ExploitPrivateScrapper
 from scraper.lolzteam import LolzScrapper
-from scraper.verified import VerifiedScrapper
+from scraper.verified import VerifiedScSpider
 from scraper.sentryMBA import SentryMBAScrapper
 from scraper.bitcointalk import BitCoinTalkScrapper
 from scraper.psbdmp import PasteBinScrapper
@@ -37,7 +37,6 @@ from scraper.thecc import TheCCScrapper
 from scraper.prtship import PrtShipScrapper
 from scraper.carding_school import CardingSchoolScrapper
 from scraper.l33t import L33TScrapper
-from scraper.verified import VerifiedScrapper
 from scraper.lcpcc import LCPScrapper
 from scraper.raidforums import RaidForumsScrapper
 from scraper.marviher import MarviherScrapper
@@ -93,7 +92,7 @@ SCRAPER_MAP = {
     'exploit': ExploitScrapper,
     'exploitprivate': ExploitPrivateScrapper,
     'lolzteam': LolzScrapper,
-    'verified': VerifiedScrapper,
+    'verified': VerifiedScSpider,
     'sentrymba': SentryMBAScrapper,
     'bitcointalk': BitCoinTalkScrapper,
     'psbdmp': PasteBinScrapper,

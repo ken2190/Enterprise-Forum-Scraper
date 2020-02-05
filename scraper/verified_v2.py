@@ -160,8 +160,8 @@ class Verifiedv2Scrapper():
     def __init__(self, kwargs):
         self.output_path = kwargs.get('output')
         self.proxy = kwargs.get('proxy') or PROXY
-        self.request_delay = 0.1
-        self.no_of_threads = 16
+        self.request_delay = 0.5
+        self.no_of_threads = 10
 
     def do_scrape(self):
         settings = {
