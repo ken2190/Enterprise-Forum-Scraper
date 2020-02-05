@@ -6,38 +6,83 @@ import re
 import scrapy
 from math import ceil
 from copy import deepcopy
-from urllib.parse import urlencode
 import configparser
+from scrapy import Selector
 from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+from selenium import webdriver
+from datetime import datetime
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-class VerifiedCarderSpider(BypassCloudfareSpider):
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
+
+
+class VerifiedCarderSpider(SitemapSpider):
     name = 'verifiedcarder_spider'
+    # Sitemap Stuffs
+    sitemap_url = 'https://verifiedcarder.ws/sitemap.php'
+    thread_xpath = '//url[loc[contains(text(),"/threads/")] and lastmod]'
+    thread_url_xpath = '//loc/text()'
+    thread_date_xpath = "//lastmod/text()"
+    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
+    custom_settings = {
+        'DOWNLOADER_MIDDLEWARES': {
+            'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None
+        }
+    }
 
-    def __init__(self, output_path, avatar_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.base_url = "https://www.verifiedcarder.ws"
         self.topic_pattern = re.compile(r'.*\.(\d+)/')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)')
+        cookies = self.get_cookies()
+        self.logger.info(f'Obtained Cookies: {cookies}')
         self.start_url = 'https://www.verifiedcarder.ws'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
         self.headers = {
             'referer': 'https://verifiedcarder.ws/',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1',
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
+            'cookie': cookies,
+            "user-agent": USER_AGENT
         }
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+    def get_cookies(self,):
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument(f'user-agent={USER_AGENT}')
+        browser = webdriver.Chrome(
+            '/usr/local/bin/chromedriver',
+            chrome_options=chrome_options)
+        browser.get(self.base_url)
+        self.logger.info('Waiting to get cookies from selenium browser')
+        time.sleep(5)
+        cookies = browser.get_cookies()
+        cookies = '; '.join([
+            f"{c['name']}={c['value']}" for c in cookies
+        ])
+        return cookies
+
+    def parse_sitemap(self, response):
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load forum
+        all_threads = selector.xpath(self.thread_xpath).extract()
+
+        for thread in all_threads:
+            yield from self.parse_sitemap_thread(thread, response)
+
+    def parse_thread_date(self, thread_date):
+        return datetime.strptime(
+            thread_date.split('+')[0],
+            self.sitemap_datetime_format
         )
 
     def parse(self, response):
@@ -50,6 +95,7 @@ class VerifiedCarderSpider(BypassCloudfareSpider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = self.base_url + url
+
             yield Request(
                 url=url,
                 headers=self.headers,
@@ -57,7 +103,7 @@ class VerifiedCarderSpider(BypassCloudfareSpider):
             )
 
     def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
+        self.logger.info('next_page_url: {}'.format(response.url))
         threads = response.xpath(
             '//a[@data-preview-url]')
         for thread in threads:
@@ -97,12 +143,12 @@ class VerifiedCarderSpider(BypassCloudfareSpider):
             self.output_path, topic_id, paginated_value)
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
+            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
         avatars = response.xpath(
-            '//div[@class="message-avatar-wrapper"]/span')
+            '//div[@class="message-avatar-wrapper"]//a/img')
         for avatar in avatars:
-            avatar_url = avatar.xpath('img/@src').extract_first()
+            avatar_url = avatar.xpath('@src').extract_first()
             if not avatar_url:
                 continue
             if not avatar_url.startswith('http'):
@@ -140,38 +186,23 @@ class VerifiedCarderSpider(BypassCloudfareSpider):
         file_name_only = file_name.rsplit('/', 1)[-1]
         with open(file_name, 'wb') as f:
             f.write(response.body)
-            print(f"Avatar for {file_name_only} done..!")
+            self.logger.info(f"Avatar for {file_name_only} done..!")
 
 
-class VerifiedCarderScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class VerifiedCarderScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = VerifiedCarderSpider
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(VerifiedCarderSpider, self.output_path, self.avatar_path)
-        process.start()
+    def load_settings(self):
+        spider_settings = super().load_settings()
+        spider_settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            }
+        )
+        return spider_settings
 
 
 if __name__ == '__main__':
