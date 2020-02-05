@@ -6,7 +6,6 @@ from datetime import (
     datetime,
     timedelta
 )
-
 from scrapy import (
     Request,
     FormRequest,
@@ -142,24 +141,31 @@ class NulledSpider(SitemapSpider):
     # Xpath stuffs
     thread_xpath = "//tr[contains(@id,\"trow\")]"
     thread_lastmod_xpath = "//td[@class=\"col_f_post\"]/ul/li[contains(@class,\"blend_links\")]/a/text()"
-    thread_url_xpath = "//a[@itemprop=\"url\" and contains(@id, \"tid-link-\")]/@href"
+    thread_url_xpath = "//ul[contains(@class,\"mini_pagination\")]/li[last()]/a/@href|" \
+                       "//a[@itemprop=\"url\" and contains(@id, \"tid-link-\")]/@href"
+
+    pagination_xpath = "//li[@class=\"next\"]/a/@href"
+    thread_pagination_xpath = "//li[@class=\"prev\"]/a/@href"
+    thread_page_xpath = "//li[@class=\"page active\"]/text()"
+    post_date_xpath = "//div[@class=\"post_body\"]/div[@class=\"post_date\"]/abbr[@class=\"published\"]/@title"
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r'topic/(\d+)',
+        r"topic/(\d+)",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
-        r'.*/(\S+\.\w+)',
+        r".*/(\S+\.\w+)",
         re.IGNORECASE
     )
     pagination_pattern = re.compile(
-        r'.*page-(\d+)',
+        r".*page-(\d+)",
         re.IGNORECASE
     )
 
     # Other settings
     sitemap_datetime_format = "%d %b, %Y"
+    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -182,11 +188,11 @@ class NulledSpider(SitemapSpider):
             self.sitemap_datetime_format
         )
 
-    def get_topic_id(self, url=None):
-        try:
-            return self.topic_pattern.findall(url)[0]
-        except Exception as err:
-            return
+    def parse_post_date(self, post_date):
+        return datetime.strptime(
+            post_date.strip()[:-6],
+            self.post_datetime_format
+        )
 
     def start_requests(self):
         # Proceed for banlist
@@ -210,111 +216,46 @@ class NulledSpider(SitemapSpider):
                 )
 
     def parse_ban_list(self, response):
-        pagination = response.meta['pagination']
-        file_name = '{}/page-{}.html'.format(
-            self.output_path, pagination)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'page-{pagination} done..!')
-        last_page = response.xpath('//li[@class="last"]/a')
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load pagination
+        pagination = response.meta.get("pagination")
+
+        # Write content
+        file_name = "%s/page-%s.html" % (
+            self.output_path,
+            pagination
+        )
+        with open(file_name, "wb") as f:
+            f.write(response.text.encode("utf-8"))
+            self.logger.info(
+                "page-%s done..!" % pagination
+            )
+            
+        # Pagination
+        last_page = response.xpath("//li[@class=\"last\"]/a")
         if last_page and pagination == 1:
-            last_page_index = last_page.xpath('@href').re(r'st=(\d+)')
+            last_page_index = last_page.xpath("@href").re(r"st=(\d+)")
             for st in range(50, int(last_page_index[0]) + 50, 50):
-                url = f'https://www.nulled.to/ban-list.php?&st={st}'
+                url = "https://www.nulled.to/ban-list.php?&st=%s" % st
                 pagination += 1
                 yield Request(
                     url=url,
                     headers=self.headers,
                     callback=self.parse_ban_list,
-                    meta={'pagination': pagination}
-                )
-
-    def parse_forum_names(self, response):
-        forums = response.xpath(
-            '//h4[@class="forum_name"]/strong/a')
-        sub_forums = response.xpath(
-            '//li/i[@class="fa fa-folder"]'
-            '/following-sibling::a[1]')
-        forums.extend(sub_forums)
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            print(url)
-
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-
-        threads = response.xpath(self.thread_xpath).extract()
-        lastmod_pool = []
-
-        for thread in threads:
-            thread_url, thread_lastmod = self.extract_thread_stats(thread)
-            lastmod_pool.append(thread_lastmod)
-
-            if self.start_date and thread_lastmod < self.start_date:
-                self.logger.info(
-                    "Thread %s last updated is %s before start date %s. Ignored." % (
-                        thread_url, thread_lastmod, self.start_date
+                    meta=self.synchronize_meta(
+                        response,
+                        default_meta={
+                            "pagination": pagination
+                        }
                     )
                 )
-                continue
-
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-
-            topic_id = self.get_topic_id(thread_url)
-
-            if not topic_id:
-                continue
-
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={
-                    "topic_id": topic_id,
-                    "cookiejar": topic_id
-                }
-            )
-
-        # Pagination
-        if not lastmod_pool:
-            self.logger.info(
-                "Forum without thread, exit."
-            )
-            return
-
-        if self.start_date and self.start_date > max(lastmod_pool):
-            self.logger.info(
-                "Found no more thread update later than %s in forum %s. Exit." % (
-                    self.start_date,
-                    response.url
-                )
-            )
-            return
-
-        next_page = response.xpath('//li[@class="next"]/a')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
+        # Save avatar content
         avatars = response.xpath(
             '//li[@class="avatar"]/img')
         for avatar in avatars:
@@ -333,29 +274,25 @@ class NulledSpider(SitemapSpider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                )
             )
 
-        next_page = response.xpath('//li[@class="next"]/a')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
+        # Parse generic thread response
+        yield from super().parse_thread(response)
 
     def parse_avatar(self, response):
-        file_name = response.meta['file_name']
+        file_name = response.meta.get("file_name")
         file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
+        with open(file_name, "wb") as f:
             f.write(response.body)
-            print(f"Avatar {file_name_only} done..!")
+            self.logger.info(
+                f"Avatar {file_name_only} done..!"
+            )
 
 
 class NulledToScrapper(SiteMapScrapper):
@@ -387,5 +324,5 @@ class NulledToScrapper(SiteMapScrapper):
         return settings
 
 
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+if __name__ == "__main__":
+    pass

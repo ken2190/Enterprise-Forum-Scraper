@@ -506,6 +506,23 @@ class SitemapSpider(BypassCloudfareSpider):
         created_ts = os.stat(file_name).st_ctime
         return datetime.fromtimestamp(created_ts)
 
+    def check_existing_file_date(self, **kwargs):
+        # Load variables
+        topic_id = kwargs.get("topic_id")
+        thread_date = kwargs.get("thread_date")
+        thread_url = kwargs.get("thread_url")
+
+        # Check existing file date
+        existing_file_date = self.get_existing_file_date(topic_id)
+        if existing_file_date and existing_file_date > thread_date:
+            self.logger.info(
+                f"Thread {thread_url} ignored because existing "
+                f"file is already latest. Last Scraped: {existing_file_date}"
+            )
+            return True
+
+        return False
+
     def load_cookies(self, cookies_string):
         """
         :param cookies_string: str => Cookie string as in browser header
@@ -618,12 +635,11 @@ class SitemapSpider(BypassCloudfareSpider):
             return
 
         # Check file exist
-        existing_file_date = self.get_existing_file_date(topic_id)
-        if existing_file_date and existing_file_date > thread_date:
-            self.logger.info(
-                f"Thread {thread_url} ignored because existing "
-                f"file is already latest. Last Scraped: {existing_file_date}"
-            )
+        if self.check_existing_file_date(
+            topic_id=topic_id,
+            thread_date=thread_date,
+            thread_url=thread_url
+        ):
             return
 
         # Load request arguments
@@ -676,6 +692,14 @@ class SitemapSpider(BypassCloudfareSpider):
             topic_id = self.get_topic_id(thread_url)
             if not topic_id:
                 continue
+
+            # Check file exist
+            if self.check_existing_file_date(
+                    topic_id=topic_id,
+                    thread_date=thread_lastmod,
+                    thread_url=thread_url
+            ):
+                return
 
             yield Request(
                 url=thread_url,
