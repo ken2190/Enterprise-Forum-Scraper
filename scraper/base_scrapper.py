@@ -377,12 +377,18 @@ class SitemapSpider(BypassCloudfareSpider):
     # Xpath stuffs
 
     # Forum xpath #
+    forum_sitemap_xpath = None  # Xpath of forum url in the forum sitemap #
     forum_xpath = None  # Xpath of forum url in the main entry forum #
     pagination_xpath = None  # Xpath of next button in forum detail #
 
     # Thread xpath #
-    thread_xpath = None  # Xpath of the whole block of thread row in forum detail #
-    thread_url_xpath = None  # Xpath of thread url last page (if exist) or just thread url in forum detail #
+    thread_sitemap_xpath = None  # Xpath of the whole block of thread in thread sitemap #
+    thread_url_xpath = None  # Xpath of thread url in thread sitemap #
+    thread_lastmod_xpath = None  # Xpath of thread lastmod in thread sitemap #
+
+    thread_xpath = None
+    thread_first_page_xpath = None  # Xpath of thread url in forum detail #
+    thread_last_page_xpath = None  # Xpath of thread url last page in forum detail (if exist) #
     thread_date_xpath = None  # Xpath of thread last post update time in forum detail #
     thread_page_xpath = None  # Xpath of current page button in thread detail #
     thread_pagination_xpath = None  # Xpath of previous button in thread pagination #
@@ -467,9 +473,17 @@ class SitemapSpider(BypassCloudfareSpider):
         selector = Selector(text=thread)
 
         # Load stats
-        thread_url = selector.xpath(
-            self.thread_url_xpath
-        ).extract_first()
+        thread_first_page_url = None
+        if self.thread_first_page_xpath:
+            thread_first_page_url = selector.xpath(
+                self.thread_first_page_xpath
+            ).extract_first()
+
+        thread_last_page_url = None
+        if self.thread_last_page_xpath:
+            thread_last_page_url = selector.xpath(
+                self.thread_last_page_xpath
+            ).extract_first()
 
         thread_lastmod = selector.xpath(
             self.thread_date_xpath
@@ -477,7 +491,8 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Process stats
         try:
-            thread_url = self.parse_thread_url(thread_url)
+            thread_url = (self.parse_thread_url(thread_last_page_url)
+                          or self.parse_thread_url(thread_first_page_url))
         except Exception as err:
             thread_url = None
 
@@ -515,7 +530,10 @@ class SitemapSpider(BypassCloudfareSpider):
         :param thread_url: str => thread url as string
         :return: str => thread url as string
         """
-        return thread_url.strip()
+        if thread_url:
+            return thread_url.strip()
+        else:
+            return
 
     def get_topic_id(self, url=None):
         """
@@ -635,7 +653,7 @@ class SitemapSpider(BypassCloudfareSpider):
         selector = Selector(text=response.text)
 
         # Load forum
-        all_forum = selector.xpath(self.forum_xpath).extract()
+        all_forum = selector.xpath(self.forum_sitemap_xpath).extract()
 
         for forum in all_forum:
             yield Request(
@@ -658,7 +676,7 @@ class SitemapSpider(BypassCloudfareSpider):
         selector = Selector(text=response.text)
 
         # Load thread
-        all_threads = selector.xpath(self.thread_xpath).extract()
+        all_threads = selector.xpath(self.thread_sitemap_xpath).extract()
 
         for thread in all_threads:
             yield from self.parse_sitemap_thread(
@@ -681,7 +699,7 @@ class SitemapSpider(BypassCloudfareSpider):
             selector.xpath(self.thread_url_xpath).extract_first()
         )
         thread_date = self.parse_thread_date(
-            selector.xpath(self.thread_date_xpath).extract_first()
+            selector.xpath(self.thread_lastmod_xpath).extract_first()
         )
 
         if self.start_date > thread_date:
@@ -878,8 +896,9 @@ class SitemapSpider(BypassCloudfareSpider):
         # Save avatar content
         all_avatars = response.xpath(self.avatar_xpath).extract()
         for avatar_url in all_avatars:
+
             # Standardize avatar url
-            if self.base_url not in avatar_url:
+            if not avatar_url.lower().startswith("http"):
                 avatar_url = self.base_url + avatar_url
 
             file_name = self.get_avatar_file(avatar_url)

@@ -40,8 +40,9 @@ class V3RMillionSpider(SitemapSpider):
 
     # Thread xpath #
     thread_xpath = "//tr[@class=\"inline_row\"]"
-    thread_url_xpath = "//td[contains(@class,\"forumdisplay\")]/div/span/span[@class=\"smalltext\"]/a[last()]/@href|" \
-                       "//span[contains(@id,\"tid\")]/a/@href"
+    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
+    thread_last_page_xpath = "//td[contains(@class,\"forumdisplay\")]/" \
+                             "div/span/span[@class=\"smalltext\"]/a[last()]/@href"
     thread_date_xpath = "//td[contains(@class,\"forumdisplay\")]/span[@class=\"lastpost smalltext\"]/text()[1]"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"

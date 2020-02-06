@@ -33,10 +33,10 @@ class SinisterSpider(SitemapSpider):
 
     # Xpath stuffs
     thread_xpath = "//tr[@class=\"inline_row\"]"
-    thread_url_xpath = "//span/span[@class=\"smalltext\"]/a[contains(@href,\"Thread-\")][last()]/@href|" \
-                       "//span[contains(@id,\"tid\")]/a/@href"
+    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
+    thread_last_page_xpath = "//span/span[@class=\"smalltext\"]/a[contains(@href,\"Thread-\")][last()]/@href"
     thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
-                           "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
+                        "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"

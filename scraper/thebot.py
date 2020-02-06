@@ -39,8 +39,8 @@ class TheBotSpider(SitemapSpider):
     pagination_xpath = "//a[contains(@class,\"pageNav-jump--next\")]/@href"
 
     thread_xpath = "//div[contains(@class,\"structItem--thread\")]"
-    thread_url_xpath = "//span[@class=\"structItem-pageJump\"]/a[last()]/@href|" \
-                       "//div[@class=\"structItem-title\"]/a/@href"
+    thread_first_page_xpath = "//div[@class=\"structItem-title\"]/a/@href"
+    thread_last_page_xpath = "//span[@class=\"structItem-pageJump\"]/a[last()]/@href"
     thread_date_xpath = "//time[contains(@class,\"structItem-latestDate\")]/@datetime"
     thread_page_xpath = "//li[contains(@class,\"pageNav-page--current\")]/a/text()"
     thread_pagination_xpath = "//a[contains(@class,\"pageNav-jump--prev\")]/@href"

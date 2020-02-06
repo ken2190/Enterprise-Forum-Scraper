@@ -36,11 +36,11 @@ class OgUsersSpider(SitemapSpider):
                 "td.col_row>a[href*=Forum-] + div.smalltext>div>a[href*=Forum-]::attr(href)"
 
     # Xpath stuffs
-    thread_xpath = "//tr[contains(@class, \"thread_row\")]"
-    thread_url_xpath = "//span[contains(@class,\"subject\")]/a[contains(@href,\"Thread-\")]/@href"
-    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
-                           "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
+    thread_xpath = "//tr[contains(@class, \"thread_row\")]"
+    thread_first_page_xpath = "//span[contains(@class,\"subject\")]/a[contains(@href,\"Thread-\")]/@href"
+    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
+                        "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_last_xpath = "//div[@class=\"pagination\"]/a[@class=\"pagination_last\"]/@href|" \
                         "//div[@class=\"pagination\"]/a[@class=\"pagination_next\"]/preceding-sibling::a/@href"
