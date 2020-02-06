@@ -1,4 +1,3 @@
-import os
 import re
 
 from datetime import (
@@ -15,8 +14,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 1
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 USER = "hackwithme123"
 PASS = "6VUZmjFzM2WtyjV"
 
@@ -43,7 +42,7 @@ class V3RMillionSpider(SitemapSpider):
     thread_xpath = "//tr[@class=\"inline_row\"]"
     thread_url_xpath = "//td[contains(@class,\"forumdisplay\")]/div/span/span[@class=\"smalltext\"]/a[last()]/@href|" \
                        "//span[contains(@id,\"tid\")]/a/@href"
-    thread_lastmod_xpath = "//td[contains(@class,\"forumdisplay\")]/span[@class=\"lastpost smalltext\"]/text()[1]"
+    thread_date_xpath = "//td[contains(@class,\"forumdisplay\")]/span[@class=\"lastpost smalltext\"]/text()[1]"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//span[@class=\"post_date\"]/text()[1]"
@@ -67,6 +66,7 @@ class V3RMillionSpider(SitemapSpider):
 
     # Other settings
     use_proxy = False
+    download_delay = REQUEST_DELAY
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
