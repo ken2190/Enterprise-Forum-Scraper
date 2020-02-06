@@ -371,24 +371,27 @@ class SitemapSpider(BypassCloudfareSpider):
     }
 
     # Format stuff
-    sitemap_datetime_format = "%Y-%m-%dT%H:%MZ"
-    post_datetime_format = "%m-%d-%Y"
+    sitemap_datetime_format = "%Y-%m-%dT%H:%MZ"  # Date time format of majority of sitemap lastmod/thread last update time #
+    post_datetime_format = "%m-%d-%Y"  # Date time format of majority of post update time #
 
     # Xpath stuffs
 
     # Forum xpath #
-    forum_xpath = None
-    pagination_xpath = None
+    forum_xpath = None  # Xpath of forum url in the main entry forum #
+    pagination_xpath = None  # Xpath of next button in forum detail #
 
     # Thread xpath #
-    thread_xpath = None
-    thread_url_xpath = None
-    thread_date_xpath = None
-    thread_page_xpath = None
-    thread_pagination_xpath = None
+    thread_xpath = None  # Xpath of the whole block of thread row in forum detail #
+    thread_url_xpath = None  # Xpath of thread url last page (if exist) or just thread url in forum detail #
+    thread_date_xpath = None  # Xpath of thread last post update time in forum detail #
+    thread_page_xpath = None  # Xpath of current page button in thread detail #
+    thread_pagination_xpath = None  # Xpath of previous button in thread pagination #
 
     # Post xpath #
-    post_date_xpath = None
+    post_date_xpath = None  # Xpath of post update time in thread detail #
+
+    # Avatar xpath #
+    avatar_xpath = None  # Xpath to define location of avatar url #
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -469,7 +472,7 @@ class SitemapSpider(BypassCloudfareSpider):
         ).extract_first()
 
         thread_lastmod = selector.xpath(
-            self.thread_lastmod_xpath
+            self.thread_date_xpath
         ).extract_first()
 
         # Process stats
@@ -533,6 +536,23 @@ class SitemapSpider(BypassCloudfareSpider):
         )
 
         return topic_id
+
+    def get_avatar_file(self, url=None):
+        """
+        :param url: str => avatar url
+        :return: str => extracted avatar file from avatar url
+        """
+
+        if getattr(self, "avatar_name_pattern", None):
+            try:
+                return os.path.join(
+                    self.avatar_path,
+                    self.avatar_name_pattern.findall(url)[0]
+                )
+            except Exception as err:
+                return
+
+        return
     
     def get_existing_file_date(self, topic_id):
 
@@ -848,6 +868,51 @@ class SitemapSpider(BypassCloudfareSpider):
                         "topic_id": topic_id
                     }
                 )
+            )
+
+    def parse_avatars(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Save avatar content
+        all_avatars = response.xpath(self.avatar_xpath).extract()
+        for avatar_url in all_avatars:
+            # Standardize avatar url
+            if self.base_url not in avatar_url:
+                avatar_url = self.base_url + avatar_url
+
+            file_name = self.get_avatar_file(avatar_url)
+
+            if file_name is None:
+                continue
+
+            if os.path.exists(file_name):
+                continue
+
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                ),
+            )
+
+    def parse_avatar(self, response):
+
+        # Load file name
+        file_name = response.meta.get("file_name")
+        avatar_name = os.path.basename(file_name)
+
+        # Save avatar
+        with open(file_name, "wb") as f:
+            f.write(response.body)
+            self.logger.info(
+                f"Avatar {avatar_name} done..!"
             )
 
     def parse_captcha(self, failure):

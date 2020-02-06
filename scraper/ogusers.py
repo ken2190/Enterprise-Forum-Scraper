@@ -38,7 +38,7 @@ class OgUsersSpider(SitemapSpider):
     # Xpath stuffs
     thread_xpath = "//tr[contains(@class, \"thread_row\")]"
     thread_url_xpath = "//span[contains(@class,\"subject\")]/a[contains(@href,\"Thread-\")]/@href"
-    thread_lastmod_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
+    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
                            "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
@@ -47,9 +47,13 @@ class OgUsersSpider(SitemapSpider):
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//div[@class=\"inline pb_date smalltext\"]/text()[contains(.,\"-\")]|" \
                       "//div[@class=\"inline pb_date smalltext\"]/span[@title]/@title"
+    avatar_xpath = "//div[@class=\"postbit-avatar\"]/a/img/@src"
 
     # Regex stuffs
-    avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
 
     # Other settings
     use_proxy = False
@@ -64,6 +68,13 @@ class OgUsersSpider(SitemapSpider):
             "Sec-fetch-site": "same-origin",
             "Sec-fetch-user": "?1",
         }
+
+    def get_avatar_file(self, url):
+
+        if "image/svg" in url:
+            return
+
+        return super().get_avatar_file(url)
 
     def parse_thread_date(self, thread_date):
         """
@@ -185,6 +196,9 @@ class OgUsersSpider(SitemapSpider):
         # Parse main thread
         yield from super().parse_thread(response)
 
+        # Parse avatar thread
+        yield from super().parse_avatars(response)
+
         # Save user content
         users = response.xpath("//div[@class=\"postbitdetail\"]/span/a")
         for user in users:
@@ -208,37 +222,6 @@ class OgUsersSpider(SitemapSpider):
                     default_meta={
                         "file_name": file_name,
                         "user_name": user_name,
-                    }
-                )
-            )
-
-        # Save avatar content
-        avatars = response.xpath("//div[@class=\"postbit-avatar\"]/a/img")
-        for avatar in avatars:
-            avatar_url = avatar.xpath("@src").extract_first()
-
-            if not avatar_url:
-                continue
-
-            if "image/svg" in avatar_url:
-                continue
-
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_name": file_name,
                     }
                 )
             )
@@ -286,15 +269,6 @@ class OgUsersSpider(SitemapSpider):
             f.write(response.text.encode('utf-8'))
             self.logger.info(
                 f"History for user {user_name} done..!"
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta.get("file_name")
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(
-                f"Avatar {file_name_only} done..!"
             )
 
 

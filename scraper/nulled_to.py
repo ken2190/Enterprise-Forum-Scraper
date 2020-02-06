@@ -140,7 +140,7 @@ class NulledSpider(SitemapSpider):
 
     # Xpath stuffs
     thread_xpath = "//tr[contains(@id,\"trow\")]"
-    thread_lastmod_xpath = "//td[@class=\"col_f_post\"]/ul/li[contains(@class,\"blend_links\")]/a/text()"
+    thread_date_xpath = "//td[@class=\"col_f_post\"]/ul/li[contains(@class,\"blend_links\")]/a/text()"
     thread_url_xpath = "//ul[contains(@class,\"mini_pagination\")]/li[last()]/a/@href|" \
                        "//a[@itemprop=\"url\" and contains(@id, \"tid-link-\")]/@href"
 
@@ -148,6 +148,7 @@ class NulledSpider(SitemapSpider):
     thread_pagination_xpath = "//li[@class=\"prev\"]/a/@href"
     thread_page_xpath = "//li[@class=\"page active\"]/text()"
     post_date_xpath = "//div[@class=\"post_body\"]/div[@class=\"post_date\"]/abbr[@class=\"published\"]/@title"
+    avatar_xpath = "//li[@class=\"avatar\"]/img/@src"
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -256,43 +257,10 @@ class NulledSpider(SitemapSpider):
     def parse_thread(self, response):
 
         # Save avatar content
-        avatars = response.xpath(
-            '//li[@class="avatar"]/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if not avatar_url:
-                continue
-            if not avatar_url.startswith('http'):
-                avatar_url = self.base_url + avatar_url
-            match = self.avatar_name_pattern.findall(avatar_url)
-            if not match:
-                continue
-            file_name = '{}/{}'.format(self.avatar_path, match[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_name": file_name
-                    }
-                )
-            )
+        yield from super().parse_avatars(response)
 
         # Parse generic thread response
         yield from super().parse_thread(response)
-
-    def parse_avatar(self, response):
-        file_name = response.meta.get("file_name")
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, "wb") as f:
-            f.write(response.body)
-            self.logger.info(
-                f"Avatar {file_name_only} done..!"
-            )
 
 
 class NulledToScrapper(SiteMapScrapper):

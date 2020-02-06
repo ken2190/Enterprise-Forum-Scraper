@@ -31,20 +31,25 @@ class V3RMillionSpider(SitemapSpider):
     login_form_css = "form[action=\"member.php\"]"
 
     # Xpath stuffs
+
+    # Forum xpath #
     forum_xpath = "//td[@class=\"trow1\" or @class=\"trow2\"]/strong/" \
                   "a[contains(@href, \"forumdisplay.php?fid=\")]/@href|" \
                   "//span[@class=\"sub_control\"]/" \
                   "a[contains(@href, \"forumdisplay.php?fid=\")]/@href"
     pagination_xpath = "//div[@class=\"pagination\"]/a[@class=\"pagination_next\"]/@href"
 
+    # Thread xpath #
     thread_xpath = "//tr[@class=\"inline_row\"]"
     thread_url_xpath = "//td[contains(@class,\"forumdisplay\")]/div/span/span[@class=\"smalltext\"]/a[last()]/@href|" \
                        "//span[contains(@id,\"tid\")]/a/@href"
     thread_lastmod_xpath = "//td[contains(@class,\"forumdisplay\")]/span[@class=\"lastpost smalltext\"]/text()[1]"
-
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//span[@class=\"post_date\"]/text()[1]"
+
+    # Avatar xpath #
+    avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -147,45 +152,11 @@ class V3RMillionSpider(SitemapSpider):
 
     def parse_thread(self, response):
 
-        # Synchronize header user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
         # Parse generic thread
         yield from super().parse_thread(response)
 
         # Save avatar content
-        avatars = response.xpath('//div[@class="author_avatar"]/a/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if not avatar_url.startswith('http'):
-                avatar_url = self.base_url + avatar_url
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_name": file_name
-                    }
-                ),
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta.get("file_name")
-        file_name_only = file_name.rsplit("/", 1)[-1]
-        with open(file_name, "wb") as f:
-            f.write(response.body)
-            self.logger.info(
-                f"Avatar {file_name_only} done..!"
-            )
+        yield from super().parse_avatars(response)
 
 
 class V3RMillionScrapper(SiteMapScrapper):

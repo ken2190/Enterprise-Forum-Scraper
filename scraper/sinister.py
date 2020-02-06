@@ -35,13 +35,14 @@ class SinisterSpider(SitemapSpider):
     thread_xpath = "//tr[@class=\"inline_row\"]"
     thread_url_xpath = "//span/span[@class=\"smalltext\"]/a[contains(@href,\"Thread-\")][last()]/@href|" \
                        "//span[contains(@id,\"tid\")]/a/@href"
-    thread_lastmod_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
+    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
                            "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//span[@class=\"post_date postbit_date\"]/text()[contains(.,\"-\")]|" \
                       "//span[@class=\"post_date postbit_date\"]/span[@title]/@title"
+    avatar_xpath = r"//div[@class=\"author_avatar postbit_avatar\"]/a/img/@src"
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -134,6 +135,9 @@ class SinisterSpider(SitemapSpider):
 
         # Parse main thread
         yield from super().parse_thread(response)
+
+        # Parse avatar
+        yield from super().parse_avatars(response)
 
 
 class SinisterScrapper(SiteMapScrapper):
