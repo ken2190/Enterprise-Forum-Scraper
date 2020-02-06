@@ -3,7 +3,7 @@ from scraper.breachforums import BreachForumsScrapper
 from scraper.exploit import ExploitScrapper
 from scraper.exploit_private import ExploitPrivateScrapper
 from scraper.lolzteam import LolzScrapper
-from scraper.verified import VerifiedScSpider
+from scraper.verified import VerifiedScScrapper
 from scraper.sentryMBA import SentryMBAScrapper
 from scraper.bitcointalk import BitCoinTalkScrapper
 from scraper.psbdmp import PasteBinScrapper
@@ -92,7 +92,7 @@ SCRAPER_MAP = {
     'exploit': ExploitScrapper,
     'exploitprivate': ExploitPrivateScrapper,
     'lolzteam': LolzScrapper,
-    'verified': VerifiedScSpider,
+    'verified': VerifiedScScrapper,
     'sentrymba': SentryMBAScrapper,
     'bitcointalk': BitCoinTalkScrapper,
     'psbdmp': PasteBinScrapper,

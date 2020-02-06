@@ -1,175 +1,176 @@
-import re
 import os
-import hashlib
-import time
-import random
-import traceback
-from requests import Session
-from lxml.html import fromstring
-from scraper.base_scrapper import BaseTorScrapper
+import re
+import scrapy
+from math import ceil
+import configparser
+from scrapy import (
+    Request,
+    FormRequest
+)
+
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-# Credentials
-USERNAME = "vrx9"
-PASSWORD = "Night#Vrx099"
+REQUEST_DELAY = 1
+NO_OF_THREADS = 1
+
+USERNAME = "cyrax11"
+MD5PASS = "5d22b48847fe3b55982c52f75a34c9a3"
+PASSWORD = "Night#Verify098"
 
 
-# Topic Counter
-TOPIC_START_COUNT = 70
-TOPIC_END_COUNT = 100000
+class VerifiedScSpider(SitemapSpider):
 
+    name = 'verifiedsc_spider'
 
-class VerifiedScrapper(BaseTorScrapper):
-    def __init__(self, kwargs):
-        super().__init__(kwargs)
-        self.site_link = "http://verified2ebdpvms.onion/"
-        self.login_url = self.site_link + "login.php?do=login"
-        self.topic_url = self.site_link + "showthread.php?t={}"
-        self.headers.update({
-            'cookie': 'IDstack=db57dd63d50b537ca89882f289e6950d7d72de45bde0a73358837ed729e0935a; '
-                      'bblastvisit=1549534014; '
-                      'bblastactivity=0; '
-                      'bbuserid=62675; '
-                      'bbpassword=edc7e2c6b7bfe17463f5f875c244d79c; '
-                      'bbsessionhash=b44349dc1940d57af030efc8c58472c3'
-        })
-        self.username = kwargs.get('user') or USERNAME
-        self.password = kwargs.get('password') or PASSWORD
-        self.ignore_xpath = '//div[contains(text(), "No Thread specified")]'
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
+    # Url stuffs
+    base_url = "https://verified.sc/"
 
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//div[@class="pagenav"]'
-            '//td[span/strong]'
-            '//following-sibling::td[1]/a/@href'
+    # Css stuffs
+    login_css_form = "form[action*=login]"
+
+    # Xpath stuffs
+    
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r".*t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r"&page=(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+
+    def parse(self, response):
+
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_css_form,
+            formdata={
+                "vb_login_username": USERNAME,
+                "vb_login_password": "",
+                "vb_login_md5password": MD5PASS,
+                "vb_login_md5password_utf": MD5PASS,
+                "cookieuser": None,
+                "s": "",
+                "url": "/",
+                "do": "login"
+            },
+            meta=self.synchronize_meta(response),
+            dont_filter=True,
+            callback=self.parse_login
         )
-        if not next_page_block:
-            return
-        next_page_url = next_page_block[0]
-        pattern = re.compile(r't=(\d+)&page=(\d+)')
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
-        if self.site_link not in next_page_url:
-            next_page_url = self.site_link + next_page_url
-        content = self.get_page_content(
-            next_page_url, self.ignore_xpath
-        )
-        if not content:
-            return
 
-        paginated_file = '{}/{}-{}.html'.format(
-            self.output_path, topic, pagination_value
-        )
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
-
-        print('{}-{} done..!'.format(topic, pagination_value))
-        return content
-
-    def clear_cookies(self,):
-        self.session.cookies['topicsread'] = ''
-
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//img[contains(@alt, "Avatar")]/@src'
-        )
-        for url in urls:
-            url = self.site_link + url
-            name_match = self.avatar_name_pattern.findall(url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
-
-    def login(self):
-        password = self.password or PASSWORD
-        md5_pass = hashlib.md5(password.encode('utf-8')).hexdigest()
-        payload = {
-            "do": "login",
-            "s": "",
-            "securitytoken": "guest",
-            "url": "/forum.php",
-            "vb_login_md5password": md5_pass,
-            "vb_login_md5password_utf": md5_pass,
-            "vb_login_password": "",
-            "vb_login_username": self.username or USERNAME
-        }
-        login_response = self.session.post(self.login_url, data=payload)
-        html_response = self.get_html_response(login_response.content)
-        if html_response.xpath('//form[@action="register.php"]'):
-            return False
-        return True
-
-    def process_topic(self, topic):
-        try:
-            response = self.process_first_page(
-                topic, self.ignore_xpath
+    def parse_login(self, response):
+        forums = response.xpath(
+            '//a[contains(@href, "forumdisplay.php?f=")]')
+        for forum in forums:
+            url = forum.xpath('@href').extract_first()
+            if self.base_url not in url:
+                url = self.base_url + url.strip('.')
+            yield Request(
+                url=url,
+                callback=self.parse_forum,
+                headers=self.headers,
+                meta={'proxy': self.proxy}
             )
-            if response is None:
-                return
 
-            avatar_info = self.get_avatar_info(response)
-            for name, url in avatar_info.items():
-                self.save_avatar(name, url)
+        # Test for single Forum
+        # url = 'http://verified2ebdpvms.onion/forumdisplay.php?f=77'
+        # yield Request(
+        #     url=url,
+        #     callback=self.parse_forum,
+        #     headers=self.headers,
+        #     meta={'proxy': self.proxy}
+        # )
 
-            # ------------clear cookies without logout--------------
-            self.clear_cookies()
-        except:
-            traceback.print_exc()
-            return
-        self.process_pagination(response)
+    def parse_forum(self, response):
+        print('next_page_url: {}'.format(response.url))
+        threads = response.xpath(
+            '//a[contains(@id, "thread_title_")]')
+        for thread in threads:
+            thread_url = thread.xpath('@href').extract_first()
+            if self.base_url not in thread_url:
+                thread_url = self.base_url + thread_url
+            topic_id = self.topic_pattern.findall(thread_url)
+            if not topic_id:
+                continue
+            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=thread_url,
+                callback=self.parse_thread,
+                headers=self.headers,
+                meta={'topic_id': topic_id[0], 'proxy': self.proxy}
+            )
 
-    def do_new_posts_scrape(self,):
-        print('**************  New posts scan  **************')
-        print('Implementation not complete yet!!')
+        next_page = response.xpath('//a[@rel="next"]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url.strip('.')
+            yield Request(
+                url=next_page_url,
+                callback=self.parse_forum,
+                headers=self.headers,
+                meta={'proxy': self.proxy}
+            )
 
-    def do_rescan(self,):
-        print('**************  Rescanning  **************')
-        print('Broken Topics found')
-        broken_topics = self.get_broken_file_topics()
-        print(broken_topics)
-        if not broken_topics:
-            return
-        self.session.proxies.update({
-            'http': self.proxy,
-            'https': self.proxy,
-        })
-        random.shuffle(broken_topics)
-        for topic in broken_topics:
-            file_path = "{}/{}.html".format(self.output_path, topic)
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            self.process_topic(topic)
+    def parse_thread(self, response):
+        topic_id = response.meta['topic_id']
+        pagination = self.pagination_pattern.findall(response.url)
+        if pagination:
+            paginated_value = int(pagination[0])
+        else:
+            paginated_value = 1
+        file_name = '{}/{}-{}.html'.format(
+            self.output_path, topic_id, paginated_value)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            print(f'{topic_id}-{paginated_value} done..!')
 
-    def do_scrape(self):
-        print('**************  Started verified Scrapper **************\n')
-
-        if not self.session.proxies.get('http'):
-            self.session.proxies.update({
-                'http': self.proxy,
-                'https': self.proxy,
-            })
-        # ----------------go to topic ------------------
-        ts = self.topic_start_count or TOPIC_START_COUNT
-        te = self.topic_end_count or TOPIC_END_COUNT + 1
-        topic_list = list(range(ts, te))
-        random.shuffle(topic_list)
-        for topic in topic_list:
-            self.process_topic(topic)
-
-
-def main():
-    template = VerifiedScrapper()
-    template.do_scrape()
+        next_page = response.xpath('//a[@rel="next"]')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url.strip('.')
+            yield Request(
+                url=next_page_url,
+                callback=self.parse_thread,
+                headers=self.headers,
+                meta={'topic_id': topic_id, 'proxy': self.proxy}
+            )
 
 
-if __name__ == '__main__':
-    main()
+class VerifiedScScrapper(SiteMapScrapper):
+
+    spider_class = VerifiedScSpider
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+            }
+        )
+        return settings
+
+
+if __name__ == "__main__":
+    pass
