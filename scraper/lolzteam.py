@@ -23,10 +23,10 @@ class LolzSpider(SitemapSpider):
     name = 'lolz_spider'
     sitemap_url = 'https://www.lolzteam.online/sitemap.xml'
     # Xpath stuffs
-    forum_xpath = "//loc/text()"
+    forum_sitemap_xpath = "//loc/text()"
     thread_url_xpath = "//loc/text()"
-    thread_xpath = '//url[loc[contains(text(), "/threads/")] and lastmod]'
-    thread_date_xpath = "//lastmod/text()"
+    thread_sitemap_xpath = '//url[loc[contains(text(), "/threads/")] and lastmod]'
+    thread_lastmod_xpath = "//lastmod/text()"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
     custom_settings = {
         'DOWNLOADER_MIDDLEWARES': {
