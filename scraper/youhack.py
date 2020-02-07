@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 
 from datetime import datetime
 from scrapy.utils.gz import gunzip
@@ -27,6 +28,7 @@ class YouHackSpider(SitemapSpider):
     thread_sitemap_xpath = "//url[loc[contains(text(),\"/threads/\")] and lastmod]"
     thread_url_xpath = "//loc/text()"
     thread_lastmod_xpath = "//lastmod/text()"
+    forbidden_text_xpath = "//h1/text()[contains(.,\"Forbidden\")]"
 
     # Regex stuffs
     topic_pattern = re.compile(r'threads/(\d+)')
@@ -35,6 +37,7 @@ class YouHackSpider(SitemapSpider):
 
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    handle_httpstatus_list = [403]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,18 +49,30 @@ class YouHackSpider(SitemapSpider):
             }
         )
 
-    def get_topic_id(self, url=None):
-
-        try:
-            return self.topic_pattern.findall(url)[0]
-        except Exception as err:
-            return
-
     def parse_thread_date(self, thread_date):
         return datetime.strptime(
             thread_date[:-6],
             self.sitemap_datetime_format
         )
+
+    def parse_sitemap(self, response):
+
+        # Check forbidden
+        forbidden_text = response.xpath(
+            self.forbidden_text_xpath
+        ).extract_first()
+
+        # Process out of forbidden
+        if response.status == 403 and forbidden_text:
+            self.logger.info(
+                "Rotated ip has been forbidden, rotating."
+            )
+            request = response.request
+            request.dont_filter = True
+            request.meta["cookiejar"] = uuid.uuid1().hex
+            yield request
+        else:
+            yield from super().parse_sitemap(response)
 
     def parse_sitemap_forum(self, response):
 
@@ -65,7 +80,7 @@ class YouHackSpider(SitemapSpider):
         selector = Selector(text=gunzip(response.body))
 
         # Load thread
-        all_threads = selector.xpath(self.thread_xpath).extract()
+        all_threads = selector.xpath(self.thread_sitemap_xpath).extract()
 
         for thread in all_threads:
             yield from self.parse_sitemap_thread(thread, response)
