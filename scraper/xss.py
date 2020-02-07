@@ -27,7 +27,7 @@ class XSSSpider(SitemapSpider):
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"threads/(\d+)/$",
+        r"threads/(\d+)/",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
@@ -45,7 +45,7 @@ class XSSSpider(SitemapSpider):
     thread_first_page_xpath = "//div[contains(@class,\"structItem-title\")]/" \
                               "a[contains(@href,\"threads/\")]/@href"
     thread_last_page_xpath = "//span[contains(@class,\"structItem-pageJump\")]/" \
-                             "a[contains(@href,\"threads/\") and last()]/@href"
+                             "a[contains(@href,\"threads/\")][last()]/@href"
     thread_date_xpath = "//time[contains(@class,\"structItem-latestDate\")]/@datetime"
 
     pagination_xpath = "//a[contains(@class,\"pageNav-jump--next\")]/@href"
@@ -76,6 +76,7 @@ class XSSSpider(SitemapSpider):
         :return: datetime => post date as datetime converted from string,
                             using class post_datetime_format
         """
+
         return datetime.strptime(
             post_date.strip()[:-5],
             self.post_datetime_format
