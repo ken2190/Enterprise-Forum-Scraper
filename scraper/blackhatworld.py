@@ -19,10 +19,10 @@ class BlackHatWorldSpider(SitemapSpider):
     sitemap_url = 'https://www.blackhatworld.com/sitemap.xml'
 
     # Xpath stuffs
-    forum_xpath = "//loc/text()"
+    forum_sitemap_xpath = "//loc/text()"
     thread_url_xpath = "//loc/text()"
-    thread_xpath = "//url"
-    thread_date_xpath = "//lastmod/text()"
+    thread_sitemap_xpath = "//url"
+    thread_lastmod_xpath = "//lastmod/text()"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
     def __init__(self, *args, **kwargs):

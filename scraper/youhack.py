@@ -23,10 +23,10 @@ class YouHackSpider(SitemapSpider):
     sitemap_url = "https://youhack.ru/sitemap.php"
 
     # Xpath stuffs
-    forum_xpath = "//sitemap/loc/text()"
-    thread_xpath = "//url[loc[contains(text(),\"/threads/\")] and lastmod]"
+    forum_sitemap_xpath = "//sitemap/loc/text()"
+    thread_sitemap_xpath = "//url[loc[contains(text(),\"/threads/\")] and lastmod]"
     thread_url_xpath = "//loc/text()"
-    thread_date_xpath = "//lastmod/text()"
+    thread_lastmod_xpath = "//lastmod/text()"
 
     # Regex stuffs
     topic_pattern = re.compile(r'threads/(\d+)')
