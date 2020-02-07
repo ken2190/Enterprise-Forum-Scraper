@@ -456,13 +456,14 @@ class SitemapSpider(BypassCloudfareSpider):
         )
 
     def synchronize_meta(self, response, default_meta={}):
-        default_meta.update(
-            {
-                key: response.meta.get(key) for key in ["cookiejar", "ip"]
-                if response.meta.get(key)
-            }
-        )
-        return default_meta
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
+
+        meta.update(default_meta)
+
+        return meta
 
     def extract_thread_stats(self, thread):
         """

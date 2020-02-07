@@ -1,17 +1,9 @@
-import sys
-import os
 import re
-import json
-import scrapy
-from glob import glob
-from math import ceil
-import configparser
-from lxml.html import fromstring
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from datetime import (
-    datetime,
-    timedelta
+import uuid
+
+from scrapy import (
+    Request,
+    FormRequest
 )
 from scraper.base_scrapper import (
     SitemapSpider,
@@ -23,11 +15,14 @@ USER = 'blacklotus2000@protonmail.com'
 PASS = 'Night#Anti999'
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
 class AntichatSpider(SitemapSpider):
     name = 'antichat_spider'
+
+    # Url stuffs
+    base_url = "https://forum.antichat.ru/"
+
     # Xpath stuffs
     forum_xpath = '//div[@class="nodelistBlock nodeText"]'\
                   '/h3[@class="nodeTitle"]/a/@href|'\
@@ -51,6 +46,20 @@ class AntichatSpider(SitemapSpider):
                       '//abbr[@class="DateTime"]/text()'
 
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
+    
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"/threads/(\d+)/",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\w+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r"page-(\d+)",
+        re.IGNORECASE
+    )
 
     # Other settings
     sitemap_datetime_format = '%d %b %Y at %H:%M %p'
@@ -58,41 +67,13 @@ class AntichatSpider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = 'https://forum.antichat.ru/'
-        self.topic_pattern = re.compile(r'/threads/(\d+)/')
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.pagination_pattern = re.compile(r'page-(\d+)')
-        self.headers = {
-            'origin': 'https://forum.antichat.ru',
-            'referer': 'https://forum.antichat.ru/',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'content-type': 'application/x-www-form-urlencoded',
-            'user-agent': USER_AGENT,
-        }
-
-    def proceed_for_login(self):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-
-        login_url = 'https://forum.antichat.ru/login/login'
-        params = {
-            'login': USER,
-            'password': PASS,
-            'register': '0',
-            "remember": '1',
-            'cookie_check': '1',
-            'redirect': 'https://forum.antichat.ru/',
-            '_xfToken': ''
-        }
-        yield FormRequest(
-            url=login_url,
-            callback=self.parse,
-            formdata=params,
-            headers=self.headers,
-            dont_filter=True,
-            )
+        self.headers.update(
+            {
+                "Sec-fetch-mode": "navigate",
+                "Sec-fetch-site": "same-origin",
+                "Sec-fetch-user": "?1",
+            }
+        )
 
     def parse(self, response):
 
@@ -110,7 +91,12 @@ class AntichatSpider(SitemapSpider):
                 url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "cookiejar": uuid.uuid1().hex
+                    }
+                )
             )
 
     def parse_thread(self, response):
