@@ -901,6 +901,9 @@ class SitemapSpider(BypassCloudfareSpider):
             if not avatar_url.lower().startswith("http"):
                 avatar_url = self.base_url + avatar_url
 
+            if 'image/svg' in avatar_url:
+                continue
+
             file_name = self.get_avatar_file(avatar_url)
 
             if file_name is None:
