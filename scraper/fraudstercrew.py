@@ -44,9 +44,9 @@ class FraudstercrewSpider(SitemapSpider):
 
     # Sitemap Stuffs
     sitemap_url = 'https://fraudstercrew.su/sitemap.php'
-    thread_xpath = "//url[loc[contains(text(),\"/threads/\")] and lastmod]"
+    thread_sitemap_xpath = "//url[loc[contains(text(),\"/threads/\")] and lastmod]"
     thread_url_xpath = '//loc/text()'
-    thread_date_xpath = "//lastmod/text()"
+    thread_lastmod_xpath = "//lastmod/text()"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
     # Other settings
@@ -136,7 +136,7 @@ class FraudstercrewSpider(SitemapSpider):
         selector = Selector(text=response.text)
 
         # Load forum
-        all_threads = selector.xpath(self.thread_xpath).extract()
+        all_threads = selector.xpath(self.thread_sitemap_xpath).extract()
 
         for thread in all_threads:
             yield from self.parse_sitemap_thread(thread, response)
