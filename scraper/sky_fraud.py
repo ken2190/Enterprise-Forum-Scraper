@@ -23,9 +23,9 @@ class SkyFraudSpider(SitemapSpider):
     base_url = "https://sky-fraud.ru/"
     
     # Xpath stuffs
-    thread_xpath = "//url[loc[contains(text(),\"/showthread.php\")] and lastmod]"
+    thread_sitemap_xpath = "//url[loc[contains(text(),\"/showthread.php\")] and lastmod]"
     thread_url_xpath = "//loc/text()"
-    thread_date_xpath = "//lastmod/text()"
+    thread_lastmod_xpath = "//lastmod/text()"
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     # Regex stuffs
