@@ -45,8 +45,63 @@ class RaidForumsSpider(SitemapSpider):
     thread_url_xpath = "//loc/text()"
     thread_lastmod_xpath = "//lastmod/text()"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def parse_sitemap_thread(self, thread, response):
+        """
+        :param thread: str => thread html include url and last mod
+        :param response: scrapy response => scrapy response
+        :return:
+        """
+
+        # Load selector
+        selector = Selector(text=thread)
+
+        # Load thread url and update
+        thread_url = self.parse_thread_url(
+            selector.xpath(self.thread_url_xpath).extract_first()
+        )
+        thread_date = self.parse_thread_date(
+            selector.xpath(self.thread_lastmod_xpath).extract_first()
+        )
+
+        if self.start_date > thread_date:
+            self.logger.info(
+                "Thread %s ignored because last update in the past. Detail: %s" % (
+                    thread_url,
+                    thread_date
+                )
+            )
+            return
+
+        # Get topic id
+        topic_id = self.get_topic_id(thread_url)
+        if not topic_id:
+            return
+
+        # Check file exist
+        if self.check_existing_file_date(
+            topic_id=topic_id,
+            thread_date=thread_date,
+            thread_url=thread_url
+        ):
+            return
+
+        # Load request arguments
+        request_arguments = {
+            "url": thread_url,
+            "headers": self.headers,
+            "callback": self.parse_thread,
+            "meta": self.synchronize_meta(
+                response,
+                default_meta={
+                    "topic_id": topic_id,
+                    "cookiejar": topic_id
+                }
+            )
+        }
+        if self.cookies:
+            request_arguments["cookies"] = self.cookies
+
+        yield Request(**request_arguments)
 
     def parse(self, response):
 
@@ -60,33 +115,6 @@ class RaidForumsSpider(SitemapSpider):
             yield Request(
                 url=url,
                 callback=self.parse_forum
-            )
-
-    def parse_new_posts(self, response):
-        threads = response.xpath(
-            '//a[text()="New"]')
-
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.get_topic_id(thread_url)
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-        next_page = response.xpath('//a[@class="pagination_next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_new_posts
             )
 
     def parse_forum(self, response):
@@ -173,8 +201,14 @@ class RaidForumsSpider(SitemapSpider):
             print(f"History for user {user_id} done..!")
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
 
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load topic
+        topic_id = response.meta.get("topic_id")
+
+        # Save thread content
         pagination = self.pagination_pattern.findall(response.url)
         paginated_value = pagination[0] if pagination else 1
         file_name = '{}/{}-{}.html'.format(
@@ -199,9 +233,12 @@ class RaidForumsSpider(SitemapSpider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                )
             )
 
         next_page = response.xpath(
@@ -214,7 +251,12 @@ class RaidForumsSpider(SitemapSpider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
             )
 
     def parse_avatar(self, response):
