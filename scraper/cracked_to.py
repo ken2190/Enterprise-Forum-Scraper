@@ -18,6 +18,7 @@ NO_OF_THREADS = 10
 class CrackedToSpider(SitemapSpider):
     name = 'cracked_spider'
     sitemap_url = 'https://cracked.to/sitemap-index.xml'
+
     # Xpath stuffs
     forum_sitemap_xpath = '//sitemap/loc[contains(text(), "sitemap-threads.xml")]/text()'
     thread_sitemap_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
@@ -30,10 +31,6 @@ class CrackedToSpider(SitemapSpider):
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page=(\d+)')
         self.start_url = 'https://cracked.to/'
-        self.headers = {
-            'referer': 'https://cracked.to/',
-            'user-agent': USER_AGENT,
-        }
 
     def parse(self, response):
         forums = response.xpath(
@@ -88,7 +85,13 @@ class CrackedToSpider(SitemapSpider):
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load topic
+        topic_id = response.meta.get("topic_id")
+
+        # Save thread content
         pagination = self.pagination_pattern.findall(response.url)
         paginated_value = pagination[0] if pagination else 1
         file_name = '{}/{}-{}.html'.format(
@@ -113,9 +116,12 @@ class CrackedToSpider(SitemapSpider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                )
             )
 
         next_page = response.xpath(
@@ -129,7 +135,12 @@ class CrackedToSpider(SitemapSpider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
             )
 
     def parse_avatar(self, response):
