@@ -73,6 +73,9 @@ class AntichatSpider(SitemapSpider):
         }
 
     def proceed_for_login(self):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
         login_url = 'https://forum.antichat.ru/login/login'
         params = {
             'login': USER,
