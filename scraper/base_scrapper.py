@@ -789,7 +789,9 @@ class SitemapSpider(BypassCloudfareSpider):
                     thread_date=thread_lastmod,
                     thread_url=thread_url
             ):
-                return
+                # -----------This is for quick test------------
+                # return
+                continue
 
             yield Request(
                 url=thread_url,
