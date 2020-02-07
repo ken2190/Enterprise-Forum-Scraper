@@ -42,7 +42,7 @@ class SinisterSpider(SitemapSpider):
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//span[@class=\"post_date postbit_date\"]/text()[contains(.,\"-\")]|" \
                       "//span[@class=\"post_date postbit_date\"]/span[@title]/@title"
-    avatar_xpath = r"//div[@class=\"author_avatar postbit_avatar\"]/a/img/@src"
+    avatar_xpath = "//div[@class=\"author_avatar postbit_avatar\"]/a/img/@src"
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
