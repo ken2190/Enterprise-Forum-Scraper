@@ -102,9 +102,9 @@ class ProLogicSpider(SitemapSpider):
         selector = Selector(text=gunzip(response.body))
 
         # Load thread
-        all_threads = selector.xpath(self.thread_xpath).extract()
+        all_threads = selector.xpath(self.thread_sitemap_xpath).extract()
         for thread in all_threads:
-            yield from self.parse_sitemap_thread(thread)
+            yield from self.parse_sitemap_thread(thread, response)
 
     def parse_forum(self, response):
         self.logger.info('next_page_url: {}'.format(response.url))
