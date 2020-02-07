@@ -17,10 +17,10 @@ class MarviherSpider(SitemapSpider):
     name = 'marviher_spider'
     sitemap_url = 'https://marviher.com/sitemap.php'
     # Xpath stuffs
-    forum_xpath = '//sitemap/loc[contains(text(), "sitemap_content_forums_Topic_")]/text()'
-    thread_xpath = '//url[loc[contains(text(),"/topic/")] and lastmod]'
+    forum_sitemap_xpath = '//sitemap/loc[contains(text(), "sitemap_content_forums_Topic_")]/text()'
+    thread_sitemap_xpath = '//url[loc[contains(text(),"/topic/")] and lastmod]'
     thread_url_xpath = "//loc/text()"
-    thread_date_xpath = "//lastmod/text()"
+    thread_lastmod_xpath = "//lastmod/text()"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
     def __init__(self, *args, **kwargs):
