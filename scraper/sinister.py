@@ -12,8 +12,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = .6
-NO_OF_THREADS = 20
+REQUEST_DELAY = .3
+NO_OF_THREADS = 12
 USERNAME = "seraleone"
 PASSWORD = "BcCeQGx5"
 
