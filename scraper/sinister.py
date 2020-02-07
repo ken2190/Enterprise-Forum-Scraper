@@ -77,7 +77,10 @@ class SinisterSpider(SitemapSpider):
         )
 
     def parse(self, response):
+        # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Login stuffs
         self.post_headers.update(self.headers)
         yield FormRequest.from_response(
             response,
