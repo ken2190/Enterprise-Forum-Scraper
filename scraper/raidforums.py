@@ -272,6 +272,7 @@ class RaidForumsSpider(SitemapSpider):
 class RaidForumsScrapper(SiteMapScrapper):
 
     spider_class = RaidForumsSpider
+    avatar_folder = 'raidforums.com'
 
     def load_settings(self):
         spider_settings = super().load_settings()

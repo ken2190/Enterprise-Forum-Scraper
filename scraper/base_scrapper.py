@@ -255,7 +255,10 @@ class SiteMapScrapper:
             os.makedirs(self.user_path)
 
     def ensure_avatar_path(self, template):
-        self.avatar_path = f'../avatars/{template}'
+        if getattr(self, 'avatar_folder', None):
+            self.avatar_path = f'../avatars/{self.avatar_folder}'
+        else:
+            self.avatar_path = f'../avatars/{template}'
         if not os.path.exists(self.avatar_path):
             os.makedirs(self.avatar_path)
 
