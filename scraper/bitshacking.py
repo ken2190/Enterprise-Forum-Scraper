@@ -10,7 +10,11 @@ from urllib.parse import urlencode
 from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import SiteMapScrapper
+from datetime import datetime
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
 REQUEST_DELAY = 0.3
@@ -24,8 +28,38 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
              'Chrome/79.0.3945.117 Safari/537.36',
 
 
-class BitsHackingSpider(scrapy.Spider):
+class BitsHackingSpider(SitemapSpider):
     name = 'bitshacking_spider'
+    sitemap_url = 'https://bitshacking.com/sitemap.xml'
+
+    # Xpaths for sitemap.xml
+    forum_sitemap_xpath = '//loc/text()'
+    thread_sitemap_xpath = '//url[loc[contains(text(), "/threads/")] and lastmod]'
+    thread_url_xpath = '//loc/text()'
+    thread_lastmod_xpath = '//lastmod/text()'
+
+    # Xpaths for normal forums
+    forum_xpath = '//h3[@class="node-title"]/a/@href'
+    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+    thread_first_page_xpath = '//div[@class="structItem-title"]'\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = '//time[contains(@class, "structItem-latestDate")]'\
+                        '/@datetime'
+    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+                              '/@href'
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+                        '/a/text()'
+    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+
+    avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
+
+    # Other settings
+    use_proxy = False
+    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,8 +69,6 @@ class BitsHackingSpider(scrapy.Spider):
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*/page-(\d+)')
         self.start_url = "https://bitshacking.com/"
-        self.output_path = kwargs.get("output_path")
-        self.avatar_path = kwargs.get("avatar_path")
         self.headers = {
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
@@ -44,15 +76,37 @@ class BitsHackingSpider(scrapy.Spider):
             'user-agent': USER_AGENT
         }
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.get_token
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+
+        return datetime.strptime(
+            thread_date.strip()[:-6],
+            self.sitemap_datetime_format
         )
 
-    def get_token(self, response):
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        return datetime.strptime(
+            post_date.strip()[:-5],
+            self.post_datetime_format
+        )
+
+    def parse(self, response):
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load token
         match = re.findall(r'csrf: \'(.*?)\'', response.text)
+
+        # Load param
         params = {
             '_xfRequestUri': '/',
             '_xfWithData': '1',
@@ -63,14 +117,23 @@ class BitsHackingSpider(scrapy.Spider):
         yield Request(
             url=token_url,
             headers=self.headers,
-            callback=self.proceed_for_login
+            callback=self.proceed_for_login,
+            meta=self.synchronize_meta(response)
         )
 
     def proceed_for_login(self, response):
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load json data
         json_response = json.loads(response.text)
         html_response = fromstring(json_response['html']['content'])
+
+        # Exact token
         token = html_response.xpath(
             '//input[@name="_xfToken"]/@value')[0]
+
+        # Load params
         params = {
             'login': USER,
             'password': PASS,
@@ -80,118 +143,47 @@ class BitsHackingSpider(scrapy.Spider):
         }
         yield FormRequest(
             url=self.login_url,
-            callback=self.parse,
+            callback=self.parse_main_page,
             formdata=params,
             headers=self.headers,
             dont_filter=True,
+            meta=self.synchronize_meta(response)
             )
 
-    def parse(self, response):
-        forums = response.xpath(
-            '//h3[@class="node-title"]/a')
-        sub_forums = response.xpath(
-            '//a[contains(@class, "subNodeLink subNodeLink--forum")]')
-        forums.extend(sub_forums)
+    def parse_main_page(self, response):
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
 
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
 
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[@data-preview-url]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+        for forum_url in all_forums:
 
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+            # if 'comments-feedbacks.6' not in forum_url:
+            #     continue
             yield Request(
-                url=next_page_url,
+                url=forum_url,
                 headers=self.headers,
+                meta=self.synchronize_meta(response),
                 callback=self.parse_forum
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath(
-            '//div[@class="message-avatar-wrapper"]/a/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if self.base_url not in avatar_url:
-                avatar_url = self.base_url + avatar_url
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
-            )
+        # Save generic thread
+        yield from super().parse_thread(response)
 
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('.', 1)[0]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            print(f"Avatar for {file_name_only} done..!")
+        # Save avatars
+        yield from super().parse_avatars(response)
 
 
 class BitsHackingScrapper(SiteMapScrapper):
 
     spider_class = BitsHackingSpider
+    site_name = 'bitshacking.com'
 
     def load_settings(self):
         spider_settings = super().load_settings()
