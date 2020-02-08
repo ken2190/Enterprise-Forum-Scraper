@@ -42,7 +42,7 @@ class RaidForumsSpider(SitemapSpider):
     # Xpath stuffs
     forum_sitemap_xpath = "//sitemap[loc[contains(text(),\"sitemap-threads.xml\")]]/loc/text()"
     thread_sitemap_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
-    thread_url_xpath = "//loc/text()"
+    thread_url_xpath = '//loc[not(contains(text(), "?page="))]/text()'
     thread_lastmod_xpath = "//lastmod/text()"
 
     def parse_sitemap_thread(self, thread, response):
@@ -59,6 +59,8 @@ class RaidForumsSpider(SitemapSpider):
         thread_url = self.parse_thread_url(
             selector.xpath(self.thread_url_xpath).extract_first()
         )
+        if not thread_url:
+            return
         thread_date = self.parse_thread_date(
             selector.xpath(self.thread_lastmod_xpath).extract_first()
         )

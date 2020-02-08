@@ -699,6 +699,8 @@ class SitemapSpider(BypassCloudfareSpider):
         thread_url = self.parse_thread_url(
             selector.xpath(self.thread_url_xpath).extract_first()
         )
+        if not thread_url:
+            return
         thread_date = self.parse_thread_date(
             selector.xpath(self.thread_lastmod_xpath).extract_first()
         )
