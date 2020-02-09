@@ -116,6 +116,7 @@ class Ox00SecScrapper(SiteMapScrapper):
     no_of_threads = 16
 
     spider_class = Ox00SecSpider
+    site_name = '0x00sec.org'
 
     def load_settings(self):
         spider_settings = super().load_settings()

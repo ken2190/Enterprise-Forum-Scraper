@@ -114,6 +114,7 @@ class MarviherSpider(SitemapSpider):
 class MarviherScrapper(SiteMapScrapper):
 
     spider_class = MarviherSpider
+    site_name = 'marviher.com'
 
     def load_settings(self):
         settings = super().load_settings()

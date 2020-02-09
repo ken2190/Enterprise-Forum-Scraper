@@ -170,6 +170,7 @@ class XrpChatScrapper(SiteMapScrapper):
     request_delay = 0.1
     no_of_threads = 16
     spider_class = XrpChatSpider
+    site_name = 'xrpchat.com'
 
     def load_settings(self):
         spider_settings = super().load_settings()

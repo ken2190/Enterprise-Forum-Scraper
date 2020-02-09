@@ -267,6 +267,7 @@ class NulledToScrapper(SiteMapScrapper):
     request_delay = 0.4
     no_of_threads = 10
     spider_class = NulledSpider
+    site_name = 'nulled.to'
 
     def __init__(self, kwargs):
         super().__init__(kwargs)

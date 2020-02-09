@@ -150,6 +150,7 @@ class MasHackerSpider(scrapy.Spider):
 class MasHackerScrapper(SiteMapScrapper):
 
     spider_class = MasHackerSpider
+    site_name = 'mashacker.com'
 
     def load_settings(self):
         spider_settings = super().load_settings()

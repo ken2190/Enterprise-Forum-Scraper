@@ -150,7 +150,8 @@ class SafetySkyHacksSpider(scrapy.Spider):
 class SafetySkyHacksScrapper(SiteMapScrapper):
 
     spider_class = SafetySkyHacksSpider
-
+    site_name = 'safetyskyhacks.com'
+    
     def load_settings(self):
         spider_settings = super().load_settings()
         spider_settings.update(

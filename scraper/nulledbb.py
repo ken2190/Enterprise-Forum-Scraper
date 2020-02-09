@@ -200,9 +200,10 @@ class NulledBBSpider(SitemapSpider):
 
 class NulledBBScrapper(SiteMapScrapper):
 
-    request_delay = 0.1
-    no_of_threads = 16
+    request_delay = 0.3
+    no_of_threads = 12
     spider_class = NulledBBSpider
+    site_name = 'nulledbb.com'
 
     def load_settings(self):
         spider_settings = super().load_settings()

@@ -174,6 +174,7 @@ class RosaNegraSpider(scrapy.Spider):
 class RosaNegraScrapper(SiteMapScrapper):
 
     spider_class = RosaNegraSpider
+    site_name = 'Rosa Negra (3pc3yapw2xmsfnfx.onion)'
 
     def load_settings(self):
         spider_settings = super().load_settings()

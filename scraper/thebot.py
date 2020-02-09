@@ -195,6 +195,7 @@ class TheBotSpider(SitemapSpider):
 class TheBotScrapper(SiteMapScrapper):
 
     spider_class = TheBotSpider
+    site_name = 'thebot.cc'
 
     def load_settings(self):
         settings = super().load_settings()

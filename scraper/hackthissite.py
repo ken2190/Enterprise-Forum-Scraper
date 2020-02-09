@@ -148,6 +148,7 @@ class HackThisSiteSpider(scrapy.Spider):
 class HackThisSiteScrapper(SiteMapScrapper):
 
     spider_class = HackThisSiteSpider
+    site_name = 'hackthissite.org'
 
     def load_settings(self):
         spider_settings = super().load_settings()

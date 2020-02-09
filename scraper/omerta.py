@@ -226,9 +226,10 @@ class OmertaSpider(SitemapSpider):
 
 class OmertaScrapper(SiteMapScrapper):
 
-    request_delay = 0.1
-    no_of_threads = 16
+    request_delay = 0.3
+    no_of_threads = 12
     spider_class = OmertaSpider
+    site_name = 'omerta.cc'
 
     def load_settings(self):
         settings = super().load_settings()

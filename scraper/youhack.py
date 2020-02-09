@@ -200,8 +200,9 @@ class YouHackSpider(SitemapSpider):
 class YouHackScrapper(SiteMapScrapper):
 
     spider_class = YouHackSpider
-    request_delay = 0.1
+    request_delay = 0.2
     no_of_threads = 16
+    site_name = 'youhack.ru'
 
     def load_settings(self):
         settings = super().load_settings()

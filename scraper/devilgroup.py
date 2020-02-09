@@ -147,6 +147,7 @@ class DevilGroupSpider(scrapy.Spider):
 class DevilGroupScrapper(SiteMapScrapper):
 
     spider_class = DevilGroupSpider
+    site_name = 'devilgroup.org'
 
     def load_settings(self):
         spider_settings = super().load_settings()

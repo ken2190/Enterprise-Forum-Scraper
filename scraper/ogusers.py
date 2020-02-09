@@ -19,7 +19,7 @@ from scraper.base_scrapper import (
 USER = 'Exabyte'
 PASS = 'Night#OG009'
 REQUEST_DELAY = .6
-NO_OF_THREADS = 20
+NO_OF_THREADS = 16
 
 
 class OgUsersSpider(SitemapSpider):
@@ -275,6 +275,7 @@ class OgUsersSpider(SitemapSpider):
 class OgUsersScrapper(SiteMapScrapper):
 
     spider_class = OgUsersSpider
+    site_name = 'ogusers.com'
 
     def load_settings(self):
         settings = super().load_settings()

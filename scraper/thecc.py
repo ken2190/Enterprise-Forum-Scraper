@@ -139,6 +139,7 @@ class TheCCSpider(scrapy.Spider):
 class TheCCScrapper(SiteMapScrapper):
 
     spider_class = TheCCSpider
+    site_name = 'thecc.bz'
 
     def load_settings(self):
         spider_settings = super().load_settings()

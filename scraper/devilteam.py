@@ -184,6 +184,7 @@ class DevilTeamSpider(scrapy.Spider):
 class DevilTeamScrapper(SiteMapScrapper):
 
     spider_class = DevilTeamSpider
+    site_name = 'devilteam.pl'
 
     def load_settings(self):
         spider_settings = super().load_settings()

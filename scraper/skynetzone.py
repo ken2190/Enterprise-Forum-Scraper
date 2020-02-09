@@ -156,6 +156,7 @@ class SkyNetZoneSpider(scrapy.Spider):
 class SkyNetZoneScrapper(SiteMapScrapper):
 
     spider_class = SkyNetZoneSpider
+    site_name = 'skynetzone.pw'
 
     def load_settings(self):
         spider_settings = super().load_settings()

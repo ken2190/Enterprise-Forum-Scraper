@@ -155,6 +155,7 @@ class CrackCommunitySpider(BypassCloudfareSpider):
 class CrackCommunityScrapper(SiteMapScrapper):
 
     spider_class = CrackCommunitySpider
+    site_name = 'crackcommunity.com'
 
     def load_settings(self):
         spider_settings = super().load_settings()

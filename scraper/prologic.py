@@ -193,6 +193,7 @@ class ProLogicSpider(SitemapSpider):
 class ProLogicScrapper(SiteMapScrapper):
 
     spider_class = ProLogicSpider
+    site_name = 'prologic.su'
 
     def load_settings(self):
         settings = super().load_settings()

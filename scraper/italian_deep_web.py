@@ -180,6 +180,7 @@ class ItalianDeepWebScrapper(SiteMapScrapper):
     no_of_threads = 16
 
     spider_class = ItalianDeepWebSpider
+    site_name = 'Italian Deep Web (ehwcnzkhqsx4qcbsef4tupfnnewhkn52uxmcyieas3x34g6j45zoqzyd.onion)'
 
     def load_settings(self):
         spider_settings = super().load_settings()

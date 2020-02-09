@@ -163,6 +163,7 @@ class V3RMillionSpider(SitemapSpider):
 class V3RMillionScrapper(SiteMapScrapper):
 
     spider_class = V3RMillionSpider
+    site_name = 'v3rmillion.net'
 
     def load_settings(self):
         settings = super().load_settings()

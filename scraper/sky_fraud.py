@@ -187,6 +187,7 @@ class SkyFraudSpider(SitemapSpider):
 class SkyFraudScrapper(SiteMapScrapper):
 
     spider_class = SkyFraudSpider
+    site_name = 'sky-fraud.ru'
 
     def load_settings(self):
         settings = super().load_settings()

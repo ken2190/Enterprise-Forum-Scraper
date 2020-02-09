@@ -159,6 +159,7 @@ class VerifiedScSpider(SitemapSpider):
 class VerifiedScScrapper(SiteMapScrapper):
 
     spider_class = VerifiedScSpider
+    site_name = 'verified.sc'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -178,6 +178,7 @@ class DNMAvengersScrapper(SiteMapScrapper):
     no_of_threads = 16
 
     spider_class = DNMAvengersSpider
+    site_name = 'DNM Avengers (avengersdutyk3xf.onion)'
 
     def load_settings(self):
         spider_settings = super().load_settings()

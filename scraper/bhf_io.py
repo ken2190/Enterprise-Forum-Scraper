@@ -323,8 +323,9 @@ class BHFIOSpider(SitemapSpider):
 class BHFIOScrapper(SiteMapScrapper):
 
     spider_class = BHFIOSpider
-    request_delay = 0.1
-    no_of_threads = 16
+    request_delay = 0.2
+    no_of_threads = 12
+    site_name = 'bhf.io'
 
     def load_settings(self):
         spider_settings = super().load_settings()

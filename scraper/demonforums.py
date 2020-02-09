@@ -187,6 +187,7 @@ class DemonForumsSpider(BypassCloudfareSpider):
 class DemonForumsScrapper(SiteMapScrapper):
 
     spider_class = DemonForumsSpider
+    site_name = 'demonforums.net'
 
     def load_settings(self):
         spider_settings = super().load_settings()
