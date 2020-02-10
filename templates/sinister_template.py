@@ -18,10 +18,10 @@ class SinisterParser:
         self.parser_name = "sinister.ly"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
-            r'(.*)--\d+\.html$'
+            r'(.*)-\d+\.html$'
         )
         self.pagination_pattern = re.compile(
-            r'.*--(\d+)\.html$'
+            r'.*-(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(files)
