@@ -13,8 +13,8 @@ from scraper.base_scrapper import (
 
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 16
-USERNAME = ""
-PASSWORD = ""
+USERNAME = "night_cyrax"
+PASSWORD = "DPO$s)sC3xzO"
 
 
 class HackForumsSpider(SitemapSpider):
@@ -22,6 +22,10 @@ class HackForumsSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://hackforums.net/"
+    login_url = "https://hackforums.net/member.php?action=login"
+
+    # Css stuffs
+    login_form_css = "form[action=\"member.php\"]"
 
     # Xpath stuffs
     forum_xpath = "//a[contains(@href,\"forumdisplay.php\")]/@href"
@@ -32,9 +36,12 @@ class HackForumsSpider(SitemapSpider):
     thread_last_page_xpath = "//span[@class=\"smalltext\" and contains(text(),\"Pages:\")]/a[last()]/@href"
     thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]|" \
                         "//span[@class=\"lastpost smalltext\"]/span[@title]/@title"
+    post_date_xpath = "//span[@class=\"post_date\"]/text()[contains(.,\"-\")]|" \
+                      "//span[@class=\"post_date\"]/span/@title"
+    avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"
 
-    thread_page_xpath = None  # Xpath of current page button in thread detail #
-    thread_pagination_xpath = None  # Xpath of previous button in thread pagination #
+    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
+    thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -53,8 +60,44 @@ class HackForumsSpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
+    handle_httpstatus_list = [403, 503]
+    use_proxy = False
 
     def parse(self, response):
+        # Synchronize user agent for cloudfare middlewares
+        self.synchronize_headers(response)
+
+        yield Request(
+            url=self.login_url,
+            headers=self.headers,
+            callback=self.parse_login,
+            meta=self.synchronize_meta(response)
+        )
+
+    def parse_login(self, response):
+
+        # Synchronize user agent for cloudfare middlewares
+        self.synchronize_headers(response)
+
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_form_css,
+            formdata={
+                "username": USERNAME,
+                "password": PASSWORD,
+                "quick_gauth_code": "",
+                "remember": "yes",
+                "submit": "Login",
+                "action": "do_login",
+                "url": self.base_url
+            },
+            dont_filter=True,
+            headers=self.headers,
+            meta=self.synchronize_meta(response),
+            callback=self.parse_start
+        )
+
+    def parse_start(self, response):
 
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
@@ -84,6 +127,9 @@ class HackForumsSpider(SitemapSpider):
 
 
 class HackForumsScrapper(SiteMapScrapper):
+
+    spider_class = HackForumsSpider
+
     def load_settings(self):
         settings = super().load_settings()
         settings.update(
