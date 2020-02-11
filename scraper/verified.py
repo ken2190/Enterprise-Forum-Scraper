@@ -8,18 +8,22 @@ from scrapy import (
     FormRequest
 )
 
+from datetime import datetime, timedelta
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
 
 
-REQUEST_DELAY = 1
+REQUEST_DELAY = 0.5
 NO_OF_THREADS = 1
 
-USERNAME = "cyrax11"
-MD5PASS = "5d22b48847fe3b55982c52f75a34c9a3"
-PASSWORD = "Night#Verify098"
+USERNAME = "vrx9"
+MD5PASS = "db587913e1544e2169f44a5b7976c9a1"
+PASSWORD = "Night#Vrx099"
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
 class VerifiedScSpider(SitemapSpider):
@@ -28,12 +32,30 @@ class VerifiedScSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://verified.sc/"
-
-    # Css stuffs
-    login_css_form = "form[action*=login]"
+    login_url = "https://verified.sc/login.php?do=login"
 
     # Xpath stuffs
-    
+    forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
+    thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
+    thread_first_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div'\
+                              '/a[contains(@href, "showthread.php?")]/@href'
+    thread_last_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div/span'\
+                             '/a[contains(@href, "showthread.php?")]'\
+                             '[last()]/@href'
+    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
+
+    pagination_xpath = '//a[@rel="next"]/@href'
+    thread_pagination_xpath = '//a[@rel="prev"]/@href'
+    thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
+    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"]'\
+                      '/a[contains(@name,"post")]/following-sibling::text()'
+    avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
+
+    # Other settings
+    use_proxy = False
+    sitemap_datetime_format = '%d.%m.%Y'
+    post_datetime_format = '%d.%m.%Y, %H:%M'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r".*t=(\d+)",
@@ -48,112 +70,136 @@ class VerifiedScSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    # Other settings
-    use_proxy = False
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update({
+            'Host': 'verified.sc',
+            'Origin': 'https://verified.sc',
+            'Referer': 'https://verified.sc/',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-User': '?1',
+            'User-Agent': USER_AGENT
+        })
 
-    def parse(self, response):
+    def start_requests(self):
+        formdata = {
+            "vb_login_username": USERNAME,
+            "vb_login_password": "",
+            "vb_login_md5password": MD5PASS,
+            "vb_login_md5password_utf": MD5PASS,
+            "cookieuser": '1',
+            "securitytoken": "guest",
+            "s": "",
+            "url": "/",
+            "do": "login"
+        }
 
-        # Synchronize user agent in cloudfare middleware
-        self.synchronize_headers(response)
-
-        yield FormRequest.from_response(
-            response,
-            formcss=self.login_css_form,
-            formdata={
-                "vb_login_username": USERNAME,
-                "vb_login_password": "",
-                "vb_login_md5password": MD5PASS,
-                "vb_login_md5password_utf": MD5PASS,
-                "cookieuser": None,
-                "s": "",
-                "url": "/",
-                "do": "login"
-            },
-            meta=self.synchronize_meta(response),
-            dont_filter=True,
-            callback=self.parse_login
+        yield FormRequest(
+            self.login_url,
+            formdata=formdata,
+            headers=self.headers,
+            callback=self.enter_code
         )
 
-    def parse_login(self, response):
-        forums = response.xpath(
-            '//a[contains(@href, "forumdisplay.php?f=")]')
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url.strip('.')
-            yield Request(
-                url=url,
-                callback=self.parse_forum,
+    def enter_code(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        code_number = response.xpath(
+            '//div[@class="personalCodeBrown"]/font/text()').extract_first()
+        code_value = self.backup_codes[int(code_number)-1]\
+            if code_number else None
+        if code_value:
+            formdata = {
+                'code': code_value
+            }
+            values = response.xpath('//form[@id="codeEnterForm"]/input')
+            for v in values:
+                key = v.xpath('@name').extract_first()
+                value = v.xpath('@value').extract_first()
+                formdata.update({key: value})
+            yield FormRequest(
+                self.login_url,
+                formdata=formdata,
                 headers=self.headers,
-                meta={'proxy': self.proxy}
+                callback=self.parse,
+                dont_filter=True,
+                meta=self.synchronize_meta(response),
             )
 
-        # Test for single Forum
-        # url = 'http://verified2ebdpvms.onion/forumdisplay.php?f=77'
-        # yield Request(
-        #     url=url,
-        #     callback=self.parse_forum,
-        #     headers=self.headers,
-        #     meta={'proxy': self.proxy}
-        # )
-
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[contains(@id, "thread_title_")]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
+        else:
             yield Request(
-                url=thread_url,
-                callback=self.parse_thread,
+                self.base_url,
                 headers=self.headers,
-                meta={'topic_id': topic_id[0], 'proxy': self.proxy}
+                callback=self.parse,
+                meta=self.synchronize_meta(response),
             )
 
-        next_page = response.xpath('//a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url.strip('.')
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        thread_date = thread_date.strip()
+
+        if 'today' in thread_date.lower():
+            return datetime.today()
+        elif "yesterday" in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
+            )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        post_date = post_date.strip()
+
+        if "today" in post_date.lower():
+            return datetime.today()
+        elif "yesterday" in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
+            )
+
+    def parse(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+            # if 'f=90' not in forum_url:
+            #     continue
             yield Request(
-                url=next_page_url,
-                callback=self.parse_forum,
+                url=forum_url,
                 headers=self.headers,
-                meta={'proxy': self.proxy}
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        if pagination:
-            paginated_value = int(pagination[0])
-        else:
-            paginated_value = 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
-        next_page = response.xpath('//a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url.strip('.')
-            yield Request(
-                url=next_page_url,
-                callback=self.parse_thread,
-                headers=self.headers,
-                meta={'topic_id': topic_id, 'proxy': self.proxy}
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
 class VerifiedScScrapper(SiteMapScrapper):
