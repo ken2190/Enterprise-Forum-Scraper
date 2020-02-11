@@ -101,6 +101,7 @@ from templates.abusewith_template import AbuseWithParser
 from templates.carding_team_template import CardingTeamParser
 from templates.thebot_template import TheBOTParser
 from templates.demonforums_template import DemonForumsParser
+from templates.devilgroup_template import DevilGroupParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -207,4 +208,5 @@ PARSER_MAP = {
     'carding_team': CardingTeamParser,
     'thebot': TheBOTParser,
     'demonforums': DemonForumsParser,
+    'devilgroup': DevilGroupParser,
 }
