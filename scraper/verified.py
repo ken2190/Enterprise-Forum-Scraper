@@ -16,8 +16,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 1
+REQUEST_DELAY = 0.4
+NO_OF_THREADS = 4
 
 USERNAME = "vrx9"
 MD5PASS = "db587913e1544e2169f44a5b7976c9a1"
@@ -108,6 +108,8 @@ class VerifiedScSpider(SitemapSpider):
 
         code_number = response.xpath(
             '//div[@class="personalCodeBrown"]/font/text()').extract_first()
+        print(self.backup_codes)
+        print(code_number)
         code_value = self.backup_codes[int(code_number)-1]\
             if code_number else None
         if code_value:
