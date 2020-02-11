@@ -94,8 +94,7 @@ class BypassCloudfareMiddleware(object):
                               and first_recaptcha_text in response.text
                               and third_cloudfare_text in response.text)
                           or (response.status in (503, 429, 403)
-                              and second_recaptcha_text in response.text
-                              and fourth_cloudfare_text in response.text))
+                              and second_recaptcha_text in response.text))
 
         return cloudfare_test
 

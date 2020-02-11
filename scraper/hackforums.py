@@ -1,11 +1,9 @@
-import time
-import requests
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
+
+from scrapy import (
+    Request,
+    FormRequest
+)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -64,6 +62,7 @@ class HackForumsSpider(SitemapSpider):
     use_proxy = False
 
     def parse(self, response):
+
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
 
