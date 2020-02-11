@@ -589,7 +589,7 @@ class SitemapSpider(BypassCloudfareSpider):
             return
 
         # Else return time stamp
-        created_ts = os.stat(file_name).st_ctime
+        created_ts = os.stat(file_name).st_mtime
         return datetime.fromtimestamp(created_ts)
 
     def check_existing_file_date(self, **kwargs):
