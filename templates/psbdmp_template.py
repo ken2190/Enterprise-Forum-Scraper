@@ -16,7 +16,7 @@ class BrokenPage(Exception):
 
 class PsbdmpParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.output_folder = "psbdmp"
+        self.output_folder = output_folder
         self.folder_path = folder_path
         self.error_folder = "{}/Errors".format(output_folder)
         # main function
