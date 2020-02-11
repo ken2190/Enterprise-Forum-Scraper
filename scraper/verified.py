@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import scrapy
 from math import ceil
 import configparser
@@ -55,6 +56,7 @@ class VerifiedScSpider(SitemapSpider):
     use_proxy = False
     sitemap_datetime_format = '%d.%m.%Y'
     post_datetime_format = '%d.%m.%Y, %H:%M'
+    stop_text = 'you have exceeded the limit of page views in 24 hours'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -196,6 +198,12 @@ class VerifiedScSpider(SitemapSpider):
             )
 
     def parse_thread(self, response):
+        if self.stop_text in response.text.lower():
+            self.logger.info(
+                'EXIT because of the text detected: '
+                f'{self.stop_text}'
+            )
+            sys.exit()
 
         # Parse generic thread
         yield from super().parse_thread(response)
