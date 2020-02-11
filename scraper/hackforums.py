@@ -1,4 +1,6 @@
+import uuid
 import re
+
 
 from scrapy import (
     Request,
@@ -27,6 +29,8 @@ class HackForumsSpider(SitemapSpider):
 
     # Xpath stuffs
     forum_xpath = "//a[contains(@href,\"forumdisplay.php\")]/@href"
+    login_check_xpath = "//span[@class=\"welcome\"]/strong/a/text()[contains(.,\"%s\")]" % USERNAME
+    ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
 
     thread_xpath = "//tr[@class=\"inline_row\"]"
@@ -59,12 +63,32 @@ class HackForumsSpider(SitemapSpider):
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
     handle_httpstatus_list = [403, 503]
-    use_proxy = False
+
+    def parse_captcha(self, response):
+        ip_ban_check = response.xpath(
+            self.ip_check_xpath
+        ).extract_first()
+
+        # Report bugs
+        if "error code: 1005" in response.text:
+            self.logger.info(
+                "Ip for error 1005 code. Rotating."
+            )
+        elif ip_ban_check:
+            self.logger.info(
+                "%s has been permanently banned. Rotating." % ip_ban_check
+            )
+
+        yield from super().start_requests()
 
     def parse(self, response):
 
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
+
+        if response.status == 403:
+            yield from self.parse_captcha(response)
+            return
 
         yield Request(
             url=self.login_url,
@@ -77,6 +101,10 @@ class HackForumsSpider(SitemapSpider):
 
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
+
+        if response.status == 403:
+            yield from self.parse_captcha(response)
+            return
 
         yield FormRequest.from_response(
             response,
