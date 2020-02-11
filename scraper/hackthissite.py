@@ -48,8 +48,8 @@ class HackThisSiteSpider(scrapy.Spider):
             url = forum.xpath('@href').extract_first()
             if self.base_url not in url:
                 url = self.base_url + url.strip('.')
-            if 'f=41' not in url:
-                continue
+            # if 'f=41' not in url:
+            #     continue
             yield Request(
                 url=url,
                 callback=self.parse_forum,
