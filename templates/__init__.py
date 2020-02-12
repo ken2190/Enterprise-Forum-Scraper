@@ -105,6 +105,8 @@ from templates.devilgroup_template import DevilGroupParser
 from templates.bitshacking_template import BitsHackingParser
 from templates.mashacker_template import MashackerParser
 from templates.hackthissite_template import HackThisSiteParser
+from templates.safeskyhacks_template import SafeskyhacksParser
+from templates.skynetzone_template import SkynetzoneParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -215,5 +217,7 @@ PARSER_MAP = {
     'bitshacking': BitsHackingParser,
     'mashacker': MashackerParser,
     'hackthissite': HackThisSiteParser,
+    'safeskyhacks': SafeskyhacksParser,
+    'skynetzone': SkynetzoneParser,
 
 }
