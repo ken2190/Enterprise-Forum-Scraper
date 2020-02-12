@@ -189,7 +189,6 @@ class DemonForumsParser:
             './/span[@class="post_date"]/text()'
         )
         date = date_block[0].strip() if date_block else ""
-        date = '2019 ' + date
         try:
             date = dparser.parse(date).timestamp()
             return str(date)
