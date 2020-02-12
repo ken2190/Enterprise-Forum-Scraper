@@ -600,7 +600,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Check existing file date
         existing_file_date = self.get_existing_file_date(topic_id)
-        if existing_file_date and existing_file_date > thread_date:
+        if existing_file_date and thread_date and existing_file_date > thread_date:
             self.logger.info(
                 f"Thread {thread_url} ignored because existing "
                 f"file is already latest. Last Scraped: {existing_file_date}"
@@ -761,6 +761,8 @@ class SitemapSpider(BypassCloudfareSpider):
 
         for thread in threads:
             thread_url, thread_lastmod = self.extract_thread_stats(thread)
+            if not thread_url:
+                continue
 
             if self.start_date and thread_lastmod is None:
                 self.logger.info(
