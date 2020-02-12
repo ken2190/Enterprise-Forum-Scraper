@@ -103,6 +103,8 @@ from templates.thebot_template import TheBOTParser
 from templates.demonforums_template import DemonForumsParser
 from templates.devilgroup_template import DevilGroupParser
 from templates.bitshacking_template import BitsHackingParser
+from templates.mashacker_template import MashackerParser
+from templates.hackthissite_template import HackThisSiteParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -211,4 +213,7 @@ PARSER_MAP = {
     'demonforums': DemonForumsParser,
     'devilgroup': DevilGroupParser,
     'bitshacking': BitsHackingParser,
+    'mashacker': MashackerParser,
+    'hackthissite': HackThisSiteParser,
+
 }
