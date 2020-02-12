@@ -87,6 +87,7 @@ from scraper.demonforums import DemonForumsScrapper
 from scraper.crack_community import CrackCommunityScrapper
 from scraper.superbay import SuperBayScrapper
 from scraper.chknet import ChkNetScrapper
+from scraper.torigon import TorigonScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -178,4 +179,5 @@ SCRAPER_MAP = {
     'crackcommunity': CrackCommunityScrapper,
     'superbay': SuperBayScrapper,
     'chknet': ChkNetScrapper,
+    'torigon': TorigonScrapper,
 }
