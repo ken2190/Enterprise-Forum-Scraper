@@ -187,14 +187,15 @@ class MashackerParser:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
 
+
+    #needs change
     def get_date(self, tag):
-        date_only_block = tag.xpath(
-            './/span[contains(@class,"date")]//descendant::text()'
-        )[0]
-        time_only_block = tag.xpath(
-            './/span[contains(@class,"time")]//descendant::text()'
-        )[0]
-        date_block = date_only_block + time_only_block
+
+        date_block = tag.xpath(
+            './/span[@class="date"]//text()'
+        )
+        
+        date_block = ' '.join(date_block)
         date = date_block.strip() if date_block else ""
         
         try:
