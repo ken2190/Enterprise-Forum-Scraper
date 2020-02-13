@@ -89,6 +89,7 @@ from scraper.superbay import SuperBayScrapper
 from scraper.chknet import ChkNetScrapper
 from scraper.torigon import TorigonScrapper
 from scraper.psxhax import PsxhaxScrapper
+from scraper.phcracker import PHCrackerScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -182,4 +183,5 @@ SCRAPER_MAP = {
     'chknet': ChkNetScrapper,
     'torigon': TorigonScrapper,
     'psxhax': PsxhaxScrapper,
+    'phcracker': PHCrackerScrapper,
 }
