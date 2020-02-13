@@ -1,126 +1,158 @@
-import re
-import os
 import time
-import random
-import traceback
-from scraper.base_scrapper import BaseScrapper
+import os
+import re
+import scrapy
+from scrapy.http import Request, FormRequest
+from datetime import datetime, timedelta
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+
+USER = 'Cyrax_011'
+PASS = 'Night#India065'
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
-# Topic Counter
-TOPIC_START_COUNT = 500
-TOPIC_END_COUNT = 900
+class BreachForumsSpider(SitemapSpider):
+    name = 'breachforums_spider'
+    base_url = "https://breachforums.com/"
 
+    # Xpaths
+    forum_xpath = '//a[contains(@href, "forumdisplay.php?fid=")]/@href'
+    pagination_xpath = '//div[@class="pagination"]'\
+                       '/a[@class="pagination_next"]/@href'
+    thread_xpath = '//tr[@class="inline_row"]'
+    thread_first_page_xpath = '//span[contains(@id,"tid_")]/a/@href'
+    thread_last_page_xpath = '//td[contains(@class,"forumdisplay_")]/div'\
+                             '/span/span[contains(@class,"smalltext")]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = '//td[contains(@class,"forumdisplay")]'\
+                        '/span[@class="lastpost smalltext"]/text()[1]|'\
+                        '//td[contains(@class,"forumdisplay")]'\
+                        '/span[@class="lastpost smalltext"]/span/@title'
+    thread_pagination_xpath = '//div[@class="pagination"]'\
+                              '//a[@class="pagination_previous"]/@href'
+    thread_page_xpath = '//span[@class="pagination_current"]/text()'
+    post_date_xpath = '//span[@class="post_date"]/text()[1]'
 
-class BreachForumsScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(BreachForumsScrapper, self).__init__(kwargs)
-        self.site_link = "https://breachforums.com/"
-        self.topic_url = self.site_link + "showthread.php?tid={}"
-        self.ignore_xpath = '//td[contains(text(),'\
-                            '"The specified thread does not exist")]'
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
+    avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//span[@class="pagination_current"]'
-            '/following-sibling::a[1]/@href'
+    # Regex stuffs
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    topic_pattern = re.compile(
+        r".*tid=(\d+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page=(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    sitemap_datetime_format = '%m-%d-%Y, %I:%M %p'
+    post_datetime_format = '%m-%d-%Y, %I:%M %p'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update({
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-user': '?1',
+            'user-agent': USER_AGENT
+        })
+
+    def start_requests(self):
+        form_data = {
+            'username': USER,
+            'password': PASS,
+            'remember': 'yes',
+            'submit': 'Login',
+            'action': 'do_login',
+            'url': 'https://breachforums.com/index.php',
+        }
+        login_url = 'https://breachforums.com/member.php'
+        yield FormRequest(
+            url=login_url,
+            formdata=form_data,
+            callback=self.parse,
+            dont_filter=True,
         )
-        if not next_page_block:
-            return
-        next_page_url = self.site_link + next_page_block[0]\
-            if self.site_link not in next_page_block[0]\
-            else next_page_block[0]
-        pattern = re.compile(r"tid=(\d+)&page=(\d+)")
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
 
-        content = self.get_page_content(
-            next_page_url, self.ignore_xpath
-        )
-        if not content:
-            return
+    def parse_thread_date(self, thread_date):
+        thread_date = thread_date.strip()
 
-        paginated_file = '{}/{}-{}.html'.format(
-            self.output_path, topic, pagination_value
-        )
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
-
-        print('{}-{} done..!'.format(topic, pagination_value))
-        return content
-
-    def clear_cookies(self,):
-        self.session.cookies['topicsread'] = ''
-
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//div[@class="author_avatar"]/a/img/@src'
-        )
-        for url in urls:
-            name_match = self.avatar_name_pattern.findall(url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
-
-    def process_topic(self, topic):
-        try:
-            response = self.process_first_page(
-                topic, self.ignore_xpath
+        if 'hour' in thread_date.lower():
+            return datetime.today()
+        elif 'yesterday' in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
             )
-            if response is None:
-                return
 
-            avatar_info = self.get_avatar_info(response)
-            for name, url in avatar_info.items():
-                self.save_avatar(name, url)
+    def parse_post_date(self, post_date):
+        # Standardize thread_date
+        post_date = post_date.strip()
 
-            # ------------clear cookies without logout--------------
-            self.clear_cookies()
-        except:
-            traceback.print_exc()
-            return
-        self.process_pagination(response)
+        if 'hour' in post_date.lower():
+            return datetime.today()
+        elif 'yesterday' in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
+            )
 
-    def do_new_posts_scrape(self,):
-        print('**************  New posts scan  **************')
-        print('Implementation not complete yet!!')
+    def parse(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
 
-    def do_rescan(self,):
-        print('**************  Rescanning  **************')
-        print('Broken Topics found')
-        broken_topics = self.get_broken_file_topics()
-        print(broken_topics)
-        if not broken_topics:
-            return
-        for topic in broken_topics:
-            file_path = "{}/{}.html".format(self.output_path, topic)
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            self.process_topic(topic)
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
 
-    def do_scrape(self):
-        print('************  BreachForums Scrapper Started  ************\n')
-        # ----------------go to topic ------------------
-        ts = self.topic_start_count or TOPIC_START_COUNT
-        te = self.topic_end_count or TOPIC_END_COUNT + 1
-        topic_list = list(range(ts, te))
-        # random.shuffle(topic_list)
-        for topic in topic_list:
-            self.process_topic(topic)
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+            # if 'fid=34' not in forum_url:
+            #     continue
 
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response),
+            )
 
-def main():
-    template = BreachForumsScrapper()
-    template.do_scrape()
+    def parse_thread(self, response):
+
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
-if __name__ == '__main__':
-    main()
+class BreachForumsScrapper(SiteMapScrapper):
+
+    spider_class = BreachForumsSpider
+    site_name = 'breachforums.com'
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+                "RETRY_HTTP_CODES": [406, 429, 500, 503],
+            }
+        )
+        return settings
