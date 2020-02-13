@@ -107,6 +107,10 @@ from templates.mashacker_template import MashackerParser
 from templates.hackthissite_template import HackThisSiteParser
 from templates.safeskyhacks_template import SafeskyhacksParser
 from templates.skynetzone_template import SkynetzoneParser
+from templates.rosanegra_template import RosanegraParser
+from templates.envoy_template import EnvoyParser
+from templates.devilteam_template import DevilteamParser
+from templates.chknet_template import ChknetParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -219,5 +223,8 @@ PARSER_MAP = {
     'hackthissite': HackThisSiteParser,
     'safeskyhacks': SafeskyhacksParser,
     'skynetzone': SkynetzoneParser,
-
+    'rosanegra': RosanegraParser,
+    'envoy': EnvoyParser,
+    'devilteam': DevilteamParser,
+    'chknet': ChknetParser,
 }
