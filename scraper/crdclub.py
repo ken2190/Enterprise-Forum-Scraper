@@ -56,7 +56,6 @@ class CrdClubSpider(SitemapSpider):
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
 
     # Other settings
-    use_proxy = False
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
 
