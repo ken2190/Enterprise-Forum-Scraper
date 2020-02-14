@@ -18,7 +18,6 @@ from scraper.base_scrapper import (
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
 class CardingTeamSpider(SitemapSpider):
@@ -64,12 +63,8 @@ class CardingTeamSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    # custom settings
-    custom_settings = {
-        'DOWNLOADER_MIDDLEWARES': {
-            'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None
-        }
-    }
+    # Other settings
+    use_proxy = False
 
     def get_cookies(self,):
         # Init chrome options
@@ -78,7 +73,7 @@ class CardingTeamSpider(SitemapSpider):
         # Init chrome arguments
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--headless')
-        chrome_options.add_argument(f'user-agent={USER_AGENT}')
+        chrome_options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
 
         # Load chrome driver
         browser = webdriver.Chrome(
@@ -94,49 +89,34 @@ class CardingTeamSpider(SitemapSpider):
 
         time.sleep(1)
         cookies = browser.get_cookies()
-        return '; '.join([
-            f"{c['name']}={c['value']}" for c in cookies
+        return {
+            c.get("name"): c.get("value") for c in cookies
             if c.get("name") == "vDDoS"
-        ])
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Init cookies
-        cookies = self.get_cookies()
-
-        # Update cookie headers
-        self.headers.update({
-            'User-Agent': USER_AGENT,
-            'Cookie': cookies
-        })
+        }
 
     def start_requests(self):
         """
         :return: => request start urls if no sitemap url or no start date
                  => request sitemap url if sitemap url and start date
         """
+
+        # Load cookies
+        cookies = self.get_cookies()
+
         if self.start_date and self.sitemap_url:
             yield Request(
                 url=self.sitemap_url,
                 headers=self.headers,
                 callback=self.parse_sitemap,
                 dont_filter=True,
-                cookies=self.load_cookies(
-                    self.headers.get("Cookie")
-                ),
-                meta={
-                    "cookiejar": uuid.uuid1().hex
-                }
+                cookies=cookies
             )
         else:
             yield Request(
                 url=self.base_url,
                 headers=self.headers,
                 dont_filter=True,
-                cookies=self.load_cookies(
-                    self.headers.get("Cookie")
-                )
+                cookies=cookies
             )
 
     def parse_thread_date(self, thread_date):
