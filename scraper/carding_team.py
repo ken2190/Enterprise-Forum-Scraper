@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import uuid
 
 from datetime import datetime
 from selenium import webdriver
@@ -91,7 +92,7 @@ class CardingTeamSpider(SitemapSpider):
         else:
             browser.get(self.base_url)
 
-        time.sleep(5)
+        time.sleep(1)
         cookies = browser.get_cookies()
         return '; '.join([
             f"{c['name']}={c['value']}" for c in cookies
@@ -109,6 +110,34 @@ class CardingTeamSpider(SitemapSpider):
             'User-Agent': USER_AGENT,
             'Cookie': cookies
         })
+
+    def start_requests(self):
+        """
+        :return: => request start urls if no sitemap url or no start date
+                 => request sitemap url if sitemap url and start date
+        """
+        if self.start_date and self.sitemap_url:
+            yield Request(
+                url=self.sitemap_url,
+                headers=self.headers,
+                callback=self.parse_sitemap,
+                dont_filter=True,
+                cookies=self.load_cookies(
+                    self.headers.get("Cookie")
+                ),
+                meta={
+                    "cookiejar": uuid.uuid1().hex
+                }
+            )
+        else:
+            yield Request(
+                url=self.base_url,
+                headers=self.headers,
+                dont_filter=True,
+                cookies=self.load_cookies(
+                    self.headers.get("Cookie")
+                )
+            )
 
     def parse_thread_date(self, thread_date):
         return datetime.today()
