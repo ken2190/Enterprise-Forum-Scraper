@@ -91,7 +91,7 @@ class CardingTeamSpider(SitemapSpider):
         else:
             browser.get(self.base_url)
 
-        time.sleep(1)
+        time.sleep(5)
         cookies = browser.get_cookies()
         return '; '.join([
             f"{c['name']}={c['value']}" for c in cookies
