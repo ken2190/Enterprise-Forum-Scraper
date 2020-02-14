@@ -9,7 +9,7 @@ import hashlib
 from scrapy.http import Request, FormRequest
 from scraper.base_scrapper import SiteMapScrapper
 
-USER = 'Cyrax_011'
+USER = 'Cyrax011'
 PASS = 'Night#India065'
 
 REQUEST_DELAY = 0.5
