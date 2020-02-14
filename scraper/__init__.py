@@ -91,6 +91,7 @@ from scraper.torigon import TorigonScrapper
 from scraper.psxhax import PsxhaxScrapper
 from scraper.phcracker import PHCrackerScrapper
 from scraper.rutor import RutorScrapper
+from scraper.freehack import FreeHackScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -186,4 +187,5 @@ SCRAPER_MAP = {
     'psxhax': PsxhaxScrapper,
     'phcracker': PHCrackerScrapper,
     'rutor': RutorScrapper,
+    'freehack': FreeHackScrapper,
 }
