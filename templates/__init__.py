@@ -111,6 +111,12 @@ from templates.rosanegra_template import RosanegraParser
 from templates.envoy_template import EnvoyParser
 from templates.devilteam_template import DevilteamParser
 from templates.chknet_template import ChknetParser
+from templates.torigon_template import TorigonParser
+from templates.superbay_template import SuperBayParser
+from templates.rutor_template import RutorParser
+from templates.psxhax_template import PsxHaxParser
+from templates.crackcommunity_template import CrackCommunityParser
+from templates.freehack_template import FreeHackParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -227,4 +233,10 @@ PARSER_MAP = {
     'envoy': EnvoyParser,
     'devilteam': DevilteamParser,
     'chknet': ChknetParser,
+    'torigon': TorigonParser,
+    'superbay': SuperBayParser,
+    'rutor': RutorParser,
+    'psxhax': PsxHaxParser,
+    'crackcommunity': CrackCommunityParser,
+    'freehack': FreeHackParser,
 }
