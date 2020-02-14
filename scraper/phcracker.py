@@ -1,4 +1,5 @@
 import re
+import uuid
 
 from datetime import datetime
 from scrapy import (
@@ -61,7 +62,7 @@ class PHCrackerSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    handle_httpstatus_list = [503]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -88,7 +89,18 @@ class PHCrackerSpider(SitemapSpider):
             self.post_datetime_format
         )
 
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            },
+            dont_filter=True
+        )
+
     def parse(self, response):
+
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 

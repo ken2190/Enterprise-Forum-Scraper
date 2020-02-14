@@ -2,6 +2,11 @@ import cloudscraper
 import uuid
 
 from base64 import b64decode
+from scraper.base_scrapper import (
+    PROXY_USERNAME,
+    PROXY_PASSWORD,
+    PROXY
+)
 
 
 class LuminatyProxyMiddleware(object):
@@ -12,9 +17,9 @@ class LuminatyProxyMiddleware(object):
 
     def __init__(self, crawler):
         self.logger = crawler.spider.logger
-        self.username = 'lum-customer-hl_afe4c719-zone-zone1'
-        self.password = '8jywfhrmovdh'
-        self.super_proxy_url = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+        self.username = PROXY_USERNAME
+        self.password = PROXY_PASSWORD
+        self.super_proxy_url = PROXY
 
     def process_request(self, request, spider):
 
@@ -120,9 +125,10 @@ class BypassCloudfareMiddleware(object):
 
         return cookies
 
-    def get_cftoken(self, url, delay=5, proxy=None):
+    def get_cftoken(self, url, delay=10, proxy=None):
         session = cloudscraper.create_scraper(
             delay=delay,
+            solveDepth=10,
             recaptcha={
                 "provider": self.captcha_provider,
                 "api_key": self.captcha_token
@@ -143,6 +149,9 @@ class BypassCloudfareMiddleware(object):
                 url="https://api.ipify.org/?format=json",
                 proxies=request_args.get("proxies")
             ).json().get("ip")
+            self.logger.info(
+                "Trying this ip: %s" % ip
+            )
 
         response = session.get(**request_args)
         response = session.get(**request_args)
@@ -181,10 +190,32 @@ class BypassCloudfareMiddleware(object):
                 root_proxy
             )
 
-        cookies, headers, ip = self.get_cftoken(
-            request.url,
-            **request_args
-        )
+        retry = 0
+        while True:
+            try:
+                cookies, headers, ip = self.get_cftoken(
+                    request.url,
+                    **request_args
+                )
+                break
+            except Exception as err:
+                if not basic_auth:
+                    raise RuntimeError(
+                        "Protection loop, already try 3 time."
+                    )
+                elif retry < self.allow_retry:
+                    proxy = PROXY % (
+                        "%s-session-%s" % (
+                            PROXY_USERNAME,
+                            uuid.uuid1().hex
+                        ),
+                        PROXY_PASSWORD
+                    )
+                    request_args["proxy"] = proxy
+                    retry += 1
+                    continue
+
+                return response
 
         # Replace cookies
         request.cookies.update(cookies.copy())

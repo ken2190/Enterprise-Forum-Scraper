@@ -7,3 +7,4 @@ python-dateutil
 cloudscraper
 pandas
 polling
+selenium-wire

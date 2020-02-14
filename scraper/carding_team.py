@@ -4,7 +4,11 @@ import time
 import uuid
 
 from datetime import datetime
-from selenium import webdriver
+from seleniumwire.webdriver import (
+    Firefox,
+    FirefoxOptions,
+    FirefoxProfile
+)
 from scrapy import (
     Request,
     FormRequest,
@@ -12,7 +16,10 @@ from scrapy import (
 )
 from scraper.base_scrapper import (
     SitemapSpider,
-    SiteMapScrapper
+    SiteMapScrapper,
+    PROXY_USERNAME,
+    PROXY_PASSWORD,
+    PROXY
 )
 
 
@@ -22,17 +29,22 @@ NO_OF_THREADS = 5
 
 class CardingTeamSpider(SitemapSpider):
     name = 'cardingteam_spider'
+
+    # Url stuffs
     base_url = "https://cardingteam.cc/"
+    sitemap_url = 'https://cardingteam.cc/sitemap-index.xml'
+    ip_url = "https://api.ipify.org?format=json"
 
     # Sitemap Stuffs
-    sitemap_url = 'https://cardingteam.cc/sitemap-index.xml'
-
     forum_sitemap_xpath = '//sitemap[loc[contains(text(),"sitemap-threads.xml")] and lastmod]/loc/text()'
     thread_sitemap_xpath = '//url[loc[contains(text(),"Thread-")] and lastmod]'
     thread_url_xpath = '//loc/text()'
     thread_lastmod_xpath = "//lastmod/text()"
 
-    # Xpaths
+    # Css stuffs
+    ip_css = "span.objectBox::text"
+
+    # Xpath stuffs
     forum_xpath = '//a[contains(@href, "Forum-")]/@href'
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
@@ -63,22 +75,41 @@ class CardingTeamSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    # Other settings
-    use_proxy = False
+    def get_cookies(self, proxy=None):
+        # Init web driver arguments
+        webdriver_kwargs = {
+            "executable_path": "/usr/local/bin/geckodriver"
+        }
 
-    def get_cookies(self,):
-        # Init chrome options
-        chrome_options = webdriver.ChromeOptions()
+        # Init options
+        options = FirefoxOptions()
+        options.headless = True
+        webdriver_kwargs["options"] = options
 
-        # Init chrome arguments
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
+        # Init profile
+        profile = FirefoxProfile()
+        profile.set_preference(
+            "general.useragent.override",
+            self.headers.get("User-Agent")
+        )
+
+        # Init proxy
+        if proxy:
+            proxy_options = {
+                "proxy": {
+                    "http": proxy,
+                    "https": proxy
+                }
+            }
+            webdriver_kwargs["seleniumwire_options"] = proxy_options
+            self.logger.info(
+                "Selenium request with proxy: %s" % proxy_options
+            )
 
         # Load chrome driver
-        browser = webdriver.Chrome(
-            "/usr/local/bin/chromedriver",
-            chrome_options=chrome_options
+        browser = Firefox(
+            profile,
+            **webdriver_kwargs
         )
 
         # Load target site
@@ -87,12 +118,38 @@ class CardingTeamSpider(SitemapSpider):
         else:
             browser.get(self.base_url)
 
-        time.sleep(1)
+        # Load cookies
+        time.sleep(2)
         cookies = browser.get_cookies()
+
+        # Load ip
+        browser.get(self.ip_url)
+        time.sleep(2)
+
+        # Load selector
+        ip = None
+        selector = Selector(text=browser.page_source)
+        if proxy:
+            ip = selector.css(
+                self.ip_css
+            ).extract_first().replace("\"", "")
+
+        # Quit browser
+        browser.quit()
+
         return {
             c.get("name"): c.get("value") for c in cookies
-            if c.get("name") == "vDDoS"
-        }
+        }, ip
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Update headers
+        self.headers.update(
+            {
+                "Host": "cardingteam.cc"
+            }
+        )
 
     def start_requests(self):
         """
@@ -101,22 +158,38 @@ class CardingTeamSpider(SitemapSpider):
         """
 
         # Load cookies
-        cookies = self.get_cookies()
+        cookiejar = uuid.uuid1().hex
+        proxy = PROXY % (
+            "%s-session-%s" % (
+                PROXY_USERNAME,
+                cookiejar
+            ),
+            PROXY_PASSWORD
+        )
+        cookies, ip = self.get_cookies(proxy)
 
         if self.start_date and self.sitemap_url:
             yield Request(
                 url=self.sitemap_url,
                 headers=self.headers,
-                callback=self.parse_sitemap,
+                cookies=cookies,
                 dont_filter=True,
-                cookies=cookies
+                callback=self.parse_sitemap,
+                meta={
+                    "cookiejar": cookiejar,
+                    "ip": ip
+                }
             )
         else:
             yield Request(
                 url=self.base_url,
                 headers=self.headers,
                 dont_filter=True,
-                cookies=cookies
+                cookies=cookies,
+                meta={
+                    "cookiejar": cookiejar,
+                    "ip": ip
+                }
             )
 
     def parse_thread_date(self, thread_date):
@@ -124,6 +197,22 @@ class CardingTeamSpider(SitemapSpider):
 
     def parse_post_date(self, thread_date):
         return datetime.today()
+
+    def parse_sitemap(self, response):
+
+        # Check correct response
+        forum_urls = response.xpath(
+            self.forum_sitemap_xpath
+        ).extract()
+
+        self.logger.info(response.request.headers)
+        self.logger.info(response.text)
+
+        if not forum_urls:
+            yield from self.start_requests()
+            return
+
+        yield from self.parse_sitemap(response)
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -156,15 +245,3 @@ class CardingTeamScrapper(SiteMapScrapper):
 
     spider_class = CardingTeamSpider
     site_name = 'cardingteam.cc'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-                "RETRY_HTTP_CODES": [406, 429, 500, 503],
-            }
-        )
-        return settings

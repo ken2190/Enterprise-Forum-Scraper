@@ -17,6 +17,10 @@ from scrapy import (
     Selector
 )
 
+PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
+PROXY_PASSWORD = "8jywfhrmovdh"
+PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
 
 ###############################################################################
 # Base Scraper

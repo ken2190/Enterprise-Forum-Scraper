@@ -51,7 +51,7 @@ class VoidToSpider(SitemapSpider):
 
     # Other settings
     sitemap_datetime_format = "%m-%d-%Y"
-    use_proxy = False
+    use_proxy = True
 
     def parse_thread_date(self, thread_date):
         """
