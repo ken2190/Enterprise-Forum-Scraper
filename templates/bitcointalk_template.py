@@ -174,6 +174,8 @@ class BitCoinTalkParser:
                 '/div[@class="smalltext"]/span[@class="edited"]/text()'
             )
         date = date_block[0].strip() if date_block else ""
+        if date.startswith('at '):
+            date = datetime.datetime.today().strftime('%B %d, %Y, ') + date.split('at ')[-1]
         try:
             pattern = '%B %d, %Y, %I:%M:%S %p'
             date = datetime.datetime.strptime(date, pattern).timestamp()
