@@ -3,6 +3,8 @@ import re
 import time
 import scrapy
 import uuid
+import requests
+import polling
 
 from glob import glob
 from requests import Session
@@ -372,6 +374,11 @@ class SitemapSpider(BypassCloudfareSpider):
     base_url = None
     sitemap_url = None
 
+    # 2captcha api #
+    recaptcha_solve_api = "https://2captcha.com/in.php"
+    recaptcha_request_api = "https://2captcha.com/res.php"
+    captcha_token = "76228b91f256210cf20e6d8428818e23"
+
     # Payload stuffs
     post_headers = {
         "Content-Type": "application/x-www-form-urlencoded"
@@ -405,6 +412,9 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Avatar xpath #
     avatar_xpath = None  # Xpath to define location of avatar url #
+
+    # Recaptcha regular xpath #
+    recaptcha_site_key_xpath = None  # Xpath to get recaptcha site key #
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -625,6 +635,133 @@ class SitemapSpider(BypassCloudfareSpider):
             element[0]: "=".join(element[1:]) for element in cookies_elements
         }
         return cookies
+
+    def request_solve_recaptcha(self, session, site_url, site_key):
+        """
+        :param session: requests.session => session to send request for solve
+                recaptcha include proxy settings.
+        :param site_url: str => url that recaptcha showing up
+        :param site_key: str => site key that use to solve recaptcha
+        :return: str => 2captcha service job id to query for if job has been
+                finished solving
+        """
+        try:
+            response = session.post(
+                self.recaptcha_solve_api,
+                data={
+                    "key": self.captcha_token,
+                    "method": "userrecaptcha",
+                    "googlekey": site_key,
+                    "pageurl": site_url,
+                    "json": "1",
+                },
+                allow_redirects=False
+            )
+        except Exception as err:
+            response = None
+
+        if response:
+            self.logger.info(
+                response.content
+            )
+            return response.json().get("request")
+        else:
+            raise RuntimeError(
+                "2Captcha: Error no job id was returned."
+            )
+
+    def request_job_recaptcha(self, job_id):
+        """
+        :param job_id: str => 2captcha service job id to call for recaptcha solved result
+        :return: str => recaptcha solved result
+        """
+
+        def _checkRequest(response):
+
+            if response.ok and response.json().get("status") == 1:
+                return response
+
+            return
+
+        response = polling.poll(
+            lambda: requests.get(
+                self.recaptcha_request_api,
+                params={
+                    "key": self.captcha_token,
+                    "action": "get",
+                    "id": job_id,
+                    "json": "1"
+                }
+            ),
+            check_success=_checkRequest,
+            step=5,
+            timeout=180
+        )
+
+        if response:
+            return response.json().get("request")
+        else:
+            raise RuntimeError(
+                "2Captcha: Error failed to solve reCaptcha."
+            )
+
+    def solve_recaptcha(self, response):
+        """
+        :param response: scrapy response => response that contains regular recaptcha
+        :return: str => recaptcha solved token to submit login
+        """
+        # Init session
+        session = requests.Session()
+
+        # Check proxy settings
+        meta_proxy = response.request.meta.get("proxy")
+        if meta_proxy:
+            session.proxies = {
+                "http": meta_proxy,
+                "https": meta_proxy
+            }
+
+        # Check proxy authentication settings
+        request = response.request
+        basic_auth = request.headers.get("Proxy-Authorization")
+        if basic_auth:
+            # Decode proxy username and password
+            basic_auth_encoded = basic_auth.decode("utf-8").split()[1]
+            username, password = b64decode(basic_auth_encoded).decode("utf-8").split(":")
+
+            # Standardize proxy
+            root_proxy = meta_proxy.replace(
+                "https://", ""
+            ).replace(
+                "http://", ""
+            )
+
+            # Generate authentication proxy
+            proxy = "%s:%s@%s" % (
+                username,
+                password,
+                root_proxy
+            )
+            session.proxies = {
+                "http": proxy,
+                "https": proxy
+            }
+
+        # Init site url and key
+        site_url = response.url
+        site_key = response.xpath(self.recaptcha_site_key_xpath).extract_first()
+
+        try:
+            jobID = self.request_solve_recaptcha(
+                session,
+                site_url,
+                site_key
+            )
+            return self.request_job_recaptcha(jobID)
+        except RuntimeError:
+            raise (
+                "2Captcha: reCaptcha solve took to long to execute, aborting."
+            )
 
     def start_requests(self):
         """

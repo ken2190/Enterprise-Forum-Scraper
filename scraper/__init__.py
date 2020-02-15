@@ -92,6 +92,8 @@ from scraper.psxhax import PsxhaxScrapper
 from scraper.phcracker import PHCrackerScrapper
 from scraper.rutor import RutorScrapper
 from scraper.freehack import FreeHackScrapper
+from scraper.void_to import VoidToScrapper
+
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -188,4 +190,5 @@ SCRAPER_MAP = {
     'phcracker': PHCrackerScrapper,
     'rutor': RutorScrapper,
     'freehack': FreeHackScrapper,
+    'void_to': VoidToScrapper
 }
