@@ -46,7 +46,7 @@ class PHCrackerSpider(SitemapSpider):
     post_date_xpath = '//div/a/time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
-    
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/(\d+)/",
@@ -65,6 +65,8 @@ class PHCrackerSpider(SitemapSpider):
     handle_httpstatus_list = [503]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
 
     def parse_thread_date(self, thread_date):
         """
@@ -119,7 +121,7 @@ class PHCrackerSpider(SitemapSpider):
             response,
             formcss=self.login_form_css,
             formdata={
-                "_xfRedirect": "/",
+                "_xfRedirect": "https://www.phcracker.net/forums/-/list",
                 "remember": "1",
                 "login": USER,
                 "password": PASS
@@ -166,11 +168,4 @@ class PHCrackerScrapper(SiteMapScrapper):
 
     def load_settings(self):
         spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
         return spider_settings
