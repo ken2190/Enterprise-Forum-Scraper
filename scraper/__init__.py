@@ -93,6 +93,8 @@ from scraper.phcracker import PHCrackerScrapper
 from scraper.rutor import RutorScrapper
 from scraper.freehack import FreeHackScrapper
 from scraper.void_to import VoidToScrapper
+from scraper.cebulka import CebulkaScrapper
+from scraper.dfas import DfasScrapper
 
 
 SCRAPER_MAP = {
@@ -190,5 +192,7 @@ SCRAPER_MAP = {
     'phcracker': PHCrackerScrapper,
     'rutor': RutorScrapper,
     'freehack': FreeHackScrapper,
-    'void_to': VoidToScrapper
+    'void_to': VoidToScrapper,
+    'cebulka': CebulkaScrapper,
+    'dfas': DfasScrapper,
 }

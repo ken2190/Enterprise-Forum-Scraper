@@ -12,6 +12,7 @@ from lxml.html import fromstring
 from requests.exceptions import ConnectionError
 from scrapy.crawler import CrawlerProcess
 from copy import deepcopy
+from base64 import b64decode
 from datetime import datetime
 
 from scrapy import (

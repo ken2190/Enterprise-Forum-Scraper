@@ -3,6 +3,7 @@ import os
 import re
 from collections import OrderedDict
 import traceback
+# import locale
 import json
 import utils
 import datetime
@@ -14,10 +15,10 @@ class BrokenPage(Exception):
     pass
 
 
-class SuperBayParser:
+class CebulkaParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-        self.parser_name = "suprbayoubiexnmp.onion"
+        self.parser_name = "http://cebulka7uxchnbpvmqapg5pfos4ngaxglsktzvha7a5rigndghvadeyd.onion"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(.*)-\d+\.html$'
@@ -48,7 +49,10 @@ class SuperBayParser:
 
         return sorted_files
 
-    def main(self):        
+    def get_pid(self, topic):
+        return str(abs(hash(topic)) % (10 ** 6))
+
+    def main(self):
         comments = []
         output_file = None
         for index, template in enumerate(self.files):
@@ -75,7 +79,7 @@ class SuperBayParser:
                     # header data extract
                     data = self.header_data_extract(
                         html_response, template)
-                    if not data:
+                    if not data or not pagination == 1:
                         comments.extend(
                             self.extract_comments(html_response))
                         continue
@@ -107,20 +111,18 @@ class SuperBayParser:
                 continue
 
     def extract_comments(self, html_response):
-        print("here")
         comments = list()
         comment_blocks = html_response.xpath(
-          '//div[contains(@class,"post classic")]'
+          '//div[@id="forum1"]/div[contains(@class, "post ")]'
         )
-
-        print(comment_blocks)
+        # print(comment_blocks)
         for index, comment_block in enumerate(comment_blocks, 1):
             user = self.get_author(comment_block)
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
             pid = self.thread_id
             avatar = self.get_avatar(comment_block)
-            comment_id = self.get_comment_id(comment_block)
+            comment_id = self.get_comment_id(comment_block)            
             if not comment_id or comment_id == "1":
                 continue
             source = {
@@ -128,7 +130,7 @@ class SuperBayParser:
                 'pid': pid,
                 'message': comment_text.strip(),
                 'cid': comment_id,
-                'author': user,
+                'author': user, 
             }
             if comment_date:
                 source.update({
@@ -148,18 +150,21 @@ class SuperBayParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[contains(@class,"post classic")]'
-            )            
+                '//div[@id="forum1"]/div[contains(@class, "post ")]'
+            )
+
             if not header:
                 return
-            # if not self.get_comment_id(header[0]) == "1":
-            #     return
+            if not self.get_comment_id(header[0]) == "1":
+                return
             title = self.get_title(html_response)
+            
             date = self.get_date(header[0])
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
+            
             source = {
                 'forum': self.parser_name,
                 'pid': pid,
@@ -182,68 +187,72 @@ class SuperBayParser:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
 
-    def get_date(self, tag):
-        date = tag.xpath(
-            './/span[@class="post_date"]/text()'
+    def get_title(self, tag):
+        title = tag.xpath(
+            '//span[contains(@class,"crumblast")]/text()'
         )
-        date = date[0].strip() if date else None        
+        title = title[0].strip() if title else None
+        return title
+
+    def get_date(self, tag):
+        date_block = tag.xpath(
+                './/span[@class="post_date"]/text()'
+            )
+        
+        if(date_block):
+            date = date_block[0].strip() if date_block else ""
+        else:
+            date = None
         try:
             date = dparser.parse(date).timestamp()
-            print("Date: ", date)
             return str(date)
         except Exception:
             return ""
 
     def get_author(self, tag):
-        author_block = tag.xpath(
-            './/div[@class="author_information"]'
-            '//span[@class="largetext"]/descendant::text()'
+        author = tag.xpath(
+            './/span[contains(@class,"post-byline")]/a/text()'
         )
-        author = "".join([
-            aut.strip() for aut in author_block
-        ])
-        print("Author: ", author)
+        if(author):
+            author = author[0].strip() if author else None
+        else:
+            author = None
+
         return author
 
-    def get_title(self, tag):
-        title = tag.xpath(
-            '//td[@class="thead"]/div/strong/text()'
-        )
-        title = title[0].strip() if title else None
-        print("title: ", title)
-        return title
+    
 
     def get_post_text(self, tag):
-        post_text_block = tag.xpath(
-            './/div[@class="post_body scaleimages"]'
-            '/descendant::text()[not(ancestor::blockquote)]'
+        post_text_block = tag.xpath(            
+            './/div[contains(@class,"post-entry")]/descendant::text()[not(ancestor::div[@class="quotebox"])]'
         )
-        post_text = "".join([
+    
+        post_text = " ".join([
             post_text.strip() for post_text in post_text_block
         ])
-        print("Text: ", post_text)
         return post_text.strip()
+    
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            './/div[@class="author_avatar"]//img/@src'
+            './/li[@class="useravatar"]//img/@src'
         )
+        print(avatar_block)
         if not avatar_block:
             return ""
         name_match = self.avatar_name_pattern.findall(avatar_block[0])
         if not name_match:
             return ""
-        return name_match[0] + '.jpg'
+        return name_match[0]
 
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            './/div[@class="post_head"]//strong/a/text()'
+            './/div[@class="posthead"]//span[@class="post-num"]/text()'
         )
         
         if comment_block:
-            comment_id = comment_block[-1].strip().split('#')[-1]
+            comment_id = comment_block[0].strip().split('#')[-1]
+        
 
-        print("Comment ID: ", comment_id)
-
-        return comment_id.replace(',', '').replace('.', '') 
+        return comment_id.replace(',', '').replace('.', '')
