@@ -117,6 +117,9 @@ from templates.rutor_template import RutorParser
 from templates.psxhax_template import PsxHaxParser
 from templates.crackcommunity_template import CrackCommunityParser
 from templates.freehack_template import FreeHackParser
+from templates.phcracker_template import PhcrackerParser
+from templates.cebulka_template import CebulkaParser
+
 
 PARSER_MAP = {
     '0day': OdayParser,

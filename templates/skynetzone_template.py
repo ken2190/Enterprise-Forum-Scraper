@@ -208,7 +208,7 @@ class SkynetzoneParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            '//div[@class="message-userDetails"]/h4/a//text()'
+            './/div[@class="message-userDetails"]/h4/a//text()'
         )
         author = author[0].strip() if author else None
         return author
