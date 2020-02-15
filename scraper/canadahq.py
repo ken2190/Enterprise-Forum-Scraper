@@ -1,56 +1,141 @@
-import time
-import requests
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+import uuid
+
+from urllib.parse import unquote
+
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 20
+USERNAME = "night_cyrax"
+PASSWORD = "3b3f4164500411ea8409b42e994a598f"
+PIN = "873348"
+MNEMONIC = "l9ZkcVuwXaShqXNWCE9z"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
 
 
-class CanadaHQSpider(BypassCloudfareSpider):
-    name = 'canadahq_spider'
+class CanadaHQSpider(SitemapSpider):
+    
+    name = "canadahq_spider"
+    
+    # Url stuffs
+    base_url = "https://canadahq.net/"
+    login_url = "https://canadahq.net/login"
 
-    def __init__(self, output_path, user_path, avatar_path):
-        self.base_url = 'https://canadahq.net/'
-        self.topic_pattern = re.compile(r't=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page=(\d+)')
-        self.start_url = 'https://canadahq.at/home'
-        self.output_path = output_path
-        self.user_path = user_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'referer': 'https://fuckav.ru/',
-            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
-        }
+    # Css stuffs
+    login_form_css = "form[action*=login]"
+    captcha_url_css = "div>img[src*=captcha]::attr(src)"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+    # Xpath stuffs
+    invalid_captcha_xpath = "//div[@class=\"alert alert-danger\"]/" \
+                            "span/text()[contains(.,\"Invalid captcha\")]"
+    
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page=(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    captcha_instruction = "Please ignore | and ^"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
         )
 
     def parse(self, response):
-        urls = response.xpath(
-            '//div[@class="menu-content"]/ul/li/a')
-        for url in urls:
-            url = url.xpath('@href').extract_first()
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        yield Request(
+            url=self.login_url,
+            headers=self.headers,
+            dont_filter=True,
+            meta=self.synchronize_meta(response),
+            callback=self.parse_login
+        )
+
+    def parse_login(self, response):
+
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load cookies
+        cookies = response.request.headers.get("Cookie").decode("utf-8")
+        if not "XSRF-TOKEN" in cookies:
             yield Request(
-                url=url,
+                url=self.login_url,
                 headers=self.headers,
-                callback=self.parse_results
+                dont_filter=True,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_login
             )
+            return
+
+        # Load captcha url
+        captcha_url = response.css(self.captcha_url_css).extract_first()
+        captcha = self.solve_captcha(
+            captcha_url,
+            response
+        )
+        self.logger.info(
+            "Captcha has been solve: %s" % captcha
+        )
+
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_form_css,
+            formdata={
+                "username": USERNAME,
+                "password": PASSWORD,
+                "captcha": captcha[:5]
+            },
+            headers=self.headers,
+            meta=self.synchronize_meta(response),
+            callback=self.parse_start
+        )
+
+    def parse_start(self, response):
+        # Check valid captcha
+        is_invalid_captcha = response.xpath(self.invalid_captcha_xpath).extract_first()
+        if is_invalid_captcha:
+            self.logger.info(
+                "Invalid captcha."
+            )
+            return
+
+        self.logger.info(response.text)
+
+        # urls = response.xpath(
+        #     '//div[@class="menu-content"]/ul/li/a')
+        # for url in urls:
+        #     url = url.xpath('@href').extract_first()
+        #     yield Request(
+        #         url=url,
+        #         headers=self.headers,
+        #         callback=self.parse_results
+        #     )
 
     def parse_results(self, response):
         print('next_page_url: {}'.format(response.url))
@@ -142,53 +227,21 @@ class CanadaHQSpider(BypassCloudfareSpider):
             print(f"Avatar for user {response.meta['user_id']} done..!")
 
 
-class CanadaHQScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.ensure_users_path()
-
-    def ensure_users_path(self, ):
-        self.user_path = f'{self.output_path}/users'
-        if not os.path.exists(self.user_path):
-            os.makedirs(self.user_path)
-
-        self.avatar_path = f'{self.user_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
-
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': REQUEST_DELAY,
-            'CONCURRENT_REQUESTS': NO_OF_THREADS,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings['DOWNLOADER_MIDDLEWARES'].update({
-                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-            })
-            settings.update({
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(
-            CanadaHQSpider, self.output_path,
-            self.user_path, self.avatar_path)
-        process.start()
+class CanadaHQScrapper(SiteMapScrapper):
+    
+    spider_class = CanadaHQSpider
+    
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "DOWNLOAD_DELAY": REQUEST_DELAY,
+                "CONCURRENT_REQUESTS": NO_OF_THREADS,
+                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+            }
+        )
+        return settings
 
 
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+if __name__ == "__main__":
+    pass

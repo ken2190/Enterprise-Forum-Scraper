@@ -18,6 +18,10 @@ from scrapy import (
     Request,
     Selector
 )
+from base64 import (
+    b64decode,
+    b64encode
+)
 
 PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
 PROXY_PASSWORD = "8jywfhrmovdh"
@@ -378,6 +382,7 @@ class SitemapSpider(BypassCloudfareSpider):
     recaptcha_solve_api = "https://2captcha.com/in.php"
     recaptcha_request_api = "https://2captcha.com/res.php"
     captcha_token = "76228b91f256210cf20e6d8428818e23"
+    captcha_instruction = "All character in picture"
 
     # Payload stuffs
     post_headers = {
@@ -636,6 +641,46 @@ class SitemapSpider(BypassCloudfareSpider):
         }
         return cookies
 
+    def load_proxies(self, response):
+        """
+        :param response: scrapy response => response to extract proxy from
+        :return: str => proxy to use for other requests
+        """
+
+        # Init proxy
+        proxy = None
+
+        # Check proxy settings
+        meta_proxy = response.request.meta.get("proxy")
+        if meta_proxy:
+            proxy = meta_proxy
+
+        # Check proxy authentication settings
+        request = response.request
+        basic_auth = request.headers.get("Proxy-Authorization")
+        if basic_auth:
+            # Decode proxy username and password
+            basic_auth_encoded = basic_auth.decode("utf-8").split()[1]
+            username, password = b64decode(basic_auth_encoded).decode("utf-8").split(":")
+
+            # Standardize proxy
+            root_proxy = meta_proxy.replace(
+                "https://", ""
+            ).replace(
+                "http://", ""
+            )
+
+            # Generate authentication proxy
+            proxy = "%s:%s@%s" % (
+                username,
+                password,
+                root_proxy
+            )
+
+        return proxy
+
+    # Main method to request to solve captcha #
+
     def request_solve_recaptcha(self, session, site_url, site_key):
         """
         :param session: requests.session => session to send request for solve
@@ -705,6 +750,51 @@ class SitemapSpider(BypassCloudfareSpider):
                 "2Captcha: Error failed to solve reCaptcha."
             )
 
+    # Main method to check for captcha solving request result #
+
+    def request_solve_captcha(self, image_content, instruction):
+        """
+        :param image_content: byte => Content of image downloaded
+        :param instruction: str => Instruction how to solve captcha
+        :return: str => Content of image captcha
+        """
+        try:
+            response = requests.post(
+                self.recaptcha_solve_api,
+                data={
+                    "key": self.captcha_token,
+                    "method": "base64",
+                    "body": b64encode(image_content),
+                    "regsense": "1",
+                    "textinstructions": instruction,
+                    "json": "1",
+                },
+                allow_redirects=False
+            )
+        except Exception as err:
+            print(err)
+            response = None
+
+        if response:
+            self.logger.info(
+                response.content
+            )
+            return response.json().get("request")
+        else:
+            raise RuntimeError(
+                "2Captcha: Error no job id was returned."
+            )
+
+    def request_job_captcha(self, job_id):
+        """
+        Share the same solution as recaptcha request job
+        :param job_id: str => 2captcha service job id to call for captcha solved result
+        :return: str => captcha solved result
+        """
+        return self.request_job_recaptcha(job_id)
+
+    # Main method to solve all kind of captcha: recaptcha, image captcha #
+
     def solve_recaptcha(self, response):
         """
         :param response: scrapy response => response that contains regular recaptcha
@@ -713,35 +803,9 @@ class SitemapSpider(BypassCloudfareSpider):
         # Init session
         session = requests.Session()
 
-        # Check proxy settings
-        meta_proxy = response.request.meta.get("proxy")
-        if meta_proxy:
-            session.proxies = {
-                "http": meta_proxy,
-                "https": meta_proxy
-            }
-
-        # Check proxy authentication settings
-        request = response.request
-        basic_auth = request.headers.get("Proxy-Authorization")
-        if basic_auth:
-            # Decode proxy username and password
-            basic_auth_encoded = basic_auth.decode("utf-8").split()[1]
-            username, password = b64decode(basic_auth_encoded).decode("utf-8").split(":")
-
-            # Standardize proxy
-            root_proxy = meta_proxy.replace(
-                "https://", ""
-            ).replace(
-                "http://", ""
-            )
-
-            # Generate authentication proxy
-            proxy = "%s:%s@%s" % (
-                username,
-                password,
-                root_proxy
-            )
+        # Load proxy
+        proxy = self.load_proxies(response)
+        if proxy:
             session.proxies = {
                 "http": proxy,
                 "https": proxy
@@ -761,6 +825,49 @@ class SitemapSpider(BypassCloudfareSpider):
         except RuntimeError:
             raise (
                 "2Captcha: reCaptcha solve took to long to execute, aborting."
+            )
+
+    def solve_captcha(self, image_url, response):
+
+        # Load session
+        session = requests.Session()
+
+        # Load cookies
+        cookies = self.load_cookies(
+            response.request.headers.get("Cookie").decode("utf-8")
+        )
+        for name, value in cookies.items():
+            session.cookies.set(name, value)
+
+        # Load proxy
+        proxy = self.load_proxies(response)
+        if proxy:
+            session.proxies = {
+                "http": proxy,
+                "https": proxy
+            }
+
+        # Download content
+        response = session.get(image_url)
+        self.logger.info(
+            "Download captcha image content with headers %s" % response.request.headers
+        )
+        image_content = response.content
+
+        # Archive captcha content
+        with open("captcha/captcha.png", "wb") as file:
+            file.write(image_content)
+
+        # Solve captcha
+        try:
+            jobID = self.request_solve_captcha(
+                image_content=image_content,
+                instruction=self.captcha_instruction
+            )
+            return self.request_job_captcha(jobID)
+        except RuntimeError:
+            raise (
+                "2Captcha: Captcha solve took to long to execute, aborting."
             )
 
     def start_requests(self):
