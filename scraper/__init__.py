@@ -96,6 +96,7 @@ from scraper.void_to import VoidToScrapper
 from scraper.cebulka import CebulkaScrapper
 from scraper.dfas import DfasScrapper
 from scraper.majestic_garden import MajesticGardenScrapper
+from scraper.torum import TorumScrapper
 
 
 SCRAPER_MAP = {
@@ -197,4 +198,5 @@ SCRAPER_MAP = {
     'cebulka': CebulkaScrapper,
     'dfas': DfasScrapper,
     'majestic_garden': MajesticGardenScrapper,
+    'torum': TorumScrapper,
 }
