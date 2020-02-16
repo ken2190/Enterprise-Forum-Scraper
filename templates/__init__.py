@@ -119,6 +119,7 @@ from templates.crackcommunity_template import CrackCommunityParser
 from templates.freehack_template import FreeHackParser
 from templates.phcracker_template import PhcrackerParser
 from templates.cebulka_template import CebulkaParser
+from templates.dfas_template import DfasParser
 
 
 PARSER_MAP = {
@@ -242,4 +243,5 @@ PARSER_MAP = {
     'psxhax': PsxHaxParser,
     'crackcommunity': CrackCommunityParser,
     'freehack': FreeHackParser,
+    'dfas': DfasParser,
 }
