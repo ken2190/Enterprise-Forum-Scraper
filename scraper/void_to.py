@@ -1,5 +1,6 @@
 import re
 import os
+import uuid
 
 from datetime import datetime, timedelta
 
@@ -74,7 +75,7 @@ class VoidToSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     post_datetime_format = '%b %d, %Y'
@@ -123,6 +124,16 @@ class VoidToSpider(SitemapSpider):
                 post_date,
                 self.post_datetime_format
             )
+
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            },
+            dont_filter=True
+        )
 
     def parse(self, response):
         # Synchronize cloudfare user agent
