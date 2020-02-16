@@ -24,7 +24,9 @@ USERNAME = "vrx9"
 MD5PASS = "db587913e1544e2169f44a5b7976c9a1"
 PASSWORD = "Night#Vrx099"
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+
+PROXY = 'http://127.0.0.1:8118'
 
 
 class VerifiedScSpider(SitemapSpider):
@@ -32,8 +34,8 @@ class VerifiedScSpider(SitemapSpider):
     name = 'verifiedsc_spider'
 
     # Url stuffs
-    base_url = "https://verified.sc/"
-    login_url = "https://verified.sc/login.php?do=login"
+    base_url = "http://verified2ebdpvms.onion/"
+    login_url = "http://verified2ebdpvms.onion/login.php?do=login"
 
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
@@ -54,6 +56,8 @@ class VerifiedScSpider(SitemapSpider):
 
     # Other settings
     use_proxy = False
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d.%m.%Y'
     post_datetime_format = '%d.%m.%Y, %H:%M'
     stop_text = 'you have exceeded the limit of page views in 24 hours'
@@ -75,14 +79,21 @@ class VerifiedScSpider(SitemapSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update({
-            'Host': 'verified.sc',
-            'Origin': 'https://verified.sc',
-            'Referer': 'https://verified.sc/',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'same-origin',
-            'Sec-Fetch-User': '?1',
+            'Host': 'verified2ebdpvms.onion',
+            'Referer': self.base_url,
             'User-Agent': USER_AGENT
         })
+
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
+
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
+
+        return meta
 
     def start_requests(self):
         formdata = {
@@ -101,7 +112,10 @@ class VerifiedScSpider(SitemapSpider):
             self.login_url,
             formdata=formdata,
             headers=self.headers,
-            callback=self.enter_code
+            callback=self.enter_code,
+            meta={
+                'proxy': PROXY
+            }
         )
 
     def enter_code(self, response):
@@ -127,7 +141,7 @@ class VerifiedScSpider(SitemapSpider):
                 self.login_url,
                 formdata=formdata,
                 headers=self.headers,
-                callback=self.parse,
+                callback=self.after_login,
                 dont_filter=True,
                 meta=self.synchronize_meta(response),
             )
@@ -136,7 +150,8 @@ class VerifiedScSpider(SitemapSpider):
             yield Request(
                 self.base_url,
                 headers=self.headers,
-                callback=self.parse,
+                callback=self.after_login,
+                dont_filter=True,
                 meta=self.synchronize_meta(response),
             )
 
@@ -178,7 +193,18 @@ class VerifiedScSpider(SitemapSpider):
                 self.post_datetime_format
             )
 
-    def parse(self, response):
+    def after_login(self, response):
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+        main_forum_url = 'http://verified2ebdpvms.onion/forum.php'
+        yield Request(
+            url=main_forum_url,
+            headers=self.headers,
+            callback=self.parse_start,
+            meta=self.synchronize_meta(response),
+        )
+
+    def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
@@ -215,19 +241,4 @@ class VerifiedScSpider(SitemapSpider):
 class VerifiedScScrapper(SiteMapScrapper):
 
     spider_class = VerifiedScSpider
-    site_name = 'verified.sc'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            }
-        )
-        return settings
-
-
-if __name__ == "__main__":
-    pass
+    site_name = 'verified (verified2ebdpvms.onion)'
