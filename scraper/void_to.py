@@ -195,11 +195,13 @@ class VoidToSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         # Check current page and last page
-        current_page = response.xpath(self.thread_page_xpath).extract_first()
+        current_page = response.xpath(self.thread_page_xpath).extract_first() or 1
         last_page = response.xpath(self.topic_last_page_xpath).extract_first()
 
         # Reverse scraping start here
-        if current_page == 1 and last_page:
+        if int(current_page) == 1 and last_page:
+            if self.base_url not in last_page:
+                last_page = self.base_url + last_page
             yield Request(
                 url=last_page,
                 headers=self.headers,
