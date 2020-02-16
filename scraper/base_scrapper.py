@@ -856,7 +856,11 @@ class SitemapSpider(BypassCloudfareSpider):
         image_content = response.content
 
         # Archive captcha content
-        with open("captcha/captcha.png", "wb") as file:
+        root_folder = os.path.dirname(os.path.abspath(__file__))
+        captcha_folder = os.path.join(root_folder, '../captcha')
+        if not os.path.exists(captcha_folder):
+            os.makedirs(captcha_folder)
+        with open(f"{captcha_folder}/captcha.png", "wb") as file:
             file.write(image_content)
 
         # Solve captcha
