@@ -17,8 +17,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.4
-NO_OF_THREADS = 4
+REQUEST_DELAY = 1
+NO_OF_THREADS = 1
 
 USERNAME = "vrx9"
 MD5PASS = "db587913e1544e2169f44a5b7976c9a1"
