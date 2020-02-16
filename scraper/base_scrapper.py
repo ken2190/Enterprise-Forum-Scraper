@@ -444,9 +444,11 @@ class SitemapSpider(BypassCloudfareSpider):
             self.cookies = self.load_cookies(self.cookies)
 
         # Handle code file
+        root_folder = os.path.dirname(os.path.abspath(__file__))
         self.backup_code_file = os.path.join(
-            os.getcwd(),
-            "code/%s" % self.name
+            root_folder,
+            '../code',
+            self.name
         )
         if not os.path.exists(self.backup_code_file):
             self.backup_code_file = None
