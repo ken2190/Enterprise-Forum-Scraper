@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 
 from datetime import (
     datetime,
@@ -16,7 +17,11 @@ from scraper.base_scrapper import (
 
 REQUEST_DELAY = 0.6
 NO_OF_THREADS = 10
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
+
+USER = 'Cyrax_011'
+PASS = 'S5eVZWqf!3wNdtb'
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36'
 
 
 class CrdClubSpider(SitemapSpider):
@@ -40,6 +45,7 @@ class CrdClubSpider(SitemapSpider):
     )
 
     # Xpath stuffs
+    login_form_xpath = '//form[@action="login.php?do=login"]'
     forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
     thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
     thread_first_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div'\
@@ -56,13 +62,17 @@ class CrdClubSpider(SitemapSpider):
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
 
     # Other settings
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update({
-            'referer': 'http://crdclub.su/',
+            'origin': 'https://crdclub.su',
+            'referer': 'https://crdclub.su/index.php',
+            'sec-fetch-dest': 'document',
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'same-origin',
             'sec-fetch-user': '?1',
@@ -70,22 +80,27 @@ class CrdClubSpider(SitemapSpider):
         })
 
     def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            },
+            dont_filter=True
+        )
 
-        login_url = 'https://crdclub.su/login.php?do=login'
+    def parse(self, response):
+
         formdata = {
-            'vb_login_username': 'darkcylon',
-            'cookieuser': '1',
-            'vb_login_password': '',
-            's': '',
-            'securitytoken': 'guest',
-            'do': 'login',
-            'vb_login_md5password': '37892308193be1e42495dd1842d31288',
-            'vb_login_md5password_utf': '37892308193be1e42495dd1842d31288'
+            'vb_login_username': USER,
+            'vb_login_password': PASS,
         }
-        yield FormRequest(
-            url=login_url,
+        yield FormRequest.from_response(
+            response=response,
+            formxpath=self.login_form_xpath,
             formdata=formdata,
             headers=self.headers,
+            meta=self.synchronize_meta(response),
             callback=self.after_login,
         )
 
@@ -95,7 +110,7 @@ class CrdClubSpider(SitemapSpider):
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.parse,
+            callback=self.parse_start,
             meta=self.synchronize_meta(response),
         )
 
@@ -138,7 +153,7 @@ class CrdClubSpider(SitemapSpider):
                 self.post_datetime_format
             )
 
-    def parse(self, response):
+    def parse_start(self, response):
 
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
@@ -149,7 +164,6 @@ class CrdClubSpider(SitemapSpider):
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-
             yield Request(
                 url=forum_url,
                 headers=self.headers,
@@ -185,14 +199,3 @@ class CrdClubScrapper(SiteMapScrapper):
 
     spider_class = CrdClubSpider
     site_name = 'crdclub.su'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            }
-        )
-        return settings
