@@ -98,6 +98,7 @@ from scraper.dfas import DfasScrapper
 from scraper.majestic_garden import MajesticGardenScrapper
 from scraper.torum import TorumScrapper
 from scraper.ciphers import CiphersScrapper
+from scraper.bigmmo import BigmmoScrapper
 
 
 SCRAPER_MAP = {
@@ -201,4 +202,5 @@ SCRAPER_MAP = {
     'majestic_garden': MajesticGardenScrapper,
     'torum': TorumScrapper,
     'ciphers': CiphersScrapper,
+    'bigmmo': BigmmoScrapper,
 }
