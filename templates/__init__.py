@@ -120,6 +120,9 @@ from templates.freehack_template import FreeHackParser
 from templates.phcracker_template import PhcrackerParser
 from templates.cebulka_template import CebulkaParser
 from templates.dfas_template import DfasParser
+from templates.void_template import VoidParser
+from templates.torum_template import TorumParser
+from templates.majesticgarden_template import MajesticGardenParser
 
 
 PARSER_MAP = {
@@ -244,4 +247,7 @@ PARSER_MAP = {
     'crackcommunity': CrackCommunityParser,
     'freehack': FreeHackParser,
     'dfas': DfasParser,
+    'void_to': VoidParser,
+    'torum': TorumParser,
+    'majestic_garden': MajesticGardenParser,
 }
