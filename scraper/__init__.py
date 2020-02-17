@@ -97,6 +97,7 @@ from scraper.cebulka import CebulkaScrapper
 from scraper.dfas import DfasScrapper
 from scraper.majestic_garden import MajesticGardenScrapper
 from scraper.torum import TorumScrapper
+from scraper.ciphers import CiphersScrapper
 
 
 SCRAPER_MAP = {
@@ -199,4 +200,5 @@ SCRAPER_MAP = {
     'dfas': DfasScrapper,
     'majestic_garden': MajesticGardenScrapper,
     'torum': TorumScrapper,
+    'ciphers': CiphersScrapper,
 }
