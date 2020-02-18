@@ -21,6 +21,24 @@ class CrackCommunitySpider(SitemapSpider):
     # Url stuffs
     base_url = "http://crackcommunity.com/"
 
+    # Xpath stuffs
+    # Forum xpath #
+    forum_xpath = "//*[@class=\"nodeTitle\"]/a[contains(@href,\"forums\")]/@href"
+    pagination_xpath = "//div[@class=\"PageNav\"]/nav/a[@class=\"text\"]/@href"
+
+    # Thread xpath #
+    thread_xpath = "//li[contains(@id,\"thread\")]"
+    thread_first_page_xpath = "//h3[@class=\"title\"]/a/@href"
+    thread_last_page_xpath = "//span[@class=\"itemPageNav\"]/a[last()]/@href"
+
+    thread_date_xpath = "//a[@class=\"dateTime\"]/*/@title"
+    thread_pagination_xpath = "//div[@class=\"PageNav\"]/nav/a[contains(text(),\"Prev\")]/@href"
+    thread_page_xpath = "//div[@class=\"PageNav\"]/nav/a[@class=\"currentPage \"]/text()"
+
+    # Post xpath #
+    post_date_xpath = "//a[@class=\"datePermalink\"]/*/@title"
+    avatar_xpath = "//div[@class=\"avatarHolder\"]/a/img/@src"
+
     # Regex pattern
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -35,7 +53,9 @@ class CrackCommunitySpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    handle_httpstatus_list = [503]
+    # Other settings
+    sitemap_datetime_format = "%b %d, %Y at %I:%M %p"
+    post_datetime_format = "%b %d, %Y at %I:%M %p"
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,9 +75,34 @@ class CrackCommunitySpider(SitemapSpider):
         )
 
     def parse(self, response):
-        self.logger.info(
-            response.text
-        )
+
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+
+        # Loop forums
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_forum
+            )
+            
+    def parse_thread(self, response):
+
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
 class CrackCommunityScrapper(SiteMapScrapper):
