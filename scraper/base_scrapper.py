@@ -1100,7 +1100,7 @@ class SitemapSpider(BypassCloudfareSpider):
         post_dates = [
             self.parse_post_date(post_date) for post_date in
             response.xpath(self.post_date_xpath).extract()
-            if post_date.strip()
+            if post_date.strip() and self.parse_post_date(post_date)
         ]
         if self.start_date and max(post_dates) < self.start_date:
             self.logger.info(

@@ -101,6 +101,7 @@ from scraper.ciphers import CiphersScrapper
 from scraper.bigmmo import BigmmoScrapper
 from scraper.runtime import RunTimeScrapper
 from scraper.sinfulsite import SinfulSiteScrapper
+from scraper.vigilante import VigilanteScrapper
 
 
 SCRAPER_MAP = {
@@ -207,4 +208,5 @@ SCRAPER_MAP = {
     'bigmmo': BigmmoScrapper,
     'runtime': RunTimeScrapper,
     'sinfulsite': SinfulSiteScrapper,
+    'vigilante': VigilanteScrapper,
 }
