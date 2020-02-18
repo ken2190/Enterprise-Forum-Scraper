@@ -72,7 +72,6 @@ class LuminatyProxyMiddleware(object):
 
 class BypassCloudfareMiddleware(object):
 
-    allow_retry = 5
     captcha_provider = "2captcha"
     captcha_token = "76228b91f256210cf20e6d8428818e23"
 
@@ -105,6 +104,9 @@ class BypassCloudfareMiddleware(object):
 
     def __init__(self, crawler):
         self.logger = crawler.spider.logger
+        self.allow_retry = getattr(crawler.spider, "cloudfare_allow_retry", 5)
+        self.delay = getattr(crawler.spider, "cloudfare_delay", 5)
+        self.solve_depth = getattr(crawler.spider, "cloudfare_solve_depth", 5)
 
     def load_cookies(self, request, byte=True):
         cookies = {}
@@ -125,10 +127,10 @@ class BypassCloudfareMiddleware(object):
 
         return cookies
 
-    def get_cftoken(self, url, delay=10, proxy=None):
+    def get_cftoken(self, url, proxy=None):
         session = cloudscraper.create_scraper(
-            delay=delay,
-            solveDepth=10,
+            delay=self.delay,
+            solveDepth=self.solve_depth,
             recaptcha={
                 "provider": self.captcha_provider,
                 "api_key": self.captcha_token
