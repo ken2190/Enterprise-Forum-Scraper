@@ -100,6 +100,7 @@ from scraper.torum import TorumScrapper
 from scraper.ciphers import CiphersScrapper
 from scraper.bigmmo import BigmmoScrapper
 from scraper.runtime import RunTimeScrapper
+from scraper.sinfulsite import SinfulSiteScrapper
 
 
 SCRAPER_MAP = {
@@ -205,4 +206,5 @@ SCRAPER_MAP = {
     'ciphers': CiphersScrapper,
     'bigmmo': BigmmoScrapper,
     'runtime': RunTimeScrapper,
+    'sinfulsite': SinfulSiteScrapper,
 }
