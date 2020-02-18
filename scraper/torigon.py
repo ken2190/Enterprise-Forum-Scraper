@@ -48,6 +48,8 @@ class TorigonSpider(SitemapSpider):
 
     # Other settings
     use_proxy = False
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%a %b %d, %Y'
 
     def __init__(self, *args, **kwargs):
@@ -163,9 +165,6 @@ class TorigonScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
                 "RETRY_HTTP_CODES": [406, 429, 500, 503],
             }
         )
