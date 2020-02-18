@@ -25,7 +25,8 @@ class MajesticGardenSpider(SitemapSpider):
 
     # Xpaths
     forum_xpath = '//a[contains(@href, "index.php?board=")]/@href'
-    pagination_xpath = '//div[@class="pagelinks floatleft"]/a[@class="navPages"]/@href'
+    pagination_xpath = '//div[@class="pagelinks floatleft"]'\
+                       '/strong/following-sibling::a[1]/@href'
     thread_xpath = '//div[@id="messageindex"]//tr[td[contains(@class,"subject")]]'
     thread_first_page_xpath = '//span[contains(@id,"msg_")]/a/@href'
     thread_last_page_xpath = '//small[contains(@id,"pages")]/a[last()]/@href'
