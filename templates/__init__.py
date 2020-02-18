@@ -123,6 +123,11 @@ from templates.dfas_template import DfasParser
 from templates.void_template import VoidParser
 from templates.torum_template import TorumParser
 from templates.majesticgarden_template import MajesticGardenParser
+from templates.ciphers_template import CiphersParser
+from templates.vigilante_template import VigilanteParser
+from templates.sinfulsite_template import SinfulSiteParser
+from templates.runtime_template import RuntimeParser
+from templates.bigmmo_template import BigMMOParser
 
 
 PARSER_MAP = {
@@ -250,4 +255,9 @@ PARSER_MAP = {
     'void_to': VoidParser,
     'torum': TorumParser,
     'majestic_garden': MajesticGardenParser,
+    'ciphers': CiphersParser,
+    'vigilante': VigilanteParser,
+    'sinfulsite': SinfulSiteParser,
+    'runtime': RuntimeParser,
+    'bigmmo': BigMMOParser,
 }
