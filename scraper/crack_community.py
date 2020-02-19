@@ -95,7 +95,7 @@ class CrackCommunitySpider(SitemapSpider):
                 meta=self.synchronize_meta(response),
                 callback=self.parse_forum
             )
-            
+
     def parse_thread(self, response):
 
         # Parse generic thread

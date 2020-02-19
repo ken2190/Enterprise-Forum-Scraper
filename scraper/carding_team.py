@@ -2,12 +2,14 @@ import os
 import re
 import time
 import uuid
+import json
 
 from datetime import datetime
+from scrapy.utils.gz import gunzip
+
 from seleniumwire.webdriver import (
-    Firefox,
-    FirefoxOptions,
-    FirefoxProfile
+    Chrome,
+    ChromeOptions
 )
 from scrapy import (
     Request,
@@ -42,7 +44,7 @@ class CardingTeamSpider(SitemapSpider):
     thread_lastmod_xpath = "//lastmod/text()"
 
     # Css stuffs
-    ip_css = "span.objectBox::text"
+    ip_css = "pre::text"
 
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "Forum-")]/@href'
@@ -76,22 +78,17 @@ class CardingTeamSpider(SitemapSpider):
     )
 
     def get_cookies(self, proxy=None):
+        # Init options
+        options = ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
+
         # Init web driver arguments
         webdriver_kwargs = {
-            "executable_path": "/usr/local/bin/geckodriver"
+            "executable_path": "/usr/local/bin/chromedriver",
+            "options": options
         }
-
-        # Init options
-        options = FirefoxOptions()
-        options.headless = True
-        webdriver_kwargs["options"] = options
-
-        # Init profile
-        profile = FirefoxProfile()
-        profile.set_preference(
-            "general.useragent.override",
-            self.headers.get("User-Agent")
-        )
 
         # Init proxy
         if proxy:
@@ -107,19 +104,24 @@ class CardingTeamSpider(SitemapSpider):
             )
 
         # Load chrome driver
-        browser = Firefox(
-            profile,
-            **webdriver_kwargs
-        )
+        browser = Chrome(**webdriver_kwargs)
 
         # Load target site
-        if self.start_date:
-            browser.get(self.sitemap_url)
-        else:
-            browser.get(self.base_url)
+        retry = 0
+        while retry < 2:
+            # Load different branch
+            if self.start_date:
+                browser.get(self.sitemap_url)
+            else:
+                browser.get(self.base_url)
+
+            # Wait
+            time.sleep(2)
+
+            # Increase count
+            retry += 1
 
         # Load cookies
-        time.sleep(2)
         cookies = browser.get_cookies()
 
         # Load ip
@@ -130,9 +132,11 @@ class CardingTeamSpider(SitemapSpider):
         ip = None
         selector = Selector(text=browser.page_source)
         if proxy:
-            ip = selector.css(
-                self.ip_css
-            ).extract_first().replace("\"", "")
+            ip = json.loads(
+                selector.css(
+                    self.ip_css
+                ).extract_first()
+            ).get("ip")
 
         # Quit browser
         browser.quit()
@@ -197,22 +201,6 @@ class CardingTeamSpider(SitemapSpider):
 
     def parse_post_date(self, thread_date):
         return datetime.today()
-
-    def parse_sitemap(self, response):
-
-        # Check correct response
-        forum_urls = response.xpath(
-            self.forum_sitemap_xpath
-        ).extract()
-
-        self.logger.info(response.request.headers)
-        self.logger.info(response.text)
-
-        if not forum_urls:
-            yield from self.start_requests()
-            return
-
-        yield from self.parse_sitemap(response)
 
     def parse(self, response):
         # Synchronize cloudfare user agent
