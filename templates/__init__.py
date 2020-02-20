@@ -128,6 +128,7 @@ from templates.vigilante_template import VigilanteParser
 from templates.sinfulsite_template import SinfulSiteParser
 from templates.runtime_template import RuntimeParser
 from templates.bigmmo_template import BigMMOParser
+from templates.wildersecurity_template import WilderSecurityParser
 
 
 PARSER_MAP = {
@@ -260,4 +261,5 @@ PARSER_MAP = {
     'sinfulsite': SinfulSiteParser,
     'runtime': RuntimeParser,
     'bigmmo': BigMMOParser,
+    'wildersecurity': WilderSecurityParser,
 }
