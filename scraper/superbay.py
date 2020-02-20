@@ -110,7 +110,7 @@ class SuperBaySpider(SitemapSpider):
 class SuperBayScrapper(SiteMapScrapper):
 
     spider_class = SuperBaySpider
-    site_name = 'superbay (suprbayoubiexnmp.onion)'
+    site_name = 'superbay_suprbayoubiexnmp'
 
     def load_settings(self):
         settings = super().load_settings()

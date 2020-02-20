@@ -196,7 +196,7 @@ class EnvoyScrapper(SiteMapScrapper):
     no_of_threads = 16
 
     spider_class = EnvoySpider
-    site_name = 'Envoy (envoys5appps3bin.onion)'
+    site_name = 'envoy_envoys5appps3bin'
 
     def load_settings(self):
         spider_settings = super().load_settings()

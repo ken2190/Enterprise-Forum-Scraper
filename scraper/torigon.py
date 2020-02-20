@@ -159,7 +159,7 @@ class TorigonSpider(SitemapSpider):
 class TorigonScrapper(SiteMapScrapper):
 
     spider_class = TorigonSpider
-    site_name = 'torigon (torigonsn3d63cldhr76mkfdzo3tndnl2tftiek55i2vilscufer6ryd.onion)'
+    site_name = 'torigon'
 
     def load_settings(self):
         settings = super().load_settings()

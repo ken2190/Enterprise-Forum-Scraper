@@ -17,7 +17,7 @@ class BrokenPage(Exception):
 class SuperBayParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-        self.parser_name = "suprbayoubiexnmp.onion"
+        self.parser_name = "superbay_suprbayoubiexnmp"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(.*)-\d+\.html$'

@@ -149,7 +149,7 @@ class RUnionSpider(SitemapSpider):
 class RUnionScrapper(SiteMapScrapper):
 
     spider_class = RUnionSpider
-    site_name = 'runion (lwplxqzvmgu43uff.onion)'
+    site_name = 'runion_lwplxqzvmgu43uff'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -128,7 +128,7 @@ class RutorSpider(SitemapSpider):
 class RutorScrapper(SiteMapScrapper):
 
     spider_class = RutorSpider
-    site_name = 'rutor (rutorzzmfflzllk5.onion)'
+    site_name = 'rutor_rutorzzmfflzllk5'
 
     def load_settings(self):
         settings = super().load_settings()

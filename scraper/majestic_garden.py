@@ -198,7 +198,7 @@ class MajesticGardenSpider(SitemapSpider):
 class MajesticGardenScrapper(SiteMapScrapper):
 
     spider_class = MajesticGardenSpider
-    site_name = 'majestic_garden (garden2b7zwrjskh2y3f4pkscgg2waogjp2ilax2mvikjlzmamylznad..onion)'
+    site_name = 'majestic_garden'
 
     def load_settings(self):
         settings = super().load_settings()

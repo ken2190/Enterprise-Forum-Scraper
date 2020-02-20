@@ -172,4 +172,4 @@ class TorumSpider(SitemapSpider):
 class TorumScrapper(SiteMapScrapper):
 
     spider_class = TorumSpider
-    site_name = 'torum (torum43tajnrxritn4iumy75giwb5yfw6cjq2czjikhtcac67tfif2yd..onion)'
+    site_name = 'torum'
