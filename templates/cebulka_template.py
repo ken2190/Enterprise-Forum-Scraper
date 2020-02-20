@@ -237,7 +237,7 @@ class CebulkaParser:
         avatar_block = tag.xpath(
             './/li[@class="useravatar"]//img/@src'
         )
-        print(avatar_block)
+
         if not avatar_block:
             return ""
         name_match = self.avatar_name_pattern.findall(avatar_block[0])

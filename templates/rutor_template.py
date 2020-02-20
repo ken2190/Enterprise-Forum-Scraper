@@ -242,7 +242,6 @@ class RutorParser:
         comment_block = tag.xpath(
             './/ul[contains(@class,"message-attribution-opposite")]/li[2]/a/text()'
         )
-        print("Comment block: ", comment_block)
         
         if comment_block:
             comment_id = comment_block[0].strip().split('#')[-1]

@@ -193,7 +193,6 @@ class PsxHaxParser:
         # date = '2019 ' + date
         try:
             date = dparser.parse(date).timestamp()
-            print(date)
             return str(date)
         except Exception:
             return ""

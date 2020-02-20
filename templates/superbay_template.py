@@ -107,13 +107,11 @@ class SuperBayParser:
                 continue
 
     def extract_comments(self, html_response):
-        print("here")
         comments = list()
         comment_blocks = html_response.xpath(
           '//div[contains(@class,"post classic")]'
         )
 
-        print(comment_blocks)
         for index, comment_block in enumerate(comment_blocks, 1):
             user = self.get_author(comment_block)
             comment_text = self.get_post_text(comment_block)
@@ -189,7 +187,6 @@ class SuperBayParser:
         date = date[0].strip() if date else None        
         try:
             date = dparser.parse(date).timestamp()
-            print("Date: ", date)
             return str(date)
         except Exception:
             return ""
@@ -202,7 +199,6 @@ class SuperBayParser:
         author = "".join([
             aut.strip() for aut in author_block
         ])
-        print("Author: ", author)
         return author
 
     def get_title(self, tag):
@@ -210,7 +206,6 @@ class SuperBayParser:
             '//td[@class="thead"]/div/strong/text()'
         )
         title = title[0].strip() if title else None
-        print("title: ", title)
         return title
 
     def get_post_text(self, tag):
@@ -221,7 +216,6 @@ class SuperBayParser:
         post_text = "".join([
             post_text.strip() for post_text in post_text_block
         ])
-        print("Text: ", post_text)
         return post_text.strip()
 
     def get_avatar(self, tag):
@@ -244,6 +238,5 @@ class SuperBayParser:
         if comment_block:
             comment_id = comment_block[-1].strip().split('#')[-1]
 
-        print("Comment ID: ", comment_id)
 
         return comment_id.replace(',', '').replace('.', '') 

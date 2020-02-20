@@ -199,7 +199,6 @@ class PhcrackerParser:
                 './/time//text()'
             )
         
-        print(date_block)
         if(date_block):
             date = date_block[0].strip() if date_block else ""
         else:

@@ -163,7 +163,6 @@ class CrdClubParser:
                 '//table[contains(@id, "post")]'
             )
             if not header:
-                print('no header')
                 return
             if not self.get_comment_id(header[0]) == "1":
                 return

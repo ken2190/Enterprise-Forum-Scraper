@@ -151,7 +151,6 @@ class HoxForumParser:
             if not self.get_comment_id(header[0]) == "1":
                 return
             title = self.get_title(html_response)
-            print(title)
             date = self.get_date(header[0])
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])

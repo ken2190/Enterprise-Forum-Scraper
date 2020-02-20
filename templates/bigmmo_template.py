@@ -183,9 +183,10 @@ class BigMMOParser:
     def get_date(self, tag):
         date_block = tag.xpath(
                 './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/text()'
-            )[0]
+            )
         
-        date = date_block.strip() if date_block else ""    
+        if date_block:
+            date = date_block[0].strip() if date_block else ""
         try:
             date = dparser.parse(date).timestamp()
             return str(date)

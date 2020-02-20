@@ -115,7 +115,7 @@ class SafeskyhacksParser:
         comment_blocks = html_response.xpath(
           '//li[contains(@class,"postcontainer")]'
         )
-        # print(comment_blocks)
+
         for index, comment_block in enumerate(comment_blocks, 1):
             user = self.get_author(comment_block)
             comment_text = self.get_post_text(comment_block)
@@ -195,7 +195,6 @@ class SafeskyhacksParser:
         
         date_block = ' '.join(date_block)
         date = date_block.strip() if date_block else ""       
-        print(date) 
         
         try:
             date = dparser.parse(date).timestamp()
