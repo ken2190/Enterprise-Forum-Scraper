@@ -228,6 +228,7 @@ class SiteMapScrapper:
         self.output_path = kwargs.get("output")
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
+        self.firstrun = kwargs.get("firstrun")
         self.ensure_avatar_path(kwargs.get("template"))
         self.set_users_path()
 
@@ -254,7 +255,8 @@ class SiteMapScrapper:
             "useronly": getattr(self, "useronly", None),
             "avatar_path": getattr(self, "avatar_path", None),
             "start_date": getattr(self, "start_date", None),
-            "user_path": getattr(self, "user_path", None)
+            "user_path": getattr(self, "user_path", None),
+            "firstrun": getattr(self, "firstrun", None)
         }
 
     def set_users_path(self):

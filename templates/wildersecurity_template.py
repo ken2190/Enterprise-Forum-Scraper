@@ -3,21 +3,21 @@ import os
 import re
 from collections import OrderedDict
 import traceback
-# import locale
 import json
 import utils
 import datetime
-from lxml.html import fromstring
 import dateutil.parser as dparser
+from lxml.html import fromstring
+
 
 class BrokenPage(Exception):
     pass
 
 
-class CrackCommunityParser:
+class WilderSecurityParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-        self.parser_name = "crackcommunity.com"
+        self.parser_name = "wilderssecurity.com"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(.*)-\d+\.html$'
@@ -178,14 +178,16 @@ class CrackCommunityParser:
         except Exception:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
+  
 
     def get_date(self, tag):
         date_block = tag.xpath(
                 './/div[contains(@class,"messageMeta")]//span[contains(@class,"DateTime")]/text()'
             )
-
-        date = date_block[0].strip() if date_block else ""
-        
+        if date_block:
+            date = date_block[0].strip() if date_block else ""    
+        else:
+            return None
         try:
             date = dparser.parse(date).timestamp()
             return str(date)
@@ -194,7 +196,7 @@ class CrackCommunityParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            './/div[contains(@class,"messageMeta")]//span[contains(@class,"authorEnd")]/a/text()'
+            './/div[contains(@class,"messageUserBlock")]//a[contains(@class,"username")]//text()'
         )
         author = author[0].strip() if author else None
         return author
@@ -224,7 +226,7 @@ class CrackCommunityParser:
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//div[contains(@class,"titleBar")]/h1/text()'
+            '//div[contains(@class,"titleBar")]/h1//text()'
         )[0]
         title = title.strip().split(']')[-1] if title else None
         return title
