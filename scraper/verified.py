@@ -17,7 +17,7 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 1
+REQUEST_DELAY = 1.2
 NO_OF_THREADS = 1
 
 USERNAME = "vrx9"
