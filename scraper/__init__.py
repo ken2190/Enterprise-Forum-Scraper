@@ -103,6 +103,7 @@ from scraper.runtime import RunTimeScrapper
 from scraper.sinfulsite import SinfulSiteScrapper
 from scraper.vigilante import VigilanteScrapper
 from scraper.wilderssecurity import WildersSecurityScrapper
+from scraper.weleakdata import WeLeakDataScrapper
 
 
 SCRAPER_MAP = {
@@ -211,4 +212,5 @@ SCRAPER_MAP = {
     'sinfulsite': SinfulSiteScrapper,
     'vigilante': VigilanteScrapper,
     'wilderssecurity': WildersSecurityScrapper,
+    'weleakdata': WeLeakDataScrapper,
 }
