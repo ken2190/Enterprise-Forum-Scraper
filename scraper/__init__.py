@@ -106,6 +106,7 @@ from scraper.wilderssecurity import WildersSecurityScrapper
 from scraper.weleakdata import WeLeakDataScrapper
 from scraper.zyberph import ZyberphScrapper
 from scraper.mmo4me import Mmo4meScrapper
+from scraper.binrev import BinRevScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -216,4 +217,5 @@ SCRAPER_MAP = {
     'weleakdata': WeLeakDataScrapper,
     'zyberph': ZyberphScrapper,
     'mmo4me': Mmo4meScrapper,
+    'binrev': BinRevScrapper,
 }
