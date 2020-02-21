@@ -278,11 +278,14 @@ class KorovkaParser:
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            'tr//a[contains(@href, "member.php?u=")]/img[@src and @alt]/@alt'
+            'tr//a[contains(@href, "member.php?u=") and img/@src]/@href'
         )
         if not avatar_block:
             return ""
-        return avatar_block[0] + '.jpg'
+        match = self.avatar_name_pattern.findall(avatar_block[0])
+        if not match:
+            return
+        return match[0] + '.jpg'
 
     def get_comment_id(self, tag):
         comment_block = tag.xpath(
