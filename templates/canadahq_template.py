@@ -49,19 +49,23 @@ class CanadaHQParser:
                 continue
 
     def process_page(self, pid, html_response):
-        data = ({
+        data = {
+            'forum': self.parser_name,
             'pid': pid
-        })
+        }
         additional_data = self.extract_page_info(html_response)
         if not additional_data:
             return
         data.update(additional_data)
+        final_data = {
+            '_source': data
+        }
         output_file = '{}/{}.json'.format(
             str(self.output_folder),
             pid
         )
         with open(output_file, 'w', encoding='utf-8') as file_pointer:
-            utils.write_json(file_pointer, data)
+            utils.write_json(file_pointer, final_data)
             print('\nJson written in {}'.format(output_file))
             print('----------------------------------------\n')
 
