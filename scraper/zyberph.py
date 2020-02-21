@@ -23,7 +23,7 @@ class ZyberphSpider(SitemapSpider):
     thread_last_page_xpath = '//div[@class="pagination"]'\
                              '/ul/li[last()]/a/@href'
     thread_date_xpath = '//dd[@class="lastpost"]/span/text()[last()]'
-    pagination_xpath = '//li[@class="arrow next"]/a[@rel="next"]/@hrefii'
+    pagination_xpath = '//li[@class="arrow next"]/a[@rel="next"]/@href'
     thread_pagination_xpath = '//li[@class="arrow previous"]/a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagination"]//'\
                         'li[@class="active"]/span/text()'
