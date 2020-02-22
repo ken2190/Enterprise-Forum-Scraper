@@ -1,6 +1,12 @@
 import re
 import uuid
 
+from urllib.parse import quote_plus
+
+from datetime import (
+    datetime,
+    timedelta
+)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -15,6 +21,7 @@ NO_OF_THREADS = 20
 USERNAME = "thecreator"
 PASSWORD = "Night#Fuck000"
 MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
+USER_ID = ",42737,"
 
 
 class FuckavSpider(SitemapSpider):
@@ -29,20 +36,21 @@ class FuckavSpider(SitemapSpider):
     captcha_form_css = "#pagenav_menu + form[action*=\"login.php\"]"
 
     # Xpath stuffs
-    forum_xpath = "//*[not(@class=\"boxcolorbar\")]/a[contains(@href,\"forumdisplay.php?f\")]"
-    pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
+    forum_xpath = "//td[contains(@id,\"f\")]/div/a[contains(@href,\"forumdisplay.php?f\")]/@href|" \
+                  "//td[contains(@id,\"f\")]/div/table/tr/td/a[contains(@href,\"forumdisplay.php?f\")]/@href"
 
-    thread_xpath = "//tr[@class=\"inline_row\"]"
-    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
-    thread_last_page_xpath = "//span/span[@class=\"smalltext\"]/a[contains(@href,\"Thread-\")][last()]/@href"
-    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
-                        "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
+    pagination_xpath = "//a[@rel=\"next\"]/@href"
 
-    thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
-    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
-    post_date_xpath = "//span[@class=\"post_date postbit_date\"]/text()[contains(.,\"-\")]|" \
-                      "//span[@class=\"post_date postbit_date\"]/span[@title]/@title"
-    avatar_xpath = "//div[@class=\"author_avatar postbit_avatar\"]/a/img/@src"
+    thread_xpath = "//tbody[contains(@id,\"threadbits_forum\")]/tr"
+    thread_first_page_xpath = "//a[contains(@id,\"thread_title\")]/@href"
+    thread_last_page_xpath = "//span/a[contains(@href,\"showthread\")][font[font]][last()]/@href|" \
+                             "//span[a[font]][last()][following-sibling::span]/a/@href"
+    thread_date_xpath = "//td[contains(@title,\"Ответов\")]/div/text()[1]"
+
+    thread_pagination_xpath = "//a[@rel=\"prev\"]/@href"
+    thread_page_xpath = "//span/strong/font/font/text()"
+    post_date_xpath = "//a[contains(@name,\"post\")]/following-sibling::text()[1][contains(.,\"-\")]"
+    avatar_xpath = "//div[@class=\"smallfont\"]/a/img/@src"
     captcha_xpath = "//img[@id=\"imagereg\"]/@src"
     
     # Regex stuffs
@@ -62,6 +70,48 @@ class FuckavSpider(SitemapSpider):
         r"(?<=sessionhash\=).*?(?=\"\;)",
         re.IGNORECASE
     )
+
+    # Other settings
+    use_proxy = False
+    sitemap_datetime_format = "%d-%m-%Y"
+    post_datetime_format = "%d-%m-%Y"
+    download_delay = REQUEST_DELAY
+    concurrent_requests = NO_OF_THREADS
+
+    def parse_thread_date(self, thread_date):
+        # Standardize thread date
+        thread_date = thread_date.strip().lower()
+
+        if "минут" in thread_date:
+            return datetime.today()
+        if "час" in thread_date:
+            return datetime.today()
+        elif "день" in thread_date:
+            day_offset = int(thread_date.split()[0])
+            return datetime.today() - timedelta(days=day_offset)
+        elif "недель" in thread_date:
+            day_offset = int(thread_date.split()[0]) * 7
+            return datetime.today() - timedelta(days=day_offset)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
+            )
+
+    def parse_post_date(self, post_date):
+        # Standardize post date
+        post_date = post_date.strip().lower()
+
+        try:
+            return datetime.strptime(
+                post_date[-10:],
+                self.post_datetime_format
+            )
+        except Exception as err:
+            return datetime.strptime(
+                post_date[:10],
+                self.post_datetime_format
+            )
 
     def start_requests(self):
         yield Request(
@@ -114,6 +164,7 @@ class FuckavSpider(SitemapSpider):
         )
 
     def parse_captcha(self, response):
+
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
@@ -123,7 +174,20 @@ class FuckavSpider(SitemapSpider):
             captcha_url = self.base_url + captcha_url
 
         # Solve captcha
-        captcha_token = self.solve_captcha(captcha_url, response)
+        captcha_token = self.solve_captcha(
+            captcha_url,
+            response,
+            cookies={
+                "User_id": USER_ID,
+                "IDstack": quote_plus(USER_ID)
+            },
+            headers={
+                "Referer": "https://fuckav.ru/login.php?do=login",
+                "Sec-fetch-dest": "image",
+                "Sec-fetch-mode": "no-cors",
+                "Sec-fetch-site": "same-origin",
+            }
+        )
 
         yield FormRequest.from_response(
             response,
@@ -142,14 +206,52 @@ class FuckavSpider(SitemapSpider):
             },
             headers=self.headers,
             meta=self.synchronize_meta(response),
-            callback=self.parse_start
+            callback=self.parse_redirect
+        )
+
+    def parse_redirect(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse_start,
+            dont_filter=True,
+            meta=self.synchronize_meta(response),
         )
 
     def parse_start(self, response):
-        self.logger.info(response.text)
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+
+        # Loop forum
+        for forum_url in all_forums:
+            # Standardize forum url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_forum
+            )
+
+    def parse_thread(self, response):
+
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Parse generic avatars
+        yield from super().parse_avatars(response)
 
 
 class FuckavScrapper(SiteMapScrapper):
+
     spider_class = FuckavSpider
 
 

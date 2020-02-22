@@ -832,20 +832,15 @@ class SitemapSpider(BypassCloudfareSpider):
                 "2Captcha: reCaptcha solve took to long to execute, aborting."
             )
 
-    def solve_captcha(self, image_url, response):
+    def solve_captcha(self, image_url, response, cookies={}, headers={}):
 
         # Load session
         session = requests.Session()
 
         # Load cookies from request
-        cookies = self.load_cookies(
-            response.request.headers.get("Cookie").decode("utf-8")
-        )
-
-        # Load cookies from response
         cookies.update(
             self.load_cookies(
-                response.headers.get("Set-Cookie").decode("utf-8")
+                response.request.headers.get("Cookie").decode("utf-8")
             )
         )
 
@@ -861,8 +856,18 @@ class SitemapSpider(BypassCloudfareSpider):
                 "https": proxy
             }
 
+        # Load user agent
+        headers.update(
+            {
+                "User-Agent": response.request.headers.get("User-Agent")
+            }
+        )
+
         # Download content
-        response = session.get(image_url)
+        response = session.get(
+            image_url,
+            headers=headers
+        )
         self.logger.info(
             "Download captcha image content with headers %s" % response.request.headers
         )

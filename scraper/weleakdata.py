@@ -136,12 +136,15 @@ class WeLeakDataSpider(SitemapSpider):
         )
 
     def parse_redirect(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
         yield FormRequest.from_response(
             response,
             meta=self.synchronize_meta(response),
             dont_filter=True,
             headers=self.headers,
-            callback=self.parse_start
+            callback=self.parse_start,
         )
 
     def parse_start(self, response):
@@ -149,8 +152,6 @@ class WeLeakDataSpider(SitemapSpider):
         self.synchronize_headers(response)
         base_forum_url = "https://weleakdata.com/forumdisplay.php?f={}"
         for i in range(1, 30):
-            # if not i == 15:
-            #     continue
             forum_url = base_forum_url.format(i)
             yield Request(
                 url=forum_url,
