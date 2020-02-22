@@ -109,6 +109,7 @@ from scraper.mmo4me import Mmo4meScrapper
 from scraper.binrev import BinRevScrapper
 from scraper.yougame import YouGameScrapper
 from scraper.whitehat import WhitehatScrapper
+from scraper.antionline import AntiOnlineScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -222,4 +223,5 @@ SCRAPER_MAP = {
     'binrev': BinRevScrapper,
     'yougame': YouGameScrapper,
     'whitehat': WhitehatScrapper,
+    'antionline': AntiOnlineScrapper,
 }
