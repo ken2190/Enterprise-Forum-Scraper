@@ -837,10 +837,19 @@ class SitemapSpider(BypassCloudfareSpider):
         # Load session
         session = requests.Session()
 
-        # Load cookies
+        # Load cookies from request
         cookies = self.load_cookies(
             response.request.headers.get("Cookie").decode("utf-8")
         )
+
+        # Load cookies from response
+        cookies.update(
+            self.load_cookies(
+                response.headers.get("Set-Cookie").decode("utf-8")
+            )
+        )
+
+        # Set cookies to session
         for name, value in cookies.items():
             session.cookies.set(name, value)
 
@@ -1204,15 +1213,3 @@ class SitemapSpider(BypassCloudfareSpider):
             self.logger.info(
                 f"Avatar {avatar_name} done..!"
             )
-
-    def parse_captcha(self, failure):
-        # Load response, request
-        response = failure.value.response
-        request = failure.request
-
-        # Load status
-        status = getattr(response, "status", None)
-
-        if (status == 403 and "Cloudfare" not in response.text):
-            with open(file="captcha_debug.html", mode="w+", encoding="utf-8") as file:
-                file.write(response.text)

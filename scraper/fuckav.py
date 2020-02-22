@@ -1,4 +1,5 @@
 import re
+import uuid
 
 from scraper.base_scrapper import (
     SitemapSpider,
@@ -11,6 +12,9 @@ from scrapy import (
 
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 20
+USERNAME = "thecreator"
+PASSWORD = "Night#Fuck000"
+MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
 
 
 class FuckavSpider(SitemapSpider):
@@ -19,6 +23,10 @@ class FuckavSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://fuckav.ru/"
+
+    # Css stuffs
+    login_form_css = "form[action*=\"login.php\"]"
+    captcha_form_css = "#pagenav_menu + form[action*=\"login.php\"]"
 
     # Xpath stuffs
     forum_xpath = "//*[not(@class=\"boxcolorbar\")]/a[contains(@href,\"forumdisplay.php?f\")]"
@@ -35,6 +43,7 @@ class FuckavSpider(SitemapSpider):
     post_date_xpath = "//span[@class=\"post_date postbit_date\"]/text()[contains(.,\"-\")]|" \
                       "//span[@class=\"post_date postbit_date\"]/span[@title]/@title"
     avatar_xpath = "//div[@class=\"author_avatar postbit_avatar\"]/a/img/@src"
+    captcha_xpath = "//img[@id=\"imagereg\"]/@src"
     
     # Regex stuffs
     topic_pattern = re.compile(
@@ -49,146 +58,100 @@ class FuckavSpider(SitemapSpider):
         r".*page=(\d+)",
         re.IGNORECASE
     )
+    get_session_hash = re.compile(
+        r"(?<=sessionhash\=).*?(?=\"\;)",
+        re.IGNORECASE
+    )
+
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            }
+        )
 
     def parse(self, response):
-        forums = response.xpath(
-            '//td[@class="alt1Active"]/div'
-            '/a[contains(@href, "forumdisplay.php?f=")]')
-        subforums = response.xpath(
-            '//td[img[@class="inlineimg"]]'
-            '/a[contains(@href, "forumdisplay.php?f=")]')
-        forums.extend(subforums)
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
 
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//td[contains(@id, "td_threadtitle_")]'
-            '/div/a[contains(@href, "showthread.php?")]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+        # Load session hash
+        session_hash = self.get_session_hash.search(
+            response.text
+        ).group()
 
-        next_page = response.xpath('//a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
-
-    def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
-
-        avatars = response.xpath('//a[contains(@href, "member.php?")]/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if self.base_url not in avatar_url:
-                avatar_url = self.base_url + avatar_url
-            user_id = re.findall(r'u=(\d+)', avatar_url)
-            if not user_id:
-                continue
-            file_name = '{}/{}.jpg'.format(self.avatar_path, user_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                    'user_id': user_id[0]
-                }
-            )
-
-        next_page = response.xpath('//a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            print(f"Avatar for user {response.meta['user_id']} done..!")
-
-
-class FuckavScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.ensure_avatar_path()
-
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
-
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            dont_filter=True,
+            meta=self.synchronize_meta(response),
+            cookies={
+                "sessionhash": session_hash
             },
-            'DOWNLOAD_DELAY': REQUEST_DELAY,
-            'CONCURRENT_REQUESTS': NO_OF_THREADS,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
+            callback=self.parse_login
+        )
 
-        }
-        if self.proxy:
-            settings['DOWNLOADER_MIDDLEWARES'].update({
-                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-            })
-            settings.update({
-                'ROTATING_PROXY_LIST': self.proxy,
+    def parse_login(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
 
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(FuckavSpider, self.output_path, self.avatar_path)
-        process.start()
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_form_css,
+            formdata={
+                "vb_login_username": USERNAME,
+                "vb_login_password": "",
+                "s": "",
+                "securitytoken": "guest",
+                "do": "login",
+                "vb_login_md5password": MD5PASSWORD,
+                "vb_login_md5password_utf": MD5PASSWORD
+            },
+            dont_filter=True,
+            meta=self.synchronize_meta(response),
+            callback=self.parse_captcha
+        )
+
+    def parse_captcha(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        # Load captcha
+        captcha_url = response.xpath(self.captcha_xpath).extract_first()
+        if self.base_url not in captcha_url:
+            captcha_url = self.base_url + captcha_url
+
+        # Solve captcha
+        captcha_token = self.solve_captcha(captcha_url, response)
+
+        yield FormRequest.from_response(
+            response,
+            formcss=self.captcha_form_css,
+            formdata={
+                "humanverify[input]": captcha_token,
+                "s": "",
+                "securitytoken": "guest",
+                "do": "dologin",
+                "vb_login_password": MD5PASSWORD,
+                "vb_login_username": USERNAME,
+                "url": "https://fuckav.ru/index.php",
+                "cookieuser": "0",
+                "postvars": "",
+                "logintype": ""
+            },
+            headers=self.headers,
+            meta=self.synchronize_meta(response),
+            callback=self.parse_start
+        )
+
+    def parse_start(self, response):
+        self.logger.info(response.text)
 
 
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+class FuckavScrapper(SiteMapScrapper):
+    spider_class = FuckavSpider
+
+
+if __name__ == "__main__":
+    pass
