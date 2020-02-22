@@ -1,44 +1,54 @@
-import time
-import requests
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
 
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
+from scrapy import (
+    Request,
+    FormRequest
+)
 
 REQUEST_DELAY = 0.1
 NO_OF_THREADS = 20
 
 
-class FuckavSpider(BypassCloudfareSpider):
-    name = 'fuckav_spider'
+class FuckavSpider(SitemapSpider):
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = 'https://fuckav.ru/'
-        self.topic_pattern = re.compile(r't=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page=(\d+)')
-        self.start_url = 'https://fuckav.ru/'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'referer': 'https://fuckav.ru/',
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
-        }
+    name = "fuckav_spider"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
-        )
+    # Url stuffs
+    base_url = "https://fuckav.ru/"
+
+    # Xpath stuffs
+    forum_xpath = "//*[not(@class=\"boxcolorbar\")]/a[contains(@href,\"forumdisplay.php?f\")]"
+    pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
+
+    thread_xpath = "//tr[@class=\"inline_row\"]"
+    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
+    thread_last_page_xpath = "//span/span[@class=\"smalltext\"]/a[contains(@href,\"Thread-\")][last()]/@href"
+    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/span[@title]/@title|" \
+                        "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]"
+
+    thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
+    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
+    post_date_xpath = "//span[@class=\"post_date postbit_date\"]/text()[contains(.,\"-\")]|" \
+                      "//span[@class=\"post_date postbit_date\"]/span[@title]/@title"
+    avatar_xpath = "//div[@class=\"author_avatar postbit_avatar\"]/a/img/@src"
+    
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page=(\d+)",
+        re.IGNORECASE
+    )
 
     def parse(self, response):
         forums = response.xpath(

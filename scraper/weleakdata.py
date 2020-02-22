@@ -63,6 +63,7 @@ class WeLeakDataSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
+    cloudfare_delay = 10
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     post_datetime_format = '%m-%d-%Y, %I:%M %p'

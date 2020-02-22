@@ -1,37 +1,50 @@
-import time
-import requests
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-class ScrapeBoxForumSpider(scrapy.Spider):
-    name = 'scrapeboxforum_spider'
+class ScrapeBoxForumSpider(SitemapSpider):
+    name = "scrapeboxforum_spider"
+    
+    # Url stuffs
+    base_url = "https://scrapeboxforum.com/"
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://scrapeboxforum.com/"
-        self.topic_pattern = re.compile(r'tid=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page=(\d+)')
-        self.start_url = 'https://scrapeboxforum.com'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/75.0.3770.142 Safari/537.36",
-        }
+    # Xpath stuffs
+    forum_xpath = "//td[contains(@class,\"trow\")]/strong/a/@href"
+    pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
-        )
+    thread_xpath = "//tr[@class=\"inline_row\"]"
+    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
+    thread_last_page_xpath = "//span[contains(@id,\"tid\")]/following-sibling::span/a[last()]/@href"
+    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]|" \
+                        "//span[@class=\"lastpost smalltext\"]/span[@title]"
+
+    thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
+    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
+    post_date_xpath = "//span[@class=\"post_date\"]/text()[contains(.,\"-\")]|" \
+                      "//span[@class=\"post_date\"]/span[@title]/@title"
+    avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"
+    
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"tid=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page=(\d+)",
+        re.IGNORECASE
+    )
 
     def parse(self, response):
         forums = response.xpath(
@@ -127,39 +140,10 @@ class ScrapeBoxForumSpider(scrapy.Spider):
             print(f"Avatar {file_name_only} done..!")
 
 
-class ScrapeBoxForumScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class ScrapeBoxForumScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
-
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(ScrapeBoxForumSpider, self.output_path, self.avatar_path)
-        process.start()
+    spider_class = ScrapeBoxForumSpider
 
 
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+if __name__ == "__main__":
+    pass
