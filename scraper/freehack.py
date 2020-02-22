@@ -88,7 +88,7 @@ class FreeHackSpider(SitemapSpider):
         yield from super().parse_thread(response)
 
         # Save avatars
-        # yield from super().parse_avatars(response)
+        yield from super().parse_avatars(response)
 
     def get_avatar_file(self, url=None):
         try:
