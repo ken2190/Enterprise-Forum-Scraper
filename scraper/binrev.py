@@ -8,8 +8,8 @@ from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
+REQUEST_DELAY = 0.7
+NO_OF_THREADS = 2
 
 USERNAME = "vrx9"
 PASSWORD = "4hr63yh38a"

@@ -18,7 +18,7 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 1.5
+REQUEST_DELAY = 8
 NO_OF_THREADS = 1
 
 CODE = 'shithead'
