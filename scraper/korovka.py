@@ -128,6 +128,10 @@ class KorovkaSpider(SitemapSpider):
         code_block = response.xpath(
             '//td[contains(text(), "буквы Вашего кодового слова форму")]'
             '/text()').re(r'Введите (\d+)-.*? и (\d+)')
+        if not code_block:
+            code_block = response.xpath(
+                '//td[contains(text(), "Your code words in the form below")]'
+                '/text()').re(r'Type (\d+)-.*? and (\d+)')
         security_token = response.xpath(
             '//input[@name="securitytoken"]/@value').extract_first()
         s = response.xpath(
