@@ -5,6 +5,7 @@ import scrapy
 import uuid
 import requests
 import polling
+import json
 
 from glob import glob
 from requests import Session
@@ -15,6 +16,10 @@ from copy import deepcopy
 from base64 import b64decode
 from datetime import datetime
 
+from seleniumwire.webdriver import (
+    Chrome,
+    ChromeOptions
+)
 from scrapy import (
     Request,
     Selector
@@ -380,6 +385,7 @@ class SitemapSpider(BypassCloudfareSpider):
     # Url stuffs
     base_url = None
     sitemap_url = None
+    ip_url = "https://api.ipify.org?format=json"
 
     # 2captcha api #
     recaptcha_solve_api = "https://2captcha.com/in.php"
@@ -395,6 +401,9 @@ class SitemapSpider(BypassCloudfareSpider):
     # Format stuff
     sitemap_datetime_format = "%Y-%m-%dT%H:%MZ"  # Date time format of majority of sitemap lastmod/thread last update time #
     post_datetime_format = "%m-%d-%Y"  # Date time format of majority of post update time #
+
+    # Css stuffs
+    ip_css = "pre::text"
 
     # Xpath stuffs
 
@@ -423,6 +432,10 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Recaptcha regular xpath #
     recaptcha_site_key_xpath = None  # Xpath to get recaptcha site key #
+
+    # Other settings
+    get_cookies_delay = 2
+    get_cookies_retry = 2
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1067,8 +1080,6 @@ class SitemapSpider(BypassCloudfareSpider):
                     thread_date=thread_lastmod,
                     thread_url=thread_url
             ):
-                # -----------This is for quick test------------
-                # return
                 continue
 
             yield Request(
@@ -1218,3 +1229,89 @@ class SitemapSpider(BypassCloudfareSpider):
             self.logger.info(
                 f"Avatar {avatar_name} done..!"
             )
+
+    def get_cookies(self, proxy=False):
+
+        # Init options
+        options = ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
+
+        # Init web driver arguments
+        webdriver_kwargs = {
+            "executable_path": "/usr/local/bin/chromedriver",
+            "options": options
+        }
+
+        # Init proxy
+        if proxy:
+            proxy = PROXY % (
+                "%s-session-%s" % (
+                    PROXY_USERNAME,
+                    uuid.uuid1().hex
+                ),
+                PROXY_PASSWORD
+            )
+            proxy_options = {
+                "proxy": {
+                    "http": proxy,
+                    "https": proxy
+                }
+            }
+            webdriver_kwargs["seleniumwire_options"] = proxy_options
+            self.logger.info(
+                "Selenium request with proxy: %s" % proxy_options
+            )
+
+        # Load chrome driver
+        browser = Chrome(**webdriver_kwargs)
+
+        # Load target site
+        retry = 0
+        while retry < self.get_cookies_retry:
+            # Load different branch
+            if self.start_date and self.sitemap_url:
+                browser.get(self.sitemap_url)
+            else:
+                browser.get(self.base_url)
+
+            # Wait
+            time.sleep(self.get_cookies_delay)
+
+            # Increase count
+            retry += 1
+
+        # Load cookies
+        cookies = browser.get_cookies()
+
+        # Load ip
+        browser.get(self.ip_url)
+        time.sleep(self.get_cookies_delay)
+
+        # Load selector
+        ip = None
+        selector = Selector(text=browser.page_source)
+        if proxy:
+            ip = json.loads(
+                selector.css(
+                    self.ip_css
+                ).extract_first()
+            ).get("ip")
+
+        # Quit browser
+        browser.quit()
+
+        # Report cookies and ip
+        bypass_cookies = {
+            c.get("name"): c.get("value") for c in cookies
+        }
+
+        self.logger.info(
+            "Bypass cookies: %s and ip: %s" % (
+                bypass_cookies,
+                ip
+            )
+        )
+
+        return bypass_cookies, ip

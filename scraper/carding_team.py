@@ -18,10 +18,7 @@ from scrapy import (
 )
 from scraper.base_scrapper import (
     SitemapSpider,
-    SiteMapScrapper,
-    PROXY_USERNAME,
-    PROXY_PASSWORD,
-    PROXY
+    SiteMapScrapper
 )
 
 
@@ -35,16 +32,12 @@ class CardingTeamSpider(SitemapSpider):
     # Url stuffs
     base_url = "https://cardingteam.cc/"
     sitemap_url = 'https://cardingteam.cc/sitemap-index.xml'
-    ip_url = "https://api.ipify.org?format=json"
 
     # Sitemap Stuffs
     forum_sitemap_xpath = '//sitemap[loc[contains(text(),"sitemap-threads.xml")] and lastmod]/loc/text()'
     thread_sitemap_xpath = '//url[loc[contains(text(),"Thread-")] and lastmod]'
     thread_url_xpath = '//loc/text()'
     thread_lastmod_xpath = "//lastmod/text()"
-
-    # Css stuffs
-    ip_css = "pre::text"
 
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "Forum-")]/@href'
@@ -77,83 +70,8 @@ class CardingTeamSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    def get_cookies(self, proxy=None):
-        # Init options
-        options = ChromeOptions()
-        options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
-
-        # Init web driver arguments
-        webdriver_kwargs = {
-            "executable_path": "/usr/local/bin/chromedriver",
-            "options": options
-        }
-
-        # Init proxy
-        if proxy:
-            proxy_options = {
-                "proxy": {
-                    "http": proxy,
-                    "https": proxy
-                }
-            }
-            webdriver_kwargs["seleniumwire_options"] = proxy_options
-            self.logger.info(
-                "Selenium request with proxy: %s" % proxy_options
-            )
-
-        # Load chrome driver
-        browser = Chrome(**webdriver_kwargs)
-
-        # Load target site
-        retry = 0
-        while retry < 2:
-            # Load different branch
-            if self.start_date:
-                browser.get(self.sitemap_url)
-            else:
-                browser.get(self.base_url)
-
-            # Wait
-            time.sleep(2)
-
-            # Increase count
-            retry += 1
-
-        # Load cookies
-        cookies = browser.get_cookies()
-
-        # Load ip
-        browser.get(self.ip_url)
-        time.sleep(2)
-
-        # Load selector
-        ip = None
-        selector = Selector(text=browser.page_source)
-        if proxy:
-            ip = json.loads(
-                selector.css(
-                    self.ip_css
-                ).extract_first()
-            ).get("ip")
-
-        # Quit browser
-        browser.quit()
-
-        return {
-            c.get("name"): c.get("value") for c in cookies
-        }, ip
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Update headers
-        self.headers.update(
-            {
-                "Host": "cardingteam.cc"
-            }
-        )
+    # Other settings
+    use_proxy = False
 
     def start_requests(self):
         """
@@ -162,15 +80,7 @@ class CardingTeamSpider(SitemapSpider):
         """
 
         # Load cookies
-        cookiejar = uuid.uuid1().hex
-        proxy = PROXY % (
-            "%s-session-%s" % (
-                PROXY_USERNAME,
-                cookiejar
-            ),
-            PROXY_PASSWORD
-        )
-        cookies, ip = self.get_cookies(proxy)
+        cookies, ip = self.get_cookies(proxy=self.use_proxy)
 
         if self.start_date and self.sitemap_url:
             yield Request(
@@ -180,7 +90,6 @@ class CardingTeamSpider(SitemapSpider):
                 dont_filter=True,
                 callback=self.parse_sitemap,
                 meta={
-                    "cookiejar": cookiejar,
                     "ip": ip
                 }
             )
@@ -191,7 +100,6 @@ class CardingTeamSpider(SitemapSpider):
                 dont_filter=True,
                 cookies=cookies,
                 meta={
-                    "cookiejar": cookiejar,
                     "ip": ip
                 }
             )
