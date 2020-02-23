@@ -111,6 +111,7 @@ from scraper.yougame import YouGameScrapper
 from scraper.whitehat import WhitehatScrapper
 from scraper.antionline import AntiOnlineScrapper
 from scraper.hackingboard import HackingBoardScrapper
+from scraper.deutschland import DeutschLandScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -226,4 +227,5 @@ SCRAPER_MAP = {
     'whitehat': WhitehatScrapper,
     'antionline': AntiOnlineScrapper,
     'hackingboard': HackingBoardScrapper,
+    'deutschland': DeutschLandScrapper,
 }
