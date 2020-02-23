@@ -129,6 +129,13 @@ from templates.sinfulsite_template import SinfulSiteParser
 from templates.runtime_template import RuntimeParser
 from templates.bigmmo_template import BigMMOParser
 from templates.wildersecurity_template import WilderSecurityParser
+from templates.zyberph_template import ZyberphParser
+from templates.yougame_template import YougameParser
+from templates.whitehat_template import WhiteHatParser
+from templates.weleakdata_template import WeLeakDataParser
+from templates.mmo4me_template import Mmo4meParser
+from templates.binrev_template import BinrevParser
+from templates.antionline_template import AntiOnlineParser
 
 
 PARSER_MAP = {
@@ -262,4 +269,11 @@ PARSER_MAP = {
     'runtime': RuntimeParser,
     'bigmmo': BigMMOParser,
     'wildersecurity': WilderSecurityParser,
+    'zyberph': ZyberphParser,
+    'yougame': YouGameScrapper,
+    'whitehat': WhiteHatParser,
+    'weleakdata': WeLeakDataParser,
+    'mmo4me': Mmo4meParser,
+    'binrev': BinrevParser,
+    'antionline': AntiOnlineParser,
 }
