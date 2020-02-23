@@ -110,6 +110,7 @@ from scraper.binrev import BinRevScrapper
 from scraper.yougame import YouGameScrapper
 from scraper.whitehat import WhitehatScrapper
 from scraper.antionline import AntiOnlineScrapper
+from scraper.hackingboard import HackingBoardScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -224,4 +225,5 @@ SCRAPER_MAP = {
     'yougame': YouGameScrapper,
     'whitehat': WhitehatScrapper,
     'antionline': AntiOnlineScrapper,
+    'hackingboard': HackingBoardScrapper,
 }
