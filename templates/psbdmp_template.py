@@ -50,14 +50,16 @@ class PsbdmpParser:
     def process_file(self, input_file_path, output_file_path, ts):
         paste_id = input_file_path.rsplit('/', 1)[-1].rsplit('.', 1)[0]
         data = {
-            'source': 'pastebin',
-            'date': ts,
-            'paste_id': paste_id
+            '_source': {
+                'source': 'pastebin',
+                'date': ts,
+                'paste_id': paste_id
+            }
 
         }
         with open(input_file_path, 'r') as fp:
             content = fp.read()
-            data.update({'content': content})
+            data['_source'].update({'content': content})
             with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
                 utils.write_json(file_pointer, data)
                 print(f'Json for paste_id {paste_id} '
