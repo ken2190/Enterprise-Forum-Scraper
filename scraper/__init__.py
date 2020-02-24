@@ -113,6 +113,7 @@ from scraper.antionline import AntiOnlineScrapper
 from scraper.hackingboard import HackingBoardScrapper
 from scraper.deutschland import DeutschLandScrapper
 from scraper.kuketz import KuketzScrapper
+from scraper.xaknet import XaknetScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -230,4 +231,5 @@ SCRAPER_MAP = {
     'hackingboard': HackingBoardScrapper,
     'deutschland': DeutschLandScrapper,
     'kuketz': KuketzScrapper,
+    'xaknet': XaknetScrapper,
 }
