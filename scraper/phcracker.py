@@ -12,8 +12,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
+REQUEST_DELAY = 0.75
+NO_OF_THREADS = 5
 
 USER = 'Cyrax_011'
 PASS = 'c2Yv9EP8MsgGHJr'
@@ -23,7 +23,7 @@ class PHCrackerSpider(SitemapSpider):
     name = 'phcracker_spider'
 
     # Url stuffs
-    base_url = "https://www.phcracker.net/"
+    base_url = "https://www.phcracker.net"
     login_url = "https://www.phcracker.net/login/login"
 
     # Css stuffs
@@ -43,7 +43,7 @@ class PHCrackerSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+    post_date_xpath = '//a/time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
@@ -62,11 +62,13 @@ class PHCrackerSpider(SitemapSpider):
     )
 
     # Other settings
-    handle_httpstatus_list = [503]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
+    get_cookies_delay = 10
+    get_cookies_retry = 2
+    use_proxy = False
 
     def parse_thread_date(self, thread_date):
         """
@@ -92,14 +94,11 @@ class PHCrackerSpider(SitemapSpider):
         )
 
     def start_requests(self):
-        yield Request(
-            url=self.base_url,
-            headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            },
-            dont_filter=True
-        )
+
+        # Load cookies and ip
+        cookies, ip = self.get_cookies(proxy=self.use_proxy)
+
+        yield from super().start_requests()
 
     def parse(self, response):
 
