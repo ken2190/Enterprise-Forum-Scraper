@@ -136,6 +136,9 @@ from templates.weleakdata_template import WeLeakDataParser
 from templates.mmo4me_template import Mmo4meParser
 from templates.binrev_template import BinrevParser
 from templates.antionline_template import AntiOnlineParser
+from templates.kuketz_template import KuketzParser
+from templates.hackingboard_template import HackingBoardParser
+from templates.deutschland_template import DeutschlandParser
 
 
 PARSER_MAP = {
@@ -276,4 +279,7 @@ PARSER_MAP = {
     'mmo4me': Mmo4meParser,
     'binrev': BinrevParser,
     'antionline': AntiOnlineParser,
+    'kuketz': KuketzParser,
+    'hackingboard': HackingBoardParser,
+    'deutschland': DeutschlandParser,
 }
