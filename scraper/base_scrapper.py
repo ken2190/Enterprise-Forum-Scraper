@@ -6,6 +6,7 @@ import uuid
 import requests
 import polling
 import json
+import logging
 
 from glob import glob
 from requests import Session
@@ -18,7 +19,7 @@ from datetime import datetime
 
 from seleniumwire.webdriver import (
     Chrome,
-    ChromeOptions
+    ChromeOptions,
 )
 from scrapy import (
     Request,
@@ -1231,6 +1232,10 @@ class SitemapSpider(BypassCloudfareSpider):
             )
 
     def get_cookies(self, proxy=False):
+
+        # Init logger
+        selenium_logger = logging.getLogger("seleniumwire")
+        selenium_logger.setLevel(logging.ERROR)
 
         # Init options
         options = ChromeOptions()

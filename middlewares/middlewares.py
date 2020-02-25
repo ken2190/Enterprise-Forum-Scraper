@@ -139,7 +139,7 @@ class BypassCloudfareMiddleware(object):
         ip = None
 
         request_args = {
-            "url": url
+            "url": url,
         }
 
         if proxy:
