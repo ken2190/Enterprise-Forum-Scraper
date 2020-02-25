@@ -116,6 +116,8 @@ from scraper.kuketz import KuketzScrapper
 from scraper.xaknet import XaknetScrapper
 from scraper.phienbanmoi import PhienbanmoiScrapper
 from scraper.bbs2cto import Bbs2ctoScrapper
+from scraper.dedik import DedikScrapper
+from scraper.blackhacker import BlackHackerScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -236,4 +238,6 @@ SCRAPER_MAP = {
     'xaknet': XaknetScrapper,
     'phienbanmoi': PhienbanmoiScrapper,
     'bbs2cto': Bbs2ctoScrapper,
+    'dedik': DedikScrapper,
+    'blackhacker': BlackHackerScrapper,
 }
