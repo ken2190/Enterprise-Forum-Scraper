@@ -55,7 +55,8 @@ class RunTimeSpider(SitemapSpider):
 
     def parse_thread_date(self, thread_date):
         thread_date = thread_date.strip()
-
+        if thread_date.startswith(','):
+            return
         if 'hour' in thread_date.lower():
             return datetime.today()
         elif 'yesterday' in thread_date.lower():
@@ -69,7 +70,8 @@ class RunTimeSpider(SitemapSpider):
     def parse_post_date(self, post_date):
         # Standardize thread_date
         post_date = post_date.strip()
-
+        if post_date.startswith(','):
+            return
         if 'hour' in post_date.lower():
             return datetime.today()
         elif 'yesterday' in post_date.lower():
