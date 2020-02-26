@@ -71,7 +71,12 @@ class BinRevSpider(SitemapSpider):
                 "auth": USERNAME,
                 "password": PASSWORD,
             },
-            meta=self.synchronize_meta(response),
+            meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "country": "us"
+                    }
+            ),
             dont_filter=True,
             headers=self.headers,
             callback=self.parse_start
@@ -93,7 +98,12 @@ class BinRevSpider(SitemapSpider):
                 url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "country": "us"
+                    }
+                )
             )
 
     def parse_thread(self, response):
