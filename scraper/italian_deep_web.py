@@ -21,8 +21,8 @@ class ItalianDeepWebSpider(scrapy.Spider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = 'http://ehwcnzkhqsx4qcbsef4tupfnnewhkn52uxmcyieas3x34g6j45zoqzyd.onion/'
-        self.login_url = 'http://ehwcnzkhqsx4qcbsef4tupfnnewhkn52uxmcyieas3x34g6j45zoqzyd.onion/member.php'
+        self.base_url = 'http://d2wqyghspuskthbpnppl6qgvlzaychpjuv6mv24gile53q5ybojrk6qd.onion/'
+        self.login_url = 'http://d2wqyghspuskthbpnppl6qgvlzaychpjuv6mv24gile53q5ybojrk6qd.onion/member.php'
         self.topic_pattern = re.compile(r'tid=(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'page=(\d+)')
@@ -59,7 +59,7 @@ class ItalianDeepWebSpider(scrapy.Spider):
             'remember': 'yes',
             'submit': 'Login',
             'action': 'do_login',
-            'url': 'http://ehwcnzkhqsx4qcbsef4tupfnnewhkn52uxmcyieas3x34g6j45zoqzyd.onion/index.php',
+            'url': 'http://d2wqyghspuskthbpnppl6qgvlzaychpjuv6mv24gile53q5ybojrk6qd.onion/index.php',
             'my_post_key':  my_post_key,
         }
         yield FormRequest(
@@ -180,7 +180,7 @@ class ItalianDeepWebScrapper(SiteMapScrapper):
     no_of_threads = 16
 
     spider_class = ItalianDeepWebSpider
-    site_name = 'Italian Deep Web (ehwcnzkhqsx4qcbsef4tupfnnewhkn52uxmcyieas3x34g6j45zoqzyd.onion)'
+    site_name = 'italian_deep_web'
 
     def load_settings(self):
         spider_settings = super().load_settings()

@@ -16,8 +16,8 @@ from scrapy import (
     FormRequest
 )
 
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 20
+REQUEST_DELAY = 0.3
+NO_OF_THREADS = 10
 USERNAME = "thecreator"
 PASSWORD = "Night#Fuck000"
 MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
