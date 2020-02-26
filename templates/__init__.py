@@ -277,7 +277,7 @@ PARSER_MAP = {
     'bigmmo': BigMMOParser,
     'wildersecurity': WilderSecurityParser,
     'zyberph': ZyberphParser,
-    'yougame': YouGameScrapper,
+    'yougame': YougameParser,
     'whitehat': WhiteHatParser,
     'weleakdata': WeLeakDataParser,
     'mmo4me': Mmo4meParser,
