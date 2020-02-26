@@ -120,6 +120,7 @@ from scraper.dedik import DedikScrapper
 from scraper.blackhacker import BlackHackerScrapper
 from scraper.brute import BruteScrapper
 from scraper.crackforum import CrackForumScrapper
+from scraper.darktime import DarkTimeScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -244,4 +245,5 @@ SCRAPER_MAP = {
     'blackhacker': BlackHackerScrapper,
     'brute': BruteScrapper,
     'crackforum': CrackForumScrapper,
+    'darktime': DarkTimeScrapper,
 }
