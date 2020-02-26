@@ -33,7 +33,9 @@ class Mmo4meSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+    post_date_xpath = '//div/a/time[@datetime]/@datetime|'\
+                      '//ul[contains(@class,"message-attribution-main")]'\
+                      '//a/time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
