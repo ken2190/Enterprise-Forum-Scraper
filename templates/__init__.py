@@ -139,7 +139,11 @@ from templates.antionline_template import AntiOnlineParser
 from templates.kuketz_template import KuketzParser
 from templates.hackingboard_template import HackingBoardParser
 from templates.deutschland_template import DeutschlandParser
-
+from templates.xaknet_template import XaknetParser
+from templates.phienbanmoi_template import PhienbanmoiParser
+from templates.blackhacker_template import BlackHackerParser
+from templates.dedik_template import DedikParser
+from templates.bbs2cto_template import Bbs2ctoParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -282,4 +286,9 @@ PARSER_MAP = {
     'kuketz': KuketzParser,
     'hackingboard': HackingBoardParser,
     'deutschland': DeutschlandParser,
+    'xaknet': XaknetParser,
+    'phienbanmoi': PhienbanmoiParser,
+    'blackhacker': BlackHackerParser,
+    'dedik': DedikParser,
+    'bbs2cto': Bbs2ctoParser,
 }
