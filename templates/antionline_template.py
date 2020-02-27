@@ -209,8 +209,11 @@ class AntiOnlineParser:
         author = tag.xpath(
             './/a[contains(@class,"username")]//descendant::text()'
         )
-        if author:
-            author = author[0].strip() if author else None
+        if not author:
+            author = tag.xpath(
+                './/span[contains(@class,"username")]//descendant::text()'
+            )
+        author = author[0].strip() if author else None
         return author
 
     def get_title(self, tag):
