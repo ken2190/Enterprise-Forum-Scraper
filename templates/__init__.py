@@ -54,7 +54,7 @@ from templates.silk_road3_template import SilkRoad3Parser
 from templates.hiddenhand_template import HiddenHandParser
 from templates.prvtzone_template import PrvtZoneParser
 from templates.hackforums_template import HackForumsParser
-from templates.darkwebs_template import DarkWebsParser
+from templates.dark2web_template import Dark2WebParser
 from templates.nulledbb_template import NulledBBParser
 from templates.russian_carder_template import RussianCarderParser
 from templates.blackhatworld_template import BlackHatWorldParser
@@ -203,7 +203,7 @@ PARSER_MAP = {
     'hiddenhand': HiddenHandParser,
     'prvtzone': PrvtZoneParser,
     'hackforums': HackForumsParser,
-    'darkwebs': DarkWebsParser,
+    'dark2web': Dark2WebParser,
     'nulledbb': NulledBBParser,
     'russian_carder': RussianCarderParser,
     'blackhatworld': BlackHatWorldParser,

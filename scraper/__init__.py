@@ -55,7 +55,7 @@ from scraper.fraudstercrew import FraudstercrewScrapper
 from scraper.crackx import CrackXScrapper
 from scraper.Oday import OdayScrapper
 from scraper.hashkiller import HashKillerScrapper
-from scraper.darkwebs import DarkWebsScrapper
+from scraper.dark2web import Dark2WebScrapper
 from scraper.fuckav import FuckavScrapper
 from scraper.canadahq import CanadaHQScrapper
 from scraper.youhack import YouHackScrapper
@@ -180,7 +180,7 @@ SCRAPER_MAP = {
     'crackx': CrackXScrapper,
     '0day': OdayScrapper,
     'hashkiller': HashKillerScrapper,
-    'darkwebs': DarkWebsScrapper,
+    'dark2web': Dark2WebScrapper,
     'fuckav': FuckavScrapper,
     'canadahq': CanadaHQScrapper,
     'youhack': YouHackScrapper,
