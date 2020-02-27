@@ -42,7 +42,7 @@ from templates.alphabay_template import AlphaBayParser
 from templates.sinister_template import SinisterParser
 from templates.verified_carder_template import VerifiedCarderParser
 from templates.carderme_template import CarderMeParser
-from templates.ccc_mn_template import CCCMNParser
+from templates.mmm_lc_template import MMMLCParser
 from templates.cracked_to_template import CrackedToParser
 from templates.sky_fraud_template import SkyFraudParser
 from templates.omerta_template import OmertaParser
@@ -191,7 +191,7 @@ PARSER_MAP = {
     'sinister': SinisterParser,
     'verified_carder': VerifiedCarderParser,
     'carderme': CarderMeParser,
-    'ccc_mn': CCCMNParser,
+    'mmm_lc': MMMLCParser,
     'cracked_to': CrackedToParser,
     'sky_fraud': SkyFraudParser,
     'omerta': OmertaParser,

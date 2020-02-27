@@ -15,7 +15,7 @@ from scraper.sinister import SinisterScrapper
 from scraper.sentryMBA_v2 import SentryMBAv2Scrapper
 from scraper.verified_carder import VerifiedCarderScrapper
 from scraper.carderme import CarderMeScrapper
-from scraper.ccc_mn import CCCMNScrapper
+from scraper.mmm_lc import MMMLCScrapper
 from scraper.cracked_to import CrackedToScrapper
 from scraper.sky_fraud import SkyFraudScrapper
 from scraper.nulled_to import NulledToScrapper
@@ -140,7 +140,7 @@ SCRAPER_MAP = {
     'sentrymba_v2': SentryMBAv2Scrapper,
     'verified_carder': VerifiedCarderScrapper,
     'carder': CarderMeScrapper,
-    'ccc_mn': CCCMNScrapper,
+    'mmm_lc': MMMLCScrapper,
     'cracked_to': CrackedToScrapper,
     'sky_fraud': SkyFraudScrapper,
     'nulled_to': NulledToScrapper,

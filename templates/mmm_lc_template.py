@@ -14,7 +14,7 @@ class BrokenPage(Exception):
     pass
 
 
-class CCCMNParser:
+class MMMLCParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "ccc.mn"
