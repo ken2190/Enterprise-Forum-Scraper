@@ -144,6 +144,10 @@ from templates.phienbanmoi_template import PhienbanmoiParser
 from templates.blackhacker_template import BlackHackerParser
 from templates.dedik_template import DedikParser
 from templates.bbs2cto_template import Bbs2ctoParser
+from templates.brute_template import BruteParser
+from templates.crackforum_template import CrackForumParser
+from templates.darktime_template import DarktimeParser
+
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -291,4 +295,7 @@ PARSER_MAP = {
     'blackhacker': BlackHackerParser,
     'dedik': DedikParser,
     'bbs2cto': Bbs2ctoParser,
+    'brute': BruteParser,
+    'crackforum': CrackForumParser,
+    'darktime': DarktimeParser,
 }
