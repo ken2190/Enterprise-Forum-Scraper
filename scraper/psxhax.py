@@ -1,16 +1,11 @@
-import time
-import requests
-import os
-import json
+import uuid
 import re
-import scrapy
-from math import ceil
-import configparser
-from urllib.parse import urlencode
-from lxml.html import fromstring
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from datetime import datetime
+
+from scrapy import (
+    Request,
+    FormRequest
+)
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -23,15 +18,19 @@ NO_OF_THREADS = 5
 USER = 'Cyrax011'
 PASS = 'Night#PSxHAx000'
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
-             'AppleWebKit/537.36 (KHTML, like Gecko) '\
-             'Chrome/79.0.3945.117 Safari/537.36',
-
 
 class PsxhaxSpider(SitemapSpider):
     name = 'psxhax_spider'
 
-    # Xpaths
+    # Url stuffs
+    base_url = "https://www.psxhax.com"
+    forum_url = "https://www.psxhax.com/forums"
+    login_url = "https://www.psxhax.com/login"
+
+    # Css stuffs
+    login_form_css = "form[action*=login]"
+
+    # Xpath stuffs
     forum_xpath = '//h3[@class="node-title"]/a/@href'
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
     thread_first_page_xpath = '//div[@class="structItem-title"]'\
@@ -45,104 +44,79 @@ class PsxhaxSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div[@class="message-attribution-main"]'\
-                      '/a/span[@class="u-concealed"]/@title|'\
-                      '//div[@class="p-body-header"]'\
-                      '//a[@class="u-concealed"]/@title'
+    post_date_xpath = '//a/span[@class="u-concealed" and @title]/text()'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"(?<=\.)\d*?(?=\/)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
 
     # Other settings
     use_proxy = False
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
     post_datetime_format = '%b %d, %Y at %I:%M %p'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = "https://www.psxhax.com"
-        self.topic_pattern = re.compile(r'threads/.*\.(\d+)/')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*/page-(\d+)')
-        self.headers.update({
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'user-agent': USER_AGENT
-        })
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
 
     def parse_thread_date(self, thread_date):
+        return super().parse_thread_date(thread_date.strip()[:-5])
 
-        return datetime.strptime(
-            thread_date.strip()[:-6],
-            self.sitemap_datetime_format
+    def start_requests(self):
+        yield Request(
+            url=self.login_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            }
         )
 
     def parse(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        # Load token
-        match = re.findall(r'csrf: \'(.*?)\'', response.text)
-
-        # Load param
-        params = {
-            '_xfRequestUri': '/',
-            '_xfWithData': '1',
-            '_xfToken': match[0],
-            '_xfResponseType': 'json'
-        }
-        token_url = 'https://psxhax.com/login/?' + urlencode(params)
-        yield Request(
-            url=token_url,
-            headers=self.headers,
-            callback=self.proceed_for_login,
-            meta=self.synchronize_meta(response)
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_form_css,
+            formdata={
+                "login": USER,
+                "password": PASS,
+                "_xfRedirect": "/"
+            },
+            meta=self.synchronize_meta(response),
+            dont_filter=True,
+            callback=self.parse_login
         )
 
-    def proceed_for_login(self, response):
+    def parse_login(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        # Load json data
-        json_response = json.loads(response.text)
-        html_response = fromstring(json_response['html']['content'])
-
-        # Exact token
-        token = html_response.xpath(
-            '//input[@name="_xfToken"]/@value')[0]
-
-        # Load params
-        params = {
-            'login': USER,
-            'password': PASS,
-            "remember": '1',
-            '_xfRedirect': 'https://www.psxhax.com/forums/',
-            '_xfToken': token
-        }
-        login_url = 'https://psxhax.com/login/login'
-        yield FormRequest(
-            url=login_url,
-            callback=self.parse_main_page,
-            formdata=params,
+        yield Request(
+            url=self.forum_url,
             headers=self.headers,
-            dont_filter=True,
+            callback=self.parse_start,
             meta=self.synchronize_meta(response)
-            )
+        )
 
-    def parse_main_page(self, response):
+    def parse_start(self, response):
+
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
-
         for forum_url in all_forums:
-
-            # Standardize url
+            # Standardize forum url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-            # if 'buy-sell-and-trade.24' not in forum_url:
-            #     continue
+
             yield Request(
                 url=forum_url,
                 headers=self.headers,
