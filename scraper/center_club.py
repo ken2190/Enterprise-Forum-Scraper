@@ -1,187 +1,162 @@
-import time
-import requests
 import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+import time
+import uuid
+import json
+
+from datetime import datetime, timedelta
+
+from scrapy import (
+    Request,
+    FormRequest,
+    Selector
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-class CenterClubSpider(BypassCloudfareSpider):
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+
+USER = 'vrx9'
+PASS = 'Night#Pro000'
+
+
+class CenterClubSpider(SitemapSpider):
     name = 'centerclub_spider'
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://center-club.ws"
-        self.topic_pattern = re.compile(r'threads/.*\.(\d+)/')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)')
-        self.start_url = 'https://center-club.ws/index.php'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'user-agent': self.custom_settings.get("DEFAULT_REQUEST_HEADERS"),
-        }
+    # Url stuffs
+    base_url = "https://center-club.us"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
-        )
+    # Xpaths
+    login_form_xpath = '//form[@method="post"]'
+    # captcha_form_xpath = '//form[@id="recaptcha-form"]'
+    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
+                  '//a[contains(@class,"subNodeLink--forum")]/@href'
+    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+    thread_first_page_xpath = '//div[@class="structItem-title"]'\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = '//time[contains(@class, "structItem-latestDate")]'\
+                        '/@datetime'
+    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+                              '/@href'
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+                        '/a/text()'
+    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+
+    avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
+
+    # Recaptcha stuffs
+    recaptcha_site_key_xpath = '//button[@class="g-recaptcha"]/@data-sitekey'
+
+    # Other settings
+    use_proxy = False
+    handle_httpstatus_list = [403]
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r'threads/.*\.(\d+)/',
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
 
     def parse(self, response):
-        forums = response.xpath(
-            '//h3[@class="node-title"]/a')
-        sub_forums = response.xpath(
-            '//ol[@class="node-subNodeFlatList"]/li/a')
-        forums.extend(sub_forums)
-
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            # if '.154/' not in url:
-            #     continue
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
+        token = response.xpath(
+            '//input[@name="_xfToken"]/@value').extract_first()
+        params = {
+            'login': USER,
+            'password': PASS,
+            "remember": '1',
+            '_xfRedirect': '',
+            '_xfToken': token
+        }
+        yield FormRequest(
+            url="https://center-club.us/index.php?login/login",
+            callback=self.parse_redirect,
+            formdata=params,
+            headers=self.headers,
+            dont_filter=True,
             )
 
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[@data-preview-url]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+    def parse_redirect(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+        yield Request(
+            url="https://center-club.us/index.php",
+            meta=self.synchronize_meta(response),
+            dont_filter=True,
+            headers=self.headers,
+            callback=self.parse_start,
+        )
 
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+
+        return datetime.strptime(
+            thread_date.strip()[:-5],
+            self.sitemap_datetime_format
+        )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        return datetime.strptime(
+            post_date.strip()[:-5],
+            self.post_datetime_format
+        )
+
+    def parse_start(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=next_page_url,
+                url=forum_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response),
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath(
-            '//div[@class="message-avatar-wrapper"]/a/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if self.base_url not in avatar_url:
-                avatar_url = self.base_url + avatar_url
-            user_id = avatar.xpath('@alt').extract_first()
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                    'user_id': user_id
-                }
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
 
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            print(f"Avatar for user {response.meta['user_id']} done..!")
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
-class CenterClubScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class CenterClubScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = CenterClubSpider
+    site_name = 'center-club.us'
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(CenterClubSpider, self.output_path, self.avatar_path)
-        process.start()
-
-
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update({
+            'RETRY_HTTP_CODES': [403, 406, 429, 500, 503]
+        })
+        return settings
