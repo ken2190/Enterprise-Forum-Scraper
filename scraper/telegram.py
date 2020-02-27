@@ -22,7 +22,7 @@ class PhreakerSpider(SitemapSpider):
     name = "phreaker_spider"
 
     # Url stuffs
-    base_url = "https://phreaker.pro"
+    base_url = "https://phreaker.pro/"
 
     # Xpath stuffs
     forum_xpath = "//h3[@class=\"node-title\"]/a/@href"
@@ -33,14 +33,14 @@ class PhreakerSpider(SitemapSpider):
     thread_last_page_xpath = "//span[@class=\"structItem-pageJump\"]/a[last()]/@href"
     thread_date_xpath = "//time[@class=\"structItem-latestDate u-dt\"]/@datetime"
     thread_pagination_xpath = "//a[contains(@class,\"pageNav-jump--prev\")]/@href"
-    thread_page_xpath = "//li[contains(@class,\"pageNav-page--current\")]/a/text()"
+    thread_page_xpath = "//li[contains(@class=\"pageNav-page--current\")]/a/text()"
 
     post_date_xpath = "//time[@class=\"u-dt\"]/@datetime"
     avatar_xpath = "//div[@class=\"message-avatar-wrapper\"]/a/img/@src"
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"(?<=\.)\d*?(?=\/)",
+        r"(?<=\.)\d*?(?=\/$)",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
