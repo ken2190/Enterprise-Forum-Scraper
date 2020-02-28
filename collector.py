@@ -49,6 +49,8 @@ class Collector:
             '-b', '--banlist', help='Scrape the ban list', action='store_true')
         parser.add_argument(
             '-lst', '--list', help='List scrapers', action='store_true')
+        parser.add_argument(
+            '-ch', '--channel', help='Channel to scrape', required=False)
         self.parser = parser
 
     def get_args(self):
