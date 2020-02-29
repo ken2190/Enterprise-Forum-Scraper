@@ -70,6 +70,67 @@ class LuminatyProxyMiddleware(object):
         )
 
 
+class DedicatedProxyMiddleware(object):
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    def __init__(self, crawler):
+        self.logger = crawler.spider.logger
+        self.username = PROXY_USERNAME
+        self.password = PROXY_PASSWORD
+        self.super_proxy_url = PROXY
+
+    def process_request(self, request, spider):
+
+        # Check session
+        session = (request.meta.get("cookiejar")
+                   or uuid.uuid1().hex)
+        country = request.meta.get("country")
+        ip = request.meta.get("ip")
+
+        # Init username
+        username = self.username
+
+        # Add session string to session if available
+        if session and not ip:
+            username = "%s-session-%s" % (
+                username,
+                session
+            )
+
+        # Add country to session if available
+        if country and not ip:
+            username = "%s-country-%s" % (
+                username,
+                country
+            )
+
+        # If has ip meta, make it priority over session
+        if ip:
+            username = "%s-ip-%s" % (
+                username,
+                ip
+            )
+
+        # Add proxy to request
+        request.meta["proxy"] = self.super_proxy_url % (
+            username,
+            self.password
+        )
+
+        # Remove old authorization if exist
+        if request.headers.get("Proxy-Authorization"):
+            del request.headers["Proxy-Authorization"]
+
+        self.logger.info(
+            'Process request %s with proxy %s' % (
+                request.url, request.meta["proxy"]
+            )
+        )
+
+
 class BypassCloudfareMiddleware(object):
 
     captcha_provider = "2captcha"

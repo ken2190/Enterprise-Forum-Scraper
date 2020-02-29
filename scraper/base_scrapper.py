@@ -326,6 +326,7 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
 class BypassCloudfareSpider(scrapy.Spider):
 
     use_proxy = True
+    proxy = None
     download_delay = 0.3
     download_thread = 10
     default_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) " \
@@ -345,7 +346,14 @@ class BypassCloudfareSpider(scrapy.Spider):
             )
 
             # Proxy settings
-            if cls.use_proxy:
+            if cls.proxy:
+                crawler.settings.set(
+                    "DOWNLOADER_MIDDLEWARES",
+                    {
+                        "middlewares.middlewares.DedicatedProxyMiddleware": 100,
+                    },
+                )
+            elif cls.use_proxy:
                 crawler.settings.set(
                     "DOWNLOADER_MIDDLEWARES",
                     {
