@@ -1,258 +1,131 @@
 import re
-import os
-import time
-import traceback
-import requests
-from requests import Session
-from scraper.base_scrapper import BaseScrapper
 
-RCKID = "bbP582dxEPHSqPT3uc5dQj7lZCvRCpDwESaZBH6RIpb6f96lu9n9RazTomhx6vru"
-BLAZINGFAST_WEB_PROTECT = "771fc8bbf99b93989e22bd21242af073"
+from datetime import (
+    datetime,
+    timedelta
+)
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-class ProcrdScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(ProcrdScrapper, self).__init__(kwargs)
-        self.base_url = 'https://procrd.me/'
-        self.topic_pattern = re.compile(r'.*\.(\d+)/')
-        self.comment_pattern = re.compile(r'(\<\!--.*?--\!\>)')
-        self.cloudfare_error = None
-        cookie = f"rcksid={RCKID}; "\
-            f"BLAZINGFAST-WEB-PROTECT={BLAZINGFAST_WEB_PROTECT};"
-        self.headers = {
-            "cookie": cookie,
-            "referer": "https://procrd.me/",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/72.0.3626.119 Safari/537.36"
-        }
+class ProcrdSpider(SitemapSpider):
 
-    def get_page_content(self, url):
-        time.sleep(self.wait_time)
-        try:
-            response = requests.get(url, headers=self.headers)
-            if not response.url == url:
-                return self.get_page_content(response.url)
-            content = response.content
-            html_response = self.get_html_response(content)
-            if html_response.xpath('//div[@class="errorwrap"]'):
-                return
-            return content
-        except:
-            traceback.print_exc()
-            return
+    name = "procrd"
 
-    def save_avatar(self, name, url):
-        avatar_file = f'{self.avatar_path}/{name}'
-        if os.path.exists(avatar_file):
-            return
-        content = self.get_page_content(url)
-        if not content:
-            return
-        with open(avatar_file, 'wb') as f:
-            f.write(content)
+    # Url stuffs
+    base_url = "https://procrd.top/"
 
-    def process_first_page(self, topic_url):
-        topic = self.topic_pattern.findall(topic_url)
-        if not topic:
-            return
-        topic = topic[0]
-        initial_file = f'{self.output_path}/{topic}-1.html'
-        if os.path.exists(initial_file):
-            return
-        content = self.get_page_content(topic_url)
-        if not content:
-            print(f'No data for url: {topic_url}')
-            return
-        with open(initial_file, 'wb') as f:
-            f.write(content)
-        print(f'{topic}-1 done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        if html_response.xpath(
-            '//font[contains(text(), "Verifying your browser, please wait")]'
-        ):
-            print('DDOS identified. Retrying after a min')
-            time.sleep(60)
-            return self.process_first_page(topic_url)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return html_response
+    # Xpath stuffs
+    forum_xpath = "//div[@class=\"nodeText\"]/h3[@class=\"nodeTitle\"]/a/@href"
+    pagination_xpath = "//a[@class=\"PageNavNext \"]/following-sibling::a[@class=\"text\"]"
 
-    def process_topic(self, topic_url):
-        html_response = self.process_first_page(topic_url)
-        if html_response is None:
-            return
-        while True:
-            response = self.write_paginated_data(
-                html_response, topic_url)
-            if response is None:
-                return
-            topic_url, html_response = response
+    thread_xpath = "//li[contains(@id,\"thread\")]"
+    thread_first_page_xpath = "//h3[@class=\"title\"]/a/@href"
+    thread_last_page_xpath = "//font/span[@class=\"itemPageNav\"][last()]/a/@href"
+    thread_date_xpath = "//a[@class=\"dateTime\"]/abbr/@title|" \
+                        "//a[@class=\"dateTime\"]/span[@class=\"DateTime\"]/@title"
 
-    def write_paginated_data(self, html_response, topic_url):
-        next_page_block = html_response.xpath(
-            '//a[contains(@class,"currentPage")]'
-            '/following-sibling::a[1]/@href'
+    thread_page_xpath = "//a[contains(@class,\"currentPage\")]/text()"
+    thread_pagination_xpath = "//a[contains(@class,\"currentPage\")]/preceding-sibling::a[1]/@href"
+
+    post_date_xpath = "//div[@class=\"privateControls\"]/span[@class=\"item muted\"]/" \
+                      "a/*[@class=\"DateTime\"]/@title"
+    avatar_xpath = "//div[@class=\"avatarHolder\"]/a/img/@src"
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"(?<=\.)\d*?(?=\/)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    sitemap_datetime_format = "%d %b %Y at %H:%M"
+    post_datetime_format = "%d %b %Y at %H:%M"
+    month_mapper = {
+        "янв": "jan",
+        "фев": "feb",
+        "мар": "mar",
+        "апр": "apr",
+        "май": "may",
+        "июн": "jun",
+        "июл": "jul",
+        "авг": "aug",
+        "сен": "sep",
+        "окт": "oct",
+        "ноя": "nov",
+        "Дек": "dec",
+        "в": "at"
+    }
+
+    def convert_russian_locale(self, text):
+        # Lower case
+        text = text.lower()
+
+        # Replace month and conjunction
+        for key, value in self.month_mapper.items():
+            text = text.replace(key.lower(), value.lower())
+
+        return text
+
+    def parse_post_date(self, post_date):
+        return super().parse_post_date(
+            self.convert_russian_locale(post_date)
         )
-        if not next_page_block:
-            next_page_block = html_response.xpath(
-                '//a[contains(@class,"currentPage")]'
-                '/following-sibling::span[1]//a/@href'
+
+    def parse_thread_date(self, thread_date):
+        return super().parse_thread_date(
+            self.convert_russian_locale(thread_date)
+        )
+
+    def parse(self, response):
+
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+            # Standardize forum url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_forum
             )
-        if not next_page_block:
-            next_page_block = html_response.xpath(
-                '//a[@class="PageNavNext hidden"]'
-                '/following-sibling::a[1]/@href'
-            )
-        if not next_page_block:
-            return
-        next_page_url = next_page_block[0]
-        next_page_url = self.base_url + next_page_url\
-            if self.base_url not in next_page_url else next_page_url
-        if next_page_url == topic_url:
-            return
-        pattern = re.compile(r'.*\.(\d+)/page-(\d+)')
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
-        content = self.get_page_content(next_page_url)
-        if not content:
-            return
-        paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
 
-        print(f'{topic}-{pagination_value} done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return next_page_url, html_response
+    def parse_forum(self, response):
 
-    def process_forum(self, url):
-        while True:
-            print(f"Forum URL: {url}")
-            forum_content = self.get_page_content(url)
-            if not forum_content:
-                print(f'No data for url: {forum_content}')
-                return
-            forum_content = self.comment_pattern.sub('', str(forum_content))
-            html_response = self.get_html_response(forum_content)
-            topic_blocks = html_response.xpath(
-                '//ol[@class="discussionListItems"]/li')
-            if not topic_blocks:
-                topic_blocks = html_response.xpath(
-                    '//div[@class="uix_stickyThreads"]/li')
-            for topic in topic_blocks:
-                topic_url = topic.xpath(
-                    'div//h3[@class="title"]/'
-                    'a[contains(@href, "threads/")]/@href')
-                if not topic_url:
-                    continue
-                topic_url = topic_url[0]
-                topic_url = self.base_url + topic_url\
-                    if self.base_url not in topic_url else topic_url
-                self.process_topic(topic_url)
-            forum_pagination_url = html_response.xpath(
-                '//a[contains(@class,"currentPage")]'
-                '/following-sibling::a[1]/@href'
-            )
-            if not forum_pagination_url:
-                forum_pagination_url = html_response.xpath(
-                    '//a[contains(@class,"currentPage")]'
-                    '/following-sibling::span[1]//a/@href'
-                )
-            if not forum_pagination_url:
-                forum_pagination_url = html_response.xpath(
-                    '//a[@class="PageNavNext hidden"]'
-                    '/following-sibling::a[1]/@href'
-                )
-            if not forum_pagination_url:
-                return
-            new_url = forum_pagination_url[0]
-            new_url = self.base_url + new_url\
-                if self.base_url not in new_url else new_url
-            if new_url == url:
-                return
-            url = new_url
+        # Parse sub forums
+        yield from self.parse(response)
 
-    def get_forum_urls(self, html_response):
-        urls = set()
-        extracted_urls = html_response.xpath(
-            '//div[@class="nodeText"]'
-            '/h3[@class="nodeTitle"]/a/@href'
-        )
-        for _url in extracted_urls:
-            if self.base_url not in _url:
-                urls.add(self.base_url + _url)
-            else:
-                urls.add(_url)
-        extracted_urls = html_response.xpath(
-            '//li/div/h4[@class="nodeTitle"]/a/@href'
-        )
-        for _url in extracted_urls:
-            if self.base_url not in _url:
-                urls.add(self.base_url + _url)
-            else:
-                urls.add(_url)
-        urls = sorted(
-            urls,
-            key=lambda x: int(x.rsplit('.', 1)[-1].split('/')[0]))
-        return urls
+        # Parse generic forum
+        yield from super().parse_forum(response)
 
-    def clear_cookies(self,):
-        self.session.cookies.clear()
+    def parse_thread(self, response):
 
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//a[@data-avatarhtml="true"]/img/@src'
-        )
-        for url in urls:
-            url = self.base_url + url\
-                if not url.startswith('http') else url
-            if "image.php" in url:
-                avatar_name_pattern = re.compile(r'.*\.(\d+)/')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = f'{name_match[0]}.jpg'
-            else:
-                avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = name_match[0]
+        # Save generic thread
+        yield from super().parse_thread(response)
 
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
-
-    def do_scrape(self):
-        print('************  ProcrdScrapper Started  ************\n')
-        main_content = self.get_page_content(self.base_url)
-        if not main_content:
-            print(f'No data for url: {self.base_url}')
-            return
-        html_response = self.get_html_response(main_content)
-        forum_urls = self.get_forum_urls(html_response)
-        # print(forum_urls)
-        # return
-        # forum_urls = ['https://procrd.me/forums/pravila-foruma-reklama-rules-advertisement.5/']
-        for forum_url in forum_urls:
-            self.process_forum(forum_url)
+        # Save avatars
+        yield from super().parse_avatars(response)
 
 
-def main():
-    template = ProcrdScrapper()
-    template.do_scrape()
+class ProcrdScrapper(SiteMapScrapper):
+    spider_class = ProcrdSpider
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    pass

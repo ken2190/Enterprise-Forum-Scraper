@@ -57,7 +57,7 @@ class HoxForumSpider(SitemapSpider):
             return datetime.today()
         else:
             return super().parse_thread_date(thread_date)
-    
+
     def parse_post_date(self, post_date):
         if "yesterday" in post_date.lower():
             return datetime.today() - timedelta(days=1)
