@@ -79,6 +79,7 @@ class KorovkaSpider(SitemapSpider):
             'Referer': self.base_url,
             'User-Agent': USER_AGENT
         })
+        self.firstrun = kwargs.get('firstrun')
 
     def synchronize_meta(self, response, default_meta={}):
         meta = {
@@ -195,20 +196,71 @@ class KorovkaSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-        all_forums = response.xpath(self.forum_xpath).extract()
-        for forum_url in all_forums:
+        if self.firstrun:
+            self.output_url_file = open(self.output_path + '/urls.txt', 'w')
+            all_forums = response.xpath(self.forum_xpath).extract()
+            for forum_url in all_forums:
 
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                # Standardize url
+                if self.base_url not in forum_url:
+                    forum_url = self.base_url + forum_url
+                yield Request(
+                    url=forum_url,
+                    headers=self.headers,
+                    callback=self.parse_forum,
+                    meta=self.synchronize_meta(response)
+                )
+        else:
+            input_file = self.output_path + '/urls.txt'
+            if not os.path.exists(input_file):
+                self.logger.info('URL File not found. Exiting!!')
+                return
+            for thread_url in open(input_file, 'r'):
+                thread_url = thread_url.strip()
+                topic_id = self.topic_pattern.findall(thread_url)
+                if not topic_id:
+                    continue
+                file_name = '{}/{}-1.html'.format(
+                    self.output_path, topic_id[0])
+                if os.path.exists(file_name):
+                    continue
+                yield Request(
+                    url=thread_url,
+                    headers=self.headers,
+                    callback=self.parse_thread,
+                    meta=self.synchronize_meta(
+                        response,
+                        default_meta={
+                            "topic_id": topic_id[0]
+                        }
+                    )
+                )
 
-            # if 'f=133' not in forum_url:
+    def parse_forum(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+        self.logger.info('next_page_url: {}'.format(response.url))
+        threads = response.xpath(self.thread_first_page_xpath).extract()
+        for thread_url in threads:
+            if self.base_url not in thread_url:
+                thread_url = self.base_url + thread_url
+            topic_id = self.topic_pattern.findall(thread_url)
+            if not topic_id:
+                continue
+            # if 'showthread.php?t=' not in thread_url:
             #     continue
+            self.output_url_file.write(thread_url)
+            self.output_url_file.write('\n')
+
+        next_page = response.xpath(self.pagination_xpath).extract_first()
+        if next_page:
+            if self.base_url not in next_page:
+                next_page = self.base_url + next_page
             yield Request(
-                url=forum_url,
+                url=next_page,
                 headers=self.headers,
                 callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
+                meta=self.synchronize_meta(response),
             )
 
     def parse_thread(self, response):
