@@ -1,201 +1,177 @@
 import re
 import os
-import time
-import traceback
-import requests
-from requests import Session
-from scraper.base_scrapper import BaseScrapper
+import uuid
+
+from datetime import datetime, timedelta
+
+from scrapy import (
+    Request,
+    FormRequest,
+    Selector
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-class BlackBoxScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(BlackBoxScrapper, self).__init__(kwargs)
-        self.base_url = 'http://blackboxs.biz/'
-        self.topic_pattern = re.compile(r't=(\d+)')
-        self.comment_pattern = re.compile(r'(\<\!--.*?--\!\>)')
-        self.cloudfare_error = None
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 
-    def get_page_content(self, url):
-        time.sleep(self.wait_time)
-        try:
-            response = requests.get(url)
-            content = response.content
-            html_response = self.get_html_response(content)
-            if html_response.xpath('//div[@class="errorwrap"]'):
-                return
-            return content
-        except:
-            traceback.print_exc()
-            return
 
-    def save_avatar(self, name, url):
-        avatar_file = f'{self.avatar_path}/{name}'
-        if os.path.exists(avatar_file):
-            return
-        content = self.get_page_content(url)
-        if not content:
-            return
-        with open(avatar_file, 'wb') as f:
-            f.write(content)
+class BlackBoxsSpider(SitemapSpider):
 
-    def process_first_page(self, topic_url):
-        topic = self.topic_pattern.findall(topic_url)
-        if not topic:
-            return
-        topic = topic[0]
-        initial_file = f'{self.output_path}/{topic}-1.html'
-        if os.path.exists(initial_file):
-            return
-        content = self.get_page_content(topic_url)
-        if not content:
-            print(f'No data for url: {topic_url}')
-            return
-        with open(initial_file, 'wb') as f:
-            f.write(content)
-        print(f'{topic}-1 done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        if html_response.xpath(
-            '//font[contains(text(), "Verifying your browser, please wait")]'
-        ):
-            print('DDOS identified. Retyring after a min')
-            time.sleep(60)
-            return self.process_first_page(topic_url)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return html_response
+    name = "blackboxs_spider"
 
-    def process_topic(self, topic_url):
-        html_response = self.process_first_page(topic_url)
-        if html_response is None:
-            return
-        while True:
-            response = self.write_paginated_data(html_response)
-            if response is None:
-                return
-            topic_url, html_response = response
+    # Url stuffs
+    base_url = "http://blackboxs.biz/"
 
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//a[@rel="next"]/@href'
-        )
-        if not next_page_block:
-            return
-        next_page_url = next_page_block[0]
-        next_page_url = self.base_url + next_page_url\
-            if self.base_url not in next_page_url else next_page_url
-        pattern = re.compile(r't=(\d+)&page=(\d+)')
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
-        content = self.get_page_content(next_page_url)
-        if not content:
-            return
-        paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
+    # Xpath stuffs
 
-        print(f'{topic}-{pagination_value} done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return next_page_url, html_response
+    # Forum xpath #
+    forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
+    thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
+    thread_first_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div'\
+                              '/a[contains(@href, "showthread.php?")]/@href'
+    thread_last_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div/span'\
+                             '/a[contains(@href, "showthread.php?")]'\
+                             '[last()]/@href'
+    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
 
-    def process_forum(self, url):
-        while True:
-            print(f"Forum URL: {url}")
-            forum_content = self.get_page_content(url)
-            if not forum_content:
-                print(f'No data for url: {forum_content}')
-                return
-            forum_content = self.comment_pattern.sub('', str(forum_content))
-            html_response = self.get_html_response(forum_content)
-            topic_urls = html_response.xpath(
-                '//table[@id="threadslist"]//td[@id]'
-                '//a[contains(@href, "showthread.php")]/@href'
+    pagination_xpath = '//a[@rel="next"]/@href'
+    thread_pagination_xpath = '//a[@rel="prev"]/@href'
+    thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
+    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]'\
+                      '/a[contains(@name,"post")]'\
+                      '/following-sibling::text()[1]'
+    avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r"u=(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    cloudfare_delay = 10
+    handle_httpstatus_list = [503]
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    post_datetime_format = '%d.%m.%Y, %H:%M'
+    sitemap_datetime_format = '%d.%m.%Y'
+
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        thread_date = thread_date.strip()
+        if "днес" in thread_date.lower():
+            return datetime.today()
+        elif "вчера" in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
             )
-            for topic_url in topic_urls:
-                topic_url = self.base_url + topic_url\
-                    if self.base_url not in topic_url else topic_url
-                self.process_topic(topic_url)
-            forum_pagination_url = html_response.xpath(
-                '//a[@rel="next"]/@href'
-            )
-            if not forum_pagination_url:
-                return
-            url = forum_pagination_url[0]
-            url = self.base_url + url\
-                if self.base_url not in url else url
 
-    def get_forum_urls(self, html_response):
-        urls = set()
-        extracted_urls = html_response.xpath(
-            '//td[@class="alt1Active"]'
-            '//a[contains(@href, "forumdisplay.php")]/@href'
-        )
-        for _url in extracted_urls:
-            if self.base_url not in _url:
-                urls.add(self.base_url + _url)
-            else:
-                urls.add(_url)
-        urls = sorted(
-            urls,
-            key=lambda x: int(x.split('f=')[-1]))
-        return urls
-
-    def clear_cookies(self,):
-        self.session.cookies.clear()
-
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//td[@class="alt2"]/div[@class="smallfont"]/a/img/@src'
-        )
-        for url in urls:
-            url = self.base_url + url\
-                if not url.startswith('http') else url
-            if "image.php" in url:
-                avatar_name_pattern = re.compile(r'u=(\d+)')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = f'{name_match[0]}.jpg'
-            else:
-                avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = name_match[0]
-
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
-
-    def do_scrape(self):
-        print('************  BlackBoxScrapper Started  ************\n')
-        main_content = self.get_page_content(self.base_url)
-        if not main_content:
-            print(f'No data for url: {self.base_url}')
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        post_date = post_date.strip()
+        if not post_date:
             return
-        html_response = self.get_html_response(main_content)
-        forum_urls = self.get_forum_urls(html_response)
-        # print(forum_urls)
-        # return
-        # forum_urls = ['http://carder.me/forumdisplay.php?f=8']
-        for forum_url in forum_urls:
-            self.process_forum(forum_url)
+
+        if "днес" in post_date.lower():
+            return datetime.today()
+        elif "вчера" in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
+            )
+
+    def parse(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+        # print(response.text)
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
+            )
+
+    def parse_thread(self, response):
+
+        # Save generic thread
+        yield from super().parse_thread(response)
+
+        # Save avatars
+        yield from self.parse_avatars(response)
+
+    def parse_avatars(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Save avatar content
+        for avatar in response.xpath(self.avatar_xpath):
+            avatar_url = avatar.xpath('img/@src').extract_first()
+
+            # Standardize avatar url
+            if not avatar_url.lower().startswith("http"):
+                avatar_url = self.base_url + avatar_url
+
+            if 'image/svg' in avatar_url:
+                continue
+
+            user_url = avatar.xpath('@href').extract_first()
+            match = self.avatar_name_pattern.findall(user_url)
+            if not match:
+                continue
+
+            file_name = os.path.join(
+                self.avatar_path,
+                f'{match[0]}.jpg'
+            )
+
+            if os.path.exists(file_name):
+                continue
+
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                ),
+            )
 
 
-def main():
-    template = BlackBoxScrapper()
-    template.do_scrape()
+class BlackBoxScrapper(SiteMapScrapper):
 
-
-if __name__ == '__main__':
-    main()
+    spider_class = BlackBoxsSpider
+    site_name = 'blackboxs.biz'

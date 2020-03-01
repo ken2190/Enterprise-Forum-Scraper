@@ -4,145 +4,160 @@ import scrapy
 from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import SiteMapScrapper
-
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 16
-
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
-             'AppleWebKit/537.36 (KHTML, like Gecko) '\
-             'Chrome/79.0.3945.117 Safari/537.36',
+from datetime import datetime, timedelta
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-class HackThisSiteSpider(scrapy.Spider):
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+
+
+class HackThisSiteSpider(SitemapSpider):
     name = 'hackthissite_spider'
+    base_url = 'https://hackthissite.org/forums'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = "http://hackthissite.org/forums"
-        self.start_url = "http://hackthissite.org/forums/index.php"
-        self.topic_pattern = re.compile(r'.*t=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*id=(.*)')
-        self.pagination_pattern = re.compile(r'.*start=(\d+)$')
-        self.output_path = kwargs.get("output_path")
-        self.avatar_path = kwargs.get("avatar_path")
-        self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'user-agent': USER_AGENT
-        }
+    # Xpaths
+    forum_xpath = '//a[contains(@class, "forumtitle")]/@href'
+    thread_xpath = '//ul[@class="topiclist topics"]/li'
+    thread_first_page_xpath = '//a[contains(@class, "topictitle")]/@href'
+    thread_last_page_xpath = '//strong[@class="pagination"]'\
+                             '/span/a[last()]/@href'
+    thread_date_xpath = '//dd[@class="lastpost"]/span/text()[last()]'
+    pagination_xpath = '//div[@class="pagination"]/span/strong'\
+                       '/following-sibling::a[1]/@href'
+    thread_pagination_xpath = '//div[@class="pagination"]/span/strong'\
+                              '/preceding-sibling::a[1]/@href'
+    thread_page_xpath = '//div[@class="pagination"]/span/strong/text()'
+    post_date_xpath = '//p[@class="author"]/strong'\
+                      '/following-sibling::text()[1]'
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            callback=self.parse,
-            headers=self.headers,
-        )
+    avatar_xpath = '//div[@class="avatar-container"]/a/img/@src'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"&t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r'.*id=(.*)',
+        re.IGNORECASE
+    )
+
+    # Other settings
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    post_datetime_format = 'on %a %b %d, %Y %I:%M %p'
+    sitemap_datetime_format = 'on %a %b %d, %Y %I:%M %p'
+
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        thread_date = thread_date.strip()
+        if "today" in thread_date.lower():
+            return datetime.today()
+        elif "yesterday" in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
+            )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        post_date = post_date.strip()
+        if not post_date:
+            return
+
+        if "today" in post_date.lower():
+            return datetime.today()
+        elif "yesterday" in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
+            )
 
     def parse(self, response):
-        forums = response.xpath(
-            '//a[@class="forumtitle" or @class="subforum read"]')
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url.strip('.')
-            # if 'f=41' not in url:
-            #     continue
-            yield Request(
-                url=url,
-                callback=self.parse_forum,
-                headers=self.headers,
-            )
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
 
-    def parse_forum(self, response):
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[@class="topictitle"]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url.strip('.')
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+            forum_url = forum_url.strip('.')
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=thread_url,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]},
+                url=forum_url,
                 headers=self.headers,
-            )
-
-        next_page = response.xpath('//a[text()="Next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url.strip('.')
-            yield Request(
-                url=next_page_url,
                 callback=self.parse_forum,
-                headers=self.headers,
+                meta=self.synchronize_meta(response),
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        if pagination:
-            paginated_value = int(int(pagination[0])/10 + 1)
-        else:
-            paginated_value = 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath('//img[@alt="User avatar"]')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if not avatar_url:
-                continue
-            avatar_url = self.base_url + avatar_url.strip('.')\
-                if not avatar_url.startswith('http') else avatar_url
-            match = self.avatar_name_pattern.findall(avatar_url)
-            if not match:
-                continue
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
+
+    def get_forum_next_page(self, response):
+        next_page = response.xpath(self.pagination_xpath).extract_first()
+        if not next_page:
+            return
+        next_page = re.sub(r'sid=\w+', '', next_page)
+        next_page = next_page.strip().strip('.')
+        if self.base_url not in next_page:
+            next_page = self.base_url + next_page
+        return next_page
+
+    def get_thread_next_page(self, response):
+        next_page = response.xpath(self.thread_pagination_xpath).extract_first()
+        if not next_page:
+            return
+        next_page = re.sub(r'sid=\w+', '', next_page)
+        next_page = next_page.strip().strip('.')
+        if self.base_url not in next_page:
+            next_page = self.base_url + next_page
+        return next_page
+
+    def parse_thread_url(self, thread_url):
+        """
+        :param thread_url: str => thread url as string
+        :return: str => thread url as string
+        """
+        if thread_url:
+            thread_url = re.sub(r'sid=\w+', '', thread_url)
+            return thread_url.strip().strip('.')
+        else:
+            return
+
+    def get_avatar_file(self, url=None):
+        """
+        :param url: str => avatar url
+        :return: str => extracted avatar file from avatar url
+        """
+        try:
+            match = self.avatar_name_pattern.findall(url)
             if '.' in match[0]:
                 file_name = '{}/{}'.format(self.avatar_path, match[0])
             else:
                 file_name = '{}/{}.jpg'.format(self.avatar_path, match[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
-            )
-
-        next_page = response.xpath('//a[text()="Next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url.strip('.')
-            yield Request(
-                url=next_page_url,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id},
-                headers=self.headers,
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar {file_name_only} done..!")
+            return file_name
+        except Exception as err:
+            return
 
 
 class HackThisSiteScrapper(SiteMapScrapper):
@@ -151,12 +166,10 @@ class HackThisSiteScrapper(SiteMapScrapper):
     site_name = 'hackthissite.org'
 
     def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
+        settings = super().load_settings()
+        settings.update(
             {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
+                "RETRY_HTTP_CODES": [406, 429, 500, 503],
             }
         )
-        return spider_settings
+        return settings

@@ -1,159 +1,116 @@
 import os
 import re
-import json
 import scrapy
 from math import ceil
 import configparser
-from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+from datetime import datetime, timedelta
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-class PrtShipSpider(scrapy.Spider):
-    name = 'prtship_spider'
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 
-    def __init__(self, output_path):
-        self.base_url = "https://prtship.com"
-        self.start_url = '{}/forums/'.format(self.base_url)
-        self.topic_pattern = re.compile(r'.*\.(\d+)/$')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)$')
-        self.start_url = 'https://prtship.com'
-        self.output_path = output_path
-        self.headers = {
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/74.0.3729.169 Safari/537.36",
-        }
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+class PrtShipSpider(SitemapSpider):
+    name = 'prship_spider'
+    base_url = 'https://prtship.com'
+
+    # Xpaths
+    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
+                  '//a[contains(@class,"subNodeLink--forum")]/@href'
+    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+    thread_first_page_xpath = '//div[@class="structItem-title"]'\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = '//time[contains(@class, "structItem-latestDate")]'\
+                        '/@datetime'
+    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+                              '/@href'
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+                        '/a/text()'
+    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+
+    avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"/threads/.*\.(\d+)",
+        re.IGNORECASE
+    )
+
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+
+        return datetime.strptime(
+            thread_date.strip()[:-5],
+            self.sitemap_datetime_format
+        )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        return datetime.strptime(
+            post_date.strip()[:-5],
+            self.post_datetime_format
         )
 
     def parse(self, response):
-        token = response.xpath(
-            '//input[@name="_xfToken"]/@value').extract_first()
-        params = {
-            '_xfRequestUri': '/',
-            '_xfWithData': '1',
-            '_xfToken': token,
-            '_xfResponseType': 'json'
-        }
-        yield FormRequest(
-            url="https://prtship.com/list-custom-tabs/english.1",
-            callback=self.parse_main_page,
-            formdata=params,
-            headers=self.headers
-            )
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+        # print(response.text)
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
 
-    def parse_main_page(self, response):
-        json_response = json.loads(response.text)
-        html_response = json_response['html']['content']
-        response = fromstring(html_response)
-        forums = response.xpath(
-            '//h3[@class="node-title"]/a')
-        for forum in forums:
-            url = forum.xpath('@href')[0]
-            if self.base_url not in url:
-                url = self.base_url + url
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=url,
+                url=forum_url,
                 headers=self.headers,
-                callback=self.parse_forum
-            )
-
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[@data-preview-url]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
-
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response),
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Save avatars
+        yield from super().parse_avatars(response)
 
 
-class PrtShipScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
+class PrtShipScrapper(SiteMapScrapper):
 
-    def do_scrape(self):
-        settings = {
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
+    spider_class = PrtShipSpider
+    site_name = 'prtship.com'
 
-        }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(PrtShipSpider, self.output_path)
-        process.start()
-
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "RETRY_HTTP_CODES": [406, 429, 500, 503],
+            }
+        )
+        return settings

@@ -1118,17 +1118,23 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
             )
             return
-
-        next_page = response.xpath(self.pagination_xpath).extract_first()
+        next_page = self.get_forum_next_page(response)
         if next_page:
-            if self.base_url not in next_page:
-                next_page = self.base_url + next_page
             yield Request(
                 url=next_page,
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response)
             )
+
+    def get_forum_next_page(self, response):
+        next_page = response.xpath(self.pagination_xpath).extract_first()
+        if not next_page:
+            return
+        next_page = next_page.strip()
+        if self.base_url not in next_page:
+            next_page = self.base_url + next_page
+        return next_page
 
     def parse_thread(self, response):
 
@@ -1172,11 +1178,8 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
 
         # Thread pagination
-        next_page = response.xpath(self.thread_pagination_xpath).extract_first()
+        next_page = self.get_thread_next_page(response)
         if next_page:
-
-            if self.base_url not in next_page:
-                next_page = self.base_url + next_page
 
             yield Request(
                 url=next_page,
@@ -1189,6 +1192,15 @@ class SitemapSpider(BypassCloudfareSpider):
                     }
                 )
             )
+
+    def get_thread_next_page(self, response):
+        next_page = response.xpath(self.thread_pagination_xpath).extract_first()
+        if not next_page:
+            return
+        next_page = next_page.strip()
+        if self.base_url not in next_page:
+            next_page = self.base_url + next_page
+        return next_page
 
     def parse_avatars(self, response):
 
