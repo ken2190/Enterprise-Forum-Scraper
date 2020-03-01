@@ -147,6 +147,9 @@ from templates.bbs2cto_template import Bbs2ctoParser
 from templates.brute_template import BruteParser
 from templates.crackforum_template import CrackForumParser
 from templates.darktime_template import DarktimeParser
+from templates.oxsec_template import ox00secParser
+from templates.dnmavengers_template import DNMAvengersParser
+from templates.italiandeepweb_template import ItalianDeepWebParser
 
 
 PARSER_MAP = {
@@ -298,4 +301,7 @@ PARSER_MAP = {
     'brute': BruteParser,
     'crackforum': CrackForumParser,
     'darktime': DarktimeParser,
+    'italiandeepweb': ItalianDeepWebParser,
+    'dnmavengers': DNMAvengersParser,
+    'oxsec': ox00secParser,
 }
