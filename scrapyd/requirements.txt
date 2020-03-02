@@ -1,0 +1,12 @@
+scrapyd
+toripchanger
+lxml
+requests
+requests[socks]
+scrapy
+selenium
+python-dateutil
+cloudscraper
+pandas
+polling
+selenium-wire
