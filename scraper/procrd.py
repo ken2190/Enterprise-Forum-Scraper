@@ -13,6 +13,9 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+
 
 class ProcrdSpider(SitemapSpider):
 
@@ -40,7 +43,7 @@ class ProcrdSpider(SitemapSpider):
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"(?<=\.)\d*?(?=\/)",
+        r"threads/.*\.(\d+)",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
@@ -49,6 +52,8 @@ class ProcrdSpider(SitemapSpider):
     )
 
     # Other settings
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%d %b %Y at %H:%M"
     post_datetime_format = "%d %b %Y at %H:%M"
     month_mapper = {
