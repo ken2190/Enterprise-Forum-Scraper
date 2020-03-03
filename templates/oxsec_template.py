@@ -123,7 +123,7 @@ class ox00secParser:
     def extract_comments(self, html_response, pagination):
         comments = list()
         comment_blocks = html_response.xpath(
-          '//div[contains(@class,"topic-post")]'
+          '//div[@class="topic-body crawler-post"]'
         )
         # print("comment blocks: ")
         comment_blocks = comment_blocks[1:]\
@@ -160,7 +160,7 @@ class ox00secParser:
 
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//div[contains(@class,"topic-post")]'
+                '//div[@class="topic-body crawler-post"]'
             )
             if not header:
                 return
@@ -194,7 +194,7 @@ class ox00secParser:
 
     def get_date(self, tag):
         date_block = tag.xpath(
-                './/a[contains(@class,"post-date")]/span/@title'
+                './/time[@itemprop="datePublished"]/@datetime'
             )
         date = date_block[0].strip() if date_block else ""
         try:
@@ -205,23 +205,19 @@ class ox00secParser:
 
     def get_author(self, tag):
         author = tag.xpath(
-            './/span[contains(@class,"username")]//text()'
+            './/span[@class="creator"]/a/descendant::text()'
         )
-
-        author = author[0].strip() if author else None
-        return author
+        return ''.join(author)
 
     def get_title(self, tag):
         title = tag.xpath(
-            '//div[contains(@class,"title-wrapper")]//h1//a[contains(@class,"title")]/text()'
+            '//meta[@itemprop="headline"]/@content'
         )
-        title = ''.join(title)
-        title = title.strip().split(']')[-1] if title else None
-        return title
+        return title[0]
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
-               './/article//div[contains(@class,"contents")]//text()'
+               './/div[@itemprop="articleBody"]/descendant::text()'
         )
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
