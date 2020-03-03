@@ -1,194 +1,182 @@
-import time
-import requests
 import os
 import re
 import scrapy
 from math import ceil
 import configparser
-import hashlib
 from scrapy.http import Request, FormRequest
-from scraper.base_scrapper import SiteMapScrapper
+from datetime import datetime, timedelta
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+
 
 USER = 'Cyrax_011'
 PASS = 'Night#India065'
 
+
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+
 PROXY = 'http://127.0.0.1:8118'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
 
 
-class ItalianDeepWebSpider(scrapy.Spider):
+class ItalianDeepWebSpider(SitemapSpider):
     name = 'italiandeepweb_spider'
+    base_url = 'http://d2wqyghspuskthbpnppl6qgvlzaychpjuv6mv24gile53q5ybojrk6qd.onion/'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = 'http://d2wqyghspuskthbpnppl6qgvlzaychpjuv6mv24gile53q5ybojrk6qd.onion/'
-        self.login_url = 'http://d2wqyghspuskthbpnppl6qgvlzaychpjuv6mv24gile53q5ybojrk6qd.onion/member.php'
-        self.topic_pattern = re.compile(r'tid=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'page=(\d+)')
-        self.output_path = kwargs.get("output_path")
-        self.useronly = kwargs.get("useronly")
-        self.avatar_path = kwargs.get("avatar_path")
-        self.start_date = kwargs.get("start_date")
-        self.headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Host': self.base_url,
-            'User-Agent': USER_AGENT,
-        }
+    # Xpaths
+    login_form_xpath = '//form[@method="post"]'
+    captcha_url_xpath = '//img[@id="captcha_img"]/@src'
+    forum_xpath = '//a[contains(@href, "forumdisplay.php?fid=")]/@href'
+    pagination_xpath = '//div[@class="pagination"]'\
+                       '/a[@class="pagination_next"]/@href'
+    thread_xpath = '//tr[@class="inline_row"]'
+    thread_first_page_xpath = '//span[contains(@id,"tid_")]/a/@href'
+    thread_last_page_xpath = '//td[contains(@class,"forumdisplay_")]/div'\
+                             '/span/span[@class="smalltext"]/a[last()]/@href'
+    thread_date_xpath = '//td[contains(@class,"forumdisplay")]'\
+                        '/span[@class="lastpost smalltext"]/text()[1]|'\
+                        '//td[contains(@class,"forumdisplay")]'\
+                        '/span[@class="lastpost smalltext"]/span/@title'
+    thread_pagination_xpath = '//div[@class="pagination"]'\
+                              '//a[@class="pagination_previous"]/@href'
+    thread_page_xpath = '//span[@class="pagination_current"]/text()'
+    post_date_xpath = '//span[@class="post_date"]/text()[1]|'\
+                      '//span[@class="post_date"]/span/@title'\
+
+    avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
+    topic_pattern = re.compile(
+        r".*tid=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    retry_http_codes = [406, 429, 500, 503]
+    sitemap_datetime_format = '%m-%d-%Y'
+    post_datetime_format = '%m-%d-%Y'
 
     def start_requests(self):
+        login_url = f"{self.base_url}member.php?action=login"
         yield Request(
-            url=self.base_url,
-            callback=self.process_login,
-            meta={'proxy': PROXY}
-        )
-
-    def process_login(self, response):
-        post_key_pattern = re.compile(r'my_post_key = "(.*?)"')
-        match = post_key_pattern.findall(response.text)
-        if not match:
-            return
-        my_post_key = match[0]
-        form_data = {
-            'username': USER,
-            'password': PASS,
-            'remember': 'yes',
-            'submit': 'Login',
-            'action': 'do_login',
-            'url': 'http://d2wqyghspuskthbpnppl6qgvlzaychpjuv6mv24gile53q5ybojrk6qd.onion/index.php',
-            'my_post_key':  my_post_key,
-        }
-        yield FormRequest(
-            url=self.login_url,
-            formdata=form_data,
-            callback=self.parse_main_page,
-            meta={'proxy': PROXY},
+            url=login_url,
+            headers=self.headers,
+            callback=self.proceed_for_login,
             dont_filter=True,
+            meta={
+                'proxy': PROXY
+            }
         )
 
-    def parse_main_page(self, response):
-        forums = response.xpath(
-            '//a[contains(@href, "forumdisplay.php?fid=")]')
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            url = url.strip('/')
-            if self.base_url not in url:
-                url = self.base_url + url
-            yield Request(
-                url=url,
-                callback=self.parse_forum,
-                meta={'proxy': PROXY}
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
+
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
+
+        return meta
+
+    def parse_thread_date(self, thread_date):
+        thread_date = thread_date.split(',')[0].strip()
+        if not thread_date:
+            return
+
+        if any(v in thread_date.lower() for v in ['oggi', 'ora']):
+            return datetime.today()
+        elif 'leri' in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
             )
 
-    def parse_forum(self, response):
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//span[contains(@id, "tid_")]/a')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                callback=self.parse_thread,
-                meta={
-                    'topic_id': topic_id[0],
-                    'proxy': PROXY
-                },
+    def parse_post_date(self, post_date):
+        # Standardize thread_date
+        post_date = post_date.split(',')[0].strip()
+        if not post_date:
+            return
+
+        if any(v in post_date.lower() for v in ['oggi', 'ora']):
+            return datetime.today()
+        elif 'leri' in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
             )
 
-        next_page = response.xpath('//a[@class="pagination_next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+    def proceed_for_login(self, response):
+        if response.request.headers.get("Cookie"):
+            captcha_url = response.xpath(
+                self.captcha_url_xpath).extract_first()
+            my_post_key = response.xpath(
+                '//input[@name="my_post_key"]/@value').extract_first()
+            imagehash = response.xpath(
+                '//input[@name="imagehash"]/@value').extract_first()
+            self.logger.info(f'Downloading captcha from {captcha_url}')
+            captcha = self.solve_captcha(
+                captcha_url,
+                response
+            )
+            self.logger.info(f'Captcha has been solved: {captcha}')
+
+            formdata = {
+                'username': USER,
+                'password': PASS,
+                'remember': 'yes',
+                'imagestring': captcha,
+                'imagehash': imagehash,
+                'submit': 'Login',
+                'action': 'do_login',
+                'url': self.base_url,
+                'my_post_key': my_post_key,
+            }
+            yield FormRequest(
+                url=f"{self.base_url}member.php",
+                formdata=formdata,
+                headers=self.headers,
+                callback=self.parse_start,
+                dont_filter=True,
+                meta=self.synchronize_meta(response),
+            )
+        else:
+            yield from self.start_requests()
+
+    def parse_start(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=next_page_url,
+                url=forum_url,
+                headers=self.headers,
                 callback=self.parse_forum,
-                meta={'proxy': PROXY}
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath('//div[@class="author_avatar"]/a/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if not avatar_url:
-                continue
-            avatar_url = self.base_url + avatar_url\
-                if not avatar_url.startswith('http') else avatar_url
-            match = self.avatar_name_pattern.findall(avatar_url)
-            if not match:
-                continue
-            file_name = '{}/{}'.format(self.avatar_path, match[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                    'proxy': PROXY
-                }
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
 
-        next_page = response.xpath(
-            '//div[@class="pagination"]'
-            '/a[@class="pagination_next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                callback=self.parse_thread,
-                meta={
-                    'topic_id': topic_id,
-                    'proxy': PROXY
-                }
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar {file_name_only} done..!")
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
 class ItalianDeepWebScrapper(SiteMapScrapper):
 
-    request_delay = 0.1
-    no_of_threads = 16
-
     spider_class = ItalianDeepWebSpider
     site_name = 'italian_deep_web'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': self.request_delay,
-                'CONCURRENT_REQUESTS': self.no_of_threads,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads
-            }
-        )
-        return spider_settings
