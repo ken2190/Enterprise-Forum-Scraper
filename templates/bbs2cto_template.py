@@ -52,13 +52,25 @@ class Bbs2ctoParser:
     def get_pid(self, topic):
         return str(abs(hash(topic)) % (10 ** 6))
 
+    def get_html_response(self, template):
+        """
+        returns the html response from the `template` contents
+        """
+        with open(template, 'r') as f:
+            content = f.read()
+            try:
+                html_response = fromstring(content)
+            except ParserError as ex:
+                return
+            return html_response
+
     def main(self):
         comments = []
         output_file = None
         for index, template in enumerate(self.files):
             print(template)
             try:
-                html_response = utils.get_html_response(template)
+                html_response = self.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
@@ -241,7 +253,11 @@ class Bbs2ctoParser:
         comment_block = tag.xpath(
             './/div[contains(@class,"tipTop")]/a//text()'
         )
-        
+        if not comment_block:
+            comment_block = tag.xpath(
+                './/div[contains(@class,"tipTop")]/span/a//text()'
+            )
+
         if comment_block:
             comment_id = comment_block[0].strip().split('#')[-1]
         
