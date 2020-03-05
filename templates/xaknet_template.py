@@ -196,7 +196,7 @@ class XaknetParser:
 
     def get_date(self, tag):
         date_block = tag.xpath(
-                './/time//text()'
+                './/time//@datetime'
             )[0]
 
         date = date_block.strip() if date_block else ""          
@@ -240,7 +240,7 @@ class XaknetParser:
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            './/ul[contains(@class,"message-attribution-opposite")]/li[2]/a//text()'
+            './/ul[contains(@class,"message-attribution-opposite")]/li[last()]/a//text()'
         )
         
         if comment_block:
