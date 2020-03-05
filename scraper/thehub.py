@@ -7,47 +7,85 @@ from math import ceil
 import configparser
 import hashlib
 from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
+
+from datetime import datetime
+
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 USER = "vrx9"
 PASS = "Night#Hub998"
 
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+
 PROXY = 'http://127.0.0.1:8118'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0'
 
 
-class TheHubSpider(scrapy.Spider):
+class TheHubSpider(SitemapSpider):
     name = 'thehub_spider'
+    base_url = 'http://thehub5himseelprs44xzgfrb4obgujkqwy5tzbsh5yttebqhaau23yd.onion/index.php'
 
-    def __init__(self, output_path, avatar_path, proxy):
-        self.base_url = 'http://thehub7xbw4dc5r2.onion/index.php'
-        self.topic_pattern = re.compile(r'topic=(\d+)')
-        self.avatar_name_pattern = re.compile(r'attach=(\d+)')
-        self.pagination_pattern = re.compile(r'topic=\d+\.(\d+)')
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.proxy = proxy
-        self.headers = {
-            'Accept': 'text/html,application/xhtml+xm…plication/xml;q=0.9,*/*;q=0.8',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Host': 'thehub7xbw4dc5r2.onion',
-            'Referer': 'http://thehub7xbw4dc5r2.onion/',
-            'Upgrade-Insecure-Requests': '1',
-            'User-Agent': USER_AGENT,
-        }
+    # Xpaths
+    forum_xpath = '//a[contains(@href, "index.php?board=")]/@href'
+    pagination_xpath = '//div[@class="pagelinks floatleft"]'\
+                       '/strong/following-sibling::a[1]/@href'
+    thread_xpath = '//div[@id="messageindex"]//tr[td[contains(@class,"subject")]]'
+    thread_first_page_xpath = '//span[contains(@id,"msg_")]/a/@href'
+    thread_last_page_xpath = '//small[contains(@id,"pages")]'\
+                             '/a[not(text()="All")][last()]/@href'
+    thread_date_xpath = '//td[contains(@class, "lastpost")]/br'\
+                        '/preceding-sibling::text()[1]'
+    thread_pagination_xpath = '//div[@class="pagelinks floatleft"]'\
+                              '/strong/preceding-sibling::a[1]/@href'
+    thread_page_xpath = '//div[@class="pagelinks floatleft"]'\
+                        '/strong/text()'
+    post_date_xpath = '//div[@class="keyinfo"]'\
+                      '/div[@class="smalltext"]/text()[last()]'
+
+    avatar_xpath = '//li[@class="avatar"]/a/img/@src'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"topic=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r"attach=(\w+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"
+    post_datetime_format = "%B %d, %Y, %I:%M:%S %p »"
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update({
+            "user-agent": USER_AGENT
+        })
 
     def start_requests(self):
         yield Request(
             url=self.base_url,
+            callback=self.proceed_for_login,
             headers=self.headers,
-            callback=self.process_login,
-            meta={'proxy': self.proxy}
+            meta={
+                'proxy': PROXY
+            }
         )
 
-    def process_login(self, response):
+    def proceed_for_login(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
         token = response.xpath(
             '//p[@class="centertext smalltext"]/'
             'following-sibling::input[1]'
@@ -68,151 +106,105 @@ class TheHubSpider(scrapy.Spider):
             url=login_url,
             headers=self.headers,
             formdata=form_data,
-            callback=self.parse_main_page,
-            meta={'proxy': self.proxy},
+            callback=self.parse_start,
+            meta=self.synchronize_meta(response),
             dont_filter=True,
         )
 
-    def parse_main_page(self, response):
-        forums = response.xpath(
-            '//a[contains(@href, "index.php?board=")]')
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            url = url.strip('/')
-            if self.base_url not in url:
-                url = self.base_url + url
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum,
-                meta={'proxy': self.proxy}
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
+
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
+
+        return meta
+
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        thread_date = thread_date.strip()
+
+        if 'at ' in thread_date.lower():
+            return datetime.today()
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
             )
 
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//td[contains(@class, "subject ")]'
-            '//span[contains(@id, "msg_")]/a')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={
-                    'topic_id': topic_id[0],
-                    'proxy': self.proxy
-                },
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        post_date = post_date.strip()
+
+        if "at " in post_date.lower():
+            return datetime.today()
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
             )
 
-        next_page = response.xpath('//div[@class="pagelinks floatleft"]/strong'
-                                   '/following-sibling::a[1]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+    def parse_start(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=next_page_url,
+                url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
-                meta={'proxy': self.proxy}
+                meta=self.synchronize_meta(response),
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        if pagination:
-            paginated_value = int(int(pagination[0])/20 + 1)
-        else:
-            paginated_value = 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath('//li[@class="avatar"]/a/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if not avatar_url:
-                continue
-            avatar_url = self.base_url + avatar_url\
-                if not avatar_url.startswith('http') else avatar_url
-            user_id = self.avatar_name_pattern.findall(avatar_url)
-            if not user_id:
-                continue
-            file_name = '{}/{}.jpg'.format(self.avatar_path, user_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                    'proxy': self.proxy
-                }
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
+
+    def get_avatar_file(self, url=None):
+        """
+        :param url: str => avatar url
+        :return: str => extracted avatar file from avatar url
+        """
+
+        try:
+            file_name = os.path.join(
+                self.avatar_path,
+                self.avatar_name_pattern.findall(url)[0]
             )
-
-        next_page = response.xpath('//div[@class="pagelinks floatleft"]/strong'
-                                   '/following-sibling::a[1]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={
-                    'topic_id': topic_id,
-                    'proxy': self.proxy
-                }
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            print(f"Avatar {file_name_only} done..!")
+            return f'{file_name}.jpg'
+        except Exception as err:
+            return
 
 
-class TheHubScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or PROXY
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
+class TheHubScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
+    spider_class = TheHubSpider
+    site_name = 'majestic_garden'
 
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        process = CrawlerProcess(settings)
-        process.crawl(TheHubSpider, self.output_path, self.avatar_path, self.proxy)
-        process.start()
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update({
+            'RETRY_HTTP_CODES': [406, 429, 500, 503]
+        })
+        return settings

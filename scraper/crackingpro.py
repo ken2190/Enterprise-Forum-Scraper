@@ -4,188 +4,86 @@ import scrapy
 from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import BypassCloudfareSpider
+from datetime import datetime
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 3
-NO_OF_THREADS = 5
+REQUEST_DELAY = 0.7
+NO_OF_THREADS = 2
 
 
-class CrackingProSpider(BypassCloudfareSpider):
+class CrackingProSpider(SitemapSpider):
     name = 'crackingpro_spider'
+    base_url = "https://www.crackingpro.com/"
 
-    def __init__(self, output_path, avatar_path):
-        self.base_url = "https://www.crackingpro.com/"
-        self.topic_pattern = re.compile(r'topic/(\d+)-')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*/page/(\d+)/')
-        self.start_url = 'https://www.crackingpro.com/'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
-        self.headers = {
-            'referer': 'https://www.crackingpro.com/index.php',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            "user-agent": self.custom_settings.get("DEFAULT_REQUEST_HEADERS")
-        }
+    # xpaths
+    login_form_xpath = '//form[@method="post"]'
+    forum_xpath = '//div[@class="lkForumRow_main"]//h4/a/@href|'\
+                  '//div[@class="lkForumRow_main"]/ul/li'\
+                  '/a[contains(@href, "/forum/")]/@href'
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse,
-            dont_filter=True,
-        )
+    pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
+
+    thread_xpath = '//li[contains(@class, "ipsDataItem ")]'
+    thread_first_page_xpath = '//span[@class="ipsType_break ipsContained"]'\
+                              '/a/@href'
+    thread_last_page_xpath = '//span[@class="ipsPagination_page"][last()]'\
+                             '/a/@href'
+
+    thread_date_xpath = '//li[@class="ipsType_light"]/a/time/@datetime'
+    thread_page_xpath = '//li[contains(@class, "ipsPagination_active")]'\
+                        '/a/text()'
+    thread_pagination_xpath = '//li[@class="ipsPagination_prev"]'\
+                              '/a/@href'
+
+    post_date_xpath = '//a/time[@datetime]/@datetime'
+
+    avatar_xpath = '//li[@class="cAuthorPane_photo"]//a/img/@src'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r'topic/(\d+)-',
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r'.*/(\S+\.\w+)',
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = True
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
+    post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 
     def parse(self, response):
-        forums = response.xpath(
-            '//div[@class="lkForumRow_main"]/h4'
-            '/a[contains(@href, "/forum/")]')
-        subforums = response.xpath(
-            '//ul[@class="lkForumRow_subForums"]/li'
-            '/a[contains(@href, "/forum/")]')
-        forums.extend(subforums)
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            # if '39-exploiting-tools' not in url:
-            #     continue
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
 
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//div[@class="ipsDataItem_main"]'
-            '//span[@class="ipsType_break ipsContained"]/a')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
 
-        next_page = response.xpath('//li[@class="ipsPagination_next"]/a')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=next_page_url,
+                url=forum_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath('//li[@class="cAuthorPane_photo"]//a/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if 'svg+xml' in avatar_url:
-                continue
-            if not avatar_url.startswith('http'):
-                avatar_url = self.base_url + avatar_url
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
 
-        next_page = response.xpath('//li[@class="ipsPagination_next"]/a')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            print(f"Avatar {file_name_only} done..!")
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
-class CrackingProScrapper():
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.ensure_avatar_path()
+class CrackingProScrapper(SiteMapScrapper):
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
-
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-            },
-            'DOWNLOAD_DELAY': REQUEST_DELAY,
-            'CONCURRENT_REQUESTS': NO_OF_THREADS,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(CrackingProSpider, self.output_path, self.avatar_path)
-        process.start()
-
-
-if __name__ == '__main__':
-    kwargs = {
-        'output': '/root/crackingpro'
-    }
-    CrackingProScrapper(kwargs).do_scrape()
+    spider_class = CrackingProSpider
+    site_name = 'crackingpro.com'
