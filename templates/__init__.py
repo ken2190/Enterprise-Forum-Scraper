@@ -150,6 +150,7 @@ from templates.darktime_template import DarktimeParser
 from templates.oxsec_template import ox00secParser
 from templates.dnmavengers_template import DNMAvengersParser
 from templates.italiandeepweb_template import ItalianDeepWebParser
+from templates.vbiran_template import VbiranParser
 
 
 PARSER_MAP = {
@@ -304,4 +305,5 @@ PARSER_MAP = {
     'italiandeepweb': ItalianDeepWebParser,
     'dnmavengers': DNMAvengersParser,
     'oxsec': ox00secParser,
+    'vbiran': VbiranParser,
 }
