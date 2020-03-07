@@ -126,6 +126,7 @@ from scraper.vbiran import VBIranScrapper
 from scraper.cryptbb import CryptBBScrapper
 from scraper.cyberforum import CyberForumScrapper
 from scraper.darkway import DarkWayScrapper
+from scraper.uinsell import UinsellScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -256,4 +257,5 @@ SCRAPER_MAP = {
     'cryptbb': CryptBBScrapper,
     'cyberforum': CyberForumScrapper,
     'darkway': DarkWayScrapper,
+    'uinsell': UinsellScrapper,
 }
