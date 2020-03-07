@@ -1158,9 +1158,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Save thread content
         if not self.useronly:
-            current_page = response.xpath(
-                self.thread_page_xpath
-            ).extract_first() or "1"
+            current_page = self.get_thread_current_page(response)
             with open(
                 file=os.path.join(
                     self.output_path,
@@ -1192,6 +1190,12 @@ class SitemapSpider(BypassCloudfareSpider):
                     }
                 )
             )
+
+    def get_thread_current_page(self, response):
+        current_page = response.xpath(
+                self.thread_page_xpath
+        ).extract_first() or "1"
+        return current_page
 
     def get_thread_next_page(self, response):
         next_page = response.xpath(self.thread_pagination_xpath).extract_first()
