@@ -48,8 +48,7 @@ class VerifiedScSpider(SitemapSpider):
     thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
-    # thread_pagination_xpath = '//a[@rel="prev"]/@href'
-    thread_pagination_xpath = '//a[@rel="next"]/@href'
+    thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
     post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"]'\
                       '/a[contains(@name,"post")]/following-sibling::text()'
@@ -87,7 +86,6 @@ class VerifiedScSpider(SitemapSpider):
             'Referer': self.base_url,
             'User-Agent': USER_AGENT
         })
-        self.firstrun = kwargs.get('firstrun')
 
     def synchronize_meta(self, response, default_meta={}):
         meta = {
@@ -129,8 +127,8 @@ class VerifiedScSpider(SitemapSpider):
 
         code_number = response.xpath(
             '//div[@class="personalCodeBrown"]/font/text()').extract_first()
-        self.logger.info(self.backup_codes)
-        self.logger.info(code_number)
+        print(self.backup_codes)
+        print(code_number)
         code_value = self.backup_codes[int(code_number)-1]\
             if code_number else None
         if code_value:
@@ -212,73 +210,20 @@ class VerifiedScSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-        if self.firstrun:
-            self.output_url_file = open(self.output_path + '/urls.txt', 'w')
-            all_forums = response.xpath(self.forum_xpath).extract()
-            for forum_url in all_forums:
 
-                # Standardize url
-                if self.base_url not in forum_url:
-                    forum_url = self.base_url + forum_url
-                # if 'f=90' not in forum_url:
-                #     continue
-                yield Request(
-                    url=forum_url,
-                    headers=self.headers,
-                    callback=self.parse_forum,
-                    meta=self.synchronize_meta(response)
-                )
-        else:
-            input_file = self.output_path + '/urls.txt'
-            if not os.path.exists(input_file):
-                self.logger.info('URL File not found. Exiting!!')
-                return
-            for thread_url in open(input_file, 'r'):
-                thread_url = thread_url.strip()
-                topic_id = self.topic_pattern.findall(thread_url)
-                if not topic_id:
-                    continue
-                file_name = '{}/{}-1.html'.format(
-                    self.output_path, topic_id[0])
-                if os.path.exists(file_name):
-                    continue
-                yield Request(
-                    url=thread_url,
-                    headers=self.headers,
-                    callback=self.parse_thread,
-                    meta=self.synchronize_meta(
-                        response,
-                        default_meta={
-                            "topic_id": topic_id[0]
-                        }
-                    )
-                )
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
 
-    def parse_forum(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(self.thread_first_page_xpath).extract()
-        for thread_url in threads:
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            if 'showthread.php?t=' not in thread_url:
-                continue
-            self.output_url_file.write(thread_url)
-            self.output_url_file.write('\n')
-
-        next_page = response.xpath(self.pagination_xpath).extract_first()
-        if next_page:
-            if self.base_url not in next_page:
-                next_page = self.base_url + next_page
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+            # if 'f=90' not in forum_url:
+            #     continue
             yield Request(
-                url=next_page,
+                url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
-                meta=self.synchronize_meta(response),
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
