@@ -81,6 +81,7 @@ from templates.fraudstercrew_template import FraudstercrewParser
 from templates.crackx_template import CrackXParser
 from templates.nulled_to_banlist import NulledToBanListParser
 from templates.hashkiller_template import HashKillerParser
+from templates.hashkiller_old_template import HashKillerOldParser
 from templates.fuckav_template import FuckavParser
 from templates.psbdmp_template import PsbdmpParser
 from templates.youhack_template import YouHackParser
@@ -238,6 +239,7 @@ PARSER_MAP = {
     'crackx': CrackXParser,
     'nulled_to_banlist': NulledToBanListParser,
     'hashkiller': HashKillerParser,
+    'hashkiller_old': HashKillerOldParser,
     'fuckav': FuckavParser,
     'psbdmp': PsbdmpParser,
     'youhack': YouHackParser,
