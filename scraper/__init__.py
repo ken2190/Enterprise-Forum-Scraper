@@ -129,6 +129,11 @@ from scraper.darkway import DarkWayScrapper
 from scraper.uinsell import UinsellScrapper
 from scraper.tophope import TopHopeScrapper
 from scraper.sysadmins import SysAdminsScrapper
+from scraper.securitylab import SecurityLabScrapper
+from scraper.zloy import ZloyScrapper
+from scraper.soqor import SoqorScrapper
+from scraper.cardvilla import CardVillaScrapper
+from scraper.cdotws import CdotWsScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -262,4 +267,9 @@ SCRAPER_MAP = {
     'uinsell': UinsellScrapper,
     'tophope': TopHopeScrapper,
     'sysadmins': SysAdminsScrapper,
+    'securitylab': SecurityLabScrapper,
+    'zloy': ZloyScrapper,
+    'soqor': SoqorScrapper,
+    'cardvilla': CardVillaScrapper,
+    'cdotws': CdotWsScrapper,
 }
