@@ -152,6 +152,10 @@ from templates.oxsec_template import ox00secParser
 from templates.dnmavengers_template import DNMAvengersParser
 from templates.italiandeepweb_template import ItalianDeepWebParser
 from templates.vbiran_template import VbiranParser
+from templates.uinsell_template import UinsellParser
+from templates.darkway_template import DarkwayParser
+from templates.cryptbb_template import CryptbbParser
+from templates.cyberforum_template import CyberForumParser
 
 
 PARSER_MAP = {
@@ -308,4 +312,8 @@ PARSER_MAP = {
     'dnmavengers': DNMAvengersParser,
     'oxsec': ox00secParser,
     'vbiran': VbiranParser,
+    'uinsell': UinsellParser,
+    'darkway': DarkwayParser,
+    'cryptbb': CryptbbParser,
+    'cyberforum': CyberForumParser,
 }
