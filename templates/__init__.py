@@ -156,6 +156,7 @@ from templates.uinsell_template import UinsellParser
 from templates.darkway_template import DarkwayParser
 from templates.cryptbb_template import CryptbbParser
 from templates.cyberforum_template import CyberForumParser
+from templates.tophope_template import TophopeParser
 
 
 PARSER_MAP = {
@@ -316,4 +317,5 @@ PARSER_MAP = {
     'darkway': DarkwayParser,
     'cryptbb': CryptbbParser,
     'cyberforum': CyberForumParser,
+    'tophope': TophopeParser,
 }
