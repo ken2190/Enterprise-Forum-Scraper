@@ -157,6 +157,10 @@ from templates.darkway_template import DarkwayParser
 from templates.cryptbb_template import CryptbbParser
 from templates.cyberforum_template import CyberForumParser
 from templates.tophope_template import TophopeParser
+from templates.securitylab_template import SecurityLabParser
+from templates.soqor_template import SoqorParser
+from templates.zloy_template import ZloyParser
+from templates.cardvilla_template import CardvillaParser
 
 
 PARSER_MAP = {
@@ -318,4 +322,8 @@ PARSER_MAP = {
     'cryptbb': CryptbbParser,
     'cyberforum': CyberForumParser,
     'tophope': TophopeParser,
+    'securitylab': SecurityLabParser,
+    'soqor': SoqorParser,
+    'zloy': ZloyParser,
+    'carvilla': CardvillaParser,
 }
