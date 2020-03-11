@@ -134,6 +134,7 @@ from scraper.zloy import ZloyScrapper
 from scraper.soqor import SoqorScrapper
 from scraper.cardvilla import CardVillaScrapper
 from scraper.cdotws import CdotWsScrapper
+from scraper.r0bforums import R0bForumsScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -272,4 +273,5 @@ SCRAPER_MAP = {
     'soqor': SoqorScrapper,
     'cardvilla': CardVillaScrapper,
     'cdotws': CdotWsScrapper,
+    'r0bforums': R0bForumsScrapper,
 }
