@@ -865,9 +865,6 @@ class SitemapSpider(BypassCloudfareSpider):
 
     def solve_captcha(self, image_url, response, cookies={}, headers={}):
 
-        # Load session
-        session = requests.Session()
-
         # Load cookies from request
         cookies.update(
             self.load_cookies(
@@ -875,17 +872,8 @@ class SitemapSpider(BypassCloudfareSpider):
             )
         )
 
-        # Set cookies to session
-        for name, value in cookies.items():
-            session.cookies.set(name, value)
-
         # Load proxy
         proxy = self.load_proxies(response)
-        if proxy:
-            session.proxies = {
-                "http": proxy,
-                "https": proxy
-            }
 
         # Load user agent
         headers.update(
@@ -895,14 +883,8 @@ class SitemapSpider(BypassCloudfareSpider):
         )
 
         # Download content
-        response = session.get(
-            image_url,
-            headers=headers
-        )
-        self.logger.info(
-            "Download captcha image content with headers %s" % response.request.headers
-        )
-        image_content = response.content
+        image_content = self.get_captcha_image_content(
+            image_url, cookies, headers, proxy)
 
         # Archive captcha content
         root_folder = os.path.dirname(os.path.abspath(__file__))
@@ -923,6 +905,28 @@ class SitemapSpider(BypassCloudfareSpider):
             raise (
                 "2Captcha: Captcha solve took to long to execute, aborting."
             )
+
+    def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
+        # Load session
+        session = requests.Session()
+        if proxy:
+            session.proxies = {
+                "http": proxy,
+                "https": proxy
+            }
+
+        # Set cookies to session
+        for name, value in cookies.items():
+            session.cookies.set(name, value)
+
+        response = session.get(
+            image_url,
+            headers=headers
+        )
+        self.logger.info(
+            "Download captcha image content with headers %s" % response.request.headers
+        )
+        return response.content
 
     def start_requests(self):
         """

@@ -1,206 +1,195 @@
-import re
 import os
-import time
-import traceback
-import requests
-from requests import Session
-from scraper.base_scrapper import BaseScrapper
+import re
+import uuid
+import base64
 
-PROXY = "socks5h://localhost:9050"
+from urllib.parse import unquote
 
-PREGATE = "1551363420.a5027023dc53726c486b2f0f583a5297.808604574a8cb9de609858bfb456b143"
-GATE = "1551363454.a7655be5c2b98b2843d23ad0ad72e09f.040731e8b7348436a3b377aa86cf30b8"
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-class HydraScrapper(BaseScrapper):
-    def __init__(self, kwargs):
-        super(HydraScrapper, self).__init__(kwargs)
-        self.base_url = 'http://hydraruzxpnew4af.onion'
-        self.topic_pattern = re.compile(r'product/(\d+)')
-        self.comment_pattern = re.compile(r'(\<\!--.*?--\!\>)')
-        self.proxy = kwargs.get('proxy') or PROXY
-        self.cloudfare_error = None
-        self.headers = {
-          'cookie': f'pregate={PREGATE}; gate={GATE}',
-          'referer': 'http://hydraruzxpnew4af.onion/',
-          'user-agent': 'Mozilla/5.0 (Windows NT 6.1; rv:60.0) '
-                        'Gecko/20100101 Firefox/60.0'
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
+
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+
+PROXY = 'http://127.0.0.1:8118'
+
+
+class HydraSpider(SitemapSpider):
+
+    name = "hydramarket_spider"
+
+    # Url stuffs
+    base_url = "http://hydraruzxpnew4af.onion"
+
+    # xpath stuffs
+    captch_form_xpath = '//form[@method="post"]'
+    captcha_url_xpath = '//img[@alt="Captcha image"]/@src'
+
+    # Regex stuffs
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r".*page=(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
+
+    def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
+
+        # Separate the metadata from the image data
+        head, data = image_url.split(',', 1)
+
+        # Decode the image data
+        plain_data = base64.b64decode(data)
+
+        return plain_data
+
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
         }
 
-    def get_page_content(self, url):
-        time.sleep(self.wait_time)
-        try:
-            response = self.session.get(url, headers=self.headers)
-            content = response.content
-            html_response = self.get_html_response(content)
-            if html_response.xpath('//div[@class="errorwrap"]'):
-                return
-            return content
-        except:
-            traceback.print_exc()
-            return
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
 
-    def save_avatar(self, name, url):
-        avatar_file = f'{self.avatar_path}/{name}'
-        if os.path.exists(avatar_file):
-            return
-        content = self.get_page_content(url)
-        if not content:
-            return
-        with open(avatar_file, 'wb') as f:
-            f.write(content)
+        return meta
 
-    def process_first_page(self, topic_url):
-        topic = self.topic_pattern.findall(topic_url)
-        if not topic:
-            return
-        topic = topic[0]
-        initial_file = f'{self.output_path}/{topic}.html'
-        if os.path.exists(initial_file):
-            return
-        content = self.get_page_content(topic_url)
-        if not content:
-            print(f'No data for url: {topic_url}')
-            return
-        with open(initial_file, 'wb') as f:
-            f.write(content)
-        print(f'{topic} done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        # avatar_info = self.get_avatar_info(html_response)
-        # for name, url in avatar_info.items():
-        #     self.save_avatar(name, url)
-        return html_response
-
-    def process_topic(self, topic_url):
-        html_response = self.process_first_page(topic_url)
-        if html_response is None:
-            return
-        while True:
-            response = self.write_paginated_data(html_response)
-            if response is None:
-                return
-            topic_url, html_response = response
-
-    def write_paginated_data(self, html_response):
-        next_page_block = html_response.xpath(
-            '//a[@class="pagination_next"]/@href'
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse_captcha,
+            dont_filter=True,
+            meta={
+                'proxy': PROXY
+            }
         )
-        if not next_page_block:
-            return
-        next_page_url = next_page_block[0]
-        next_page_url = self.base_url + next_page_url\
-            if self.base_url not in next_page_url else next_page_url
-        pattern = re.compile(r'tid=(\d+)&page=(\d+)')
-        match = pattern.findall(next_page_url)
-        if not match:
-            return
-        topic, pagination_value = match[0]
-        content = self.get_page_content(next_page_url)
-        if not content:
-            return
-        paginated_file = f'{self.output_path}/{topic}-{pagination_value}.html'
-        with open(paginated_file, 'wb') as f:
-            f.write(content)
 
-        print(f'{topic}-{pagination_value} done..!')
-        content = self.comment_pattern.sub('', str(content))
-        html_response = self.get_html_response(content)
-        avatar_info = self.get_avatar_info(html_response)
-        for name, url in avatar_info.items():
-            self.save_avatar(name, url)
-        return next_page_url, html_response
+    def parse_captcha(self, response):
 
-    def process_forum(self, url):
-        while True:
-            print(f"Forum URL: {url}")
-            forum_content = self.get_page_content(url)
-            if not forum_content:
-                print(f'No data for url: {forum_content}')
-                return
-            forum_content = self.comment_pattern.sub('', str(forum_content))
-            html_response = self.get_html_response(forum_content)
-            topic_urls = html_response.xpath(
-                '//div[@class="title over"]/a/@href'
-            )
-            for topic_url in topic_urls:
-                topic_url = self.base_url + topic_url\
-                    if not topic_url.startswith('http') else topic_url
-                self.process_topic(topic_url)
-            forum_pagination_url = html_response.xpath(
-                '//li[@class="pag_right"]/a/@href'
-            )
-            if not forum_pagination_url:
-                return
-            url = forum_pagination_url[0]
-            url = self.base_url + url\
-                if not url.startswith('http') else url
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
 
-    def get_forum_urls(self, html_response):
-        urls = set()
-        extracted_urls = html_response.xpath(
-            '//div[contains(@class, "market_main")]/a[@role]/@href'
+        # Load cookies
+        cookies = response.request.headers.get("Cookie")
+        if not cookies:
+            yield from self.start_requests()
+            return
+
+        # Load captcha url
+        captcha_url = response.xpath(
+                self.captcha_url_xpath).extract_first()
+        captcha = self.solve_captcha(
+            captcha_url,
+            response
         )
-        for _url in extracted_urls:
-            if self.base_url not in _url:
-                urls.add(self.base_url + _url)
-            else:
-                urls.add(_url)
-        urls = sorted(
-            urls,
-            key=lambda x: int(x.split('market/')[-1]))
-        return urls
-
-    def clear_cookies(self,):
-        self.session.cookies.clear()
-
-    def get_avatar_info(self, html_response):
-        avatar_info = dict()
-        urls = html_response.xpath(
-            '//div[@class="author_avatar"]/a/img/@src'
+        self.logger.info(
+            "Captcha has been solved: %s" % captcha
         )
+
+        yield FormRequest.from_response(
+            response,
+            formxpath=self.captch_form_xpath,
+            formdata={
+                "captcha": captcha
+            },
+            headers=self.headers,
+            meta=self.synchronize_meta(response),
+            callback=self.parse_start
+        )
+
+    def parse_start(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        urls = response.xpath(
+            '//div/a[@role and contains(@href, "/market/")]')
         for url in urls:
-            url = self.base_url + url\
-                if not url.startswith('http') else url
-            if "image.php" in url:
-                avatar_name_pattern = re.compile(r'uid=(\d+)')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = f'{name_match[0]}.jpg'
-            else:
-                avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-                name_match = avatar_name_pattern.findall(url)
-                if not name_match:
-                    continue
-                name = name_match[0]
+            url = url.xpath('@href').extract_first()
+            if self.base_url not in url:
+                url = self.base_url + url
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_results,
+                meta=self.synchronize_meta(response),
+            )
 
-            if name not in avatar_info:
-                avatar_info.update({
-                    name: url
-                })
-        return avatar_info
+    def parse_results(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
 
-    def do_scrape(self):
-        print('************  HydraScrapper  Started  ************\n')
-        self.session.proxies.update({
-            'http': self.proxy,
-            'https': self.proxy,
-        })
-        main_content = self.get_page_content(self.base_url)
-        if not main_content:
-            print(f'No data for url: {self.base_url}')
-            return
-        html_response = self.get_html_response(main_content)
-        forum_urls = self.get_forum_urls(html_response)
-        for forum_url in forum_urls:
-            self.process_forum(forum_url)
+        self.logger.info('next_page_url: {}'.format(response.url))
+        products = response.xpath(
+            '//div[@class="title over"]/a[contains(@href, "/product/")]')
+        for product in products:
+            product_url = product.xpath('@href').extract_first()
+            if self.base_url not in product_url:
+                product_url = self.base_url + product_url
+            file_id = product_url.rsplit('/', 1)[-1]
+            file_name = '{}/{}.html'.format(self.output_path, file_id)
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=product_url,
+                headers=self.headers,
+                callback=self.parse_product,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        'file_id': file_id
+                    }
+                )
+            )
+
+        next_page = response.xpath(
+            '//ul[@class="pagination"]/li[@class="pag_right"]/a')
+        if next_page:
+            next_page_url = next_page.xpath('@href').extract_first()
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_results,
+                meta=self.synchronize_meta(response),
+            )
+
+    def parse_product(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        file_id = response.meta['file_id']
+        file_name = '{}/{}.html'.format(self.output_path, file_id)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(f'Product: {file_id} done..!')
 
 
-def main():
-    template = HydraScrapper()
-    template.do_scrape()
-
-
-if __name__ == '__main__':
-    main()
+class HydraScrapper(SiteMapScrapper):
+    spider_class = HydraSpider
+    site_name = 'hydra_hydraruzxpnew4af'
