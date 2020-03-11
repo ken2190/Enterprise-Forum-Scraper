@@ -8,11 +8,13 @@ import polling
 import json
 import logging
 
+
 from glob import glob
 from requests import Session
 from lxml.html import fromstring
 from requests.exceptions import ConnectionError
 from scrapy.crawler import CrawlerProcess
+from scrapy.exceptions import CloseSpider
 from copy import deepcopy
 from base64 import b64decode
 from datetime import datetime
@@ -235,8 +237,12 @@ class SiteMapScrapper:
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
         self.firstrun = kwargs.get("firstrun")
+        self.kill = kwargs.get("kill")
         self.ensure_avatar_path(kwargs.get("template"))
         self.set_users_path()
+
+        if self.kill:
+            self.kill = int(self.kill)
 
         if self.start_date:
             try:
@@ -262,7 +268,8 @@ class SiteMapScrapper:
             "avatar_path": getattr(self, "avatar_path", None),
             "start_date": getattr(self, "start_date", None),
             "user_path": getattr(self, "user_path", None),
-            "firstrun": getattr(self, "firstrun", None)
+            "firstrun": getattr(self, "firstrun", None),
+            "kill": getattr(self, "kill", None)
         }
 
     def set_users_path(self):
@@ -455,6 +462,8 @@ class SitemapSpider(BypassCloudfareSpider):
         self.avatar_path = kwargs.get("avatar_path")
         self.user_path = kwargs.get("user_path")
         self.start_date = kwargs.get("start_date")
+        self.kill = kwargs.get("kill")
+        self.topic_pages_saved = 0
 
         # Handle headers
         self.headers = {
@@ -1174,6 +1183,17 @@ class SitemapSpider(BypassCloudfareSpider):
                 self.logger.info(
                     f'{topic_id}-{current_page} done..!'
                 )
+                self.topic_pages_saved += 1
+
+                # Update stats
+                self.crawler.stats.set_value(
+                    "topic pages saved",
+                    self.topic_pages_saved
+                )
+
+                # Kill task if kill count met
+                if self.kill and self.topic_pages_saved >= self.kill:
+                    raise CloseSpider(reason="Kill count met, shut down.")
 
         # Thread pagination
         next_page = self.get_thread_next_page(response)

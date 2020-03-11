@@ -51,6 +51,8 @@ class Collector:
             '-lst', '--list', help='List scrapers', action='store_true')
         parser.add_argument(
             '-ch', '--channel', help='Channel to scrape', required=False)
+        parser.add_argument(
+            '-k', '--kill', help='Kill after this amount of topic page saved', required=False)
         self.parser = parser
 
     def get_args(self):
