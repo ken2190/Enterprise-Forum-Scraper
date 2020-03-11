@@ -161,6 +161,7 @@ from templates.securitylab_template import SecurityLabParser
 from templates.soqor_template import SoqorParser
 from templates.zloy_template import ZloyParser
 from templates.cardvilla_template import CardvillaParser
+from templates.cdotws_template import CdotwsParser
 
 
 PARSER_MAP = {
@@ -326,4 +327,5 @@ PARSER_MAP = {
     'soqor': SoqorParser,
     'zloy': ZloyParser,
     'carvilla': CardvillaParser,
+    'cdotws': CdotwsParser,
 }
