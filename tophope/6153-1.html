@@ -1,0 +1,2574 @@
+<!DOCTYPE html>
+<html id="XF" lang="ru-RU" dir="LTR" data-app="public" data-template="thread_view" data-container-key="node-466" data-content-key="thread-6153" data-logged-in="false" data-cookie-prefix="xf_" data-style-id="3" class="has-no-js template-thread_view" data-run-jobs="">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Программа конвертер .uc для русских символов | TopHope</title>
+<meta name="description" content="Программа конвертирует все файлы с расширение *.uc в указной папки для использования Русских символов в скрипте.
+( Предупреждаю если у вас уже есть скрипты..." />
+<meta property="og:description" content="Программа конвертирует все файлы с расширение *.uc в указной папки для использования Русских символов в скрипте.
+( Предупреждаю если у вас уже есть скрипты с Русскими символами они заменятся на ???? )
+ 
+Разработчик : BITHack
+Не доверяешь собери сам:
+Исходник: Lazarus
+unit Unit1;
+
+{$mode..." />
+<meta property="twitter:description" content="Программа конвертирует все файлы с расширение *.uc в указной папки для использования Русских символов в скрипте.
+( Предупреждаю если у вас уже есть скрипты с Русскими символами они заменятся на..." />
+<meta property="og:url" content="https://tophope.ru/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/" />
+<script src="/cdn-cgi/apps/head/pQ0v4jtHsSzdXDC7ZgV1Hu-jjpI.js"></script><link rel="canonical" href="https://tophope.ru/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/" />
+<meta property="og:site_name" content="TopHope" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Программа конвертер .uc для русских символов" />
+<meta property="twitter:title" content="Программа конвертер .uc для русских символов" />
+<meta name="theme-color" content="#e1e8f8" />
+<link rel="preload" href="/styles/fonts/fa/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="preload" href="/styles/fonts/fa/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="preload" href="/styles/fonts/fa/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="stylesheet" href="/css.php?css=public%3Anormalize.css%2Cpublic%3Acore.less%2Cpublic%3Aapp.less&amp;s=3&amp;l=3&amp;d=1573891129&amp;k=edf6cfeed2b8b8213808b1692c79649ca17f77fa" />
+<link rel="stylesheet" href="/css.php?css=public%3Abb_code.less%2Cpublic%3Afox_avatar_toolbox.less%2Cpublic%3Afox_avt_message_user_details.less%2Cpublic%3Amessage.less%2Cpublic%3Anotices.less%2Cpublic%3Ashare_controls.less%2Cpublic%3Aextra.less&amp;s=3&amp;l=3&amp;d=1573891129&amp;k=9c9b3fb9c13e1f346deda4559f513451c1d64602" />
+<script src="/js/xf/preamble.min.js?_v=db17b04c"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-49083153-1"></script>
+<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-49083153-1', {
+			// 
+			
+			
+		});
+	</script>
+<script type='text/javascript'>
+var xfhtml = document.getElementById('XF');
+function addClass(el, className) { if (el.classList) el.classList.add(className); else if (!hasClass(el, className)) el.className += ' ' + className; }
+function getCookie(name) { var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)'); return v ? v[2] : null; }
+function setCookie(name, value, days) { var d = new Date; d.setTime(d.getTime() + 24*60*60*1000*days); document.cookie = name + "=" + value + ";path=/;expires=" + d.toGMTString(); }
+function deleteCookie(name) { setCookie(name, '', -1); }
+function applySetting(settingName, settingOn, allowToggle){
+	
+	// Theme editor is enabled. Check for selected toggle, otherwise apply default
+		if(allowToggle === 1){	
+			cookie = getCookie(settingName);
+			if( (cookie === 'on') || (!cookie && (settingOn === 1)) ){
+				addClass(xfhtml, settingName);
+			}
+		} else if(settingOn === 1){
+			addClass(xfhtml, settingName);
+		}
+	
+}
+
+
+applySetting('focus-fluid', 0, 1);
+
+
+applySetting('focus-grid', 0, 1);
+
+
+applySetting('focus-sidebar-sticky', 1, 1);
+
+
+applySetting('focus-sidebar-flip', 0, 1);
+
+
+
+
+
+	var backgroundCookie = getCookie('xenfocusBackground-3');
+	if(backgroundCookie){ xfhtml.setAttribute('data-focus-bg', '' + backgroundCookie + '');	} else { xfhtml.setAttribute('data-focus-bg', '1'); }
+
+</script>
+</head>
+<body data-template="thread_view">
+<div class='focus-width'><div class="p-pageWrapper" id="top">
+
+<header class="p-header" id="header">
+<div class="p-header-inner">
+<div class="p-header-content">
+<div class="p-header-logo p-header-logo--image">
+<a href="/forum/">
+<span>
+<img src="https://tophope.ru/images/th.png" alt="TopHope" />
+</span>
+</a>
+</div>
+<div class='focus-ad'></div>
+<div class='focus-wrap-user'>
+
+<div class="p-nav-opposite">
+<div class="p-navgroup p-account p-navgroup--guest">
+<a href="/login/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--logIn" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Вход</span>
+</a>
+<a href="/register/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--register" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Регистрация</span>
+</a>
+<a href="#" class="p-navgroup-link xenfocus-navgroup-icon" rel="nofollow" data-xf-init="tooltip" title="" data-xenfocus-editor>
+<i class="fa--xf far fa-toggle-on" aria-hidden="true"></i>
+</a>
+</div>
+<div class="p-navgroup p-discovery">
+<a href="/whats-new/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--whatsnew" title="Что нового?">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Что нового?</span>
+</a>
+<a href="/search/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--search" data-xf-click="menu" data-xf-key="/" aria-label="Поиск" aria-expanded="false" aria-haspopup="true" title="Поиск">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Поиск</span>
+</a>
+<div class="menu menu--structural menu--wide" data-menu="menu" aria-hidden="true">
+<form action="/search/search" method="post" class="menu-content" data-xf-init="quick-search">
+<h3 class="menu-header">Поиск</h3>
+<div class="menu-row">
+<div class="inputGroup inputGroup--joined">
+<input type="text" class="input" name="keywords" placeholder="Поиск..." aria-label="Поиск" data-menu-autofocus="true" />
+
+<select name="constraints" class="js-quickSearch-constraint input" aria-label="Search within">
+<option value="">Везде</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;}">Темы</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;nodes&quot;:[466],&quot;child_nodes&quot;:1}}">Этот форум</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;thread&quot;:6153}}">Эта тема</option>
+</select>
+</div>
+</div>
+<div class="menu-row">
+<label class="iconic"><input type="checkbox" name="c[title_only]" value="1" /><i aria-hidden="true"></i><span class="iconic-label">Искать только в заголовках</span></label>
+</div>
+<div class="menu-row">
+<div class="inputGroup">
+<span class="inputGroup-text" id="ctrl_search_menu_by_member">От:</span>
+<input class="input" name="c[users]" data-xf-init="auto-complete" placeholder="Пользователь" aria-labelledby="ctrl_search_menu_by_member" />
+</div>
+</div>
+<div class="menu-footer">
+<span class="menu-footer-controls">
+<button type="submit" class="button--primary button button--icon button--icon--search"><span class="button-text">Поиск</span></button>
+<a href="/search/" class="button"><span class="button-text">Расширенный поиск...</span></a>
+</span>
+</div>
+<input type="hidden" name="_xfToken" value="1583580712,e3ef66f168c3ea0405575f4a549c37f7" />
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+
+
+<div class="p-nav">
+<div class="p-nav-inner">
+<div class='focus-mobile-navigation'>
+<a class="p-nav-menuTrigger" data-xf-click="off-canvas" data-menu=".js-headerOffCanvasMenu" role="button" tabindex="0">
+<i aria-hidden="true"></i>
+<span class="p-nav-menuText">Меню</span>
+</a>
+<div class='focus-mobile-logo'>
+<a href="/">
+<img src="https://tophope.ru/images/th.png" alt="TopHope" />
+</a>
+</div>
+</div>
+<div class='focus-wrap-user hide:desktop'>
+
+<div class="p-nav-opposite">
+<div class="p-navgroup p-account p-navgroup--guest">
+<a href="/login/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--logIn" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Вход</span>
+</a>
+<a href="/register/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--register" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Регистрация</span>
+</a>
+<a href="#" class="p-navgroup-link xenfocus-navgroup-icon" rel="nofollow" data-xf-init="tooltip" title="" data-xenfocus-editor>
+<i class="fa--xf far fa-toggle-on" aria-hidden="true"></i>
+</a>
+</div>
+<div class="p-navgroup p-discovery">
+<a href="/whats-new/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--whatsnew" title="Что нового?">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Что нового?</span>
+</a>
+<a href="/search/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--search" data-xf-click="menu" data-xf-key="/" aria-label="Поиск" aria-expanded="false" aria-haspopup="true" title="Поиск">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Поиск</span>
+</a>
+<div class="menu menu--structural menu--wide" data-menu="menu" aria-hidden="true">
+<form action="/search/search" method="post" class="menu-content" data-xf-init="quick-search">
+<h3 class="menu-header">Поиск</h3>
+<div class="menu-row">
+<div class="inputGroup inputGroup--joined">
+<input type="text" class="input" name="keywords" placeholder="Поиск..." aria-label="Поиск" data-menu-autofocus="true" />
+<select name="constraints" class="js-quickSearch-constraint input" aria-label="Search within">
+<option value="">Везде</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;}">Темы</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;nodes&quot;:[466],&quot;child_nodes&quot;:1}}">Этот форум</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;thread&quot;:6153}}">Эта тема</option>
+</select>
+</div>
+</div>
+<div class="menu-row">
+<label class="iconic"><input type="checkbox" name="c[title_only]" value="1" /><i aria-hidden="true"></i><span class="iconic-label">Искать только в заголовках</span></label>
+</div>
+<div class="menu-row">
+<div class="inputGroup">
+<span class="inputGroup-text" id="ctrl_search_menu_by_member">От:</span>
+<input class="input" name="c[users]" data-xf-init="auto-complete" placeholder="Пользователь" aria-labelledby="ctrl_search_menu_by_member" />
+</div>
+</div>
+<div class="menu-footer">
+<span class="menu-footer-controls">
+<button type="submit" class="button--primary button button--icon button--icon--search"><span class="button-text">Поиск</span></button>
+<a href="/search/" class="button"><span class="button-text">Расширенный поиск...</span></a>
+</span>
+</div>
+<input type="hidden" name="_xfToken" value="1583580712,e3ef66f168c3ea0405575f4a549c37f7" />
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<nav class='focus-wrap-nav'>
+<div class="p-nav-scroller hScroller" data-xf-init="h-scroller" data-auto-scroll=".p-navEl.is-selected">
+<div class="hScroller-scroll">
+<ul class="p-nav-list js-offCanvasNavSource">
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="EWRporta">Главная</a>
+<a data-xf-key="1" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/whats-new/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="EWRporta_whatsnaw">Что нового?</a>
+<a href="/whats-new/latest-activity" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="EWRporta_latest">Последняя активность</a>
+<a href="/ewr-porta/authors/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="EWRporta_authors">Авторы</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl is-selected" data-has-children="true">
+<svg data-name="curve" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 6"><path d="M0,6H6V0A6,6,0,0,1,0,6Z" /></svg>
+<svg data-name="curve" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 6"><path d="M6,6H0V0A6,6,0,0,0,6,6Z" /></svg>
+<a href="/forum/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="forums">Форумы</a>
+<a data-xf-key="2" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/whats-new/posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="newPosts">Новые сообщения</a>
+<a href="/search/?type=post" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="searchForums">Поиск сообщений</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="/whats-new/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="whatsNew">Что нового?</a>
+<a data-xf-key="3" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/whats-new/posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="whatsNewPosts">Новые сообщения</a>
+<a href="/whats-new/latest-activity" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="latestActivity">Последняя активность</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="/members/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="members">Пользователи</a>
+<a data-xf-key="4" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/online/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="currentVisitors">Текущие посетители</a>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<div class='focus-wrap-search'>
+<form action="/search/search" method="post">
+
+<div class='focus-search'>
+<div class='focus-search-flex'>
+<input name="keywords" placeholder="Поиск..." aria-label="Поиск" data-menu-autofocus="true" type="text" />
+<div class='focus-search-prefix'><i class="fa--xf far fa-search" aria-hidden="true"></i></div>
+</div>
+</div>
+<div class="focus-search-menu">
+<div class="menu-row">
+<select name="constraints" class="js-quickSearch-constraint input" aria-label="Search within">
+<option value="">Везде</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;}">Темы</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;nodes&quot;:[466],&quot;child_nodes&quot;:1}}">Этот форум</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;thread&quot;:6153}}">Эта тема</option>
+</select>
+</div>
+<div class="menu-row">
+<label class="iconic"><input type="checkbox" name="c[title_only]" value="1" /><i aria-hidden="true"></i><span class="iconic-label">Искать только в заголовках</span></label>
+</div>
+<div class="menu-row">
+<div class="inputGroup">
+<span class="inputGroup-text">От:</span>
+<input class="input" name="c[users]" data-xf-init="auto-complete" placeholder="Пользователь" aria-labelledby="ctrl_search_menu_by_member" />
+</div>
+</div>
+<div class="menu-footer">
+<span class="menu-footer-controls">
+<a href="/search/" class="button"><span class="button-text">Фильтры</span></a>
+<button type="submit" class="button--primary button button--icon button--icon--search"><span class="button-text">Поиск</span></button>
+</span>
+</div>
+</div>
+<input type="hidden" name="_xfToken" value="1583580712,e3ef66f168c3ea0405575f4a549c37f7" />
+</form>
+</div>
+</div>
+</div>
+
+<div class="p-sectionLinks">
+<div class="p-sectionLinks-inner hScroller" data-xf-init="h-scroller">
+<div class="hScroller-scroll">
+<ul class="p-sectionLinks-list">
+<li>
+<div class="p-navEl ">
+<a href="/whats-new/posts/" class="p-navEl-link " data-xf-key="alt+1" data-nav-id="newPosts">Новые сообщения</a>
+</div>
+</li>
+<li>
+<div class="p-navEl ">
+<a href="/search/?type=post" class="p-navEl-link " data-xf-key="alt+2" data-nav-id="searchForums">Поиск сообщений</a>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class='focus-content'>
+<div class="p-body">
+<div class="p-body-inner">
+
+
+<div class='focus-breadcrumb'>
+<ul class="p-breadcrumbs " itemscope itemtype="https://schema.org/BreadcrumbList">
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/" itemprop="item">
+<span itemprop="name">Форумы</span>
+</a>
+<meta itemprop="position" content="1" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/#avtorskie-razdely.465" itemprop="item">
+<span itemprop="name">Авторские разделы</span>
+</a>
+<meta itemprop="position" content="2" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/bit_hack.466/" itemprop="item">
+<span itemprop="name">BIT_hack</span>
+</a>
+<meta itemprop="position" content="3" />
+</li>
+</ul>
+<ul class='xenfocus-social'>
+<li><a href='#vk.com/tophope' target='_blank'></a></li>
+</ul>
+</div>
+<noscript><div class="blockMessage blockMessage--important blockMessage--iconic u-noJsOnly">JavaScript отключён. Чтобы полноценно использовать наш сайт, включите JavaScript в своём браузере.</div></noscript>
+<!--[if lt IE 9]><div class="blockMessage blockMessage&#45;&#45;important blockMessage&#45;&#45;iconic">Вы используете устаревший браузер. Этот и другие сайты могут отображаться в нём некорректно.<br />Вам необходимо обновить браузер или попробовать использовать <a href="https://www.google.com/chrome/browser/" target="_blank">другой</a>.</div><![endif]-->
+<div class="p-body-header">
+<div class="p-title ">
+<h1 class="p-title-value">Программа конвертер .uc для русских символов</h1>
+</div>
+<div class="p-description">
+<ul class="listInline listInline--bullet">
+<li>
+<i class="fa--xf far fa-user" aria-hidden="true" title="Автор темы"></i>
+<span class="u-srOnly">Автор темы</span>
+<a href="/members/bit_hack.33717/" class="username  u-concealed" dir="auto" data-user-id="33717" data-xf-init="member-tooltip"><span class="username--staff username--moderator">BIT_hack</span></a>
+</li>
+<li>
+<i class="fa--xf far fa-clock" aria-hidden="true" title="Дата начала"></i>
+<span class="u-srOnly">Дата начала</span>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/" class="u-concealed"><time class="u-dt" dir="auto" datetime="2018-01-23T20:36:33+0300" data-time="1516728993" data-date-string="23 Январь 2018" data-time-string="20:36" title="23 Январь 2018 в 20:36">23 Январь 2018</time></a>
+</li>
+</ul>
+</div>
+</div>
+<div class="p-body-main  ">
+<div class="p-body-content">
+<div class="p-body-pageContent">
+<div class="block block--messages" data-xf-init="" data-type="post" data-href="/inline-mod/">
+<div class="block-outer"></div>
+<div class="block-outer js-threadStatusField"></div>
+<div class="block-container lbContainer" data-xf-init="lightbox select-to-quote" data-message-selector=".js-post" data-lb-id="thread-6153" data-lb-universal="0">
+<div class="block-body js-replyNewMessageContainer">
+<article class="message message--post js-post js-inlineModContainer  " data-author="BIT_hack" data-content="post-54601" id="js-post-54601">
+<span class="u-anchorTarget" id="post-54601"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/bit_hack.33717/" class="username " dir="auto" data-user-id="33717" data-xf-init="member-tooltip" itemprop="name"><span class="username--style66 username--staff username--moderator">BIT_hack</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/bit_hack.33717/" class="avatar avatar--l" data-user-id="33717" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/33/33717.jpg?1571065634" alt="BIT_hack" class="avatar-u33717-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/bit_hack.33717/" class="username " dir="auto" data-user-id="33717" data-xf-init="member-tooltip" itemprop="name"><span class="username--style66 username--staff username--moderator">BIT_hack</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>354</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>434</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>63</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54601" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2018-01-23T20:36:33+0300" data-time="1516728993" data-date-string="23 Январь 2018" data-time-string="20:36" title="23 Январь 2018 в 20:36">23 Январь 2018</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54601" data-xf-init="share-tooltip" data-href="/posts/54601/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54601" rel="nofollow">
+#1
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-54601" data-lb-caption-desc="BIT_hack &middot; 23 Январь 2018 в 20:36">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><div style="text-align: center"><b>Программа конвертирует все файлы с расширение *.uc в указной папки для использования Русских символов в скрипте.</b><br />
+<span style="color: #b30000">( Предупреждаю если у вас уже есть скрипты с Русскими символами они заменятся на ???? )<br />
+<a href="https://tophope.ru/attachments/588/" target="_blank">Посмотреть вложение 588</a> </span>&#8203;</div><span style="color: #0080ff">Разработчик : BITHack</span><br />
+<span style="color: #000000">Не доверяешь собери сам:<br />
+<b>Исходник: Lazarus</b></span><br />
+<span style="color: #0080ff">
+<div class="bbCodeBlock bbCodeBlock--screenLimited bbCodeBlock--code">
+<div class="bbCodeBlock-title">
+PHP:
+</div>
+<div class="bbCodeBlock-content" dir="ltr">
+<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a>or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a>to view codes content!
+</div>
+</div>
+</div></span></div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/54601/reactions" data-xf-click="overlay" data-cache="false"><bdi>AlisaCodeDragon</bdi>, <bdi>Euphoria</bdi> и <bdi>HellFire</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-54605" id="js-post-54605">
+<span class="u-anchorTarget" id="post-54605"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54605" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2018-01-23T21:13:14+0300" data-time="1516731194" data-date-string="23 Январь 2018" data-time-string="21:13" title="23 Январь 2018 в 21:13">23 Январь 2018</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54605" data-xf-init="share-tooltip" data-href="/posts/54605/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54605" rel="nofollow">
+#2
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-54605" data-lb-caption-desc="AlisaCodeDragon &middot; 23 Январь 2018 в 21:13">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">моя умеет нарезать все хроники на uc <br />
+даже корею ))<br />
+дядь а эм зачем тут ратник ? <div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div><br />
+протекторов не заметила но вот ругань на именно этот вирус чего то стёмно ))<br />
+это типа RDP удаленное управление тачилой юзверя хе хе шалун ))<br />
+ну или в вирус тотал дубов держат ок чо учла )</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="BIT_hack" data-content="post-54606" id="js-post-54606">
+<span class="u-anchorTarget" id="post-54606"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+ <h4 class="message-name"><a href="/members/bit_hack.33717/" class="username " dir="auto" data-user-id="33717" data-xf-init="member-tooltip" itemprop="name"><span class="username--style66 username--staff username--moderator">BIT_hack</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/bit_hack.33717/" class="avatar avatar--l" data-user-id="33717" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/33/33717.jpg?1571065634" alt="BIT_hack" class="avatar-u33717-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/bit_hack.33717/" class="username " dir="auto" data-user-id="33717" data-xf-init="member-tooltip" itemprop="name"><span class="username--style66 username--staff username--moderator">BIT_hack</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>354</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>434</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>63</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54606" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2018-01-23T21:18:29+0300" data-time="1516731509" data-date-string="23 Январь 2018" data-time-string="21:18" title="23 Январь 2018 в 21:18">23 Январь 2018</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54606" data-xf-init="share-tooltip" data-href="/posts/54606/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54606" rel="nofollow">
+#3
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-54606" data-lb-caption-desc="BIT_hack &middot; 23 Январь 2018 в 21:18">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=54605" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-54605">AliceVIRUS написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+ну или в вирус тотал дубов держат ок чо учла )
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Не доверяешь собери сама: Просто при компиляции включил сжатие файла иначе под Lazarus большой получается отсюда и подозрение на вирус.<br />
+<span style="color: #0080ff">Исходник:</span><br />
+<div class="bbCodeBlock bbCodeBlock--screenLimited bbCodeBlock--code">
+<div class="bbCodeBlock-title">
+PHP:
+</div>
+<div class="bbCodeBlock-content" dir="ltr">
+<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a>or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a>to view codes content!
+</div>
+</div>
+</div></div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+<div class="message-lastEdit">
+Последнее редактирование модератором: <time class="u-dt" dir="auto" datetime="2020-01-13T04:43:41+0300" data-time="1578879821" data-date-string="13 Январь 2020" data-time-string="04:43" title="13 Январь 2020 в 04:43">13 Январь 2020</time>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/54606/reactions" data-xf-click="overlay" data-cache="false"><bdi>Euphoria</bdi> и <bdi>HellFire</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-54607" id="js-post-54607">
+<span class="u-anchorTarget" id="post-54607"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54607" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2018-01-23T21:27:04+0300" data-time="1516732024" data-date-string="23 Январь 2018" data-time-string="21:27" title="23 Январь 2018 в 21:27">23 Январь 2018</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54607" data-xf-init="share-tooltip" data-href="/posts/54607/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54607" rel="nofollow">
+#4
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-54607" data-lb-caption-desc="AlisaCodeDragon &middot; 23 Январь 2018 в 21:27">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=54606" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-54606">BIT_hack написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Просто при компиляции включил сжатие файла иначе под Lazarus большой получается отсюда и подозрение на вирус
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Я ТЕБЯ ЛИЧНО не в чом не обвиняла стопэ rolleyes.png=)))))))<br />
+просто это сканер и вообще ток один baidu это закрытый пекин вроде япошки идиоты )<br />
+мимими наоборот приятно что кто то стока уделяет времени этой тематике<br />
+код если бы захотела я вынула бы из любого файла своим декомпилятором ( даж корея летит на фарш изи там )<br />
+спасибки за вклад в развитие форума ^</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="BIT_hack" data-content="post-54608" id="js-post-54608">
+<span class="u-anchorTarget" id="post-54608"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/bit_hack.33717/" class="username " dir="auto" data-user-id="33717" data-xf-init="member-tooltip" itemprop="name"><span class="username--style66 username--staff username--moderator">BIT_hack</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/bit_hack.33717/" class="avatar avatar--l" data-user-id="33717" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/33/33717.jpg?1571065634" alt="BIT_hack" class="avatar-u33717-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/bit_hack.33717/" class="username " dir="auto" data-user-id="33717" data-xf-init="member-tooltip" itemprop="name"><span class="username--style66 username--staff username--moderator">BIT_hack</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>354</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>434</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>63</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54608" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2018-01-23T21:30:39+0300" data-time="1516732239" data-date-string="23 Январь 2018" data-time-string="21:30" title="23 Январь 2018 в 21:30">23 Январь 2018</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54608" data-xf-init="share-tooltip" data-href="/posts/54608/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54608" rel="nofollow">
+#5
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-54608" data-lb-caption-desc="BIT_hack &middot; 23 Январь 2018 в 21:30">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=54605" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-54605">AliceVIRUS написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+моя умеет нарезать все хроники на uc<br />
+даже корею ))
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Я пока так не умею))<br />
+<blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=54607" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-54607">AliceVIRUS написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+код если бы захотела я вынула бы из любого файла своим декомпилятором ( даж корея летит на фарш изи там )
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>из Delphi, Java, с++ и тп можно вытащить из Lazarusa сомнение)</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/54608/reactions" data-xf-click="overlay" data-cache="false"><bdi>AlisaCodeDragon</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-54610" id="js-post-54610">
+<span class="u-anchorTarget" id="post-54610"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54610" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2018-01-23T21:57:37+0300" data-time="1516733857" data-date-string="23 Январь 2018" data-time-string="21:57" title="23 Январь 2018 в 21:57">23 Январь 2018</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54610" data-xf-init="share-tooltip" data-href="/posts/54610/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54610" rel="nofollow">
+#6
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-54610" data-lb-caption-desc="AlisaCodeDragon &middot; 23 Январь 2018 в 21:57">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=54608" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-54608">BIT_hack написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Я пока так не умею))<br />
+<br />
+из Delphi, Java, с++ и тп можно вытащить <b>из Lazarusa сомнение</b>)
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>хм дамп с процесса - если это то о чём я подумала <br />
+через скрипт какой и так все знают D <br />
+если конечно речь о файле типа <b>u контейнеров</b> , а так обычно декомпиляторами , хотя что за код нужно хе хе нюансы знать <br />
+<br />
+<blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=54608" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-54608">BIT_hack написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Я пока так не умею))<br />
+)
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>да все мы учимся чему то новому , это нормально для этого и существуют эти форум обмен информацией по идеи <br />
+а не для понтов о бля я научилась всему уровень бог ха ха мм личные мысли )))</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-54613" id="js-post-54613">
+<span class="u-anchorTarget" id="post-54613"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54613" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2018-01-24T02:41:33+0300" data-time="1516750893" data-date-string="24 Январь 2018" data-time-string="02:41" title="24 Январь 2018 в 02:41">24 Январь 2018</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54613" data-xf-init="share-tooltip" data-href="/posts/54613/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-54613" rel="nofollow">
+#7
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-54613" data-lb-caption-desc="AlisaCodeDragon &middot; 24 Январь 2018 в 02:41">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=54611" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-54611">BIT_hack написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Жаль что это уже никому не интересно(
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Думаю есть те кого это интересует , просто щас все думают как набить карманы баблом<br />
+редко кто хочет делать что то бесплатно , так сказать массово для народа )<br />
+Мне интересны твои наработки , так что продолжай , буду рада помочь если понадоблюсь</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="HelloZerg" data-content="post-59701" id="js-post-59701">
+<span class="u-anchorTarget" id="post-59701"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/hellozerg.59419/" class="avatar avatar--l avatar--default avatar--default--dynamic" data-user-id="59419" data-xf-init="member-tooltip" style="background-color: #143352; color: #478cd1">
+<span class="avatar-u59419-l">H</span>
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>7</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>2</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>1</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59701" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-13T00:55:13+0300" data-time="1578866113" data-date-string="13 Январь 2020" data-time-string="00:55" title="13 Январь 2020 в 00:55">13 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59701" data-xf-init="share-tooltip" data-href="/posts/59701/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59701" rel="nofollow">
+#8
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59701" data-lb-caption-desc="HelloZerg &middot; 13 Январь 2020 в 00:55">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">все кого это интересуют ищут информацию. И ставлкиваются с этими така сказать &quot;Богами&quot; которые заместь дельного совета отправляют в поиковит и говорят юзай там....</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/59701/reactions" data-xf-click="overlay" data-cache="false"><bdi>hexpro</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-59702" id="js-post-59702">
+<span class="u-anchorTarget" id="post-59702"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59702" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-13T05:00:31+0300" data-time="1578880831" data-date-string="13 Январь 2020" data-time-string="05:00" title="13 Январь 2020 в 05:00">13 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59702" data-xf-init="share-tooltip" data-href="/posts/59702/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59702" rel="nofollow">
+#9
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59702" data-lb-caption-desc="AlisaCodeDragon &middot; 13 Январь 2020 в 05:00">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59701" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59701">HelloZerg написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+все кого это интересуют ищут информацию. И ставлкиваются с этими така сказать &quot;Богами&quot; которые заместь дельного совета отправляют в поиковит и говорят юзай там....
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Я не видела чтобы вы спросили совета а сразу пишите критику )<br />
+или это было не на этом форуме тут уж не знаю везде люди разные <br />
+по сути все что касаемо интерфейсов тут вам не уверена что помогут <br />
+не то чтобы люди плохие а просто это сфера заработка и сама l2 уже давно бизнес у многих<br />
+<br />
+Свои собрала сама компиляторы 110+337+768 ревизии ( не интерфейсы ) модели эффекты нпс делают<br />
+но по сути доделать до интерфейса вполне реально фиксы hud+canvas и так мелкие правки остались<br />
+<br />
+использовала простой unreal engine runtime и notepad ++<br />
+<br />
+вот и вся магия ну и огромное желание сделать его <br />
+мой совет начать с базового изучения хотя бы сделайте с 337 ревизии это прелюдия<br />
+у меня создание такого компилятора заняло всего 2 часа не торопилась <br />
+если будете сразу лезть в высшие хроники там сложнее )<br />
+пример я делала под 110 протокол где то часиков 5 и совет начать с простого задания<br />
+мои базовые навыки до создания компиляторов были по моделированию возможно это помогло<br />
+конечно проще создать ( на готовых шаровых компиляторах ) что то типа нового эффекта <br />
+уверена это самое простое с чего начать а если хотите экстрима как написала 337 протокол попробуйте<br />
+можно взять код с звездных войн они на том же движке и перенести в lineage2 эффекты немного дописать<br />
+я уже переносила это не сложно зато сделаете что то уникальное )<br />
+у битхака хватает базовых уроков с которых можно начать изучать unreal scripts уверена найдете.<br />
+<br />
+ps если есть вопросы пишите - не кусаюсь )</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/59702/reactions" data-xf-click="overlay" data-cache="false"><bdi>Gylik</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="HelloZerg" data-content="post-59707" id="js-post-59707">
+<span class="u-anchorTarget" id="post-59707"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/hellozerg.59419/" class="avatar avatar--l avatar--default avatar--default--dynamic" data-user-id="59419" data-xf-init="member-tooltip" style="background-color: #143352; color: #478cd1">
+<span class="avatar-u59419-l">H</span>
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>7</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>2</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>1</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59707" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-13T15:51:22+0300" data-time="1578919882" data-date-string="13 Январь 2020" data-time-string="15:51" title="13 Январь 2020 в 15:51">13 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59707" data-xf-init="share-tooltip" data-href="/posts/59707/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59707" rel="nofollow">
+#10
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59707" data-lb-caption-desc="HelloZerg &middot; 13 Январь 2020 в 15:51">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59702" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59702">AlisaCodeDragon написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Я не видела чтобы вы спросили совета а сразу пишите критику )<br />
+или это было не на этом форуме тут уж не знаю везде люди разные<br />
+по сути все что касаемо интерфейсов тут вам не уверена что помогут<br />
+не то чтобы люди плохие а просто это сфера заработка и сама l2 уже давно бизнес у многих<br />
+<br />
+Свои собрала сама компиляторы 110+337+768 ревизии ( не интерфейсы ) модели эффекты нпс делают<br />
+но по сути доделать до интерфейса вполне реально фиксы hud+canvas и так мелкие правки остались<br />
+<br />
+использовала простой unreal engine runtime и notepad ++<br />
+<br />
+вот и вся магия ну и огромное желание сделать его<br />
+мой совет начать с базового изучения хотя бы сделайте с 337 ревизии это прелюдия<br />
+у меня создание такого компилятора заняло всего 2 часа не торопилась<br />
+если будете сразу лезть в высшие хроники там сложнее )<br />
+пример я делала под 110 протокол где то часиков 5 и совет начать с простого задания<br />
+мои базовые навыки до создания компиляторов были по моделированию возможно это помогло<br />
+конечно проще создать ( на готовых шаровых компиляторах ) что то типа нового эффекта<br />
+уверена это самое простое с чего начать а если хотите экстрима как написала 337 протокол попробуйте<br />
+можно взять код с звездных войн они на том же движке и перенести в lineage2 эффекты немного дописать<br />
+я уже переносила это не сложно зато сделаете что то уникальное )<br />
+у битхака хватает базовых уроков с которых можно начать изучать unreal scripts уверена найдете.<br />
+<br />
+ps если есть вопросы пишите - не кусаюсь )
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>да вопросов хоть отбавляй, да возможно я не так начал и да, на этом форуме помогли больше чем на остальных, но в любых вопросах был один ответ, начни оттуда, дойдешь туда, там поймешь, я понимаю что это стало какой то запретной темой, по этому приходится оббивать пороги всех форумов, что бы найти что то=)</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/59707/reactions" data-xf-click="overlay" data-cache="false"><bdi>hexpro</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-59710" id="js-post-59710">
+<span class="u-anchorTarget" id="post-59710"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59710" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-13T20:37:45+0300" data-time="1578937065" data-date-string="13 Январь 2020" data-time-string="20:37" title="13 Январь 2020 в 20:37">13 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59710" data-xf-init="share-tooltip" data-href="/posts/59710/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59710" rel="nofollow">
+#11
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59710" data-lb-caption-desc="AlisaCodeDragon &middot; 13 Январь 2020 в 20:37">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59707" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59707">HelloZerg написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+да вопросов хоть отбавляй, да возможно я не так начал и да, на этом форуме помогли больше чем на остальных, но в любых вопросах был один ответ, начни оттуда, дойдешь туда, там поймешь, я понимаю что это стало какой то запретной темой, по этому приходится оббивать пороги всех форумов, что бы найти что то=)
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>А какие именно вопросы ? на данный момент интересуют <br />
+суть поняла что unreal scripts создание что то своего но уточните детали.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="HelloZerg" data-content="post-59712" id="js-post-59712">
+<span class="u-anchorTarget" id="post-59712"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/hellozerg.59419/" class="avatar avatar--l avatar--default avatar--default--dynamic" data-user-id="59419" data-xf-init="member-tooltip" style="background-color: #143352; color: #478cd1">
+<span class="avatar-u59419-l">H</span>
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>7</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>2</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>1</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59712" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-13T23:15:29+0300" data-time="1578946529" data-date-string="13 Январь 2020" data-time-string="23:15" title="13 Январь 2020 в 23:15">13 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59712" data-xf-init="share-tooltip" data-href="/posts/59712/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59712" rel="nofollow">
+#12
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59712" data-lb-caption-desc="HelloZerg &middot; 13 Январь 2020 в 23:15">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59710" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59710">AlisaCodeDragon написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+А какие именно вопросы ? на данный момент интересуют<br />
+суть поняла что unreal scripts создание что то своего но уточните детали.
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Давайте начнем с начала, часть U файлов просто так не открыть, даже использовав программы декрипторы, часть Xdat так же не открываются редактором, какой софт нужно искать или каким образом они открываются?</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-59714" id="js-post-59714">
+<span class="u-anchorTarget" id="post-59714"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59714" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-14T00:15:26+0300" data-time="1578950126" data-date-string="14 Январь 2020" data-time-string="00:15" title="14 Январь 2020 в 00:15">14 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59714" data-xf-init="share-tooltip" data-href="/posts/59714/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59714" rel="nofollow">
+#13
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59714" data-lb-caption-desc="AlisaCodeDragon &middot; 14 Январь 2020 в 00:15">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59712" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59712">HelloZerg написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Давайте начнем с начала, часть U файлов просто так не открыть, даже использовав программы декрипторы, часть Xdat так же не открываются редактором, какой софт нужно искать или каким образом они открываются?
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Для начало лезть в защищенные u контейнеры нету смысла , я бы советовала взять оригинальные<br />
+можно посмотреть что то до хф5 или какие вас интересуют ? <br />
+для хф5 хроник достаточно использовать обычный wot софт <br />
+для открытия xdat можно использовать софт acmi <br />
+<br />
+какая изначально задача? напишите прямо</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="HelloZerg" data-content="post-59716" id="js-post-59716">
+<span class="u-anchorTarget" id="post-59716"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/hellozerg.59419/" class="avatar avatar--l avatar--default avatar--default--dynamic" data-user-id="59419" data-xf-init="member-tooltip" style="background-color: #143352; color: #478cd1">
+<span class="avatar-u59419-l">H</span>
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>7</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>2</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>1</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59716" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-14T00:20:21+0300" data-time="1578950421" data-date-string="14 Январь 2020" data-time-string="00:20" title="14 Январь 2020 в 00:20">14 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59716" data-xf-init="share-tooltip" data-href="/posts/59716/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59716" rel="nofollow">
+#14
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59716" data-lb-caption-desc="HelloZerg &middot; 14 Январь 2020 в 00:20">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59714" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59714">AlisaCodeDragon написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Для начало лезть в защищенные u контейнеры нету смысла , я бы советовала взять оригинальные<br />
+можно посмотреть что то до хф5 или какие вас интересуют ?<br />
+для хф5 хроник достаточно использовать обычный wot софт<br />
+для открытия xdat можно использовать софт acmi<br />
+<br />
+какая изначально задача? напишите прямо
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>пишу прямо, научится редактировать интерфейсы и скрипты, просто укажите что для начала нужно, с чего начали вы, в какую сторону двигатся=)</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-59718" id="js-post-59718">
+<span class="u-anchorTarget" id="post-59718"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59718" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-14T01:13:17+0300" data-time="1578953597" data-date-string="14 Январь 2020" data-time-string="01:13" title="14 Январь 2020 в 01:13">14 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59718" data-xf-init="share-tooltip" data-href="/posts/59718/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59718" rel="nofollow">
+#15
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59718" data-lb-caption-desc="AlisaCodeDragon &middot; 14 Январь 2020 в 01:13">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59716" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59716">HelloZerg написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+пишу прямо, научится редактировать интерфейсы и скрипты, просто укажите что для начала нужно, с чего начали вы, в какую сторону двигатся=)
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Хорошо учла это будет как *дайте мне гранату где фашисты куда бросить ? * <br />
+давайте попробуем есть пирог вилкой )<br />
+за психологическое состояние после общения с компилятором ответственности не несем )<br />
+<br />
+ладно от слов к делу для начало давайте немножко подумаем как устроены классы и что такое иерархия <br />
+в каждом движке и так же игре есть ini файлы содержащие в себе настройки и подключение пакетов<br />
+по сути это u контейнеры содержащие в себе unreal sctiprs код <br />
+они то нам и нужны смотрим ( хф5 резивия 273 ) что мы там видим ?<br />
+<br />
+EditPackages=Core<br />
+EditPackages=Engine<br />
+<br />
+по сути вы найдете там вот такие записи это и есть иерархия классов<br />
+ведь компилятор unreal engine runtime будет требовать сначала 1 пак потом 2 и так далее<br />
+это значит что изначально нам нужны сходы ( декомпил ) core.u для этого мы будем юзать ( использовать )<br />
+различный софт это может быть utpt софт или наш любимый <span style="font-size: 12px"><b>WoT greal explorer</b><br />
+скачать его можно тут </span>
+<div class="bbCodeSpoiler">
+<button type="button" class="bbCodeSpoiler-button button--longText button" data-xf-click="toggle" data-xf-init="tooltip" title="Нажмите для открытия или закрытия спойлера"><span class="button-text">
+<span>Спойлер: <span class="bbCodeSpoiler-button-title">нажми меня </span></span>
+</span></button>
+<div class="bbCodeSpoiler-content">
+<div class="bbCodeBlock bbCodeBlock--spoiler">
+<div class="bbCodeBlock-content">яд диск - <div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div><br />
+</div>
+</div>
+</div>
+</div><br />
+ещё один замечательный инструмент это <span style="font-size: 12px"><b>Xdat Editor</b><br />
+</span>
+<div class="bbCodeSpoiler">
+<button type="button" class="bbCodeSpoiler-button button--longText button" data-xf-click="toggle" data-xf-init="tooltip" title="Нажмите для открытия или закрытия спойлера"><span class="button-text">
+<span>Спойлер: <span class="bbCodeSpoiler-button-title">нажми меня </span></span>
+</span></button>
+<div class="bbCodeSpoiler-content">
+<div class="bbCodeBlock bbCodeBlock--spoiler">
+<div class="bbCodeBlock-content"><div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div></div>
+</div>
+</div>
+</div><br />
+Когда вы обзавелись сим мощными инструментами вам нужно заняться подготовкой <br />
+исходного кода то есть мы u контейнеры с кодом core.u нарезаем с помощью софта utpt - wot <br />
+на uc болванки содержащие в себе unreal scripts код который нам и будет нужен для работы<br />
+<br />
+Напишите все ли понятно из начального гайда ?<br />
+Да и прибудет с вами сила (с) звездные войны</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="HelloZerg" data-content="post-59719" id="js-post-59719">
+<span class="u-anchorTarget" id="post-59719"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/hellozerg.59419/" class="avatar avatar--l avatar--default avatar--default--dynamic" data-user-id="59419" data-xf-init="member-tooltip" style="background-color: #143352; color: #478cd1">
+<span class="avatar-u59419-l">H</span>
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/hellozerg.59419/" class="username " dir="auto" data-user-id="59419" data-xf-init="member-tooltip" itemprop="name">HelloZerg</a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">New member</h5>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>7</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>2</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>1</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59719" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-14T01:18:57+0300" data-time="1578953937" data-date-string="14 Январь 2020" data-time-string="01:18" title="14 Январь 2020 в 01:18">14 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59719" data-xf-init="share-tooltip" data-href="/posts/59719/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59719" rel="nofollow">
+#16
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59719" data-lb-caption-desc="HelloZerg &middot; 14 Январь 2020 в 01:18">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59718" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59718">AlisaCodeDragon написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Хорошо учла это будет как *дайте мне гранату где фашисты куда бросить ? *<br />
+давайте попробуем есть пирог вилкой )<br />
+за психологическое состояние после общения с компилятором ответственности не несем )<br />
+<br />
+ладно от слов к делу для начало давайте немножко подумаем как устроены классы и что такое иерархия<br />
+в каждом движке и так же игре есть ini файлы содержащие в себе настройки и подключение пакетов<br />
+по сути это u контейнеры содержащие в себе unreal sctiprs код<br />
+они то нам и нужны смотрим ( хф5 резивия 273 ) что мы там видим ?<br />
+<br />
+EditPackages=Core<br />
+EditPackages=Engine<br />
+<br />
+по сути вы найдете там вот такие записи это и есть иерархия классов<br />
+ведь компилятор unreal engine runtime будет требовать сначала 1 пак потом 2 и так далее<br />
+это значит что изначально нам нужны сходы ( декомпил ) core.u для этого мы будем юзать ( использовать )<br />
+различный софт это может быть utpt софт или наш любимый <span style="font-size: 12px"><b>WoT greal explorer</b><br />
+скачать его можно тут </span>
+<div class="bbCodeSpoiler">
+<button type="button" class="bbCodeSpoiler-button button--longText button" data-xf-click="toggle" data-xf-init="tooltip" title="Нажмите для открытия или закрытия спойлера"><span class="button-text">
+<span>Спойлер: <span class="bbCodeSpoiler-button-title">нажми меня </span></span>
+</span></button>
+<div class="bbCodeSpoiler-content">
+<div class="bbCodeBlock bbCodeBlock--spoiler">
+<div class="bbCodeBlock-content">яд диск - <div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div></div>
+</div>
+</div>
+</div>ещё один замечательный инструмент это <span style="font-size: 12px"><b>Xdat Editor</b><br />
+</span>
+<div class="bbCodeSpoiler">
+<button type="button" class="bbCodeSpoiler-button button--longText button" data-xf-click="toggle" data-xf-init="tooltip" title="Нажмите для открытия или закрытия спойлера"><span class="button-text">
+<span>Спойлер: <span class="bbCodeSpoiler-button-title">нажми меня </span></span>
+</span></button>
+<div class="bbCodeSpoiler-content">
+<div class="bbCodeBlock bbCodeBlock--spoiler">
+<div class="bbCodeBlock-content"><div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div></div>
+</div>
+</div>
+</div>Когда вы обзавелись сим мощными инструментами вам нужно заняться подготовкой<br />
+исходного кода то есть мы u контейнеры с кодом core.u нарезаем с помощью софта utpt - wot<br />
+на uc болванки содержащие в себе unreal scripts код который нам и будет нужен для работы<br />
+<br />
+Напишите все ли понятно из начального гайда ?<br />
+Да и прибудет с вами сила (с) звездные войны
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>С этим все понятно, каково дальнейшее пошаговое движение, декрипт и распаковка и компиляция обратно в U и добавление и редактирование(включение окошек) в Xdat понятно, wot utpt xdat скачено, уже есть начинания, хотелось бы пройтись по примерам, так сказать наглядно с самого элементарного=)<br />
+Спсибо большое за помощ=) и да, выглядит наверное так, как с гранатой=)</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="AlisaCodeDragon" data-content="post-59720" id="js-post-59720">
+<span class="u-anchorTarget" id="post-59720"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/alisacodedragon.55219/" class="avatar avatar--l" data-user-id="55219" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/55/55219.jpg?1583512371" srcset="/data/avatars/h/55/55219.jpg?1583512371 2x" alt="AlisaCodeDragon" class="avatar-u55219-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/alisacodedragon.55219/" class="username " dir="auto" data-user-id="55219" data-xf-init="member-tooltip" itemprop="name"><span class="username--style17 username--staff username--moderator">AlisaCodeDragon</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Active member</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--skyBlue message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Независимый разработчик</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>259</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>241</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>43</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59720" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2020-01-14T05:40:40+0300" data-time="1578969640" data-date-string="14 Январь 2020" data-time-string="05:40" title="14 Январь 2020 в 05:40">14 Январь 2020</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59720" data-xf-init="share-tooltip" data-href="/posts/59720/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153/post-59720" rel="nofollow">
+#17
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-59720" data-lb-caption-desc="AlisaCodeDragon &middot; 14 Январь 2020 в 05:40">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="/goto/post?id=59719" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-59719">HelloZerg написал(а):</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+каково дальнейшее пошаговое движение
+</div>
+<div class="bbCodeBlock-expandLink"><a>Нажмите для раскрытия...</a></div>
+</div>
+</blockquote>Далее как написала выше надеюсь вы внимательно прочли это <br />
+нам нужно создать фундамент вы же знаете что дом стоит на фундаменте ( образно )<br />
+по иерархии это создание первого пака Core.u без него изобрести велосипед невозможно <br />
+<br />
+У вас не было вопросов по подключению уверена умеете <br />
+ps если не в курсе подскажу используем unreal engine runtime<br />
+приступите к созданию ядра покажите что получилось <br />
+если не знаете как начать напишите в теме это то с чего стоит начинать в этом деле<br />
+как ни банально нельзя сразу прыгнуть в дамки не побыв пешкой ( шахматы - метафора )</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/59720/reactions" data-xf-click="overlay" data-cache="false"><bdi>HellFire</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+<div class="block-outer block-outer--after">
+<div class="block-outer-opposite">
+<a href="/login/" class="button--link button" data-xf-click="overlay"><span class="button-text">
+Войдите или зарегистрируйтесь для ответа.
+</span></a>
+</div>
+</div>
+</div>
+<div class="blockMessage blockMessage--none">
+<div class="shareButtons shareButtons--iconic" data-xf-init="share-buttons" data-page-url="" data-page-title="" data-page-desc="">
+<span class="shareButtons-label">Поделиться:</span>
+<div class="shareButtons-buttons">
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--facebook" data-href="https://www.facebook.com/sharer.php?u={url}">
+<i aria-hidden="true"></i>
+<span>Facebook</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--twitter" data-href="https://twitter.com/intent/tweet?url={url}&amp;text={title}">
+<i aria-hidden="true"></i>
+<span>Twitter</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--reddit" data-href="https://reddit.com/submit?url={url}&amp;title={title}">
+<i aria-hidden="true"></i>
+<span>Reddit</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--pinterest" data-href="https://pinterest.com/pin/create/bookmarklet/?url={url}&amp;description={title}">
+<i aria-hidden="true"></i>
+<span>Pinterest</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--tumblr" data-href="https://www.tumblr.com/widgets/share/tool?canonicalUrl={url}&amp;title={title}">
+<i aria-hidden="true"></i>
+<span>Tumblr</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--whatsApp" data-href="https://api.whatsapp.com/send?text={title}&nbsp;{url}">
+<i aria-hidden="true"></i>
+<span>WhatsApp</span>
+</a>
+<a class="shareButtons-button shareButtons-button--email" data-href="mailto:?subject={title}&amp;body={url}">
+<i aria-hidden="true"></i>
+<span>Электронная почта</span>
+</a>
+<a class="shareButtons-button shareButtons-button--link is-hidden" data-clipboard="{url}">
+<i aria-hidden="true"></i>
+<span>Ссылка</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul class="p-breadcrumbs p-breadcrumbs--bottom" itemscope itemtype="https://schema.org/BreadcrumbList">
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/" itemprop="item">
+<span itemprop="name">Форумы</span>
+</a>
+<meta itemprop="position" content="1" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/#avtorskie-razdely.465" itemprop="item">
+<span itemprop="name">Авторские разделы</span>
+</a>
+<meta itemprop="position" content="2" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/bit_hack.466/" itemprop="item">
+<span itemprop="name">BIT_hack</span>
+</a>
+<meta itemprop="position" content="3" />
+</li>
+</ul>
+</div>
+</div>
+</div> 
+
+<div class="offCanvasMenu offCanvasMenu--nav js-headerOffCanvasMenu" data-menu="menu" aria-hidden="true" data-ocm-builder="navigation">
+<div class="offCanvasMenu-backdrop" data-menu-close="true"></div>
+<div class="offCanvasMenu-content">
+<div class="offCanvasMenu-header">
+Меню
+<a class="offCanvasMenu-closer" data-menu-close="true" role="button" tabindex="0" aria-label="Закрыть"></a>
+</div>
+<div class="p-offCanvasRegisterLink">
+<div class="offCanvasMenu-linkHolder">
+<a href="/login/" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+Вход
+</a>
+</div>
+<hr class="offCanvasMenu-separator" />
+<div class="offCanvasMenu-linkHolder">
+<a href="/register/" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+Регистрация
+</a>
+</div>
+<hr class="offCanvasMenu-separator" />
+</div>
+<div class="js-offCanvasNavTarget"></div>
+</div>
+</div>
+
+<footer class="p-footer" id="footer">
+<div class="p-footer-inner">
+<div class="p-footer-row">
+<div class="p-footer-row-main">
+<ul class="p-footer-linkList">
+<li><a href="/misc/style" data-xf-click="overlay" data-xf-init="tooltip" title="Выбор стиля" rel="nofollow">
+<i class="fa--xf far fa-paint-brush" aria-hidden="true"></i> Uniform Dark
+</a></li>
+<li class='xenfocus-footer-icon'><a href="#" rel="nofollow" data-xf-init="tooltip" title="" data-xenfocus-editor><i class="fa--xf far fa-toggle-on" aria-hidden="true"></i></a></li>
+<li><a href="/misc/language" data-xf-click="overlay" data-xf-init="tooltip" title="Выбор языка" rel="nofollow">
+<i class="fa--xf far fa-globe" aria-hidden="true"></i> Русский - полный перевод</a></li>
+</ul>
+</div>
+<div class="p-footer-row-opposite">
+<ul class="p-footer-linkList">
+<li><a href="/help/terms/">Условия и правила</a></li>
+<li><a href="/help/privacy-policy/">Политика конфиденциальности</a></li>
+<li><a href="/help/">Помощь</a></li>
+<li><a href="/forum/-/index.rss" target="_blank" class="p-footer-rssLink" title="RSS"><span aria-hidden="true"><i class="fa--xf far fa-rss" aria-hidden="true"></i><span class="u-srOnly">RSS</span></span></a></li>
+</ul>
+</div>
+</div>
+<div class='footer-align'>
+<div>
+</div>
+<div>
+</div>
+</div>
+</div>
+</footer>
+</div></div> 
+<div class='focus-editor-wrap'>
+<div class='focus-editor-overlay' data-xenfocus-editor></div>
+<div class='focus-editor'>
+<div class='focus-editor-scroll'>
+<div>
+<h4 data-focus-text='Background Picker'></h4>
+<div class="focus-picker">
+<span data-focus-bg='1'><i></i></span>
+<span data-focus-bg='2'><i></i></span>
+<span data-focus-bg='3'><i></i></span>
+<span data-focus-bg='4'><i></i></span>
+<span data-focus-bg='5'><i></i></span>
+<span data-focus-bg='6'><i></i></span>
+</div>
+</div>
+<div>
+<h4 data-focus-text='Customize layout'></h4>
+<div class='focus-editor-panel' data-toggle-class='focus-fluid' data-default='off'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-width' id='focus-fluid-off' />
+<input type='radio' name='focus-width' id='focus-fluid-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Fluid width?' data-setting-desc='Enabling this will increase the width of the site so it occupies the width of your browser. Useful for larger screens.'></div>
+</div>
+<div class='focus-editor-panel' data-toggle-class='focus-grid' data-default='off'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-grid' id='focus-grid-off' />
+<input type='radio' name='focus-grid' id='focus-grid-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Grid layout?' data-setting-desc='If enabled, the forums will be displayed as a grid instead of a table.'></div>
+</div>
+<div class='focus-editor-panel' data-toggle-class='focus-sidebar-sticky' data-default='on'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-sidebar-sticky' id='focus-sidebar-sticky-off' />
+<input type='radio' name='focus-sidebar-sticky' id='focus-sidebar-sticky-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Sticky sidebar?' data-setting-desc='If enabled, the sidebar will stick to the top of the screen for easy access.'></div>
+</div>
+<div class='focus-editor-panel' data-toggle-class='focus-sidebar-flip' data-default='off'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-sidebar-flip' id='focus-sidebar-flip-off' />
+<input type='radio' name='focus-sidebar-flip' id='focus-sidebar-flip-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Flip sidebar?' data-setting-desc='Flip the sidebar between the left and right sides.'></div>
+</div>
+</div>
+</div>
+<div class='focus-editor-save'>
+<button data-xenfocus-editor data-focus-text='Save'></button>
+</div>
+</div>
+</div>
+<div class="u-bottomFixer js-bottomFixTarget">
+<ul class="notices notices--bottom_fixer  js-notices" data-xf-init="notices" data-type="bottom_fixer" data-scroll-interval="6">
+<li class="notice js-notice notice--primary notice--cookie" data-notice-id="-1" data-delay-duration="0" data-display-duration="0" data-auto-dismiss="0" data-visibility="">
+<div class="notice-content">
+<div class="u-alignCenter">
+На данном сайте используются файлы cookie, чтобы персонализировать контент и сохранить Ваш вход в систему, если Вы зарегистрируетесь.<br />
+Продолжая использовать этот сайт, Вы соглашаетесь на использование наших файлов cookie.
+</div>
+<div class="u-inputSpacer u-alignCenter">
+<a href="/account/dismiss-notice" class="js-noticeDismiss button--notice button button--icon button--icon--confirm"><span class="button-text">Принять</span></a>
+<a href="/help/cookies" class="button--notice button"><span class="button-text">Узнать больше...</span></a>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="u-scrollButtons js-scrollButtons" data-trigger-type="up">
+<a href="#top" class="button--scroll button" data-xf-click="scroll-to"><span class="button-text"><i class="fa--xf far fa-arrow-up" aria-hidden="true"></i><span class="u-srOnly">Сверху</span></span></a>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script>window.jQuery || document.write('<script src="/js/vendor/jquery/jquery-3.3.1.min.js?_v=db17b04c"><\/script>')</script>
+<script src="/js/vendor/vendor-compiled.js?_v=db17b04c"></script>
+<script src="/js/xf/core-compiled.js?_v=db17b04c"></script>
+<script src="/js/xf/code_block-compiled.js?_v=db17b04c"></script>
+<script src="/js/xf/notice.min.js?_v=db17b04c"></script>
+<script src="/styles/xenfocus/js/xenfocus.js?v="></script>
+<script>
+		jQuery.extend(true, XF.config, {
+			// 
+			userId: 0,
+			enablePush: true,
+			pushAppServerKey: 'BIZeYWKbQ0m+6YFx+ZpbcZZsponh8U0LoyTnKpCDBOfKvxwre0wxo/ELTSt+zg3x9RzdVc5Vt9q2uOYOjB8UUXU=',
+			url: {
+				fullBase: 'https://tophope.ru/',
+				basePath: '/',
+				css: '/css.php?css=__SENTINEL__&s=3&l=3&d=1573891129',
+				keepAlive: '/login/keep-alive'
+			},
+			cookie: {
+				path: '/',
+				domain: '',
+				prefix: 'xf_',
+				secure: true
+			},
+			csrf: '1583580712,e3ef66f168c3ea0405575f4a549c37f7',
+			js: {"\/js\/xf\/code_block-compiled.js?_v=db17b04c":true,"\/js\/xf\/notice.min.js?_v=db17b04c":true,"\/styles\/xenfocus\/js\/xenfocus.js?v=":true},
+			css: {"public:bb_code.less":true,"public:fox_avatar_toolbox.less":true,"public:fox_avt_message_user_details.less":true,"public:message.less":true,"public:notices.less":true,"public:share_controls.less":true,"public:extra.less":true},
+			time: {
+				now: 1583580712,
+				today: 1583528400,
+				todayDow: 6
+			},
+			borderSizeFeature: '3px',
+			fontAwesomeWeight: 'r',
+			enableRtnProtect: true,
+			enableFormSubmitSticky: true,
+			uploadMaxFilesize: 2097152,
+			allowedVideoExtensions: ["m4v","mov","mp4","mp4v","mpeg","mpg","ogv","webm"],
+			shortcodeToEmoji: true,
+			visitorCounts: {
+				conversations_unread: '0',
+				alerts_unread: '0',
+				total_unread: '0',
+				title_count: true,
+				icon_indicator: false
+			},
+			jsState: {},
+			publicMetadataLogoUrl: '',
+			publicPushBadgeUrl: 'https://tophope.ru/styles/default/xenforo/bell.png'
+		});
+
+		jQuery.extend(XF.phrases, {
+			// 
+			date_x_at_time_y: "{date} в {time}",
+			day_x_at_time_y:  "{day} в {time}",
+			yesterday_at_x:   "Вчера в {time}",
+			x_minutes_ago:    "{minutes} мин. назад",
+			one_minute_ago:   "1 минуту назад",
+			a_moment_ago:     "Только что",
+			today_at_x:       "Сегодня в {time}",
+			in_a_moment:      "В настоящее время",
+			in_a_minute:      "Менее минуты назад",
+			in_x_minutes:     "В течении {minutes} минут",
+			later_today_at_x: "Сегодня позже в {time}",
+			tomorrow_at_x:    "Завтра в {time}",
+
+			day0: "Воскресенье",
+			day1: "Понедельник",
+			day2: "Вторник",
+			day3: "Среда",
+			day4: "Четверг",
+			day5: "Пятница",
+			day6: "Суббота",
+
+			dayShort0: "Вос",
+			dayShort1: "Пон",
+			dayShort2: "Вто",
+			dayShort3: "Сре",
+			dayShort4: "Чет",
+			dayShort5: "Пят",
+			dayShort6: "Суб",
+
+			month0: "Январь",
+			month1: "Февраль",
+			month2: "Март",
+			month3: "Апрель",
+			month4: "Май",
+			month5: "Июнь",
+			month6: "Июль",
+			month7: "Август",
+			month8: "Сентябрь",
+			month9: "Октябрь",
+			month10: "Ноябрь",
+			month11: "Декабрь",
+
+			active_user_changed_reload_page: "Ваша сессия истекла. Перезагрузите страницу.",
+			server_did_not_respond_in_time_try_again: "Сервер не ответил вовремя. Пожалуйста, попробуйте снова.",
+			oops_we_ran_into_some_problems: "Упс! Мы столкнулись с некоторыми проблемами.",
+			oops_we_ran_into_some_problems_more_details_console: "Упс! Мы столкнулись с некоторыми проблемами. Пожалуйста, попробуйте позже. Более детальную информацию об ошибке Вы можете посмотреть в консоли браузера.",
+			file_too_large_to_upload: "Файл слишком большой для загрузки.",
+			uploaded_file_is_too_large_for_server_to_process: "Загруженный файл слишком большой для обработки сервером.",
+			files_being_uploaded_are_you_sure: "Файлы все ещё загружаются. Вы действительно хотите отправить эту форму?",
+			attach: "Прикрепить файлы",
+			rich_text_box: "Текстовое поле с поддержкой форматирования",
+			close: "Закрыть",
+			link_copied_to_clipboard: "Ссылка скопирована в буфер обмена.",
+			text_copied_to_clipboard: "Скопировано в буфер обмена",
+			loading: "Загрузка...",
+
+			processing: "Обработка",
+			'processing...': "Обработка...",
+
+			showing_x_of_y_items: "Показано {count} из {total} элементов",
+			showing_all_items: "Показаны все элементы",
+			no_items_to_display: "Нет элементов для отображения",
+
+			push_enable_notification_title: "Push-уведомления для сайта TopHope успешно активированы",
+			push_enable_notification_body: "Спасибо за активацию push-уведомлений!"
+		});
+	</script>
+<form style="display:none" hidden="hidden">
+<input type="text" name="_xfClientLoadTime" value="" id="_xfClientLoadTime" title="_xfClientLoadTime" tabindex="-1" />
+</form>
+<script type="text/template" id="xfReactTooltipTemplate">
+		<div class="tooltip-content-inner">
+			<div class="reactTooltip">
+				
+					<a href="#" class="reaction reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--2" data-reaction-id="2"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Love" title="Love" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--3" data-reaction-id="3"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Haha" title="Haha" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--4" data-reaction-id="4"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Wow" title="Wow" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--5" data-reaction-id="5"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Sad" title="Sad" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--6" data-reaction-id="6"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Angry" title="Angry" data-xf-init="tooltip" /></a>
+				
+			</div>
+		</div>
+	</script>
+<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "DiscussionForumPosting",
+			"@id": "https:\/\/tophope.ru\/threads\/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0-%D0%BA%D0%BE%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B5%D1%80-uc-%D0%B4%D0%BB%D1%8F-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D1%85-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%BE%D0%B2.6153\/",
+			"headline": "Программа конвертер .uc для русских символов",
+			"articleBody": "Программа конвертирует все файлы с расширение *.uc в указной папки для использования Русских символов в скрипте.\n( Предупреждаю если у вас уже есть скрипты с Русскими символами они заменятся на ???? )\n \nРазработчик : BITHack\nНе доверяешь собери сам:\nИсходник: Lazarus\nunit Unit1;\n\n{$mode objfpc}{$H+}\n\ninterface\n\nuses\n  LazUTF8,Classes, SysUtils, FileUtil, Forms,\n  Dialogs, StdCtrls, ComCtrls;\n\ntype\n\n  { TForm1 }\n\n  TForm1 = class(TForm)\n    Button1: TButton;\n    ProgressBar1: TProgressBar;\n    SelectDirectoryDialog1: TSelectDirectoryDialog;\n    procedure Button1Click(Sender: TObject);\n\n  private\n\n  public\n\n  end;\n\nvar\n  Form1: TForm1;\n\nimplementation\n\n{$R *.lfm}\n\n{ TForm1 }\n\n\n\nprocedure TForm1.Button1Click(Sender: TObject);\nVar\n  Src,Dst, PascalFiles: TStringList;\n  i: Integer;\nbegin\n  try\n   if  SelectDirectoryDialog1.Execute then\n   begin\n  Src := TStringList.Create;\n  Dst := TStringList.Create;\n    PascalFiles := TStringList.Create;\nFindAllFiles(PascalFiles,SelectDirectoryDialog1.FileName, '*.uc', True);\nProgressBar1.Max:=PascalFiles.Count;\n   for i:=0 to PascalFiles.Count -1do\n    begin\n    ProgressBar1.Position:=i;\n    Src.LoadFromFile(PascalFiles.Strings[i]);\n    Dst.Text :=   UTF8ToWinCP(WinCPToUTF8(Src.Text));\n    Dst.SaveToFile(PascalFiles.Strings[i]);\n    end;\n   Src.Free;\n   Dst.Free;\n   PascalFiles.Free;\n   ProgressBar1.Position:=0;\n   ShowMessage('Все готово!');\n   end;\n  finally\n  end;\n\nend;\n\nend.",
+			"articleSection": "BIT_hack",
+			"author": {
+				"@type": "Person",
+				"name": "BIT_hack"
+			},
+			"datePublished": "2018-01-23",
+			"dateModified": "2020-01-14",
+			"image": "https:\/\/tophope.ru\/data\/avatars\/l\/33\/33717.jpg?1571065634",
+			"interactionStatistic": {
+				"@type": "InteractionCounter",
+				"interactionType": "https://schema.org/ReplyAction",
+				"userInteractionCount": 16
+			}
+		}
+		</script>
+</body>
+</html>

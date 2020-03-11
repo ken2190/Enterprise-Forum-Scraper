@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html id="XF" lang="ru-RU" dir="LTR" data-app="public" data-template="thread_view" data-container-key="node-301" data-content-key="thread-3296" data-logged-in="false" data-cookie-prefix="xf_" data-style-id="3" class="has-no-js template-thread_view">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мануал по созданию Сервера и все что с ним связанно. | TopHope</title>
+<meta name="description" content="Гайд по установке сервера от Emu
+по этому гайду вы можете устанавливать любой сервер 
+и так присупим.
+
+navicat..." />
+<meta property="og:description" content="Гайд по установке сервера от Emu
+по этому гайду вы можете устанавливать любой сервер 
+и так присупим.
+
+navicat _http://rapidshare.com/files/100549000/Navicat.rar.html
+MySQL _http://rapidshare.com/files/100550719/mysql-6.2.rar.html
+Java..." />
+<meta property="twitter:description" content="Гайд по установке сервера от Emu
+по этому гайду вы можете устанавливать любой сервер 
+и так присупим.
+
+navicat _http://rapidshare.com/files/100549000/Navicat.rar.html
+MySQL..." />
+<meta property="og:url" content="https://tophope.ru/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/" />
+<script src="/cdn-cgi/apps/head/pQ0v4jtHsSzdXDC7ZgV1Hu-jjpI.js"></script><link rel="canonical" href="https://tophope.ru/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/" />
+<meta property="og:site_name" content="TopHope" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Мануал по созданию Сервера и все что с ним связанно." />
+<meta property="twitter:title" content="Мануал по созданию Сервера и все что с ним связанно." />
+<meta name="theme-color" content="#e1e8f8" />
+<link rel="preload" href="/styles/fonts/fa/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="preload" href="/styles/fonts/fa/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="preload" href="/styles/fonts/fa/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+<link rel="stylesheet" href="/css.php?css=public%3Anormalize.css%2Cpublic%3Acore.less%2Cpublic%3Aapp.less&amp;s=3&amp;l=3&amp;d=1573891129&amp;k=edf6cfeed2b8b8213808b1692c79649ca17f77fa" />
+<link rel="stylesheet" href="/css.php?css=public%3Afox_avatar_toolbox.less%2Cpublic%3Afox_avt_message_user_details.less%2Cpublic%3Amessage.less%2Cpublic%3Anotices.less%2Cpublic%3Ashare_controls.less%2Cpublic%3Aextra.less&amp;s=3&amp;l=3&amp;d=1573891129&amp;k=635ee9983f7050f57a34205d7d2eecc5afcaba95" />
+<script src="/js/xf/preamble.min.js?_v=db17b04c"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-49083153-1"></script>
+<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-49083153-1', {
+			// 
+			
+			
+		});
+	</script>
+<script type='text/javascript'>
+var xfhtml = document.getElementById('XF');
+function addClass(el, className) { if (el.classList) el.classList.add(className); else if (!hasClass(el, className)) el.className += ' ' + className; }
+function getCookie(name) { var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)'); return v ? v[2] : null; }
+function setCookie(name, value, days) { var d = new Date; d.setTime(d.getTime() + 24*60*60*1000*days); document.cookie = name + "=" + value + ";path=/;expires=" + d.toGMTString(); }
+function deleteCookie(name) { setCookie(name, '', -1); }
+function applySetting(settingName, settingOn, allowToggle){
+	
+	// Theme editor is enabled. Check for selected toggle, otherwise apply default
+		if(allowToggle === 1){	
+			cookie = getCookie(settingName);
+			if( (cookie === 'on') || (!cookie && (settingOn === 1)) ){
+				addClass(xfhtml, settingName);
+			}
+		} else if(settingOn === 1){
+			addClass(xfhtml, settingName);
+		}
+	
+}
+
+
+applySetting('focus-fluid', 0, 1);
+
+
+applySetting('focus-grid', 0, 1);
+
+
+applySetting('focus-sidebar-sticky', 1, 1);
+
+
+applySetting('focus-sidebar-flip', 0, 1);
+
+
+
+
+
+	var backgroundCookie = getCookie('xenfocusBackground-3');
+	if(backgroundCookie){ xfhtml.setAttribute('data-focus-bg', '' + backgroundCookie + '');	} else { xfhtml.setAttribute('data-focus-bg', '1'); }
+
+</script>
+</head>
+<body data-template="thread_view">
+<div class='focus-width'><div class="p-pageWrapper" id="top">
+
+<header class="p-header" id="header">
+<div class="p-header-inner">
+<div class="p-header-content">
+<div class="p-header-logo p-header-logo--image">
+<a href="/forum/">
+<span>
+<img src="https://tophope.ru/images/th.png" alt="TopHope" />
+</span>
+</a>
+</div>
+<div class='focus-ad'></div>
+<div class='focus-wrap-user'>
+
+<div class="p-nav-opposite">
+<div class="p-navgroup p-account p-navgroup--guest">
+<a href="/login/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--logIn" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Вход</span>
+</a>
+<a href="/register/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--register" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Регистрация</span>
+</a>
+<a href="#" class="p-navgroup-link xenfocus-navgroup-icon" rel="nofollow" data-xf-init="tooltip" title="" data-xenfocus-editor>
+<i class="fa--xf far fa-toggle-on" aria-hidden="true"></i>
+</a>
+</div>
+<div class="p-navgroup p-discovery">
+<a href="/whats-new/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--whatsnew" title="Что нового?">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Что нового?</span>
+</a>
+<a href="/search/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--search" data-xf-click="menu" data-xf-key="/" aria-label="Поиск" aria-expanded="false" aria-haspopup="true" title="Поиск">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Поиск</span>
+</a>
+<div class="menu menu--structural menu--wide" data-menu="menu" aria-hidden="true">
+<form action="/search/search" method="post" class="menu-content" data-xf-init="quick-search">
+<h3 class="menu-header">Поиск</h3>
+<div class="menu-row">
+<div class="inputGroup inputGroup--joined">
+<input type="text" class="input" name="keywords" placeholder="Поиск..." aria-label="Поиск" data-menu-autofocus="true" />
+<select name="constraints" class="js-quickSearch-constraint input" aria-label="Search within">
+<option value="">Везде</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;}">Темы</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;nodes&quot;:[301],&quot;child_nodes&quot;:1}}">Этот форум</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;thread&quot;:3296}}">Эта тема</option>
+</select>
+</div>
+</div>
+<div class="menu-row">
+<label class="iconic"><input type="checkbox" name="c[title_only]" value="1" /><i aria-hidden="true"></i><span class="iconic-label">Искать только в заголовках</span></label>
+</div>
+<div class="menu-row">
+<div class="inputGroup">
+<span class="inputGroup-text" id="ctrl_search_menu_by_member">От:</span>
+<input class="input" name="c[users]" data-xf-init="auto-complete" placeholder="Пользователь" aria-labelledby="ctrl_search_menu_by_member" />
+</div>
+</div>
+<div class="menu-footer">
+<span class="menu-footer-controls">
+<button type="submit" class="button--primary button button--icon button--icon--search"><span class="button-text">Поиск</span></button>
+<a href="/search/" class="button"><span class="button-text">Расширенный поиск...</span></a>
+</span>
+</div>
+<input type="hidden" name="_xfToken" value="1583579922,ecb75edeeae6bba37e49d96613908feb" />
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+
+
+<div class="p-nav">
+<div class="p-nav-inner">
+<div class='focus-mobile-navigation'>
+<a class="p-nav-menuTrigger" data-xf-click="off-canvas" data-menu=".js-headerOffCanvasMenu" role="button" tabindex="0">
+<i aria-hidden="true"></i>
+<span class="p-nav-menuText">Меню</span>
+</a>
+<div class='focus-mobile-logo'>
+<a href="/">
+<img src="https://tophope.ru/images/th.png" alt="TopHope" />
+</a>
+</div>
+</div>
+<div class='focus-wrap-user hide:desktop'>
+
+<div class="p-nav-opposite">
+<div class="p-navgroup p-account p-navgroup--guest">
+<a href="/login/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--logIn" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Вход</span>
+</a>
+<a href="/register/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--register" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Регистрация</span>
+</a>
+<a href="#" class="p-navgroup-link xenfocus-navgroup-icon" rel="nofollow" data-xf-init="tooltip" title="" data-xenfocus-editor>
+<i class="fa--xf far fa-toggle-on" aria-hidden="true"></i>
+</a>
+</div>
+<div class="p-navgroup p-discovery">
+<a href="/whats-new/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--whatsnew" title="Что нового?">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Что нового?</span>
+</a>
+<a href="/search/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--search" data-xf-click="menu" data-xf-key="/" aria-label="Поиск" aria-expanded="false" aria-haspopup="true" title="Поиск">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Поиск</span>
+</a>
+<div class="menu menu--structural menu--wide" data-menu="menu" aria-hidden="true">
+<form action="/search/search" method="post" class="menu-content" data-xf-init="quick-search">
+<h3 class="menu-header">Поиск</h3>
+<div class="menu-row">
+<div class="inputGroup inputGroup--joined">
+<input type="text" class="input" name="keywords" placeholder="Поиск..." aria-label="Поиск" data-menu-autofocus="true" />
+<select name="constraints" class="js-quickSearch-constraint input" aria-label="Search within">
+<option value="">Везде</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;}">Темы</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;nodes&quot;:[301],&quot;child_nodes&quot;:1}}">Этот форум</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;thread&quot;:3296}}">Эта тема</option>
+</select>
+</div>
+</div>
+<div class="menu-row">
+<label class="iconic"><input type="checkbox" name="c[title_only]" value="1" /><i aria-hidden="true"></i><span class="iconic-label">Искать только в заголовках</span></label>
+</div>
+<div class="menu-row">
+<div class="inputGroup">
+<span class="inputGroup-text" id="ctrl_search_menu_by_member">От:</span>
+<input class="input" name="c[users]" data-xf-init="auto-complete" placeholder="Пользователь" aria-labelledby="ctrl_search_menu_by_member" />
+</div>
+</div>
+ <div class="menu-footer">
+<span class="menu-footer-controls">
+<button type="submit" class="button--primary button button--icon button--icon--search"><span class="button-text">Поиск</span></button>
+<a href="/search/" class="button"><span class="button-text">Расширенный поиск...</span></a>
+</span>
+</div>
+<input type="hidden" name="_xfToken" value="1583579922,ecb75edeeae6bba37e49d96613908feb" />
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<nav class='focus-wrap-nav'>
+<div class="p-nav-scroller hScroller" data-xf-init="h-scroller" data-auto-scroll=".p-navEl.is-selected">
+<div class="hScroller-scroll">
+<ul class="p-nav-list js-offCanvasNavSource">
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="EWRporta">Главная</a>
+<a data-xf-key="1" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/whats-new/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="EWRporta_whatsnaw">Что нового?</a>
+<a href="/whats-new/latest-activity" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="EWRporta_latest">Последняя активность</a>
+<a href="/ewr-porta/authors/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="EWRporta_authors">Авторы</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl is-selected" data-has-children="true">
+<svg data-name="curve" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 6"><path d="M0,6H6V0A6,6,0,0,1,0,6Z" /></svg>
+<svg data-name="curve" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 6"><path d="M6,6H0V0A6,6,0,0,0,6,6Z" /></svg>
+<a href="/forum/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="forums">Форумы</a>
+<a data-xf-key="2" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/whats-new/posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="newPosts">Новые сообщения</a>
+<a href="/search/?type=post" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="searchForums">Поиск сообщений</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="/whats-new/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="whatsNew">Что нового?</a>
+<a data-xf-key="3" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/whats-new/posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="whatsNewPosts">Новые сообщения</a>
+<a href="/whats-new/latest-activity" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="latestActivity">Последняя активность</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="/members/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="members">Пользователи</a>
+<a data-xf-key="4" data-xf-click="menu" data-menu-pos-ref="< .p-navEl" data-arrow-pos-ref="< .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+
+<a href="/online/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="currentVisitors">Текущие посетители</a>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<div class='focus-wrap-search'>
+<form action="/search/search" method="post">
+
+<div class='focus-search'>
+<div class='focus-search-flex'>
+<input name="keywords" placeholder="Поиск..." aria-label="Поиск" data-menu-autofocus="true" type="text" />
+<div class='focus-search-prefix'><i class="fa--xf far fa-search" aria-hidden="true"></i></div>
+</div>
+</div>
+<div class="focus-search-menu">
+<div class="menu-row">
+<select name="constraints" class="js-quickSearch-constraint input" aria-label="Search within">
+<option value="">Везде</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;}">Темы</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;nodes&quot;:[301],&quot;child_nodes&quot;:1}}">Этот форум</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;thread&quot;:3296}}">Эта тема</option>
+</select>
+</div>
+<div class="menu-row">
+<label class="iconic"><input type="checkbox" name="c[title_only]" value="1" /><i aria-hidden="true"></i><span class="iconic-label">Искать только в заголовках</span></label>
+</div>
+<div class="menu-row">
+<div class="inputGroup">
+<span class="inputGroup-text">От:</span>
+<input class="input" name="c[users]" data-xf-init="auto-complete" placeholder="Пользователь" aria-labelledby="ctrl_search_menu_by_member" />
+</div>
+</div>
+<div class="menu-footer">
+<span class="menu-footer-controls">
+<a href="/search/" class="button"><span class="button-text">Фильтры</span></a>
+<button type="submit" class="button--primary button button--icon button--icon--search"><span class="button-text">Поиск</span></button>
+</span>
+</div>
+</div>
+<input type="hidden" name="_xfToken" value="1583579922,ecb75edeeae6bba37e49d96613908feb" />
+</form>
+</div>
+</div>
+</div>
+
+<div class="p-sectionLinks">
+<div class="p-sectionLinks-inner hScroller" data-xf-init="h-scroller">
+<div class="hScroller-scroll">
+<ul class="p-sectionLinks-list">
+<li>
+<div class="p-navEl ">
+<a href="/whats-new/posts/" class="p-navEl-link " data-xf-key="alt+1" data-nav-id="newPosts">Новые сообщения</a>
+</div>
+</li>
+<li>
+<div class="p-navEl ">
+<a href="/search/?type=post" class="p-navEl-link " data-xf-key="alt+2" data-nav-id="searchForums">Поиск сообщений</a>
+</div>
+</li>
+
+</ul>
+</div>
+</div>
+</div>
+
+<div class='focus-content'>
+<div class="p-body">
+<div class="p-body-inner">
+
+
+<div class='focus-breadcrumb'>
+<ul class="p-breadcrumbs " itemscope itemtype="https://schema.org/BreadcrumbList">
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/" itemprop="item">
+<span itemprop="name">Форумы</span>
+</a>
+<meta itemprop="position" content="1" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/#servernaja.300" itemprop="item">
+<span itemprop="name">Серверная</span>
+</a>
+<meta itemprop="position" content="2" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/lineage-ii.301/" itemprop="item">
+<span itemprop="name">Lineage II</span>
+</a>
+<meta itemprop="position" content="3" />
+</li>
+</ul>
+<ul class='xenfocus-social'>
+<li><a href='#vk.com/tophope' target='_blank'></a></li>
+</ul>
+</div>
+<noscript><div class="blockMessage blockMessage--important blockMessage--iconic u-noJsOnly">JavaScript отключён. Чтобы полноценно использовать наш сайт, включите JavaScript в своём браузере.</div></noscript>
+<!--[if lt IE 9]><div class="blockMessage blockMessage&#45;&#45;important blockMessage&#45;&#45;iconic">Вы используете устаревший браузер. Этот и другие сайты могут отображаться в нём некорректно.<br />Вам необходимо обновить браузер или попробовать использовать <a href="https://www.google.com/chrome/browser/" target="_blank">другой</a>.</div><![endif]-->
+<div class="p-body-header">
+<div class="p-title ">
+<h1 class="p-title-value">Мануал по созданию Сервера и все что с ним связанно.</h1>
+</div>
+<div class="p-description">
+<ul class="listInline listInline--bullet">
+<li>
+<i class="fa--xf far fa-user" aria-hidden="true" title="Автор темы"></i>
+<span class="u-srOnly">Автор темы</span>
+<a href="/members/sailas32.35610/" class="username  u-concealed" dir="auto" data-user-id="35610" data-xf-init="member-tooltip"><span class="username--staff username--moderator">sailas32</span></a>
+</li>
+<li>
+<i class="fa--xf far fa-clock" aria-hidden="true" title="Дата начала"></i>
+<span class="u-srOnly">Дата начала</span>
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/" class="u-concealed"><time class="u-dt" dir="auto" datetime="2014-03-21T00:32:15+0400" data-time="1395347535" data-date-string="21 Март 2014" data-time-string="00:32" title="21 Март 2014 в 00:32">21 Март 2014</time></a>
+</li>
+</ul>
+</div>
+</div>
+<div class="p-body-main  ">
+<div class="p-body-content">
+<div class="p-body-pageContent">
+<div class="block block--messages" data-xf-init="" data-type="post" data-href="/inline-mod/">
+<div class="block-outer"></div>
+<div class="block-outer js-threadStatusField"></div>
+<div class="block-container lbContainer" data-xf-init="lightbox select-to-quote" data-message-selector=".js-post" data-lb-id="thread-3296" data-lb-universal="0">
+<div class="block-body js-replyNewMessageContainer">
+<article class="message message--post js-post js-inlineModContainer  " data-author="sailas32" data-content="post-26866" id="js-post-26866">
+<span class="u-anchorTarget" id="post-26866"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/sailas32.35610/" class="username " dir="auto" data-user-id="35610" data-xf-init="member-tooltip" itemprop="name"><span class="username--style29 username--staff username--moderator">sailas32</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Старший модератор</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/sailas32.35610/" class="avatar avatar--l" data-user-id="35610" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/35/35610.jpg?1400798149" alt="sailas32" class="avatar-u35610-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/sailas32.35610/" class="username " dir="auto" data-user-id="35610" data-xf-init="member-tooltip" itemprop="name"><span class="username--style29 username--staff username--moderator">sailas32</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Старший модератор</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>305</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>368</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>63</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26866" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2014-03-21T00:32:15+0400" data-time="1395347535" data-date-string="21 Март 2014" data-time-string="00:32" title="21 Март 2014 в 00:32">21 Март 2014</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26866" data-xf-init="share-tooltip" data-href="/posts/26866/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26866" rel="nofollow">
+#1
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-26866" data-lb-caption-desc="sailas32 &middot; 21 Март 2014 в 00:32">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><b>Гайд по установке сервера от Emu</b><br />
+<b>по этому гайду вы можете устанавливать любой сервер <br />
+и так присупим.<br />
+<br />
+navicat _<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div><br />
+MySQL _<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div><br />
+Java _<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div> <br />
+<br />
+Устанавливаем MySql<br />
+Распаковываем её. запускаем setup.exe. В окне приветствия жмём Next, в окне setup type выбираем Complite и жмём Next, в окне ready to install жмём Install, далее жмём next, next, в окне Wizard complited жмём Finish и приступаем к настройке мускула. Жмём Next, Next в окне MySql Server Instance Configuration выбираем Server Machine и жмём Next, Next, Next, выбираем Online Transaction Processing (OLTP) и жмём Next, Next, Next, ставим галочку в Include Bin Directory pn Windows PATH и жмём Next, в окне New root password выбираем пароль(у нас будет 123456), в окошке Confirm опять вводим пароль(123456), ставим галочку Enable root access from remote machines и так же в графе Create an Anonymous Account далее жмём Next, жмём Execute. Всё, мускул установлен.<br />
+Устанавливаем Navicat.<br />
+Распаковываем содержимое архива и запускаем navicat8_mysql_en.exe. В окне приветствия жмём Next, выбираем I accept the agreement жмём Next, Next, Next, Next, Install, Finish. Запускаем invisible.exe и патчим нашего кота. запускаем навикат,жмём Connection, в графе Connection Name вводим название нашего коннекта (например server) в графе Password вводим пароль который мы задали при установке мускула(123456) остальное ничего не трогаем и жмём ОК. Жмём созданный коннект server 2 раза и создаём базу Emu_DB( пкм на коннекте server, выбираем New Database и в графе Enter database name вводим Emu_DB). Закрываем навикота.Всё, база создана.<br />
+Устанавливаем Java машину<br />
+Запускаем jre-6u3-windows-i586-p.exe,соглашаемся с лицензионкой и жмём Next. Во втором окне путь установки программы оставляем без изменения, жмём Next. Далее также указан путь, его также оставляем без изменения и жмём Next. В появившемся окне, ставим галочку в пункте Microsoft Internet Explorer и жмём Next. Всё, все программы установили.<br />
+Приступаем к самому серверу.<br />
+на жёстком диске С создаём дирректорию server и распаковываем содержимое архива туда. Идём в C:\server\tools и редактируем database_installer.bat(пкм и выбираем изменить). Прописываем в нём наш пасс к базе и правим путь к мускулу в директорию bin, больше ничего не трогаем. Должно получиться следующее<br />
+REM # ================#<br />
+REM # for diskw users #<br />
+REM #=================#<br />
+REM C:\Program Files\MySQL\MySQL Server 6.0\bin (путь к дирректории bin)<br />
+REM #=======================================#<br />
+REM # for mysql server users on x64 systems #<br />
+REM #=======================================#<br />
+REM C:\Program Files (x86)\MySQL\MySQL Server 5.0\bin<br />
+REM #=========================================#<br />
+REM # for mysql server users on Win XP system #<br />
+REM #=========================================#<br />
+REM C:\Program Files\MySQL\MySQL Server 6.0\bin (путь к дирректории bin)<br />
+REM C:\Program Files\MySQL\MySQL Server 6.0\bin (путь к дирректории bin)<br />
+<br />
+REM LOGINSERVER<br />
+set lsuser=root<br />
+set lspass=123456 (наш пароль к мускулу)<br />
+set lsdb=Emu_DB<br />
+set lshost=localhost<br />
+REM GAMESERVER<br />
+set gsuser=root<br />
+set gspass=123456 (наш пароль к мускулу)<br />
+set gsdb=Emu_DB<br />
+set gshost=localhost<br />
+<br />
+Сохраняем и закрываем батник. Далее идём сюда C:\server\gameserver\config\main правим любым текстовым редактором (например в блакноте)файл gameserver.properties графу Client Protocol<br />
+<br />
+# -----------------------<br />
+# Secton: Client Protocol<br />
+# -----------------------<br />
+# Minimum and maximum protocol revision that server allow to connect.<br />
+# You must keep MinProtocolRevision &lt;= MaxProtocolRevision.<br />
+MinProtocolRevision = 1<br />
+MaxProtocolRevision = 999<br />
+# ------------------------<br />
+# Section: Server Capacity <br />
+# ------------------------<br />
+# Define how many players are allowed to play simultaneously on your server.<br />
+MaximumOnlineUsers = 1000<br />
+<br />
+Далее сюда C:\server\gameserver\config\network правим в файле database.properties наш пасс к базе<br />
+<br />
+# URL to connect to database.<br />
+URL = jdbc:mysql://localhost/Emu_DB<br />
+# here are some other url's :<br />
+# URL = jdbc:hsqldb:hsql://localhost/Emu_DB<br />
+# URL = jdbc:sqlserver://localhost/database=Emu_DB/user=sa/password=<br />
+# your database login (by default MySQL uses = root, Warning: Not a Safe Setting! try to use your own login)<br />
+Login = root<br />
+# your database password (by default MySQL uses = root, Warning: Not a Safe Setting! try to use your own pass)<br />
+Password =123456(наш пасс к мускулу)<br />
+# define here how many connections are allowed at the same time.<br />
+MaximumDbConnections = 1000(число одновременных подключений к серверу)<br />
+<br />
+Тут же в C:\server\gameserver\config\network правим файл network.properties прописываем наш IP<br />
+<br />
+# -----------------<br />
+# Connection Config<br />
+# -----------------<br />
+# Bind ip of the gameserver, use 0.0.0.0 to bind on all available IPs<br />
+GameserverHostname = 0.0.0.0<br />
+GameserverPort = 7777<br />
+# This is transmitted to the clients connecting from an external network,<br />
+# so it has to be a public IP or resolvable hostname<br />
+ExternalHostname = наш внешний Ip<br />
+# This is transmitted to the client from the same network,<br />
+# so it has to be a local IP or resolvable hostname<br />
+InternalHostname = наш внутрисетевой IP (локальная сетка)<br />
+InternalNetworks =<br />
+# Define optional networks and router IPs<br />
+# IP (200.100.200.100) or fully qualified domain name<br />
+# (google.com) that resolves to an IP (use ping to determine if a domain resolves).<br />
+# Format: ip,net/mask;ip,net/mask,net/mask<br />
+# (mask 192.168.0.0/16 or 192.168.0.0/255.255.0.0 would be 192.168.*.*)<br />
+# Note: keep InternalNetworks and OptionalNetworks blank for compatibility with older login server<br />
+OptionalNetworks =<br />
+# --------------<br />
+# Port Forwading<br />
+# --------------<br />
+# The Loginserver host and port<br />
+LoginPort = 9014<br />
+LoginHost = IP нашего логин сервера<br />
+<br />
+Далее идём в C:\server\gameserver\config\network редактим файл security.properties отключаем ГГ<br />
+<br />
+# ------------------------<br />
+# Section: GG (Game Guard)<br />
+# ------------------------<br />
+# Enforce gameguard for clients<br />
+# GameGuardEnforce - enforces gameguard query on character login<br />
+# GameGuardProhibitAction - don't allow player to perform trade, talk with npc<br />
+# or move until gameguard reply is received.<br />
+GameGuardEnforce = ставим false<br />
+GameGuardProhibitAction = ставим false<br />
+<br />
+Идем сюда C:\server\login\config\main редактим файл loginserver.properties если нам нужно сделать авторегистрацию а также отключаем ГГ<br />
+<br />
+# ------------------<br />
+# Section: Accounts<br />
+# ------------------<br />
+# Automatically Create Accounts.<br />
+# default = false<br />
+AutoCreateAccounts = ставим true<br />
+# ------------------------<br />
+# Section: GG (Game Guard)<br />
+# ------------------------<br />
+# Enforce Game Guard Authorization from Client.<br />
+# Login Server will kick client if client bypassed GameGuard authentication<br />
+# default = true<br />
+ForceGGAuth = ставим false<br />
+<br />
+<br />
+Идём сюда C:\server\login\config\network редактим файл database.properties<br />
+<br />
+<br />
+# Define MySQL Driver URL.<br />
+URL = jdbc:mysql://localhost/Emu_DB<br />
+# here you have some more urls: <br />
+# URL = jdbc:hsqldb:hsql://localhost/Emu_DB<br />
+# URL = jdbc:sqlserver://localhost/database = Emu_DB/user = sa /password = (your pass)<br />
+# Your login to Database (default = root)<br />
+Login = root<br />
+# Your password to database (default = root)<br />
+Password =123456 (наш пасс к мускулу)<br />
+# Define how many connections are allowed on your database.<br />
+MaximumDbConnections = 1500 (число одновременных подключений)<br />
+<br />
+<br />
+Тут же редактим файл network.properties вписываем наш IP <br />
+<br />
+<br />
+# Bind ip of the loginserver, use 0.0.0.0 to bind on all available IPs<br />
+LoginServerHostName = наш IP<br />
+LoginServerPort = 2106<br />
+# The port, ip on which login will listen for GameServers<br />
+LoginPort = 9014<br />
+LoginHostName = наш IP<br />
+<br />
+Теперь нам нада залить базу в мускул.<br />
+В папке tools запускаем ранее отредактированный батник database_installer.bat и заливаем базу.<br />
+Открываем в навикате нашу базу Emu_DB и в графе gameservers удаляем все значения.<br />
+Далее идём в C:\server\login и запускаем батник register_gameserver.bat, дожидаемся прогрузки и на вопрос чего же мы хотим смело тыркаем 1 появитса файлик hexid(server 1).txt переименовываем его в hexid.txt вырезаем и кидаем в папку C:\server\gameserver\config\network<br />
+Опять идём в папку C:\server\login и запускаем батник account_manager.bat нажимаем 1 - интер, вводим желаемый себе логин - интер, пасс - интер, уровень доступа для нашего аккаунта 200 - интер. Всё мы создали сервер со своим аккаунтом с уровнем администратора.</b></div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="sailas32" data-content="post-26867" id="js-post-26867">
+<span class="u-anchorTarget" id="post-26867"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/sailas32.35610/" class="username " dir="auto" data-user-id="35610" data-xf-init="member-tooltip" itemprop="name"><span class="username--style29 username--staff username--moderator">sailas32</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Старший модератор</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/sailas32.35610/" class="avatar avatar--l" data-user-id="35610" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/35/35610.jpg?1400798149" alt="sailas32" class="avatar-u35610-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/sailas32.35610/" class="username " dir="auto" data-user-id="35610" data-xf-init="member-tooltip" itemprop="name"><span class="username--style29 username--staff username--moderator">sailas32</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Старший модератор</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>305</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>368</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>63</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26867" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2014-03-21T00:33:25+0400" data-time="1395347605" data-date-string="21 Март 2014" data-time-string="00:33" title="21 Март 2014 в 00:33">21 Март 2014</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26867" data-xf-init="share-tooltip" data-href="/posts/26867/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26867" rel="nofollow">
+#2
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-26867" data-lb-caption-desc="sailas32 &middot; 21 Март 2014 в 00:33">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Как отредактировать l2.ini Нам понадобитса L2FileEdit<br />
+<br />
+<br />
+Самое важное это изменить IP в файле l2.ini. Расшифруем его с помощью l2encdec. Для этого в командной сторке выполните:<br />
+&quot;l2encdec -l l2.ini&quot; или &quot;l2encdec -d l2.ini&quot; (l2.ini должен находить в той же папке)<br />
+После этого должен появиться файл dec-l2.ini. Находим в нём строку ServerAddr= и пишем в ней ServerAddr=127.0.0.1 (или любой другой ип).<br />
+<br />
+Запускаем l2encdec с параметрами:<br />
+&quot;l2encdec -h 413 dec-l2.ini&quot;<br />
+<br />
+Получаеться файл enc-dec-l2.ini, переименовываем его в l2.ini, всё клиент готов для игры на фришарде.<br />
+Или вот так( что проще)<br />
+<br />
+1. В папке l2encdec делаем два ярлыка для l2encdec.exe.<br />
+2. Нажимаем правой кнопкой мыши на 1-м ЯРЛЫКЕ, заходим в Свойства<br />
+3. В строке Объект (после того что там написано) ставим пробел и пишем -s l2.ini (после -s ставиться пробел !!! а вместо l2.ini пишется название того файла который вам нужно расшифровать). Нажимаем ОК<br />
+4. Нажимаем правой кнопкой мыши на 2-м ЯРЛЫКЕ, заходим в Свойства<br />
+5. В строке Объект (после того что там написано) ставим пробел и пишем -h 413 dec-l2.ini (соблюдайте пробелы так же как у меня !!! а вместо l2.ini пишется название того файла который вам нужно зашифровать). Нажимаем ОК<br />
+Теперь помещаете файл который надо расшифровать/зашифровать в папку с l2encdec ( в данном случае это l2.ini , вы же можете то что вам надо. Но не забудте прописать название этого файла в св-ах ярлыков! Для расшифровки кликаем 2 раза на ПЕРВОМ ярлыке и у вас появиться dec-l2.ini (расшифрованный файл, вы можете править его с помощью блокнота и правите в нем то что вам надо))<br />
+Для зашифровки кликаем 2 раза на ВТОРОМ ярлыке и у вас появиться enc-dec-l2.ini (зашифрованный файл, переименовываем его в l2.ini и пихаем в папку system)</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/26867/reactions" data-xf-click="overlay" data-cache="false"><bdi>Gant</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="sailas32" data-content="post-26868" id="js-post-26868">
+<span class="u-anchorTarget" id="post-26868"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope itemtype="https://schema.org/Person" class="message-user">
+<div class="message-userDetails-top">
+<h4 class="message-name"><a href="/members/sailas32.35610/" class="username " dir="auto" data-user-id="35610" data-xf-init="member-tooltip" itemprop="name"><span class="username--style29 username--staff username--moderator">sailas32</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Старший модератор</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<a href="/members/sailas32.35610/" class="avatar avatar--l" data-user-id="35610" data-xf-init="member-tooltip">
+<img src="/data/avatars/l/35/35610.jpg?1400798149" alt="sailas32" class="avatar-u35610-l" itemprop="image" />
+</a>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><a href="/members/sailas32.35610/" class="username " dir="auto" data-user-id="35610" data-xf-init="member-tooltip" itemprop="name"><span class="username--style29 username--staff username--moderator">sailas32</span></a></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Старший модератор</h5>
+<div class="userBanner userBanner--staff message-userBanner" dir="auto" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Команда форума</strong><span class="userBanner-after"></span></div>
+<div class="userBanner userBanner userBanner--olive message-userBanner" itemprop="jobTitle"><span class="userBanner-before"></span><strong>Старший модератор</strong><span class="userBanner-after"></span></div>
+</div>
+<div class="message-userExtras">
+<dl class="pairs pairs--justified">
+<dt>Сообщения</dt>
+<dd>305</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Реакции</dt>
+<dd>368</dd>
+</dl>
+<dl class="pairs pairs--justified">
+<dt>Баллы</dt>
+<dd>63</dd>
+</dl>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26868" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2014-03-21T00:36:08+0400" data-time="1395347768" data-date-string="21 Март 2014" data-time-string="00:36" title="21 Март 2014 в 00:36">21 Март 2014</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26868" data-xf-init="share-tooltip" data-href="/posts/26868/share" rel="nofollow">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="/threads/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296/post-26868" rel="nofollow">
+#3
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-26868" data-lb-caption-desc="sailas32 &middot; 21 Март 2014 в 00:36">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Тем кто удивляетса почему у них не работает баффер<br />
+идём сюда <br />
+C:\server\gameserver\config\custom\custom.properti тут прописываем<br />
+# --------------------------------<br />
+# Section: Database Customizations<br />
+# --------------------------------<br />
+# loads the custom buylists that will be used by custom merchant npcs<br />
+# default = false <br />
+LoadCustomBuylists = true<br />
+<br />
+# loads the custom teleport tables that will be used by custom teleporter npcs<br />
+# default = false <br />
+=====================================<br />
+время баффов выставлять тут <br />
+C:\server\gameserver\config\main\skills.properties<br />
+LoadCustomTeleports = true<br />
+# ================== #=============================#<br />
+# L2Emu Project Pack # Npc Buffer Settings #<br />
+# ================== #=============================#<br />
+<br />
+# ------------------------<br />
+# Npc Buffer Configuration<br />
+# ------------------------<br />
+<br />
+# Allows/Disallows Players use buffs from NPC (IDS: 50000,50001)<br />
+AllowNpcBuffer = false<br />
+AllowKarmaPlayer = false<br />
+<br />
+# ------------------------------------<br />
+# Section: Allowed levels to get buffs<br />
+# ------------------------------------<br />
+<br />
+# min level to buy buffs <br />
+# default = 1<br />
+MinLevelToGetBuffs = 1<br />
+<br />
+# max level to buy buffs<br />
+# default = 80<br />
+MaxLevelToGetBuffs = 80<br />
+<br />
+# min summon level to buy buffs <br />
+# default = 1<br />
+MinSummonLevelToGetBuffs = 1<br />
+<br />
+# max summon level to buy buffs <br />
+# default = 80<br />
+MaxSummonLevelToGetBuffs = 80<br />
+<br />
+# -------------------------------<br />
+# Section: Specific type of buff.<br />
+# -------------------------------<br />
+<br />
+# allow npc buffer to sell prophet buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellProphetBuffs = true<br />
+<br />
+# allow npc buffer to sell dances ?<br />
+# default = false<br />
+AllowNpcBufferToSellDances = true<br />
+<br />
+# allow npc buffer to sell songs ?<br />
+# default = false<br />
+AllowNpcBufferToSellSongs = true<br />
+<br />
+# allow npc buffer to sell other buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellOtherBuffs = true<br />
+<br />
+# allow npc buffer to sell orc buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellOrcBuffs = true<br />
+<br />
+# allow npc buffer to shaman buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellShamanBuffs = true<br />
+<br />
+# allow npc buffer to sell overlord buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellOverlordBuffs = true<br />
+<br />
+# allow npc buffer to sell warcryer buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellWarcryerBuffs = true<br />
+<br />
+# allow npc buffer to sell summon buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellSummonBuffs = true<br />
+<br />
+# allow npc buffer to sell cubics ?<br />
+# default = false<br />
+AllowNpcBufferToSellCubics = true<br />
+<br />
+# allow npc buffer to sell noble buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellNobleBuffs = false<br />
+<br />
+# allow npc buffer to sell hero buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellHeroBuffs = false<br />
+<br />
+<br />
+# ----------------------------<br />
+# Section: Full Type of Buffs.<br />
+# ----------------------------<br />
+<br />
+# allow npc buffer to all prophet buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullProphetBuffs = true<br />
+<br />
+# allow npc buffer to all dances buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullDances = true<br />
+<br />
+# allow npc buffer to all songs buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullSongs = true<br />
+<br />
+# allow npc buffer to sell other buffs ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullOtherBuffs = true<br />
+<br />
+# allow npc buffer to all orc buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullOrcBuffs = true<br />
+<br />
+# allow npc buffer to all shaman buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullShamanBuffs = true<br />
+<br />
+# allow npc buffer to all overlord buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullOverlordBuffs = true<br />
+<br />
+# allow npc buffer to all warcryer buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullWarcryerBuffs = true<br />
+<br />
+# allow npc buffer to all summons buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullSummonBuffs = true<br />
+<br />
+# allow npc buffer to all cubics buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullCubics = true<br />
+<br />
+# allow npc buffer to all noble buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullNobleBuffs = false<br />
+<br />
+# allow npc buffer to all hero buffs in a row ?<br />
+# default = false<br />
+AllowNpcBufferToSellFullHeroBuffs = false<br />
+<br />
+<br />
+# --------------------<br />
+# Section: Buffs Price<br />
+# --------------------<br />
+ProphetBuffPrice = 10000<br />
+SongPrice = 10000<br />
+DancePrice = 10000<br />
+OrcBuffPrice = 10000<br />
+ClanBuffPrice = 10000<br />
+PricePerCubic = 10000<br />
+PricePerSummonBuff = 10000<br />
+PricePerHeroBuff = 10000<br />
+PricePerNobleBuff = 10000<br />
+<br />
+# Price for All buffs per class<br />
+FullProphetBuffsPrice = 200000<br />
+FullDancesPrice = 100000<br />
+FullSongsDancePrice = 100000<br />
+FullShamanBuffPrice = 50000<br />
+FullWarcryerBuffPrice = 50000<br />
+FullOverlordBuffPrice = 50000<br />
+FullClanBuffsPrice = 150000<br />
+FullCubicsPrice = 100000<br />
+FullSummonBuffsPrice = 50000<br />
+FullHeroBuffsPrice = 50000<br />
+FullNobleBuffsPrice = 50000<br />
+<br />
+# The npc buffer can restore CP/HP/MP paying per each CP/HP/MP point<br />
+# Example if char hp is 100 to restore all hp will cost PricePerHpPoint x 100 (if set to 1)<br />
+PricePerPlayerCpPoint = 8<br />
+PricePerPlayerMpPoint = 8<br />
+PricePerPlayerHpPoint = 8<br />
+<br />
+# Prices for Summons Restore Points:<br />
+PricePerSummonHpPoint = 8<br />
+PricePerSummonMpPoint = 8<br />
+<br />
+# Exchange sp for sp scrolls from npc buffer, here is the multiplier.<br />
+SpMultiplier = 1<br />
+<br />
+# Enables /disables Npc Buffers Animation (useful for huge players to reduce lag)<br />
+# false by default<br />
+DisableAnimation = false<br />
+<br />
+# Enables/Disables Npc Buffer While a Siege is in Progress.<br />
+DisableNpcBufferDuringSiege = false<br />
+<br />
+# regenerate hp/mp for free when buffed ?<br />
+RegenarateStatsForFree = false<br />
+<br />
+# if enable this adena will be taken, else no.<br />
+AdenaNeeded = false<br />
+<br />
+<br />
+если у вас пишет чтото,после того как вы хотите бафнуться,а именно что то связанное с WEEKANDS или HOLYDEY,то в C:\server\gameserver\config\custom\npc_buffer.prop erties<br />
+<br />
+# Allows/Disallows Players use buffs from NPC (IDS: 50000,50001)<br />
+AllowNpcBuffer = false меняем значение на true<br />
+<br />
+Теперь рассмотрим как нам сделать сайт для ЛОКАЛЬНОЙ СЕТИ.<br />
+<br />
+Качаем джентьменский набор от денвера _<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div><br />
+Сам сайт от мой вэб _<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div><br />
+Устанавливаем денвер, по умолчанию он создаст на диске С дирректорию WebServers, идём туда там мы видим несколько папок : denwer , home , tmp , usr. Нам нужна папка home, заходим в неё и создаём папку с названием нашего внутреннего IP (ну например 192.168.25.135), заходим в неё и кидаем туда сам сайт (папку www от мой вэб), заходим в папку www и видим там папку config, входим и редактируем в блокноте файлик config.php , должно получиться следующее<br />
+<br />
+&lt;?php<br />
+$L2JBS_config[&quot;mysql_host&quot;]=&quot;192.168.25.135&quot;; // IP адрес MySQL-сервера [&quot;localhost&quot;] (наш IP)<br />
+$L2JBS_config[&quot;mysql_port&quot;]=&quot;3306&quot;; // Порт [&quot;3306&quot;]<br />
+$L2JBS_config[&quot;mysql_db&quot;]=&quot;Emu_DB&quot;; // Имя игровой базы [&quot;l2jdb&quot;] (название базы)<br />
+$L2JBS_config[&quot;mysql_login&quot;]=&quot;root&quot;; // Логин [&quot;root&quot;] <br />
+$L2JBS_config[&quot;mysql_password&quot;]=&quot;123456&quot;; // Пароль [&quot;root&quot;] (наш пароль к базе мускула)<br />
+$htitle=&quot;Moy-weB&quot;; // Титул сайта<br />
+$fut=&quot;© Lineage-II Moy-Web 2007&quot;; // Подпись в низу сайта<br />
+$top=&quot;50&quot;; // Количество игроков в списке ТОП<br />
+$hserver=&quot;192.168.25.135&quot;; // IP адрес сервера (наш IP)<br />
+$portgame=&quot;7777&quot;; // Порт игрового сервера<br />
+$portlogin=&quot;2106&quot;; // Порт логин сервера<br />
+<br />
+<br />
+так же файлик config.php можно редактировать как вам будет угодно(там всё на русском и всё понятно).<br />
+Запускаем Start Denwer и вуаля у нас есть локальный сайт ))) Доступ к админке от мой вэб выглядит так: _<div class="blockMessage blockMessage--important">Please,
+<a href="/login/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-sign-in-alt"></i>
+Вход
+</a> or
+<a href="/register/" data-xf-click="overlay" data-follow-redirects="on"><i class="fas fa-plus-square"></i>
+Регистрация
+</a> to view URLs content!
+</div> проекта/news/ пользователь root пароль root. Всё, ваши локальшики имеют доступ к вашему сайту.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" /></span></li>
+</ul>
+<span class="u-srOnly">Реакции:</span>
+<a class="reactionsBar-link" href="/posts/26868/reactions" data-xf-click="overlay" data-cache="false"><bdi>6aPmaJIei</bdi> и <bdi>Gant</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+<div class="block-outer block-outer--after">
+<div class="block-outer-opposite">
+<a href="/login/" class="button--link button" data-xf-click="overlay"><span class="button-text">
+Войдите или зарегистрируйтесь для ответа.
+</span></a>
+</div>
+</div>
+</div>
+<div class="blockMessage blockMessage--none">
+<div class="shareButtons shareButtons--iconic" data-xf-init="share-buttons" data-page-url="" data-page-title="" data-page-desc="">
+<span class="shareButtons-label">Поделиться:</span>
+<div class="shareButtons-buttons">
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--facebook" data-href="https://www.facebook.com/sharer.php?u={url}">
+<i aria-hidden="true"></i>
+<span>Facebook</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--twitter" data-href="https://twitter.com/intent/tweet?url={url}&amp;text={title}">
+<i aria-hidden="true"></i>
+<span>Twitter</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--reddit" data-href="https://reddit.com/submit?url={url}&amp;title={title}">
+<i aria-hidden="true"></i>
+<span>Reddit</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--pinterest" data-href="https://pinterest.com/pin/create/bookmarklet/?url={url}&amp;description={title}">
+<i aria-hidden="true"></i>
+<span>Pinterest</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--tumblr" data-href="https://www.tumblr.com/widgets/share/tool?canonicalUrl={url}&amp;title={title}">
+<i aria-hidden="true"></i>
+<span>Tumblr</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--whatsApp" data-href="https://api.whatsapp.com/send?text={title}&nbsp;{url}">
+<i aria-hidden="true"></i>
+<span>WhatsApp</span>
+</a>
+<a class="shareButtons-button shareButtons-button--email" data-href="mailto:?subject={title}&amp;body={url}">
+<i aria-hidden="true"></i>
+<span>Электронная почта</span>
+</a>
+<a class="shareButtons-button shareButtons-button--link is-hidden" data-clipboard="{url}">
+<i aria-hidden="true"></i>
+<span>Ссылка</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul class="p-breadcrumbs p-breadcrumbs--bottom" itemscope itemtype="https://schema.org/BreadcrumbList">
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/" itemprop="item">
+<span itemprop="name">Форумы</span>
+</a>
+<meta itemprop="position" content="1" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/#servernaja.300" itemprop="item">
+<span itemprop="name">Серверная</span>
+</a>
+<meta itemprop="position" content="2" />
+</li>
+<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+<a href="/forum/lineage-ii.301/" itemprop="item">
+<span itemprop="name">Lineage II</span>
+</a>
+<meta itemprop="position" content="3" />
+</li>
+</ul>
+</div>
+</div>
+</div> 
+
+<div class="offCanvasMenu offCanvasMenu--nav js-headerOffCanvasMenu" data-menu="menu" aria-hidden="true" data-ocm-builder="navigation">
+<div class="offCanvasMenu-backdrop" data-menu-close="true"></div>
+<div class="offCanvasMenu-content">
+<div class="offCanvasMenu-header">
+Меню
+<a class="offCanvasMenu-closer" data-menu-close="true" role="button" tabindex="0" aria-label="Закрыть"></a>
+</div>
+<div class="p-offCanvasRegisterLink">
+<div class="offCanvasMenu-linkHolder">
+<a href="/login/" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+Вход
+</a>
+</div>
+<hr class="offCanvasMenu-separator" />
+<div class="offCanvasMenu-linkHolder">
+<a href="/register/" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+Регистрация
+</a>
+</div>
+<hr class="offCanvasMenu-separator" />
+</div>
+<div class="js-offCanvasNavTarget"></div>
+</div>
+</div>
+
+<footer class="p-footer" id="footer">
+<div class="p-footer-inner">
+<div class="p-footer-row">
+<div class="p-footer-row-main">
+<ul class="p-footer-linkList">
+<li><a href="/misc/style" data-xf-click="overlay" data-xf-init="tooltip" title="Выбор стиля" rel="nofollow">
+<i class="fa--xf far fa-paint-brush" aria-hidden="true"></i> Uniform Dark
+</a></li>
+<li class='xenfocus-footer-icon'><a href="#" rel="nofollow" data-xf-init="tooltip" title="" data-xenfocus-editor><i class="fa--xf far fa-toggle-on" aria-hidden="true"></i></a></li>
+<li><a href="/misc/language" data-xf-click="overlay" data-xf-init="tooltip" title="Выбор языка" rel="nofollow">
+<i class="fa--xf far fa-globe" aria-hidden="true"></i> Русский - полный перевод</a></li>
+</ul>
+</div>
+<div class="p-footer-row-opposite">
+<ul class="p-footer-linkList">
+<li><a href="/help/terms/">Условия и правила</a></li>
+<li><a href="/help/privacy-policy/">Политика конфиденциальности</a></li>
+<li><a href="/help/">Помощь</a></li>
+<li><a href="/forum/-/index.rss" target="_blank" class="p-footer-rssLink" title="RSS"><span aria-hidden="true"><i class="fa--xf far fa-rss" aria-hidden="true"></i><span class="u-srOnly">RSS</span></span></a></li>
+</ul>
+</div>
+</div>
+<div class='footer-align'>
+<div>
+</div>
+<div>
+</div>
+</div>
+</div>
+</footer>
+</div></div> 
+<div class='focus-editor-wrap'>
+<div class='focus-editor-overlay' data-xenfocus-editor></div>
+<div class='focus-editor'>
+<div class='focus-editor-scroll'>
+<div>
+<h4 data-focus-text='Background Picker'></h4>
+<div class="focus-picker">
+<span data-focus-bg='1'><i></i></span>
+<span data-focus-bg='2'><i></i></span>
+<span data-focus-bg='3'><i></i></span>
+<span data-focus-bg='4'><i></i></span>
+<span data-focus-bg='5'><i></i></span>
+<span data-focus-bg='6'><i></i></span>
+</div>
+</div>
+<div>
+<h4 data-focus-text='Customize layout'></h4>
+<div class='focus-editor-panel' data-toggle-class='focus-fluid' data-default='off'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-width' id='focus-fluid-off' />
+<input type='radio' name='focus-width' id='focus-fluid-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Fluid width?' data-setting-desc='Enabling this will increase the width of the site so it occupies the width of your browser. Useful for larger screens.'></div>
+</div>
+<div class='focus-editor-panel' data-toggle-class='focus-grid' data-default='off'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-grid' id='focus-grid-off' />
+<input type='radio' name='focus-grid' id='focus-grid-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Grid layout?' data-setting-desc='If enabled, the forums will be displayed as a grid instead of a table.'></div>
+</div>
+<div class='focus-editor-panel' data-toggle-class='focus-sidebar-sticky' data-default='on'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-sidebar-sticky' id='focus-sidebar-sticky-off' />
+<input type='radio' name='focus-sidebar-sticky' id='focus-sidebar-sticky-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Sticky sidebar?' data-setting-desc='If enabled, the sidebar will stick to the top of the screen for easy access.'></div>
+</div>
+<div class='focus-editor-panel' data-toggle-class='focus-sidebar-flip' data-default='off'>
+<div class='focus-editor-toggle'>
+<input type='radio' name='focus-sidebar-flip' id='focus-sidebar-flip-off' />
+<input type='radio' name='focus-sidebar-flip' id='focus-sidebar-flip-on' />
+<i class='focus-toggle'><i></i></i>
+</div>
+<div class='focus-editor-text' data-setting-title='Flip sidebar?' data-setting-desc='Flip the sidebar between the left and right sides.'></div>
+</div>
+</div>
+</div>
+<div class='focus-editor-save'>
+<button data-xenfocus-editor data-focus-text='Save'></button>
+</div>
+</div>
+</div>
+<div class="u-bottomFixer js-bottomFixTarget">
+<ul class="notices notices--bottom_fixer  js-notices" data-xf-init="notices" data-type="bottom_fixer" data-scroll-interval="6">
+<li class="notice js-notice notice--primary notice--cookie" data-notice-id="-1" data-delay-duration="0" data-display-duration="0" data-auto-dismiss="0" data-visibility="">
+<div class="notice-content">
+<div class="u-alignCenter">
+На данном сайте используются файлы cookie, чтобы персонализировать контент и сохранить Ваш вход в систему, если Вы зарегистрируетесь.<br />
+Продолжая использовать этот сайт, Вы соглашаетесь на использование наших файлов cookie.
+</div>
+<div class="u-inputSpacer u-alignCenter">
+<a href="/account/dismiss-notice" class="js-noticeDismiss button--notice button button--icon button--icon--confirm"><span class="button-text">Принять</span></a>
+<a href="/help/cookies" class="button--notice button"><span class="button-text">Узнать больше...</span></a>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div class="u-scrollButtons js-scrollButtons" data-trigger-type="up">
+<a href="#top" class="button--scroll button" data-xf-click="scroll-to"><span class="button-text"><i class="fa--xf far fa-arrow-up" aria-hidden="true"></i><span class="u-srOnly">Сверху</span></span></a>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script>window.jQuery || document.write('<script src="/js/vendor/jquery/jquery-3.3.1.min.js?_v=db17b04c"><\/script>')</script>
+<script src="/js/vendor/vendor-compiled.js?_v=db17b04c"></script>
+<script src="/js/xf/core-compiled.js?_v=db17b04c"></script>
+<script src="/js/xf/notice.min.js?_v=db17b04c"></script>
+<script src="/styles/xenfocus/js/xenfocus.js?v="></script>
+<script>
+		jQuery.extend(true, XF.config, {
+			// 
+			userId: 0,
+			enablePush: true,
+			pushAppServerKey: 'BIZeYWKbQ0m+6YFx+ZpbcZZsponh8U0LoyTnKpCDBOfKvxwre0wxo/ELTSt+zg3x9RzdVc5Vt9q2uOYOjB8UUXU=',
+			url: {
+				fullBase: 'https://tophope.ru/',
+				basePath: '/',
+				css: '/css.php?css=__SENTINEL__&s=3&l=3&d=1573891129',
+				keepAlive: '/login/keep-alive'
+			},
+			cookie: {
+				path: '/',
+				domain: '',
+				prefix: 'xf_',
+				secure: true
+			},
+			csrf: '1583579922,ecb75edeeae6bba37e49d96613908feb',
+			js: {"\/js\/xf\/notice.min.js?_v=db17b04c":true,"\/styles\/xenfocus\/js\/xenfocus.js?v=":true},
+			css: {"public:fox_avatar_toolbox.less":true,"public:fox_avt_message_user_details.less":true,"public:message.less":true,"public:notices.less":true,"public:share_controls.less":true,"public:extra.less":true},
+			time: {
+				now: 1583579922,
+				today: 1583528400,
+				todayDow: 6
+			},
+			borderSizeFeature: '3px',
+			fontAwesomeWeight: 'r',
+			enableRtnProtect: true,
+			enableFormSubmitSticky: true,
+			uploadMaxFilesize: 2097152,
+			allowedVideoExtensions: ["m4v","mov","mp4","mp4v","mpeg","mpg","ogv","webm"],
+			shortcodeToEmoji: true,
+			visitorCounts: {
+				conversations_unread: '0',
+				alerts_unread: '0',
+				total_unread: '0',
+				title_count: true,
+				icon_indicator: false
+			},
+			jsState: {},
+			publicMetadataLogoUrl: '',
+			publicPushBadgeUrl: 'https://tophope.ru/styles/default/xenforo/bell.png'
+		});
+
+		jQuery.extend(XF.phrases, {
+			// 
+			date_x_at_time_y: "{date} в {time}",
+			day_x_at_time_y:  "{day} в {time}",
+			yesterday_at_x:   "Вчера в {time}",
+			x_minutes_ago:    "{minutes} мин. назад",
+			one_minute_ago:   "1 минуту назад",
+			a_moment_ago:     "Только что",
+			today_at_x:       "Сегодня в {time}",
+			in_a_moment:      "В настоящее время",
+			in_a_minute:      "Менее минуты назад",
+			in_x_minutes:     "В течении {minutes} минут",
+			later_today_at_x: "Сегодня позже в {time}",
+			tomorrow_at_x:    "Завтра в {time}",
+
+			day0: "Воскресенье",
+			day1: "Понедельник",
+			day2: "Вторник",
+			day3: "Среда",
+			day4: "Четверг",
+			day5: "Пятница",
+			day6: "Суббота",
+
+			dayShort0: "Вос",
+			dayShort1: "Пон",
+			dayShort2: "Вто",
+			dayShort3: "Сре",
+			dayShort4: "Чет",
+			dayShort5: "Пят",
+			dayShort6: "Суб",
+
+			month0: "Январь",
+			month1: "Февраль",
+			month2: "Март",
+			month3: "Апрель",
+			month4: "Май",
+			month5: "Июнь",
+			month6: "Июль",
+			month7: "Август",
+			month8: "Сентябрь",
+			month9: "Октябрь",
+			month10: "Ноябрь",
+			month11: "Декабрь",
+
+			active_user_changed_reload_page: "Ваша сессия истекла. Перезагрузите страницу.",
+			server_did_not_respond_in_time_try_again: "Сервер не ответил вовремя. Пожалуйста, попробуйте снова.",
+			oops_we_ran_into_some_problems: "Упс! Мы столкнулись с некоторыми проблемами.",
+			oops_we_ran_into_some_problems_more_details_console: "Упс! Мы столкнулись с некоторыми проблемами. Пожалуйста, попробуйте позже. Более детальную информацию об ошибке Вы можете посмотреть в консоли браузера.",
+			file_too_large_to_upload: "Файл слишком большой для загрузки.",
+			uploaded_file_is_too_large_for_server_to_process: "Загруженный файл слишком большой для обработки сервером.",
+			files_being_uploaded_are_you_sure: "Файлы все ещё загружаются. Вы действительно хотите отправить эту форму?",
+			attach: "Прикрепить файлы",
+			rich_text_box: "Текстовое поле с поддержкой форматирования",
+			close: "Закрыть",
+			link_copied_to_clipboard: "Ссылка скопирована в буфер обмена.",
+			text_copied_to_clipboard: "Скопировано в буфер обмена",
+			loading: "Загрузка...",
+
+			processing: "Обработка",
+			'processing...': "Обработка...",
+
+			showing_x_of_y_items: "Показано {count} из {total} элементов",
+			showing_all_items: "Показаны все элементы",
+			no_items_to_display: "Нет элементов для отображения",
+
+			push_enable_notification_title: "Push-уведомления для сайта TopHope успешно активированы",
+			push_enable_notification_body: "Спасибо за активацию push-уведомлений!"
+		});
+	</script>
+<form style="display:none" hidden="hidden">
+<input type="text" name="_xfClientLoadTime" value="" id="_xfClientLoadTime" title="_xfClientLoadTime" tabindex="-1" />
+</form>
+<script type="text/template" id="xfReactTooltipTemplate">
+		<div class="tooltip-content-inner">
+			<div class="reactTooltip">
+				
+					<a href="#" class="reaction reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--2" data-reaction-id="2"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Love" title="Love" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--3" data-reaction-id="3"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Haha" title="Haha" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--4" data-reaction-id="4"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Wow" title="Wow" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--5" data-reaction-id="5"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Sad" title="Sad" data-xf-init="tooltip" /></a>
+				
+					<a href="#" class="reaction reaction--6" data-reaction-id="6"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Angry" title="Angry" data-xf-init="tooltip" /></a>
+				
+			</div>
+		</div>
+	</script>
+<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "DiscussionForumPosting",
+			"@id": "https:\/\/tophope.ru\/threads\/%D0%9C%D0%B0%D0%BD%D1%83%D0%B0%D0%BB-%D0%BF%D0%BE-%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D1%8E-%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D0%B8-%D0%B2%D1%81%D0%B5-%D1%87%D1%82%D0%BE-%D1%81-%D0%BD%D0%B8%D0%BC-%D1%81%D0%B2%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE.3296\/",
+			"headline": "Мануал по созданию Сервера и все что с ним связанно.",
+			"articleBody": "Гайд по установке сервера от Emu\nпо этому гайду вы можете устанавливать любой сервер \nи так присупим.\n\nnavicat _http:\/\/rapidshare.com\/files\/100549000\/Navicat.rar.html\nMySQL _http:\/\/rapidshare.com\/files\/100550719\/mysql-6.2.rar.html\nJava _http:\/\/rapidshare.com\/files\/100551249\/jre-6u3-windows-i586-p.exe.html \n\nУстанавливаем MySql\nРаспаковываем её. запускаем setup.exe. В окне приветствия жмём Next, в окне setup type выбираем Complite и жмём Next, в окне ready to install жмём Install, далее жмём next, next, в окне Wizard complited жмём Finish и приступаем к настройке мускула. Жмём Next, Next в окне MySql Server Instance Configuration выбираем Server Machine и жмём Next, Next, Next, выбираем Online Transaction Processing (OLTP) и жмём Next, Next, Next, ставим галочку в Include Bin Directory pn Windows PATH и жмём Next, в окне New root password выбираем пароль(у нас будет 123456), в окошке Confirm опять вводим пароль(123456), ставим галочку Enable root access from remote machines и так же в графе Create an Anonymous Account далее жмём Next, жмём Execute. Всё, мускул установлен.\nУстанавливаем Navicat.\nРаспаковываем содержимое архива и запускаем navicat8_mysql_en.exe. В окне приветствия жмём Next, выбираем I accept the agreement жмём Next, Next, Next, Next, Install, Finish. Запускаем invisible.exe и патчим нашего кота. запускаем навикат,жмём Connection, в графе Connection Name вводим название нашего коннекта (например server) в графе Password вводим пароль который мы задали при установке мускула(123456) остальное ничего не трогаем и жмём ОК. Жмём созданный коннект server 2 раза и создаём базу Emu_DB( пкм на коннекте server, выбираем New Database и в графе Enter database name вводим Emu_DB). Закрываем навикота.Всё, база создана.\nУстанавливаем Java машину\nЗапускаем jre-6u3-windows-i586-p.exe,соглашаемся с лицензионкой и жмём Next. Во втором окне путь установки программы оставляем без изменения, жмём Next. Далее также указан путь, его также оставляем без изменения и жмём Next. В появившемся окне, ставим галочку в пункте Microsoft Internet Explorer и жмём Next. Всё, все программы установили.\nПриступаем к самому серверу.\nна жёстком диске С создаём дирректорию server и распаковываем содержимое архива туда. Идём в C:\\server\\tools и редактируем database_installer.bat(пкм и выбираем изменить). Прописываем в нём наш пасс к базе и правим путь к мускулу в директорию bin, больше ничего не трогаем. Должно получиться следующее\nREM # ================#\nREM # for diskw users #\nREM #=================#\nREM C:\\Program Files\\MySQL\\MySQL Server 6.0\\bin (путь к дирректории bin)\nREM #=======================================#\nREM # for mysql server users on x64 systems #\nREM #=======================================#\nREM C:\\Program Files (x86)\\MySQL\\MySQL Server 5.0\\bin\nREM #=========================================#\nREM # for mysql server users on Win XP system #\nREM #=========================================#\nREM C:\\Program Files\\MySQL\\MySQL Server 6.0\\bin (путь к дирректории bin)\nREM C:\\Program Files\\MySQL\\MySQL Server 6.0\\bin (путь к дирректории bin)\n\nREM LOGINSERVER\nset lsuser=root\nset lspass=123456 (наш пароль к мускулу)\nset lsdb=Emu_DB\nset lshost=localhost\nREM GAMESERVER\nset gsuser=root\nset gspass=123456 (наш пароль к мускулу)\nset gsdb=Emu_DB\nset gshost=localhost\n\nСохраняем и закрываем батник. Далее идём сюда C:\\server\\gameserver\\config\\main правим любым текстовым редактором (например в блакноте)файл gameserver.properties графу Client Protocol\n\n# -----------------------\n# Secton: Client Protocol\n# -----------------------\n# Minimum and maximum protocol revision that server allow to connect.\n# You must keep MinProtocolRevision <= MaxProtocolRevision.\nMinProtocolRevision = 1\nMaxProtocolRevision = 999\n# ------------------------\n# Section: Server Capacity \n# ------------------------\n# Define how many players are allowed to play simultaneously on your server.\nMaximumOnlineUsers = 1000\n\nДалее сюда C:\\server\\gameserver\\config\\network правим в файле database.properties наш пасс к базе\n\n# URL to connect to database.\nURL = jdbc:mysql:\/\/localhost\/Emu_DB\n# here are some other url's :\n# URL = jdbc:hsqldb:hsql:\/\/localhost\/Emu_DB\n# URL = jdbc:sqlserver:\/\/localhost\/database=Emu_DB\/user=sa\/password=\n# your database login (by default MySQL uses = root, Warning: Not a Safe Setting! try to use your own login)\nLogin = root\n# your database password (by default MySQL uses = root, Warning: Not a Safe Setting! try to use your own pass)\nPassword =123456(наш пасс к мускулу)\n# define here how many connections are allowed at the same time.\nMaximumDbConnections = 1000(число одновременных подключений к серверу)\n\nТут же в C:\\server\\gameserver\\config\\network правим файл network.properties прописываем наш IP\n\n# -----------------\n# Connection Config\n# -----------------\n# Bind ip of the gameserver, use 0.0.0.0 to bind on all available IPs\nGameserverHostname = 0.0.0.0\nGameserverPort = 7777\n# This is transmitted to the clients connecting from an external network,\n# so it has to be a public IP or resolvable hostname\nExternalHostname = наш внешний Ip\n# This is transmitted to the client from the same network,\n# so it has to be a local IP or resolvable hostname\nInternalHostname = наш внутрисетевой IP (локальная сетка)\nInternalNetworks =\n# Define optional networks and router IPs\n# IP (200.100.200.100) or fully qualified domain name\n# (google.com) that resolves to an IP (use ping to determine if a domain resolves).\n# Format: ip,net\/mask;ip,net\/mask,net\/mask\n# (mask 192.168.0.0\/16 or 192.168.0.0\/255.255.0.0 would be 192.168.*.*)\n# Note: keep InternalNetworks and OptionalNetworks blank for compatibility with older login server\nOptionalNetworks =\n# --------------\n# Port Forwading\n# --------------\n# The Loginserver host and port\nLoginPort = 9014\nLoginHost = IP нашего логин сервера\n\nДалее идём в C:\\server\\gameserver\\config\\network редактим файл security.properties отключаем ГГ\n\n# ------------------------\n# Section: GG (Game Guard)\n# ------------------------\n# Enforce gameguard for clients\n# GameGuardEnforce - enforces gameguard query on character login\n# GameGuardProhibitAction - don't allow player to perform trade, talk with npc\n# or move until gameguard reply is received.\nGameGuardEnforce = ставим false\nGameGuardProhibitAction = ставим false\n\nИдем сюда C:\\server\\login\\config\\main редактим файл loginserver.properties если нам нужно сделать авторегистрацию а также отключаем ГГ\n\n# ------------------\n# Section: Accounts\n# ------------------\n# Automatically Create Accounts.\n# default = false\nAutoCreateAccounts = ставим true\n# ------------------------\n# Section: GG (Game Guard)\n# ------------------------\n# Enforce Game Guard Authorization from Client.\n# Login Server will kick client if client bypassed GameGuard authentication\n# default = true\nForceGGAuth = ставим false\n\n\nИдём сюда C:\\server\\login\\config\\network редактим файл database.properties\n\n\n# Define MySQL Driver URL.\nURL = jdbc:mysql:\/\/localhost\/Emu_DB\n# here you have some more urls: \n# URL = jdbc:hsqldb:hsql:\/\/localhost\/Emu_DB\n# URL = jdbc:sqlserver:\/\/localhost\/database = Emu_DB\/user = sa \/password = (your pass)\n# Your login to Database (default = root)\nLogin = root\n# Your password to database (default = root)\nPassword =123456 (наш пасс к мускулу)\n# Define how many connections are allowed on your database.\nMaximumDbConnections = 1500 (число одновременных подключений)\n\n\nТут же редактим файл network.properties вписываем наш IP \n\n\n# Bind ip of the loginserver, use 0.0.0.0 to bind on all available IPs\nLoginServerHostName = наш IP\nLoginServerPort = 2106\n# The port, ip on which login will listen for GameServers\nLoginPort = 9014\nLoginHostName = наш IP\n\nТеперь нам нада залить базу в мускул.\nВ папке tools запускаем ранее отредактированный батник database_installer.bat и заливаем базу.\nОткрываем в навикате нашу базу Emu_DB и в графе gameservers удаляем все значения.\nДалее идём в C:\\server\\login и запускаем батник register_gameserver.bat, дожидаемся прогрузки и на вопрос чего же мы хотим смело тыркаем 1 появитса файлик hexid(server 1).txt переименовываем его в hexid.txt вырезаем и кидаем в папку C:\\server\\gameserver\\config\\network\nОпять идём в папку C:\\server\\login и запускаем батник account_manager.bat нажимаем 1 - интер, вводим желаемый себе логин - интер, пасс - интер, уровень доступа для нашего аккаунта 200 - интер. Всё мы создали сервер со своим аккаунтом с уровнем администратора.",
+			"articleSection": "Lineage II",
+			"author": {
+				"@type": "Person",
+				"name": "sailas32"
+			},
+			"datePublished": "2014-03-21",
+			"dateModified": "2014-03-21",
+			"image": "https:\/\/tophope.ru\/data\/avatars\/l\/35\/35610.jpg?1400798149",
+			"interactionStatistic": {
+				"@type": "InteractionCounter",
+				"interactionType": "https://schema.org/ReplyAction",
+				"userInteractionCount": 2
+			}
+		}
+		</script>
+</body>
+</html>

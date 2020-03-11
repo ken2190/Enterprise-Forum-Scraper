@@ -20,9 +20,9 @@ from scraper.base_scrapper import (
 REQUEST_DELAY = 10
 NO_OF_THREADS = 1
 
-USERNAME = "vrx9"
+USERNAME = "blackrhino"
 MD5PASS = "db587913e1544e2169f44a5b7976c9a1"
-PASSWORD = "Night#Vrx099"
+PASSWORD = "Night#Rhino02"
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
 
