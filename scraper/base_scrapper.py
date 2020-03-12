@@ -16,7 +16,6 @@ from requests.exceptions import ConnectionError
 from scrapy.crawler import CrawlerProcess
 from scrapy.exceptions import CloseSpider
 from copy import deepcopy
-from base64 import b64decode
 from datetime import datetime
 
 from seleniumwire.webdriver import (
@@ -357,6 +356,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                 crawler.settings.set(
                     "DOWNLOADER_MIDDLEWARES",
                     {
+                        "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 50,
                         "middlewares.middlewares.DedicatedProxyMiddleware": 100,
                     },
                 )
@@ -364,6 +364,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                 crawler.settings.set(
                     "DOWNLOADER_MIDDLEWARES",
                     {
+                        "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 50,
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
                         "middlewares.middlewares.BypassCloudfareMiddleware": 200
                     },
@@ -372,6 +373,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                 crawler.settings.set(
                     "DOWNLOADER_MIDDLEWARES",
                     {
+                        "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 50,
                         "middlewares.middlewares.BypassCloudfareMiddleware": 200
                     },
                 )

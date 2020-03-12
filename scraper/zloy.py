@@ -55,12 +55,12 @@ class ZloySpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
-    handle_httpstatus_list = [503]
+    use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
+    cloudfare_delay = 10
 
     def parse_thread_date(self, thread_date):
         """
@@ -100,6 +100,15 @@ class ZloySpider(SitemapSpider):
                 post_date,
                 self.post_datetime_format
             )
+
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            }
+        )
 
     def parse(self, response):
         # Synchronize cloudfare user agent
