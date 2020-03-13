@@ -45,6 +45,11 @@ class HydraSpider(SitemapSpider):
     )
 
     # Other settings
+    custom_settings = {
+        "DOWNLOADER_MIDDLEWARES": {
+            'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
+        }
+    }
     use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
@@ -109,6 +114,7 @@ class HydraSpider(SitemapSpider):
             captcha_url,
             response
         )
+        captcha = captcha.lower()
         self.logger.info(
             "Captcha has been solved: %s" % captcha
         )
@@ -131,11 +137,9 @@ class HydraSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        # ---------------------------------------
-        # Uncomment this and check the responst
-        # self.logger.info("RESPONSE")
-        # self.logger.info(response.text)
-        # ---------------------------------------
+        if response.xpath(self.captcha_url_xpath):
+            self.logger.info("Invalid Captcha")
+            return
         urls = response.xpath(
             '//div/a[@role and contains(@href, "/market/")]')
         for url in urls:
