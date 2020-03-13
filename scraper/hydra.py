@@ -85,7 +85,8 @@ class HydraSpider(SitemapSpider):
             callback=self.parse_captcha,
             dont_filter=True,
             meta={
-                'proxy': PROXY
+                'proxy': PROXY,
+                'handle_httpstatus_list': [302]
             }
         )
 
@@ -95,6 +96,7 @@ class HydraSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         # Load cookies
+
         cookies = response.request.headers.get("Cookie")
         if not cookies:
             yield from self.start_requests()
@@ -111,21 +113,29 @@ class HydraSpider(SitemapSpider):
             "Captcha has been solved: %s" % captcha
         )
 
+        formdata = {
+            "captcha": captcha
+        }
+
         yield FormRequest.from_response(
-            response,
+            response=response,
             formxpath=self.captch_form_xpath,
-            formdata={
-                "captcha": captcha
-            },
+            formdata=formdata,
             headers=self.headers,
+            callback=self.parse_start,
+            dont_filter=True,
             meta=self.synchronize_meta(response),
-            callback=self.parse_start
         )
 
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # ---------------------------------------
+        # Uncomment this and check the responst
+        # self.logger.info("RESPONSE")
+        # self.logger.info(response.text)
+        # ---------------------------------------
         urls = response.xpath(
             '//div/a[@role and contains(@href, "/market/")]')
         for url in urls:
