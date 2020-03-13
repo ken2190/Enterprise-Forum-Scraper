@@ -162,6 +162,7 @@ from templates.soqor_template import SoqorParser
 from templates.zloy_template import ZloyParser
 from templates.cardvilla_template import CardvillaParser
 from templates.cdotws_template import CdotwsParser
+from templates.r0bforums_template import R0bforumsParser
 
 
 PARSER_MAP = {
@@ -328,4 +329,5 @@ PARSER_MAP = {
     'zloy': ZloyParser,
     'carvilla': CardvillaParser,
     'cdotws': CdotwsParser,
+    'r0bforums': R0bforumsParser,
 }
