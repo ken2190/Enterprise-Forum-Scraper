@@ -351,44 +351,51 @@ class BypassCloudfareSpider(scrapy.Spider):
                 }
             )
 
+            # Default downloader middlewares
+            downloader_middlewares = {
+                'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': 20,
+                'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': 40,
+                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 50,
+            }
+
             # Proxy settings
             if cls.proxy:
-                crawler.settings.set(
-                    "DOWNLOADER_MIDDLEWARES",
+                downloader_middlewares.update(
                     {
-                        "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 50,
                         "middlewares.middlewares.DedicatedProxyMiddleware": 100,
-                    },
+                    }
                 )
             elif cls.use_proxy:
-                crawler.settings.set(
-                    "DOWNLOADER_MIDDLEWARES",
+                downloader_middlewares.update(
                     {
-                        "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 50,
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
                         "middlewares.middlewares.BypassCloudfareMiddleware": 200
-                    },
+                    }
                 )
             else:
-                crawler.settings.set(
-                    "DOWNLOADER_MIDDLEWARES",
+                downloader_middlewares.update(
                     {
-                        "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 50,
                         "middlewares.middlewares.BypassCloudfareMiddleware": 200
-                    },
+                    }
                 )
-                crawler.settings.set(
-                    "DOWNLOAD_DELAY",
-                    cls.download_delay
-                )
-                crawler.settings.set(
-                    "CONCURRENT_REQUESTS",
-                    cls.download_thread
-                )
-                crawler.settings.set(
-                    "CONCURRENT_REQUESTS_PER_DOMAIN",
-                    cls.download_thread
-                )
+
+            # Default settings
+            crawler.settings.set(
+                "DOWNLOADER_MIDDLEWARES",
+                downloader_middlewares
+            )
+            crawler.settings.set(
+                "DOWNLOAD_DELAY",
+                cls.download_delay
+            )
+            crawler.settings.set(
+                "CONCURRENT_REQUESTS",
+                cls.download_thread
+            )
+            crawler.settings.set(
+                "CONCURRENT_REQUESTS_PER_DOMAIN",
+                cls.download_thread
+            )
 
             # Free settings
             crawler.settings.freeze()

@@ -29,6 +29,9 @@ class CrackingKingSpider(SitemapSpider):
     base_url = "https://crackingking.com/"
     login_url = "https://crackingking.com/member.php?action=login"
 
+    # Css stuffs
+    login_form_css = "form[action]"
+
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "forum-")]/@href'
     pagination_xpath = '//div[@class="pagination"]'\
@@ -72,7 +75,7 @@ class CrackingKingSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     handle_httpstatus_list = [503]
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
@@ -145,9 +148,10 @@ class CrackingKingSpider(SitemapSpider):
             "url": f'{self.base_url}index.php',
             "g-recaptcha-response": self.solve_recaptcha(response)
         }
-        self.logger.info(formdata)
-        yield FormRequest(
-            url='https://crackingking.com/member.php',
+
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_form_css,
             formdata=formdata,
             meta=self.synchronize_meta(response),
             dont_filter=True,
@@ -155,23 +159,12 @@ class CrackingKingSpider(SitemapSpider):
             callback=self.parse_start
         )
 
-    def parse_redirect(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        yield Request(
-            url=f'{self.base_url}index.php',
-            meta=self.synchronize_meta(response),
-            dont_filter=True,
-            headers=self.headers,
-            callback=self.parse_start,
-        )
-
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        # Please check response here...
         self.logger.info(response.text)
+
         return
         all_forums = response.xpath(self.forum_xpath).extract()
         for forum_url in all_forums:
