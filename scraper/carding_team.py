@@ -25,6 +25,9 @@ from scraper.base_scrapper import (
 REQUEST_DELAY = 0.6
 NO_OF_THREADS = 2
 
+USER = 'Cyrax_011'
+PASS = 'c2Yv9EP8MsgGHJr'
+
 
 class CardingTeamSpider(SitemapSpider):
     name = 'cardingteam_spider'
@@ -40,6 +43,7 @@ class CardingTeamSpider(SitemapSpider):
     thread_lastmod_xpath = "//lastmod/text()"
 
     # Xpath stuffs
+    login_form_xpath = '//form[@method="post"]'
     forum_xpath = '//a[contains(@href, "Forum-")]/@href'
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
@@ -71,7 +75,7 @@ class CardingTeamSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
 
@@ -97,7 +101,8 @@ class CardingTeamSpider(SitemapSpider):
             )
         else:
             yield Request(
-                url=self.base_url,
+                url='https://cardingteam.cc/member.php?action=login',
+                callback=self.proceed_for_login,
                 headers=self.headers,
                 dont_filter=True,
                 cookies=cookies,
@@ -105,6 +110,22 @@ class CardingTeamSpider(SitemapSpider):
                     "ip": ip
                 }
             )
+
+    def proceed_for_login(self, response):
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+        formdata = {
+            'username': USER,
+            'password': PASS,
+        }
+        yield FormRequest.from_response(
+            response=response,
+            formxpath=self.login_form_xpath,
+            formdata=formdata,
+            headers=self.headers,
+            meta=self.synchronize_meta(response),
+            callback=self.parse,
+        )
 
     def parse_thread_date(self, thread_date):
         return datetime.today()
