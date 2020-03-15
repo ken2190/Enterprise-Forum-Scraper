@@ -108,7 +108,9 @@ class R0bForumsSpider(SitemapSpider):
         )
 
     def parse_thread_date(self, thread_date):
-        thread_date = thread_date.strip()
+        thread_date = thread_date.split(',')[0].strip()
+        if not thread_date:
+            return
 
         if 'hour' in thread_date.lower():
             return datetime.today()
@@ -122,7 +124,9 @@ class R0bForumsSpider(SitemapSpider):
 
     def parse_post_date(self, post_date):
         # Standardize thread_date
-        post_date = post_date.strip()
+        post_date = post_date.split(',')[0].strip()
+        if not post_date:
+            return
 
         if 'hour' in post_date.lower():
             return datetime.today()
