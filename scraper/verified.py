@@ -17,14 +17,14 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 10
+REQUEST_DELAY = 4
 NO_OF_THREADS = 1
 
 USERNAME = "blackrhino"
-MD5PASS = "db587913e1544e2169f44a5b7976c9a1"
+MD5PASS = "7a3a4f8cbe6d26725a900af4be9256aa"
 PASSWORD = "Night#Rhino02"
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/71.0'
 
 PROXY = 'http://127.0.0.1:8118'
 

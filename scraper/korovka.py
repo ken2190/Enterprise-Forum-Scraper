@@ -18,14 +18,14 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 2
+REQUEST_DELAY = 20
 NO_OF_THREADS = 1
 
 CODE = 'marketpl'
 USER = "vrx9"
 PASS = 'Night#Cat'
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
 
 PROXY = 'http://127.0.0.1:8118'
 
