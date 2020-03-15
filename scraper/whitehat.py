@@ -55,6 +55,7 @@ class WhitehatSpider(SitemapSpider):
         re.IGNORECASE
     )
     # Other settings
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d/%m/%y, %I:%M %p'

@@ -57,6 +57,7 @@ class CardingSiteSpider(SitemapSpider):
     )
 
     # Other settings
+    use_proxy = True
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
     download_delay = REQUEST_DELAY
@@ -96,7 +97,7 @@ class CardingSiteSpider(SitemapSpider):
         yield from super().parse_avatars(response)
 
 
-class CardingSiteSpider(SiteMapScrapper):
+class CardingSiteScraper(SiteMapScrapper):
 
     spider_class = CardingSiteSpider
     site_name = 'cardingsite.cc'

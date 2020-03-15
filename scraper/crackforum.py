@@ -59,6 +59,7 @@ class CrackForumSpider(SitemapSpider):
     )
 
     # Other settings
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y, %H:%M'

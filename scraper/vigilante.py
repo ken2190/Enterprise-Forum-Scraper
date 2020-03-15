@@ -48,6 +48,7 @@ class VigilanteSpider(SitemapSpider):
     )
 
     # Other settings
+    use_proxy = True
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'
     download_delay = REQUEST_DELAY

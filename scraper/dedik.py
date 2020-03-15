@@ -49,6 +49,7 @@ class DedikSpider(SitemapSpider):
     )
 
     # Other settings
+    use_proxy = True
     handle_httpstatus_list = [403]
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS

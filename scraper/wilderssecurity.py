@@ -57,6 +57,7 @@ class WildersSecuritySpider(SitemapSpider):
     )
 
     # Other settings
+    use_proxy = True
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
     download_delay = REQUEST_DELAY

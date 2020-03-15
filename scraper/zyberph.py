@@ -42,6 +42,7 @@ class ZyberphSpider(SitemapSpider):
     )
 
     # Other settings
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     post_datetime_format = '%a %b %d, %Y %I:%M %p'
