@@ -131,7 +131,7 @@ class UinsellSpider(SitemapSpider):
 class UinsellScrapper(SiteMapScrapper):
 
     spider_class = UinsellSpider
-    site_name = 'forum.uinsell.net'
+    site_name = 'uinsell.net'
 
     def load_settings(self):
         settings = super().load_settings()
