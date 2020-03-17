@@ -137,7 +137,7 @@ from scraper.cdotws import CdotWsScrapper
 from scraper.r0bforums import R0bForumsScrapper
 from scraper.crackingking import CrackingKingScrapper
 from scraper.altenens import AltenensScrapper
-from scraper.cardingsite import CardingSiteSpider
+from scraper.cardingsite import CardingSiteScraper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -279,5 +279,5 @@ SCRAPER_MAP = {
     'r0bforums': R0bForumsScrapper,
     'crackingking': CrackingKingScrapper,
     'altenens': AltenensScrapper,
-    'cardingsite': CardingSiteSpider,
+    'cardingsite': CardingSiteScraper,
 }

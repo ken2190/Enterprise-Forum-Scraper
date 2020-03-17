@@ -48,6 +48,7 @@ class RunTimeSpider(SitemapSpider):
     )
 
     # Other settings
+    use_proxy = True
     sitemap_datetime_format = '%m-%d-%Y, %I:%M %p'
     post_datetime_format = '%m-%d-%Y, %I:%M %p'
     download_delay = REQUEST_DELAY
