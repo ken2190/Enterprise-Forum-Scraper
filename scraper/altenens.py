@@ -19,7 +19,7 @@ from scraper.base_scrapper import (
 
 
 REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
+NO_OF_THREADS = 6
 
 USER = 'thecreator'
 PASS = 'Night#Altens001'

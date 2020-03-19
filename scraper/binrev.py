@@ -8,8 +8,8 @@ from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.7
-NO_OF_THREADS = 2
+REQUEST_DELAY = 1
+NO_OF_THREADS = 1
 
 USERNAME = "vrx9"
 PASSWORD = "4hr63yh38a"
@@ -54,7 +54,7 @@ class BinRevSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
@@ -74,7 +74,7 @@ class BinRevSpider(SitemapSpider):
             meta=self.synchronize_meta(
                     response,
                     default_meta={
-                        "country": "us"
+                        "country": "CA"
                     }
             ),
             dont_filter=True,
