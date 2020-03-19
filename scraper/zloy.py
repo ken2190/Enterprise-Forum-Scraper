@@ -60,7 +60,7 @@ class ZloySpider(SitemapSpider):
     download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
-    cloudfare_delay = 10
+    cloudfare_delay = 5
 
     def parse_thread_date(self, thread_date):
         """

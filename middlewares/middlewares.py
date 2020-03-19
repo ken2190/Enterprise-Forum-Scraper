@@ -1,6 +1,8 @@
 import cloudscraper
 import uuid
+import requests
 
+from scrapy import Selector
 from base64 import b64decode
 from scraper.base_scrapper import (
     PROXY_USERNAME,
@@ -135,6 +137,8 @@ class BypassCloudfareMiddleware(object):
 
     captcha_provider = "2captcha"
     captcha_token = "76228b91f256210cf20e6d8428818e23"
+    ip_api = "https://api.ipify.org/?format=json"
+    fraudulent_api = "https://scamalytics.com/ip/%s"
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -168,6 +172,65 @@ class BypassCloudfareMiddleware(object):
         self.allow_retry = getattr(crawler.spider, "cloudfare_allow_retry", 5)
         self.delay = getattr(crawler.spider, "cloudfare_delay", 5)
         self.solve_depth = getattr(crawler.spider, "cloudfare_solve_depth", 5)
+        self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 35)
+
+    def get_fraud_score(self, ip):
+        # Request api check
+        res = requests.get(
+            self.fraudulent_api % ip
+        )
+
+        # Load selector
+        selector = Selector(text=res.content)
+
+        # Load score
+        score = selector.xpath("//div[@class=\"score\"]/text()").extract_first()
+        if not score:
+            return self.fraudulent_threshold
+
+        # Standardize score
+        score = int(score.split()[-1])
+        return score
+
+    def get_good_ip(self):
+        while True:
+            # Load proxy
+            username = "%s-session-%s" % (
+                PROXY_USERNAME,
+                uuid.uuid1().hex
+            )
+            password = PROXY_PASSWORD
+            proxy = PROXY % (username, password)
+
+            # Load ip
+            ip = requests.get(
+                self.ip_api,
+                proxies={
+                    "http": proxy,
+                    "https": proxy
+                }
+            ).json().get("ip")
+
+            # Check fraudulent score
+            ip_score = self.get_fraud_score(ip)
+            if ip_score >= self.fraudulent_threshold:
+                self.logger.info(
+                    "Ip %s has fraudulent score of %s, "
+                    "above threshold %s, aborting." % (
+                        ip, ip_score, self.fraudulent_threshold
+                    )
+                )
+                continue
+
+            # Report good ip
+            self.logger.info(
+                "Find out good ip %s with fraudulent score of %s, "
+                "below threshold %s, continue." % (
+                    ip, ip_score, self.fraudulent_threshold
+                )
+            )
+
+            return ip
 
     def load_cookies(self, request, byte=True):
         cookies = {}
@@ -209,7 +272,7 @@ class BypassCloudfareMiddleware(object):
                 "https": proxy
             }
             ip = session.get(
-                url="https://api.ipify.org/?format=json",
+                url=self.ip_api,
                 proxies=request_args.get("proxies")
             ).json().get("ip")
             self.logger.info(
@@ -240,13 +303,17 @@ class BypassCloudfareMiddleware(object):
         # Add proxy authen if available
         basic_auth = request.headers.get("Proxy-Authorization")
         if basic_auth:
-            basic_auth_encoded = basic_auth.decode("utf-8").split()[1]
-            username, password = b64decode(basic_auth_encoded).decode("utf-8").split(":")
+            ip = self.get_good_ip()
             root_proxy = proxy.replace(
                 "https://", ""
             ).replace(
                 "http://", ""
             )
+            username = "%s-ip-%s" % (
+                PROXY_USERNAME,
+                ip
+            )
+            password = PROXY_PASSWORD
             request_args["proxy"] = "%s:%s@%s" % (
                 username,
                 password,
@@ -268,9 +335,9 @@ class BypassCloudfareMiddleware(object):
                     )
                 elif retry < self.allow_retry:
                     proxy = PROXY % (
-                        "%s-session-%s" % (
+                        "%s-ip-%s" % (
                             PROXY_USERNAME,
-                            uuid.uuid1().hex
+                            self.get_good_ip()
                         ),
                         PROXY_PASSWORD
                     )

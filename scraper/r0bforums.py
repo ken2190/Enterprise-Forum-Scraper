@@ -59,8 +59,8 @@ class R0bForumsSpider(SitemapSpider):
     handle_httpstatus_list = [503]
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-    sitemap_datetime_format = '%m-%d-%Y, %I:%M %p'
-    post_datetime_format = '%m-%d-%Y, %I:%M %p'
+    sitemap_datetime_format = '%m-%d-%Y'
+    post_datetime_format = '%m-%d-%Y'
 
     def start_requests(self):
         login_url = 'https://r0bforums.com/member.php?action=login'

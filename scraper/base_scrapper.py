@@ -1062,7 +1062,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         yield Request(**request_arguments)
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, thread_meta={}):
 
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
@@ -1113,16 +1113,20 @@ class SitemapSpider(BypassCloudfareSpider):
             ):
                 continue
 
+            # Check thread meta
+            if thread_meta:
+                meta = thread_meta
+            else:
+                meta = self.synchronize_meta(response)
+
+            # Update topic id
+            meta["topic_id"] = topic_id
+
             yield Request(
                 url=thread_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "topic_id": topic_id
-                    }
-                )
+                meta=meta
             )
 
         # Pagination
