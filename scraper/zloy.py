@@ -15,8 +15,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 4
+REQUEST_DELAY = 0.7
+NO_OF_THREADS = 2
 
 
 class ZloySpider(SitemapSpider):
@@ -180,7 +180,7 @@ class ZloySpider(SitemapSpider):
 class ZloyScrapper(SiteMapScrapper):
 
     spider_class = ZloySpider
-    site_name = 'forum.zloy.bz'
+    site_name = 'zloy.bz'
 
     def load_settings(self):
         settings = super().load_settings()

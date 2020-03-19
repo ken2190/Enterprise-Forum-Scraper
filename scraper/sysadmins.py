@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 3
+REQUEST_DELAY = 0.7
+NO_OF_THREADS = 4
 
 
 class SysAdminsSpider(SitemapSpider):
