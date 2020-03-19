@@ -1,11 +1,18 @@
 import os
 import re
 import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
+import uuid
+
 from datetime import datetime
-from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
 REQUEST_DELAY = 1
@@ -54,11 +61,26 @@ class BinRevSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
     post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
+
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex,
+                "country": "CA"
+            },
+            callback=self.parse,
+            dont_filter=True,
+            errback=self.parse_failure
+        )
+
+    def parse_failure(self, failure):
+        yield from self.start_requests()
 
     def parse(self, response):
         # Synchronize cloudfare user agent
