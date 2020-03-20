@@ -136,7 +136,7 @@ class ZloySpider(SitemapSpider):
             request.meta = {
                 "cookiejar": uuid.uuid1().hex
             }
-            yield Request
+            yield request
             return
 
         yield from super().parse_forum(response)
@@ -150,7 +150,7 @@ class ZloySpider(SitemapSpider):
                 "cookiejar": uuid.uuid1().hex,
                 "topic_id": response.meta.get("topic_id")
             }
-            yield Request
+            yield request
             return
 
         # Save generic thread
