@@ -61,6 +61,7 @@ class ZloySpider(SitemapSpider):
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
     cloudfare_delay = 5
+    handle_httpstatus_list = [503]
 
     def parse_thread_date(self, thread_date):
         """
@@ -127,7 +128,30 @@ class ZloySpider(SitemapSpider):
                 meta=self.synchronize_meta(response)
             )
 
+    def parse_forum(self, response):
+        # Check status 503
+        if response.status == 503:
+            request = response.request
+            request.dont_filter = True
+            request.meta = {
+                "cookiejar": uuid.uuid1().hex
+            }
+            yield Request
+            return
+
+        yield from super().parse_forum(response)
+
     def parse_thread(self, response):
+        # Check status 503
+        if response.status == 503:
+            request = response.request
+            request.dont_filter = True
+            request.meta = {
+                "cookiejar": uuid.uuid1().hex,
+                "topic_id": response.meta.get("topic_id")
+            }
+            yield Request
+            return
 
         # Save generic thread
         yield from super().parse_thread(response)
