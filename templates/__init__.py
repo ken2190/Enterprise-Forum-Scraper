@@ -163,6 +163,8 @@ from templates.zloy_template import ZloyParser
 from templates.cardvilla_template import CardvillaParser
 from templates.cdotws_template import CdotwsParser
 from templates.r0bforums_template import R0bforumsParser
+from templates.cardingsite_template import CardingSiteParser
+from templates.altenens_template import AltenensParser
 
 
 PARSER_MAP = {
@@ -330,4 +332,6 @@ PARSER_MAP = {
     'carvilla': CardvillaParser,
     'cdotws': CdotwsParser,
     'r0bforums': R0bforumsParser,
+    'cardingsite': CardingSiteParser,
+    'altenens': AltenensParser,
 }
