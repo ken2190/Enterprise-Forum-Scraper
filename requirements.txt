@@ -8,3 +8,4 @@ cloudscraper
 pandas
 polling
 selenium-wire
+aiohttp

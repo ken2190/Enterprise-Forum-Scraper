@@ -1,6 +1,9 @@
 import cloudscraper
 import uuid
 import requests
+import asyncio
+import aiohttp
+import json
 
 from scrapy import Selector
 from base64 import b64decode
@@ -173,51 +176,112 @@ class BypassCloudfareMiddleware(object):
         self.delay = getattr(crawler.spider, "cloudfare_delay", 5)
         self.solve_depth = getattr(crawler.spider, "cloudfare_solve_depth", 5)
         self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 35)
+        self.ip_batch_size = getattr(crawler.spider, "ip_batch_size", 20)
 
-    def get_fraud_score(self, ip):
-        # Request api check
-        res = requests.get(
-            self.fraudulent_api % ip
-        )
+    async def fetch(self, url, **kwargs):
+
+        # Load session
+        session = aiohttp.ClientSession()
+
+        # Load method
+        method = kwargs.get("method")
+        if method not in ["get", "post"]:
+            method = "get"
+        else:
+            del kwargs["method"]
+
+        # Load response
+        if method == "get":
+            response = await session.get(url, **kwargs)
+        else:
+            response = await session.post(url, **kwargs)
+
+        # Load text response
+        text = await response.text()
+
+        # Close session
+        await session.close()
+
+        return text
+
+    async def get_fraud_score(self, ip):
+
+        # Load response
+        response = await self.fetch(self.fraudulent_api % ip)
 
         # Load selector
-        selector = Selector(text=res.content)
+        selector = Selector(text=response)
 
         # Load score
-        score = selector.xpath("//div[@class=\"score\"]/text()").extract_first()
+        score = selector.xpath(
+            "//div[@class=\"score\"]/text()"
+        ).extract_first()
+
         if not score:
             return self.fraudulent_threshold
 
         # Standardize score
         score = int(score.split()[-1])
+
         return score
 
-    def get_good_ip(self):
-        while True:
-            # Load proxy
-            username = "%s-session-%s" % (
-                PROXY_USERNAME,
-                uuid.uuid1().hex
+    async def get_ip_score(self, session_id):
+        username = "%s-session-%s" % (
+            PROXY_USERNAME,
+            session_id
+        )
+        password = PROXY_PASSWORD
+        response = await self.fetch(
+            self.ip_api,
+            proxy=PROXY % (
+                username,
+                password
             )
-            password = PROXY_PASSWORD
-            proxy = PROXY % (username, password)
+        )
 
-            # Load ip
-            ip = requests.get(
-                self.ip_api,
-                proxies={
-                    "http": proxy,
-                    "https": proxy
-                }
-            ).json().get("ip")
+        # Load ip
+        ip = json.loads(response).get("ip")
 
-            # Check fraudulent score
-            ip_score = self.get_fraud_score(ip)
-            if ip_score >= self.fraudulent_threshold:
+        # Load score
+        score = await self.get_fraud_score(ip)
+
+        return ip, score
+
+    def loop_good_ip(self):
+        request_pool = []
+        index = 0
+        while index < self.ip_batch_size:
+            index += 1
+            session_id = uuid.uuid1().hex
+            request_pool.append(
+                self.get_ip_score(session_id)
+            )
+
+        # Load loop
+        loop = asyncio.get_event_loop()
+
+        # Load loop results
+        results = loop.run_until_complete(
+            asyncio.gather(*request_pool)
+        )
+
+        # Sort result
+        results.sort(key=lambda x: x[1])
+
+        # Close loop
+        loop.close()
+
+        return results[0]
+
+    def get_good_ip(self):
+
+        while True:
+            ip, score = self.loop_good_ip()
+            if score >= self.fraudulent_threshold:
                 self.logger.info(
                     "Ip %s has fraudulent score of %s, "
                     "above threshold %s, aborting." % (
-                        ip, ip_score, self.fraudulent_threshold
+                        ip, score, self.fraudulent_threshold
                     )
                 )
                 continue
@@ -226,7 +290,7 @@ class BypassCloudfareMiddleware(object):
             self.logger.info(
                 "Find out good ip %s with fraudulent score of %s, "
                 "below threshold %s, continue." % (
-                    ip, ip_score, self.fraudulent_threshold
+                    ip, score, self.fraudulent_threshold
                 )
             )
 

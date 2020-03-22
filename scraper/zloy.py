@@ -210,7 +210,7 @@ class ZloyScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                "RETRY_HTTP_CODES": [406, 429, 500, 503],
+                "RETRY_HTTP_CODES": [406, 429, 500],
             }
         )
         return settings
