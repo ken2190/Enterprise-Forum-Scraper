@@ -6,8 +6,8 @@ from scraper.lolzteam import LolzScrapper
 from scraper.verified import VerifiedScScrapper
 from scraper.sentryMBA import SentryMBAScrapper
 from scraper.bitcointalk import BitCoinTalkScrapper
-from scraper.psbdmp import PasteBinScrapper
-from scraper.psbdmp_old import PasteBinScrapperOld
+from scraper.psbdmp import PsbdmpScrapper
+from scraper.pastebin import PasteBinScrapper
 from scraper.wallstreet import WallStreetScrapper
 from scraper.kickass import KickAssScrapper
 from scraper.galaxy3 import Galaxy3Scrapper
@@ -149,8 +149,8 @@ SCRAPER_MAP = {
     'verified': VerifiedScScrapper,
     'sentrymba': SentryMBAScrapper,
     'bitcointalk': BitCoinTalkScrapper,
-    'psbdmp_old': PasteBinScrapperOld,
-    'psbdmp': PasteBinScrapper,
+    'psbdmp': PsbdmpScrapper,
+    'pastebin': PasteBinScrapper,
     'wallstreet': WallStreetScrapper,
     'kickass': KickAssScrapper,
     'galaxy3': Galaxy3Scrapper,
