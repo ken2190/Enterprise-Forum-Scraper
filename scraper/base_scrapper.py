@@ -744,6 +744,7 @@ class SitemapSpider(BypassCloudfareSpider):
                     "googlekey": site_key,
                     "pageurl": site_url,
                     "json": "1",
+                    "soft_id": "2612"
                 },
                 allow_redirects=False
             )
@@ -813,6 +814,7 @@ class SitemapSpider(BypassCloudfareSpider):
                     "regsense": "1",
                     "textinstructions": instruction,
                     "json": "1",
+                    "soft_id": "2612"
                 },
                 allow_redirects=False
             )
