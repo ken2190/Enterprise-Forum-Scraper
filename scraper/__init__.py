@@ -139,6 +139,7 @@ from scraper.r0bforums import R0bForumsScrapper
 from scraper.crackingking import CrackingKingScrapper
 from scraper.altenens import AltenensScrapper
 from scraper.cardingsite import CardingSiteScraper
+from scraper.greysec import GreysecScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -282,4 +283,5 @@ SCRAPER_MAP = {
     'crackingking': CrackingKingScrapper,
     'altenens': AltenensScrapper,
     'cardingsite': CardingSiteScraper,
+    'greysec': GreysecScrapper,
 }
