@@ -1,40 +1,91 @@
+import json
 import re
 import os
 import datetime
-import requests
 import time
+import scrapy
 import traceback
-from lxml.html import fromstring
-from scraper.base_scrapper import BypassCloudfareSpider
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
+from scraper.base_scrapper import PROXY_USERNAME, PROXY_PASSWORD, PROXY
+
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 
 
-class PsbdmpScrapper(BypassCloudfareSpider):
+def get_proxies():
+    proxy = PROXY % (
+        "%s-session-%s" % (
+            PROXY_USERNAME,
+            uuid.uuid1().hex
+        ),
+        PROXY_PASSWORD
+    )
+    return {
+        "http": proxy,
+        "https": proxy
+    }
 
-    def __init__(self, kwargs):
-        self.base_url = 'https://psbdmp.ws'
-        self.start_url = 'https://psbdmp.ws/api/dump/getbydate'
-        self.dump_url = 'https://pastebin.com/{}'
-        self.output_path = kwargs.get('output')
-        self.date_format = '%Y-%m-%d'
-        self.start_date = None
-        if kwargs.get("start_date"):
-            self.start_date = datetime.datetime.strptime(
-                kwargs.get('start_date'),
-                self.date_format
+
+class PsbdmpSpider(SitemapSpider):
+    name = 'psbdmp_spider'
+    base_url = 'https://psbdmp.ws'
+    start_url = 'https://psbdmp.ws/api/dump/getbydate'
+    dump_url = 'https://pastebin.com/{}'
+
+    # Other settings
+    use_proxy = True
+    date_format = '%Y-%m-%d'
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+
+    def start_requests(self,):
+        while self.start_date < datetime.datetime.now():
+            _from = self.start_date.strftime(self.date_format)
+            self.start_date = self.start_date + datetime.timedelta(days=1)
+            _to = self.start_date.strftime(self.date_format)
+            formdata = {
+                'from': _from,
+                'to': _to
+            }
+            output_path = '{}/{}'.format(self.output_path, _from)
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+
+            yield scrapy.FormRequest(
+                self.start_url,
+                formdata=formdata,
+                dont_filter=True,
+                meta={'output_path': output_path}
             )
 
-    def save_file(self, dump_id, output_path):
+    def parse(self, response):
+        json_data = json.loads(response.text)
+        for data in json_data['data']:
+            dump_id = data['id']
+            dump_url = self.dump_url.format(dump_id)
+            yield scrapy.Request(
+                dump_url,
+                callback=self.save_file,
+                meta={
+                    'dump_id': dump_id,
+                    'output_path': response.meta['output_path']
+                }
+            )
+
+    def save_file(self, response):
+        output_path = response.meta['output_path']
+        dump_id = response.meta['dump_id']
         dump_file = '{}/{}.txt'.format(
             output_path, dump_id
         )
         if os.path.exists(dump_file):
             print('{} already exists..!'.format(dump_file))
             return
-        dump_url = self.dump_url.format(dump_id)
-        response = requests.get(dump_url).text
-        html_response = fromstring(response)
-        content = html_response.xpath(
-            '//textarea[@id="paste_code"]/text()')
+        content = response.xpath(
+            '//textarea[@id="paste_code"]/text()').extract()
         content = ''.join(content)
         if not content:
             return
@@ -42,40 +93,7 @@ class PsbdmpScrapper(BypassCloudfareSpider):
             f.write(content)
         print('{} done..!'.format(dump_file))
 
-    def do_scrape(self):
-        print('************  Pastebin Scrapper Started  ************\n')
 
-        if not self.start_date:
-            print('Parameter missing: -s/--start_date')
-            return
-
-        while self.start_date < datetime.datetime.now():
-            try:
-                _from = self.start_date.strftime(self.date_format)
-                output_path = '{}/{}'.format(self.output_path, _from)
-                if not os.path.exists(output_path):
-                    os.makedirs(output_path)
-                self.start_date = self.start_date + datetime.timedelta(days=1)
-                _to = self.start_date.strftime(self.date_format)
-                data = {
-                    'from': _from,
-                    'to': _to
-                }
-                print('\nGetting dump for {}'.format(_from))
-                response = requests.post(self.start_url, data=data)
-                json_data = response.json()
-                for data in json_data['data']:
-                    dump_id = data['id']
-                    self.save_file(dump_id, output_path)
-            except Exception:
-                traceback.print_exc()
-                pass
-
-
-def main():
-    template = PsbdmpScrapper()
-    template.do_scrape()
-
-
-if __name__ == '__main__':
-    main()
+class PsbdmpScrapper(SiteMapScrapper):
+    spider_class = PsbdmpSpider
+    site_name = 'psbdmp.ws'
