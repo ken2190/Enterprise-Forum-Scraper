@@ -43,9 +43,22 @@ class ZloyParser:
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+            key=lambda x: (self.thread_name_pattern.search(x).group(1),
+                           self.pagination_pattern.search(x).group(1)))
 
         return sorted_files
+
+    def get_html_response(self, template):
+        """
+        returns the html response from the `template` contents
+        """
+        with open(template, 'r') as f:
+            content = f.read()
+            try:
+                html_response = fromstring(content)
+            except ParserError as ex:
+                return
+            return html_response
 
     def get_pid(self, topic):
         return str(abs(hash(topic)) % (10 ** 6))
@@ -56,7 +69,7 @@ class ZloyParser:
         for index, template in enumerate(self.files):
             print(template)
             try:
-                html_response = utils.get_html_response(template)
+                html_response = self.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
