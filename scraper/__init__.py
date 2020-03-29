@@ -143,6 +143,9 @@ from scraper.greysec import GreysecScrapper
 from scraper.dsslegends import DssLegendsScrapper
 from scraper.crackingsoul import CrackingSoulScrapper
 from scraper.exelab import ExeLabScrapper
+from scraper.codeby import CodebyScrapper
+from scraper.malvult import MalvultScrapper
+from scraper.mfd import MfdScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -290,4 +293,7 @@ SCRAPER_MAP = {
     'dsslegends': DssLegendsScrapper,
     'crackingsoul': CrackingSoulScrapper,
     'exelab': ExeLabScrapper,
+    'codeby': CodebyScrapper,
+    'malvult': MalvultScrapper,
+    'mfd': MfdScrapper,
 }
