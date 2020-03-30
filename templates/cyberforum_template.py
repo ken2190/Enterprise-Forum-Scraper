@@ -97,10 +97,9 @@ class CyberForumParser:
                     )
                     file_pointer = open(output_file, 'w', encoding='utf-8')
                     utils.write_json(file_pointer, data)
-                else:
-                    # extract comments
-                    comments.extend(
-                        self.extract_comments(html_response))
+                # extract comments
+                comments.extend(
+                    self.extract_comments(html_response))
 
                 if final:
                     utils.write_comments(file_pointer, comments, output_file)
