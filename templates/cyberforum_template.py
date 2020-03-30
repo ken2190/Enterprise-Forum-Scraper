@@ -111,7 +111,7 @@ class CyberForumParser:
                     self.error_folder,
                     ex
                 )
-            except:
+            except Exception:
                 traceback.print_exc()
                 continue
 
@@ -149,7 +149,7 @@ class CyberForumParser:
                 comments.append({
                     '_source': source,
                 })
-            except:
+            except Exception:
                 continue
         return comments
 
@@ -188,7 +188,7 @@ class CyberForumParser:
             return {
                 '_source': source
             }
-        except:
+        except Exception:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
 
@@ -204,7 +204,7 @@ class CyberForumParser:
         try:
             Date = dparser.parse(Date).timestamp()
             return str(Date)
-        except:
+        except Exception:
             if not Date:
                 return ''
 
@@ -214,7 +214,7 @@ class CyberForumParser:
                 day = date.today() - timedelta(days=1)
             else:
                 day = date.today()
-            
+
             toparse = day.strftime("%B %d, %Y") + Date[-1]
             Date = dparser.parse(toparse).timestamp()
             return str(Date)
@@ -223,7 +223,10 @@ class CyberForumParser:
         author = tag.xpath(
             './/span[contains(@class,"bigusername")]/text()'
         )
-        
+        if not author:
+            author = tag.xpath(
+                './/span[contains(@class,"bigusername")]/font/text()'
+            )
         author = author[0].strip() if author else None
         return author
 
@@ -262,13 +265,11 @@ class CyberForumParser:
         return name_match[0]
 
     def get_comment_id(self, tag):
-        comment_id = ""
         comment_block = tag.xpath(
-            './/td[contains(@class,"alt2 smallfont")][2]//text()'
+            './/td[contains(@class,"alt2 smallfont")][2]//b/text()'
         )
-        # print(comment_block)
-        comment_block = ''.join(comment_block)
-        if comment_block:
-            comment_id = comment_block.strip().split('#')[-1]
-        
-        return comment_id.replace(',', '').replace('.', '')
+        if not comment_block:
+            return
+
+        return comment_block[0].strip().split('#')[-1].\
+            replace(',', '').replace('.', '')
