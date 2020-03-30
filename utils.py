@@ -22,11 +22,11 @@ def handle_error(template, error_folder, error_message):
         file_pointer.write(str(error_message))
 
 
-def get_html_response(template, pattern=None, encoding=None):
+def get_html_response(template, pattern=None, encoding=None, mode='rb'):
     """
     returns the html response from the `template` contents
     """
-    with open(template, 'rb') as f:
+    with open(template, mode) as f:
         content = f.read()
         if pattern:
             encoding = encoding if encoding else 'utf-8'
@@ -76,6 +76,7 @@ def write_comments(file_pointer, comments, output_file):
 
     for comment in comments:
         write_json(file_pointer, comment)
+    file_pointer.close()
     print('\nJson written in {}'.format(output_file))
     print('----------------------------------------\n')
 
