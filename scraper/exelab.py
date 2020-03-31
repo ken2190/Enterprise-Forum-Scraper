@@ -4,6 +4,7 @@ import time
 import uuid
 import json
 import locale
+import dateparser
 
 from datetime import datetime
 from scrapy import (
@@ -66,11 +67,11 @@ class ExeLabSpider(SitemapSpider):
         thread_date = thread_date.split(',')[0].strip()
         if not thread_date:
             return
-
-        return datetime.strptime(
-            thread_date,
-            self.sitemap_datetime_format
-        )
+        return dateparser.parse(thread_date)
+        # return datetime.strptime(
+        #     thread_date,
+        #     self.sitemap_datetime_format
+        # )
 
     def parse_post_date(self, post_date):
         # Standardize thread_date
@@ -79,14 +80,15 @@ class ExeLabSpider(SitemapSpider):
         if not post_date:
             return
         post_date = post_date[0].strip()
-        return datetime.strptime(
-            post_date,
-            self.post_datetime_format
-        )
+        return dateparser.parse(post_date)
+        # return datetime.strptime(
+        #     post_date,
+        #     self.post_datetime_format
+        # )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
     def parse(self, response):
         # Synchronize cloudfare user agent
