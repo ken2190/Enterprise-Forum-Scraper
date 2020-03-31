@@ -165,6 +165,9 @@ from templates.cdotws_template import CdotwsParser
 from templates.r0bforums_template import R0bforumsParser
 from templates.cardingsite_template import CardingSiteParser
 from templates.altenens_template import AltenensParser
+from templates.dsslegends_template import DssLegendsParser
+from templates.exelab_template import ExelabParser
+from templates.crackingsoul_template import CrackingSoulParser
 
 
 PARSER_MAP = {
@@ -334,4 +337,7 @@ PARSER_MAP = {
     'r0bforums': R0bforumsParser,
     'cardingsite': CardingSiteParser,
     'altenens': AltenensParser,
+    'dsslegends': DssLegendsParser,
+    'exelab': ExelabParser,
+    'crackingsoul': CrackingSoulParser,
 }
