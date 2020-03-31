@@ -18,14 +18,15 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 20
+REQUEST_DELAY = .2
 NO_OF_THREADS = 1
 
-CODE = 'marketpl'
-USER = "vrx9"
-PASS = 'Night#Cat'
+CODE = 'shithead'
+USER = "nsfw3"
+PASS = 'Night#NSFW00'
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5 Build/LMY48B; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36'
+
 
 PROXY = 'http://127.0.0.1:8118'
 
@@ -35,8 +36,8 @@ class KorovkaSpider(SitemapSpider):
     name = 'korovka_spider'
 
     # Url stuffs
-    base_url = "http://korovka32xc3t5cg.onion/"
-    login_url = "http://korovka32xc3t5cg.onion/login.php?do=login"
+    base_url = "https://korovka.cc"
+    login_url = "https://korovka.cc/login.php?do=login"
 
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "forumdisplay.php?f=")]/@href'
@@ -56,7 +57,7 @@ class KorovkaSpider(SitemapSpider):
     avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d-%m-%Y'
