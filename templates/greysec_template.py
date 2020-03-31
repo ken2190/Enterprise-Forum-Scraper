@@ -110,6 +110,7 @@ class GreySecParser:
             comments.append({
                 
                 '_source': {
+               	    'forum': self.parser_name,
                     'pid': pid,
                     'date': comment_date,
                     'message': comment_text.strip(),

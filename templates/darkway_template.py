@@ -17,7 +17,7 @@ class BrokenPage(Exception):
 class DarkwayParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-        self.parser_name = "Darkway"
+        self.parser_name = "darkway_kzx2d7tcvfm5j6yt2ii7ejkeal3d5oy5gsewwnw7hmywj3nordbg4syd"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
