@@ -1,4 +1,5 @@
 import os
+import uuid
 import re
 import sys
 import scrapy
@@ -18,17 +19,12 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = .2
+REQUEST_DELAY = 3
 NO_OF_THREADS = 1
 
 CODE = 'shithead'
 USER = "nsfw3"
 PASS = 'Night#NSFW00'
-
-USER_AGENT = 'Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5 Build/LMY48B; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36'
-
-
-PROXY = 'http://127.0.0.1:8118'
 
 
 class KorovkaSpider(SitemapSpider):
@@ -36,7 +32,7 @@ class KorovkaSpider(SitemapSpider):
     name = 'korovka_spider'
 
     # Url stuffs
-    base_url = "https://korovka.cc"
+    base_url = "https://korovka.cc/"
     login_url = "https://korovka.cc/login.php?do=login"
 
     # Xpath stuffs
@@ -75,23 +71,7 @@ class KorovkaSpider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.headers.update({
-            'Host': 'korovka32xc3t5cg.onion',
-            'Referer': self.base_url,
-            'User-Agent': USER_AGENT
-        })
         self.firstrun = kwargs.get('firstrun')
-
-    def synchronize_meta(self, response, default_meta={}):
-        meta = {
-            key: response.meta.get(key) for key in ["cookiejar", "ip"]
-            if response.meta.get(key)
-        }
-
-        meta.update(default_meta)
-        meta.update({'proxy': PROXY})
-
-        return meta
 
     def start_requests(self):
         md5_pass = hashlib.md5(PASS.encode('utf-8')).hexdigest()
@@ -111,7 +91,7 @@ class KorovkaSpider(SitemapSpider):
             headers=self.headers,
             callback=self.parse_redirect,
             meta={
-                'proxy': PROXY
+                "cookiejar": uuid.uuid1().hex
             }
         )
 
@@ -316,4 +296,4 @@ class KorovkaSpider(SitemapSpider):
 class KorovkaScrapper(SiteMapScrapper):
 
     spider_class = KorovkaSpider
-    site_name = 'korovka (korovka32xc3t5cg.onion)'
+    site_name = 'korovka.cc'
