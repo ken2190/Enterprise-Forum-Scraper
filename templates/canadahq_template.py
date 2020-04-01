@@ -37,6 +37,12 @@ class CanadaHQParser:
             try:
                 html_response = utils.get_html_response(template)
                 pid = template.split('/')[-1].rsplit('.', 1)[0]
+                pid = str(
+                    int.from_bytes(
+                        pid.encode('utf-8'),
+                        byteorder='big'
+                    ) % (10 ** 7)
+                )
                 self.process_page(pid, html_response)
             except BrokenPage as ex:
                 utils.handle_error(
