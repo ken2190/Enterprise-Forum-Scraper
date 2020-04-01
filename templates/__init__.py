@@ -168,7 +168,9 @@ from templates.altenens_template import AltenensParser
 from templates.dsslegends_template import DssLegendsParser
 from templates.exelab_template import ExelabParser
 from templates.crackingsoul_template import CrackingSoulParser
-
+from templates.mfd_template import MfdParser
+from templates.malvult_template import MalvultParser
+from templates.codeby_template import CodebyParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -340,4 +342,7 @@ PARSER_MAP = {
     'dsslegends': DssLegendsParser,
     'exelab': ExelabParser,
     'crackingsoul': CrackingSoulParser,
+    'mfd': MfdParser,
+    'malvult': MalvultParser,
+    'codeby': CodebyParser,
 }
