@@ -146,6 +146,8 @@ from scraper.exelab import ExeLabScrapper
 from scraper.codeby import CodebyScrapper
 from scraper.malvult import MalvultScrapper
 from scraper.mfd import MfdScrapper
+from scraper.delfcode import DelfcodeScrapper
+from scraper.vlmi import VlmiScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -296,4 +298,6 @@ SCRAPER_MAP = {
     'codeby': CodebyScrapper,
     'malvult': MalvultScrapper,
     'mfd': MfdScrapper,
+    'delfcode': DelfcodeScrapper,
+    'vlmi': VlmiScrapper,
 }
