@@ -246,5 +246,5 @@ class CodebyParser:
         if comment_block:
             comment_id = comment_block[0].strip().split('#')[-1]
         
-        return comment_id.replace(',', '').replace('.', '')
+        return comment_id.replace(',', '').replace('.', '').replace(' ', '')
 
