@@ -148,6 +148,7 @@ from scraper.malvult import MalvultScrapper
 from scraper.mfd import MfdScrapper
 from scraper.delfcode import DelfcodeScrapper
 from scraper.vlmi import VlmiScrapper
+from scraper.chf import ChfScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -300,4 +301,5 @@ SCRAPER_MAP = {
     'mfd': MfdScrapper,
     'delfcode': DelfcodeScrapper,
     'vlmi': VlmiScrapper,
+    'chf': ChfScrapper,
 }
