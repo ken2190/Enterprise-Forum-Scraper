@@ -12,8 +12,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 5
+REQUEST_DELAY = 0.8
+NO_OF_THREADS = 4
 
 
 class MfdSpider(SitemapSpider):
@@ -51,7 +51,7 @@ class MfdSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = '%d.%m.%Y'
     post_datetime_format = '%d.%m.%Y %H:%M'
     download_delay = REQUEST_DELAY

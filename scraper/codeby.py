@@ -19,7 +19,7 @@ from scraper.base_scrapper import (
 
 
 REQUEST_DELAY = 0.5
-NO_OF_THREADS = 4
+NO_OF_THREADS = 8
 
 
 class CodebySpider(SitemapSpider):

@@ -13,7 +13,7 @@ from scraper.base_scrapper import (
 
 
 REQUEST_DELAY = 0.3
-NO_OF_THREADS = 5
+NO_OF_THREADS = 8
 
 USER = "Cyrax011"
 PASS = "4hr63yh38a61SDW0"
@@ -58,7 +58,7 @@ class MalvultSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
     download_delay = REQUEST_DELAY

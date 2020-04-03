@@ -71,7 +71,7 @@ class BHFIOSpider(SitemapSpider):
         # Load backup codes
         self.backup_code_file = os.path.join(
             #os.getcwd(),
-            "code/%s" % self.name
+            "/opt/forumparser/code/%s" % self.name
         )
         with open(
             file=self.backup_code_file,
@@ -323,8 +323,8 @@ class BHFIOSpider(SitemapSpider):
 class BHFIOScrapper(SiteMapScrapper):
 
     spider_class = BHFIOSpider
-    request_delay = 0.2
-    no_of_threads = 12
+    request_delay = 0.8
+    no_of_threads = 4
     site_name = 'bhf.io'
 
     def load_settings(self):
