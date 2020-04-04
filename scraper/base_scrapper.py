@@ -939,26 +939,34 @@ class SitemapSpider(BypassCloudfareSpider):
         )
         return response.content
 
-    def start_requests(self):
+    def start_requests(self, cookiejar=None, ip=None):
         """
         :return: => request start urls if no sitemap url or no start date
                  => request sitemap url if sitemap url and start date
         """
+
+        # Load meta
+        meta = {}
+        if cookiejar:
+            meta["cookiejar"] = cookiejar
+        if ip:
+            meta["ip"] = ip
+
+        # Branch choices requests
         if self.start_date and self.sitemap_url:
             yield scrapy.Request(
                 url=self.sitemap_url,
                 headers=self.headers,
                 callback=self.parse_sitemap,
                 dont_filter=True,
-                meta={
-                    "cookiejar": uuid.uuid1().hex
-                }
+                meta=meta
             )
         else:
             yield Request(
                 url=self.base_url,
                 headers=self.headers,
-                dont_filter=True
+                dont_filter=True,
+                meta=meta
             )
 
     def parse_sitemap(self, response):
