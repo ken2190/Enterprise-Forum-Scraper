@@ -171,6 +171,8 @@ from templates.crackingsoul_template import CrackingSoulParser
 from templates.mfd_template import MfdParser
 from templates.malvult_template import MalvultParser
 from templates.codeby_template import CodebyParser
+from templates.vlmi_template import VlmiParser
+from templates.delfcode_template import DelfcodeParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -345,4 +347,6 @@ PARSER_MAP = {
     'mfd': MfdParser,
     'malvult': MalvultParser,
     'codeby': CodebyParser,
+    'vlmi': VlmiParser,
+    'delfcode': DelfcodeParser,
 }
