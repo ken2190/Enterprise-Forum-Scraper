@@ -17,7 +17,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.exceptions import CloseSpider
 from copy import deepcopy
 from datetime import datetime
-from middlewares.middlewares import IpHandler
+from middlewares.utils import IpHandler
 
 from seleniumwire.webdriver import (
     Chrome,
