@@ -124,12 +124,6 @@ class DedicatedProxyMiddleware(object):
         if request.headers.get("Proxy-Authorization"):
             del request.headers["Proxy-Authorization"]
 
-        self.logger.info(
-            'Process request %s with proxy %s' % (
-                request.url, request.meta["proxy"]
-            )
-        )
-
 
 class BypassCloudfareMiddleware(object):
 
