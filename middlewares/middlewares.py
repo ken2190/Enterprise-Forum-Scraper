@@ -171,7 +171,7 @@ class BypassCloudfareMiddleware(object):
         self.allow_retry = getattr(crawler.spider, "cloudfare_allow_retry", 5)
         self.delay = getattr(crawler.spider, "cloudfare_delay", 5)
         self.solve_depth = getattr(crawler.spider, "cloudfare_solve_depth", 5)
-        self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 65)
+        self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 35)
         self.ip_batch_size = getattr(crawler.spider, "ip_batch_size", 20)
 
         # Load ip handler
@@ -293,6 +293,7 @@ class BypassCloudfareMiddleware(object):
                 )
                 break
             except Exception as err:
+                self.logger.info(err)
                 if not basic_auth:
                     raise RuntimeError(
                         "Protection loop, already try 3 time."

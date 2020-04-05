@@ -74,6 +74,11 @@ class YouHackSpider(SitemapSpider):
         else:
             yield from super().parse_sitemap(response)
 
+    def start_requests(self):
+        yield from super().start_requests(
+            uuid.uuid1().hex
+        )
+
     def parse_sitemap_forum(self, response):
 
         # Load selector
@@ -86,6 +91,9 @@ class YouHackSpider(SitemapSpider):
             yield from self.parse_sitemap_thread(thread, response)
 
     def parse(self, response):
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
         forums = response.xpath(
             '//ol[@class="nodeList"]//h3[@class="nodeTitle"]'
             '/a[contains(@href, "forums/")]')
@@ -101,10 +109,15 @@ class YouHackSpider(SitemapSpider):
             yield Request(
                 url=url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_forum(self, response):
+
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
         self.logger.info(
             "Next_page_url: %s" % response.request.url
         )
@@ -129,7 +142,10 @@ class YouHackSpider(SitemapSpider):
                 url=thread_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={'topic_id': topic_id}
+                )
             )
 
         next_page_url = response.xpath(
@@ -144,6 +160,10 @@ class YouHackSpider(SitemapSpider):
             )
 
     def parse_thread(self, response):
+
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
         topic_id = response.meta['topic_id']
         pagination = self.pagination_pattern.findall(response.url)
         paginated_value = pagination[0] if pagination else 1
@@ -172,9 +192,12 @@ class YouHackSpider(SitemapSpider):
                 url=avatar_url,
                 headers=self.headers,
                 callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        'file_name': file_name,
+                    }
+                )
             )
 
         next_page_url = response.xpath(
@@ -186,7 +209,10 @@ class YouHackSpider(SitemapSpider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={'topic_id': topic_id}
+                )
             )
 
     def parse_avatar(self, response):
