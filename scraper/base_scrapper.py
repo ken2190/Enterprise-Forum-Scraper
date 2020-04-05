@@ -17,6 +17,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.exceptions import CloseSpider
 from copy import deepcopy
 from datetime import datetime
+from middlewares.middlewares import IpHandler
 
 from seleniumwire.webdriver import (
     Chrome,
@@ -473,6 +474,14 @@ class SitemapSpider(BypassCloudfareSpider):
         self.start_date = kwargs.get("start_date")
         self.kill = kwargs.get("kill")
         self.topic_pages_saved = 0
+
+        # Load fraud check settings
+
+        self.ip_handler = IpHandler(
+            logger=self.logger,
+            fraudulent_threshold=getattr(self, "fraudulent_threshold", 35),
+            ip_batch_size=getattr(self, "ip_batch_size", 20)
+        )
 
         # Handle headers
         self.headers = {
@@ -1302,7 +1311,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 f"Avatar {avatar_name} done..!"
             )
 
-    def get_cookies(self, proxy=False):
+    def get_cookies(self, proxy=False, fraud_check=False, fraud_threshold=35):
 
         # Init logger
         selenium_logger = logging.getLogger("seleniumwire")
@@ -1319,6 +1328,10 @@ class SitemapSpider(BypassCloudfareSpider):
             "executable_path": "/usr/local/bin/chromedriver",
             "options": options
         }
+
+        # Fraud check
+        if fraud_check:
+            pass
 
         # Init proxy
         if proxy:
