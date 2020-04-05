@@ -13,27 +13,14 @@ from scraper.base_scrapper import PROXY_USERNAME, PROXY_PASSWORD, PROXY
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
-
-
-def get_proxies():
-    proxy = PROXY % (
-        "%s-session-%s" % (
-            PROXY_USERNAME,
-            uuid.uuid1().hex
-        ),
-        PROXY_PASSWORD
-    )
-    return {
-        "http": proxy,
-        "https": proxy
-    }
+API_KEY = '1QhbWzJDoVPB1piPV10w'
 
 
 class PsbdmpSpider(SitemapSpider):
     name = 'psbdmp_spider'
     base_url = 'https://psbdmp.ws'
     start_url = 'https://psbdmp.ws/api/dump/getbydate'
-    dump_url = 'https://pastebin.com/{}'
+    dump_url = f'https://psbdmp.ws/api/v2/dump/{API_KEY}/{{}}'
 
     # Other settings
     use_proxy = True
@@ -84,9 +71,11 @@ class PsbdmpSpider(SitemapSpider):
         if os.path.exists(dump_file):
             print('{} already exists..!'.format(dump_file))
             return
-        content = response.xpath(
-            '//textarea[@id="paste_code"]/text()').extract()
-        content = ''.join(content)
+        json_data = json.loads(response.text)
+        if not json_data.get('error') == 0:
+            return
+
+        content = json_data['data']
         if not content:
             return
         with open(dump_file, 'w') as f:
