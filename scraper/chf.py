@@ -29,7 +29,7 @@ class ChfSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div[@class="message-attribution-main"]'\
+    post_date_xpath = '//header[@class="message-attribution"]'\
                       '//time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
@@ -46,6 +46,7 @@ class ChfSpider(SitemapSpider):
     )
 
     # Other settings
+    handle_httpstatus_list = [403]
     use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
@@ -100,15 +101,12 @@ class ChfSpider(SitemapSpider):
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-        self.logger.info(response.text)
         all_forums = response.xpath(self.forum_xpath).extract()
         for forum_url in all_forums:
 
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-            self.logger.info(forum_url)
-            continue
             yield Request(
                 url=forum_url,
                 headers=self.headers,
@@ -134,7 +132,7 @@ class ChfScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                "RETRY_HTTP_CODES": [406, 429, 500, 503],
+                "RETRY_HTTP_CODES": [403, 406, 429, 500, 503],
             }
         )
         return settings
