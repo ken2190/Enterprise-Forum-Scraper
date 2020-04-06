@@ -173,6 +173,7 @@ from templates.malvult_template import MalvultParser
 from templates.codeby_template import CodebyParser
 from templates.vlmi_template import VlmiParser
 from templates.delfcode_template import DelfcodeParser
+from templates.opencard_template import OpenCardParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -349,4 +350,5 @@ PARSER_MAP = {
     'codeby': CodebyParser,
     'vlmi': VlmiParser,
     'delfcode': DelfcodeParser,
+    'opencard': OpenCardParser,
 }
