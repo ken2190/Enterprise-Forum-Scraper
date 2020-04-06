@@ -1330,18 +1330,29 @@ class SitemapSpider(BypassCloudfareSpider):
         }
 
         # Fraud check
+        ip = None
         if fraud_check:
-            pass
+            ip = self.ip_handler.get_good_ip()
 
         # Init proxy
         if proxy:
-            proxy = PROXY % (
-                "%s-session-%s" % (
-                    PROXY_USERNAME,
-                    uuid.uuid1().hex
-                ),
-                PROXY_PASSWORD
-            )
+            if ip is None:
+                proxy = PROXY % (
+                    "%s-session-%s" % (
+                        PROXY_USERNAME,
+                        uuid.uuid1().hex
+                    ),
+                    PROXY_PASSWORD
+                )
+            else:
+                proxy = PROXY % (
+                    "%s-ip-%s" % (
+                        PROXY_USERNAME,
+                        ip
+                    ),
+                    PROXY_PASSWORD
+                )
+
             proxy_options = {
                 "proxy": {
                     "http": proxy,

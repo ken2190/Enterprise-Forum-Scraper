@@ -1,10 +1,8 @@
-import os
+import uuid
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from datetime import datetime, timedelta
+
+from scrapy.http import Request
+from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
@@ -48,7 +46,7 @@ class ChfSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
@@ -61,14 +59,19 @@ class ChfSpider(SitemapSpider):
         """
 
         # Load cookies
-        cookies, ip = self.get_cookies(proxy=self.use_proxy)
-        self.logger.info("COOKIES")
-        self.logger.info(cookies)
-        self.logger.info(ip)
+        cookies, ip = self.get_cookies(
+            proxy=self.use_proxy,
+            fraud_check=True
+        )
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
             cookies=cookies,
+            meta={
+                "ip": ip,
+                "cookiejar": uuid.uuid1().hex
+            }
         )
 
     def parse_thread_date(self, thread_date):

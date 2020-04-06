@@ -73,18 +73,24 @@ class IpHandler(object):
         )
 
         # Load proxy
-        username = "%s-session-%s" % (
-            PROXY_USERNAME,
-            session_id
-        )
-        password = PROXY_PASSWORD
-        response = await self.fetch(
-            self.ip_api,
-            proxy=PROXY % (
-                username,
-                password
-            )
-        )
+        while True:
+            try:
+                username = "%s-session-%s" % (
+                    PROXY_USERNAME,
+                    session_id
+                )
+                password = PROXY_PASSWORD
+                response = await self.fetch(
+                    self.ip_api,
+                    proxy=PROXY % (
+                        username,
+                        password
+                    )
+                )
+                break
+            except Exception as err:
+                session_id = uuid.uuid1().hex
+                continue
 
         # Load ip
         ip = json.loads(response).get("ip")
