@@ -408,8 +408,7 @@ def process_file(args):
                     print('Writing line number:', line_number)
                 except Exception:
                     print('Error in line number:', line_number)
-                    traceback.print_exc()
-                    break
+                    continue
 
 
 def main():
