@@ -1311,7 +1311,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 f"Avatar {avatar_name} done..!"
             )
 
-    def get_cookies(self, proxy=False, fraud_check=False, fraud_threshold=35):
+    def get_cookies(self, proxy=False, fraud_check=False):
 
         # Init logger
         selenium_logger = logging.getLogger("seleniumwire")

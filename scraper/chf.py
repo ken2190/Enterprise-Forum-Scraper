@@ -52,6 +52,8 @@ class ChfSpider(SitemapSpider):
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    fraudulent_threshold = 60
+    get_cookies_delay = 6
 
     def start_requests(self):
         """
