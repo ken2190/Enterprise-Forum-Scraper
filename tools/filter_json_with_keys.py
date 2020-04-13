@@ -263,7 +263,7 @@ def process_iran1(out_file, single_json):
                 'full_name': value['full_name']
             })
     if filtered_json:
-        out_file.write(json.dumps(filtered_json)+'\n')
+        out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_iran2(out_file, single_json):
@@ -278,7 +278,7 @@ def process_iran2(out_file, single_json):
         if key in IRAN2_FIELDS:
             filtered_json.update({key: value})
     if filtered_json:
-        out_file.write(json.dumps(filtered_json)+'\n')
+        out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_posh(out_file, single_json):
