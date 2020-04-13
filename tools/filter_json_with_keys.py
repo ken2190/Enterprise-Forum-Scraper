@@ -343,8 +343,11 @@ def process_scrape(out_file, single_json):
         if not value:
             continue
         if key == 'email':
-            if value and value[0]:
-                filtered_json.update({'email': value[0]})
+            if value:
+                if isinstance(value, list):
+                    filtered_json.update({'email': value[0]})
+                else:
+                    filtered_json.update({'email': value})
             else:
                 continue
         elif key == 'company':
@@ -388,7 +391,7 @@ def process_file(args):
     with open(output_file, 'w') as out_file:
         with open(input_file, 'r') as fp:
             for line_number, single_json in enumerate(fp, 1):
-                pattern = re.compile(r': "(([^"]+)"([^"]+))",')
+                pattern = re.compile(r': "(([^"]+)"([^"]*))",')
                 single_json = pattern.sub(": \"\\2'\\3\",", single_json)
                 try:
                     if args.type == 'pipl':
