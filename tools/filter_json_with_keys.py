@@ -118,6 +118,21 @@ VEDANTU_FIELDS = {
     'email',
 }
 
+IRAN1_FIELDS = {
+    'username',
+    'pk',
+    'full_name',
+    'uuid',
+    'addAccount'
+}
+
+IRAN2_FIELDS = {
+    'first_name',
+    'last_name',
+    'phone',
+    'id'
+}
+
 FIELD_MAPS = {
     'pizap': PIZAP_FIELDS,
     'gyfcat': GYFCAT_FIELDS,
@@ -127,6 +142,8 @@ FIELD_MAPS = {
     'posh': POSH_FIELDS,
     'scrape': SCRAPE_FIELDS,
     'vedantu': VEDANTU_FIELDS,
+    'iran1': IRAN1_FIELDS,
+    'iran2': IRAN2_FIELDS,
 }
 
 
@@ -229,6 +246,39 @@ def process_pdl(out_file, single_json):
         elif key in PDL_FIELDS:
             filtered_json.update({key: value})
     out_file.write(json.dumps(filtered_json)+'\n')
+
+
+def process_iran1(out_file, single_json):
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    for key, value in json_response.items():
+        if not value:
+            continue
+        if key in IRAN1_FIELDS:
+            filtered_json.update({key: value})
+        elif key == 'user':
+            filtered_json.update({
+                'username': value['username'],
+                'pk': value['pk'],
+                'full_name': value['full_name']
+            })
+    if filtered_json:
+        out_file.write(json.dumps(filtered_json)+'\n')
+
+
+def process_iran2(out_file, single_json):
+    single_json = single_json.replace(':"{"', ':{"').replace('}","', '},"')
+    json_response = json.loads(single_json)
+    filtered_json = dict()
+    if not json_response.get('message'):
+        return
+    for key, value in json_response['message'].items():
+        if not value:
+            continue
+        if key in IRAN2_FIELDS:
+            filtered_json.update({key: value})
+    if filtered_json:
+        out_file.write(json.dumps(filtered_json)+'\n')
 
 
 def process_posh(out_file, single_json):
@@ -406,6 +456,10 @@ def process_file(args):
                         process_scrape(out_file, single_json)
                     elif args.type == 'vedantu':
                         process_vedantu(out_file, single_json)
+                    elif args.type == 'iran1':
+                        process_iran1(out_file, single_json)
+                    elif args.type == 'iran2':
+                        process_iran2(out_file, single_json)
                     else:
                         process_line(out_file, single_json, args.type)
                     print('Writing line number:', line_number)
