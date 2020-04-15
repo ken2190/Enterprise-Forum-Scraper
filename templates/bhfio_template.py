@@ -18,7 +18,7 @@ class BHFIOParser:
         self.parser_name = "bhf.io"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
-            r'(\d+).*html$'
+            r'(\d+)-\d+\.html$'
         )
         self.pagination_pattern = re.compile(
             r'\d+-(\d+)\.html$'
@@ -40,10 +40,25 @@ class BHFIOParser:
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: (self.thread_name_pattern.search(x).group(1),
-                           int(self.pagination_pattern.search(x).group(1))))
+            key=lambda x: (
+                int(self.thread_name_pattern.search(x).group(1)),
+                int(self.pagination_pattern.search(x).group(1))
+            )
+        )
 
         return sorted_files
+
+    def get_html_response(self, template):
+        """
+        returns the html response from the `template` contents
+        """
+        with open(template, 'r') as f:
+            content = f.read()
+            try:
+                html_response = fromstring(content)
+            except ParserError as ex:
+                return
+            return html_response
 
     def main(self):
         comments = []
@@ -66,7 +81,7 @@ class BHFIOParser:
                     self.files,
                     index
                 )
-                if pagination == 1:
+                if pagination == 1 or (final and not output_file):
 
                     # header data extract
                     data = self.header_data_extract(
@@ -89,6 +104,7 @@ class BHFIOParser:
                     utils.write_comments(file_pointer, comments, output_file)
                     comments = []
                     output_file = None
+                    final = None
             except BrokenPage as ex:
                 utils.handle_error(
                     pid,
@@ -143,8 +159,7 @@ class BHFIOParser:
             )
             if not header:
                 return
-            if not self.get_comment_id(header[0]) == "1":
-                return
+
             title = self.get_title(html_response)
             date = self.get_date(header[0])
             author = self.get_author(header[0])
@@ -169,7 +184,7 @@ class BHFIOParser:
             return {
                 '_source': source
             }
-        except:
+        except Exception:
             ex = traceback.format_exc()
             raise BrokenPage(ex)
 
