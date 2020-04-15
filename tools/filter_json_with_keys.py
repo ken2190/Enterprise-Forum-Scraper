@@ -201,7 +201,7 @@ def process_pipl(out_file, single_json):
             filtered_json.update({key: value})
     process_address(filtered_json)
     process_name(filtered_json)
-    out_file.write(json.dumps(filtered_json)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_ig(out_file, single_json):
@@ -224,7 +224,7 @@ def process_ig(out_file, single_json):
 
         elif key in IG_FIELDS:
             filtered_json.update({key: value})
-    out_file.write(json.dumps(filtered_json)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_pdl(out_file, single_json):
@@ -245,7 +245,7 @@ def process_pdl(out_file, single_json):
             filtered_json.update({'t': ph_data})
         elif key in PDL_FIELDS:
             filtered_json.update({key: value})
-    out_file.write(json.dumps(filtered_json)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_iran1(out_file, single_json):
@@ -332,7 +332,7 @@ def process_posh(out_file, single_json):
 
         elif key in POSH_FIELDS:
             filtered_json.update({key: value})
-    out_file.write(json.dumps(filtered_json)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_address(filtered_json):
@@ -382,7 +382,7 @@ def process_line(out_file, single_json, _type):
                 filtered_json.update({key: list(value.values())[0]})
             elif isinstance(value, str):
                 filtered_json.update({key: value})
-    out_file.write(json.dumps(filtered_json)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_scrape(out_file, single_json):
@@ -410,7 +410,7 @@ def process_scrape(out_file, single_json):
                 filtered_json.update({'phone': phone[0]['phoneNumber']})
         elif key in SCRAPE_FIELDS:
             filtered_json.update({key: value})
-    out_file.write(json.dumps(filtered_json)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_vedantu(out_file, single_json):
@@ -432,7 +432,7 @@ def process_vedantu(out_file, single_json):
             filtered_json.update(value)
         elif key in VEDANTU_FIELDS:
             filtered_json.update({key: value})
-    out_file.write(json.dumps(filtered_json)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
 def process_file(args):
