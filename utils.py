@@ -50,6 +50,8 @@ def write_json(file_pointer, data):
 
 
 def write_comments(file_pointer, comments, output_file):
+    if not output_file:
+        return
     """
     writes each comment sequentially in file object `file_pointer`
     """

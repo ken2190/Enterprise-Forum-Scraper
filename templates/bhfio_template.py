@@ -26,7 +26,6 @@ class BHFIOParser:
         self.avatar_name_pattern = re.compile(r'members/(\d+)/')
         self.files = self.get_filtered_files(files)
         self.folder_path = folder_path
-        self.distinct_files = set()
         self.error_folder = "{}/Errors".format(output_folder)
         self.thread_id = None
         # main function
@@ -41,7 +40,8 @@ class BHFIOParser:
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+            key=lambda x: (self.thread_name_pattern.search(x).group(1),
+                           int(self.pagination_pattern.search(x).group(1))))
 
         return sorted_files
 
@@ -51,7 +51,7 @@ class BHFIOParser:
         for index, template in enumerate(self.files):
             print(template)
             try:
-                html_response = utils.get_html_response(template)
+                html_response = self.get_html_response(template)
                 file_name_only = template.split('/')[-1]
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
@@ -66,17 +66,13 @@ class BHFIOParser:
                     self.files,
                     index
                 )
-                if self.thread_id not in self.distinct_files and\
-                   not output_file:
+                if pagination == 1:
 
                     # header data extract
                     data = self.header_data_extract(
                         html_response, template)
-                    if not data or not pagination == 1:
-                        comments.extend(
-                            self.extract_comments(html_response))
+                    if not data:
                         continue
-                    self.distinct_files.add(self.thread_id)
 
                     # write file
                     output_file = '{}/{}.json'.format(
@@ -99,7 +95,7 @@ class BHFIOParser:
                     self.error_folder,
                     ex
                 )
-            except:
+            except Exception:
                 traceback.print_exc()
                 continue
 
