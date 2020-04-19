@@ -8,18 +8,14 @@ import argparse
 POSH_FIELDS = [
     'first_name',
     'last_name',
-    'url',
+    'email',
+    'address',
     'city',
     'state',
-    'website',
-    'email',
-    'passwd_hash',
-    'pnuser',
-    'pnid',
-    'fbid',
-    'fbuser',
-    'twid',
-    'twuser',
+    'country',
+    'zip',
+    'ip_address',
+    'phone'
 ]
 
 IG_FIELDS = [
