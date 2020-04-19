@@ -332,6 +332,7 @@ def process_posh(out_file, single_json):
 
         elif key in POSH_FIELDS:
             filtered_json.update({key: value})
+    process_posh_name(filtered_json)
     out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
@@ -349,6 +350,16 @@ def process_address(filtered_json):
         filtered_json.update({'a': address})
 
 
+def process_posh_name(filtered_json):
+    name = ''
+    if 'first_name' in filtered_json:
+        name = filtered_json.pop('first_name')
+    if 'last_name' in filtered_json:
+        name = f"{name} {filtered_json.pop('last_name')}"
+    if name:
+        filtered_json.update({'n': name})
+
+
 def process_name(filtered_json):
     name = ''
     if 'fn' in filtered_json:
@@ -359,7 +370,6 @@ def process_name(filtered_json):
         name = f"{name} {filtered_json.pop('ln')}"
     if name:
         filtered_json.update({'n': name})
-    pass
 
 
 def process_line(out_file, single_json, _type):
