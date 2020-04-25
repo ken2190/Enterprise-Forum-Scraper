@@ -109,10 +109,14 @@ class ApollonSpider(MarketPlaceSpider):
             yield from self.start_requests()
             return
         # Load captcha url
-        captcha_url = f'{self.base_url}cap/capshow.png'
+        captcha_url = f'{self.base_url}cap/capshow.php'
         captcha = self.solve_captcha(
             captcha_url,
-            response
+            response,
+            headers={
+                "Referer": "http://apollionih4ocqyd.onion/login.php",
+                "Host": "apollionih4ocqyd.onion"
+            }
         )
         captcha = captcha.lower()
         self.logger.info(
