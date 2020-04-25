@@ -1415,3 +1415,132 @@ class SitemapSpider(BypassCloudfareSpider):
         )
 
         return bypass_cookies, ip
+
+
+class MarketPlaceSpider(SitemapSpider):
+    market_url_xpath = None
+    product_url_xpath = None
+    next_page_xpath = None
+    user_xpath = None
+
+    def parse_start(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        urls = response.xpath(self.market_url_xpath).extract()
+        for url in urls:
+            if self.base_url not in url:
+                url = self.base_url + url
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_products,
+                meta=self.synchronize_meta(response),
+            )
+
+    def parse_products(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        self.logger.info('next_page_url: {}'.format(response.url))
+        products = response.xpath(self.product_url_xpath).extract()
+        for product_url in products:
+            if self.base_url not in product_url:
+                product_url = self.base_url + product_url
+            file_id = product_url.rsplit('/', 1)[-1]
+            file_name = '{}/{}.html'.format(self.output_path, file_id)
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=product_url,
+                headers=self.headers,
+                callback=self.parse_product,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        'file_id': file_id
+                    }
+                )
+            )
+
+        next_page_url = response.xpath(self.next_page_xpath).extract_first()
+        if next_page_url:
+            if self.base_url not in next_page_url:
+                next_page_url = self.base_url + next_page_url
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_products,
+                meta=self.synchronize_meta(response),
+            )
+
+    def parse_product(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        file_id = response.meta['file_id']
+        file_name = '{}/{}.html'.format(self.output_path, file_id)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(f'Product: {file_id} done..!')
+
+        if not self.user_xpath:
+            return
+        user_url = response.xpath(self.user_xpath).extract_first()
+        if not user_url:
+            return
+        user_id = user_url.rsplit('/', 1)[-1]
+        file_name = '{}/{}.html'.format(self.user_path, user_id)
+        if os.path.exists(file_name):
+            return
+        yield Request(
+            url=user_url,
+            headers=self.headers,
+            callback=self.parse_user,
+            meta=self.synchronize_meta(
+                response,
+                default_meta={
+                    'file_name': file_name,
+                    'user_id': user_id
+                }
+            )
+        )
+
+    def parse_user(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        user_id = response.meta['user_id']
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(f'User: {user_id} done..!')
+
+        avatar_url = response.xpath(self.avatar_xpath).extract_first()
+        if not avatar_url:
+            return
+        ext = avatar_url.rsplit('.', 1)[-1]
+        if not ext:
+            ext = 'jpg'
+        file_name = '{}/{}.{}'.format(self.avatar_path, user_id, ext)
+        if os.path.exists(file_name):
+            return
+        yield Request(
+            url=avatar_url,
+            headers=self.headers,
+            callback=self.parse_avatar,
+            meta=self.synchronize_meta(
+                response,
+                default_meta={
+                    'file_name': file_name,
+                    'user_id': user_id
+                }
+            )
+        )
+
+    def parse_avatar(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            self.logger.info(
+                f"Avatar for user {response.meta['user_id']} done..!")

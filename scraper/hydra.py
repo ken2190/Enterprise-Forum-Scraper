@@ -10,7 +10,7 @@ from scrapy import (
     FormRequest
 )
 from scraper.base_scrapper import (
-    SitemapSpider,
+    MarketPlaceSpider,
     SiteMapScrapper
 )
 
@@ -23,7 +23,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
 PROXY = 'http://127.0.0.1:8118'
 
 
-class HydraSpider(SitemapSpider):
+class HydraSpider(MarketPlaceSpider):
 
     name = "hydramarket_spider"
 
@@ -33,6 +33,9 @@ class HydraSpider(SitemapSpider):
     # xpath stuffs
     captch_form_xpath = '//form[@method="post"]'
     captcha_url_xpath = '//img[@alt="Captcha image"]/@src'
+    market_url_xpath = '//div/a[@role and contains(@href, "/market/")]/@href'
+    product_url_xpath = '//div[@class="title over"]/a[contains(@href, "/product/")]/@href'
+    next_page_xpath = '//ul[@class="pagination"]/li[@class="pag_right"]/a/@href'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -134,74 +137,11 @@ class HydraSpider(SitemapSpider):
         )
 
     def parse_start(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
 
         if response.xpath(self.captcha_url_xpath):
             self.logger.info("Invalid Captcha")
             return
-        urls = response.xpath(
-            '//div/a[@role and contains(@href, "/market/")]')
-        for url in urls:
-            url = url.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_results,
-                meta=self.synchronize_meta(response),
-            )
-
-    def parse_results(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-
-        self.logger.info('next_page_url: {}'.format(response.url))
-        products = response.xpath(
-            '//div[@class="title over"]/a[contains(@href, "/product/")]')
-        for product in products:
-            product_url = product.xpath('@href').extract_first()
-            if self.base_url not in product_url:
-                product_url = self.base_url + product_url
-            file_id = product_url.rsplit('/', 1)[-1]
-            file_name = '{}/{}.html'.format(self.output_path, file_id)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=product_url,
-                headers=self.headers,
-                callback=self.parse_product,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        'file_id': file_id
-                    }
-                )
-            )
-
-        next_page = response.xpath(
-            '//ul[@class="pagination"]/li[@class="pag_right"]/a')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_results,
-                meta=self.synchronize_meta(response),
-            )
-
-    def parse_product(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-
-        file_id = response.meta['file_id']
-        file_name = '{}/{}.html'.format(self.output_path, file_id)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'Product: {file_id} done..!')
+        yield from super().parse_start(response)
 
 
 class HydraScrapper(SiteMapScrapper):

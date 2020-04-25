@@ -22,22 +22,20 @@ PASSWORD = "Chq#Blast888"
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
 
+PROXY = 'http://127.0.0.1:8118'
 
-class CanadaHQSpider(MarketPlaceSpider):
 
-    name = "canadahq_spider"
+class ApollonSpider(MarketPlaceSpider):
+
+    name = "apollon_spider"
 
     # Url stuffs
-    base_url = "https://canadahq.net/"
-    login_url = "https://canadahq.net/login"
+    base_url = "http://apollionih4ocqyd.onion/"
+    login_url = "http://apollionih4ocqyd.onion/login.php"
 
-    # Css stuffs
-    login_form_css = "form[action*=login]"
-    captcha_url_css = "div>img[src*=captcha]::attr(src)"
-
-    # Xpath stuffs
-    invalid_captcha_xpath = "//div[@class=\"alert alert-danger\"]/" \
-                            "span/text()[contains(.,\"Invalid captcha\")]"
+    # xpath stuffs
+    login_form_xpath = captcha_form_xpath = '//form[@method="post"]'
+    captcha_url_xpath = '//img[@name="capt_code"]/@src'
     market_url_xpath = '//div[@class="menu-content"]/ul/li/a/@href'
     product_url_xpath = '//a[@class="product"]/@href'
     next_page_xpath = '//a[@rel="next"]/@href'
@@ -59,6 +57,12 @@ class CanadaHQSpider(MarketPlaceSpider):
     )
 
     # Other settings
+    # Other settings
+    # custom_settings = {
+    #     "DOWNLOADER_MIDDLEWARES": {
+    #         'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
+    #     }
+    # }
     use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
@@ -72,16 +76,26 @@ class CanadaHQSpider(MarketPlaceSpider):
             }
         )
 
-    def parse(self, response):
-        # Synchronize user agent for cloudfare middleware
-        self.synchronize_headers(response)
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
 
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
+
+        return meta
+
+    def start_requests(self):
         yield Request(
             url=self.login_url,
             headers=self.headers,
+            callback=self.parse_login,
             dont_filter=True,
-            meta=self.synchronize_meta(response),
-            callback=self.parse_login
+            meta={
+                'proxy': PROXY,
+            }
         )
 
     def parse_login(self, response):
@@ -91,37 +105,29 @@ class CanadaHQSpider(MarketPlaceSpider):
 
         # Load cookies
         cookies = response.request.headers.get("Cookie").decode("utf-8")
-        if "XSRF-TOKEN" not in cookies:
-            yield Request(
-                url=self.login_url,
-                headers=self.headers,
-                dont_filter=True,
-                meta=self.synchronize_meta(response),
-                callback=self.parse_login
-            )
+        if not cookies:
+            yield from self.start_requests()
             return
-
         # Load captcha url
-        captcha_url = response.css(self.captcha_url_css).extract_first()
+        captcha_url = f'{self.base_url}cap/capshow.png'
         captcha = self.solve_captcha(
             captcha_url,
             response
         )
-        if len(captcha) > 5:
-            captcha = captcha.replace('l', '').replace('^', '')
-
+        captcha = captcha.lower()
         self.logger.info(
             "Captcha has been solved: %s" % captcha
         )
 
-        yield FormRequest.from_response(
-            response,
-            formcss=self.login_form_css,
-            formdata={
-                "username": USERNAME,
-                "password": PASSWORD,
-                "captcha": captcha[:5]
-            },
+        formdata = {
+            'I_username': USERNAME,
+            'I_password': PASSWORD,
+            "capt_code": captcha
+        }
+
+        yield FormRequest(
+            self.login_url,
+            formdata=formdata,
             headers=self.headers,
             meta=self.synchronize_meta(response),
             callback=self.parse_start
@@ -130,6 +136,8 @@ class CanadaHQSpider(MarketPlaceSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+        self.logger.info(response.text)
+        return
 
         # Check valid captcha
         is_invalid_captcha = response.xpath(
@@ -143,6 +151,6 @@ class CanadaHQSpider(MarketPlaceSpider):
         yield from super().parse_start(response)
 
 
-class CanadaHQScrapper(SiteMapScrapper):
-    spider_class = CanadaHQSpider
-    site_name = 'canadahq.at'
+class ApollonScrapper(SiteMapScrapper):
+    spider_class = ApollonSpider
+    site_name = 'apollon (apollionih4ocqyd.onion)'
