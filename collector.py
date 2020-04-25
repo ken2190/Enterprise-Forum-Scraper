@@ -53,6 +53,21 @@ class Collector:
             '-ch', '--channel', help='Channel to scrape', required=False)
         parser.add_argument(
             '-k', '--kill', help='Kill after this amount of topic page saved', required=False)
+        parser.add_argument(
+            '-db', '--db',
+            help='Meta scraper module',
+            action='store_true'
+        )
+        parser.add_argument(
+            '-gather', '--gather',
+            help='Meta scraper port scanner',
+            action='store_true'
+        )
+        parser.add_argument(
+            '-scan', '--scan',
+            help='Meta scraper scan',
+            action='store_true'
+        )
         self.parser = parser
 
     def get_args(self):
@@ -67,6 +82,13 @@ class Collector:
         elif kwargs.get('scrape'):
             from run_scrapper import Scraper
             Scraper(kwargs).do_scrape()
+        elif kwargs.get("db"):
+            if kwargs.get("gather"):
+                pass
+            elif kwargs.get("scan"):
+                pass
+            else:
+                raise ValueError("Either gather or scan for db tools.")
         else:
             self.parser.print_help()
 

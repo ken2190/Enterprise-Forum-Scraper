@@ -886,11 +886,24 @@ class SitemapSpider(BypassCloudfareSpider):
     def solve_captcha(self, image_url, response, cookies={}, headers={}):
 
         # Load cookies from request
-        cookies.update(
-            self.load_cookies(
-                response.request.headers.get("Cookie").decode("utf-8")
+        try:
+            cookies.update(
+                self.load_cookies(
+                    response.request.headers.get("Cookie").decode("utf-8")
+                )
             )
-        )
+        except Exception as err:
+            pass
+
+        # Load cookies from response
+        try:
+            cookies.update(
+                self.load_cookies(
+                    response.headers.get("Set-Cookie").decode("utf-8")
+                )
+            )
+        except Exception as err:
+            pass
 
         # Load proxy
         proxy = self.load_proxies(response)
