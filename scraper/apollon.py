@@ -31,17 +31,17 @@ class ApollonSpider(MarketPlaceSpider):
 
     # Url stuffs
     base_url = "http://apollionih4ocqyd.onion/"
-    login_url = "http://apollionih4ocqyd.onion/login.php"
+    login_url = f"{base_url}login.php"
 
     # xpath stuffs
-    login_form_xpath = captcha_form_xpath = '//form[@method="post"]'
+    login_form_xpath = captcha_form_xpath = '//form[@method="POST"]'
     captcha_url_xpath = '//img[@name="capt_code"]/@src'
-    market_url_xpath = '//div[@class="menu-content"]/ul/li/a/@href'
-    product_url_xpath = '//a[@class="product"]/@href'
-    next_page_xpath = '//a[@rel="next"]/@href'
-    user_xpath = '//a[contains(text(), "profile") and contains'\
-                 '(text(), "View")]/@href'
-    avatar_xpath = '//img[@class="img-responsive"]/@src'
+    market_url_xpath = '//ul[@id="side-menu"]/li/a/@href'
+    product_url_xpath = '//a[contains(@href, "listing.php")]/@href'
+    next_page_xpath = '//li[@class="page-item active"]'\
+                      '/following-sibling::li[1]/a/@href'
+    user_xpath = '//small/a[contains(@href, "user.php")]/@href'
+    avatar_xpath = '//img[contains(@class, "img-responsive")]/@src'
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -87,6 +87,18 @@ class ApollonSpider(MarketPlaceSpider):
 
         return meta
 
+    def get_market_url(self, url):
+        base_url = f'{self.base_url}home.php'
+        if base_url not in url:
+            url = base_url + url
+        return url
+
+    def get_user_id(self, url):
+        return url.rsplit('id=', 1)[-1]
+
+    def get_file_id(self, url):
+        return url.rsplit('id=', 1)[-1]
+
     def start_requests(self):
         yield Request(
             url=self.login_url,
@@ -114,7 +126,7 @@ class ApollonSpider(MarketPlaceSpider):
             captcha_url,
             response,
             headers={
-                "Referer": "http://apollionih4ocqyd.onion/login.php",
+                "Referer": f"{self.base_url}login.php",
                 "Host": "apollionih4ocqyd.onion"
             }
         )
@@ -124,35 +136,20 @@ class ApollonSpider(MarketPlaceSpider):
         )
 
         formdata = {
-            'I_username': USERNAME,
-            'I_password': PASSWORD,
+            'l_username': USERNAME,
+            'l_password': PASSWORD,
             "capt_code": captcha
         }
 
-        yield FormRequest(
-            self.login_url,
+        yield FormRequest.from_response(
+            response=response,
+            formxpath=self.login_form_xpath,
             formdata=formdata,
             headers=self.headers,
+            dont_filter=True,
             meta=self.synchronize_meta(response),
             callback=self.parse_start
         )
-
-    def parse_start(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        self.logger.info(response.text)
-        return
-
-        # Check valid captcha
-        is_invalid_captcha = response.xpath(
-            self.invalid_captcha_xpath).extract_first()
-        if is_invalid_captcha:
-            self.logger.info(
-                "Invalid captcha."
-            )
-            return
-
-        yield from super().parse_start(response)
 
 
 class ApollonScrapper(SiteMapScrapper):
