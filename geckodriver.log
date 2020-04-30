@@ -433,3 +433,59 @@ JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't fin
 1581674293309	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:45601","noProxy":[],"sslProxy":"127.0.0.1:45601"}
 JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
 1581674313042	Marionette	INFO	Stopped listening on port 37411
+1588053223190	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileV4RSQ1"
+1588053225774	Marionette	INFO	Listening on port 35925
+1588053225845	Marionette	WARN	TLS certificate errors will be ignored for this session
+1588053225850	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:36213","noProxy":[],"sslProxy":"127.0.0.1:36213"}
+JavaScript error: resource://gre/actors/AutoCompleteChild.jsm, line 196: Error: Invalid autocomplete selectedIndex
+1588053289026	Marionette	INFO	Stopped listening on port 35925
+1588130232059	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile9lGjzY"
+1588130237372	Marionette	INFO	Listening on port 40273
+1588130237447	Marionette	WARN	TLS certificate errors will be ignored for this session
+1588130237477	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:42881","noProxy":[],"sslProxy":"127.0.0.1:42881"}
+1588130299328	Marionette	INFO	Stopped listening on port 40273
+1588130343993	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile5gUkxl"
+1588130348024	Marionette	INFO	Listening on port 37627
+1588130348141	Marionette	WARN	TLS certificate errors will be ignored for this session
+1588130348155	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:35083","noProxy":[],"sslProxy":"127.0.0.1:35083"}
+1588130410078	Marionette	INFO	Stopped listening on port 37627
+1588131051113	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileznpjmv"
+1588131054322	Marionette	INFO	Listening on port 38291
+1588131054408	Marionette	WARN	TLS certificate errors will be ignored for this session
+1588131054415	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:35069","noProxy":[],"sslProxy":"127.0.0.1:35069"}
+JavaScript error: https://chf.su/, line 4980: ReferenceError: jQuery is not defined
+JavaScript error: https://chf.su/, line 5105: ReferenceError: $ is not defined
+1588131116569	Marionette	INFO	Stopped listening on port 38291
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x370131,name=PContent::Msg_DetachBrowsingContext) Closed channel: cannot send/recv
+
+1588131769399	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile7Ovkw2"
+1588131772706	Marionette	INFO	Listening on port 38417
+1588131772978	Marionette	WARN	TLS certificate errors will be ignored for this session
+1588131772982	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:35151","noProxy":[],"sslProxy":"127.0.0.1:35151"}
+JavaScript error: https://chf.su/, line 4980: ReferenceError: jQuery is not defined
+JavaScript error: https://chf.su/, line 5105: ReferenceError: $ is not defined
+1588132138930	Marionette	INFO	Stopped listening on port 38417
+1588132218133	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileCuBHGK"
+1588132222018	Marionette	INFO	Listening on port 39205
+1588132222078	Marionette	WARN	TLS certificate errors will be ignored for this session
+1588132222084	Marionette	INFO	Proxy settings initialised: {"proxyType":"manual","httpProxy":"127.0.0.1:41831","noProxy":[],"sslProxy":"127.0.0.1:41831"}
+JavaScript error: https://chf.su/, line 4980: ReferenceError: jQuery is not defined
+JavaScript error: https://chf.su/, line 5105: ReferenceError: $ is not defined
+1588132584048	Marionette	INFO	Stopped listening on port 39205
+1588245164470	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilePrqctd"
+1588245168046	Marionette	INFO	Listening on port 44797
+1588245168173	Marionette	WARN	TLS certificate errors will be ignored for this session
+1588245536585	Marionette	INFO	Stopped listening on port 44797
+1588246168097	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileLoE62W"
+*** You are running in headless mode.
+1588246170315	Marionette	INFO	Listening on port 32897
+1588246170325	Marionette	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
