@@ -151,6 +151,7 @@ from scraper.vlmi import VlmiScrapper
 from scraper.chf import ChfScrapper
 from scraper.opencard import OpencardScrapper
 from scraper.apollon import ApollonScrapper
+from scraper.darkbay import DarkbayScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -306,4 +307,5 @@ SCRAPER_MAP = {
     'chf': ChfScrapper,
     'opencard': OpencardScrapper,
     'apollon': ApollonScrapper,
+    'darkbay': DarkbayScrapper,
 }
