@@ -153,6 +153,7 @@ from scraper.opencard import OpencardScrapper
 from scraper.apollon import ApollonScrapper
 from scraper.maza import MazaScrapper
 from scraper.darkbay import DarkbayScrapper
+from scraper.darkmarket import DarkmarketScrapper
 
 
 SCRAPER_MAP = {
@@ -310,5 +311,6 @@ SCRAPER_MAP = {
     'opencard': OpencardScrapper,
     'apollon': ApollonScrapper,
     'maza': MazaScrapper,
-    'darkbay': DarkbayScrapper
+    'darkbay': DarkbayScrapper,
+    'darkmarket': DarkmarketScrapper,
 }
