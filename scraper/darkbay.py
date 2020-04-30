@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import base64
 
 from urllib.parse import unquote
 
@@ -25,48 +26,30 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 PROXY = 'http://127.0.0.1:8118'
 
 
-class ApollonSpider(MarketPlaceSpider):
+class DarkBaySpider(MarketPlaceSpider):
 
-    name = "apollon_spider"
+    name = "darkbay_spider"
 
     # Url stuffs
-    base_url = "http://apollionih4ocqyd.onion/"
-    login_url = f"{base_url}login.php"
+    base_url = "http://darkbayupenqdqvv.onion/"
 
     # xpath stuffs
-    login_form_xpath = captcha_form_xpath = '//form[@method="POST"]'
-    captcha_url_xpath = '//img[@name="capt_code"]/@src'
-    market_url_xpath = '//ul[@id="side-menu"]/li/a/@href'
-    product_url_xpath = '//a[contains(@href, "listing.php")]/@href'
-    next_page_xpath = '//li[@class="page-item active"]'\
-                      '/following-sibling::li[1]/a/@href'
-    user_xpath = '//small/a[contains(@href, "user.php")]/@href'
-    avatar_xpath = '//img[contains(@class, "img-responsive")]/@src'
+    login_form_xpath = '//form[@method="POST"]'
+    captcha_url_xpath = '//form[@method="POST"]//img/@src'
+    market_url_xpath = '//div[@class="category"]/a/@href'
+    product_url_xpath = '//a[contains(@href, "/product/")]/@href'
+    next_page_xpath = '//a[@rel="next"]/@href'
+    user_xpath = '//a[contains(@href, "/vendor/")]/@href'
+    avatar_xpath = '//img[contains(@class, "image-responsive")]/@src'
     # Regex stuffs
-    topic_pattern = re.compile(
-        r"t=(\d+)",
-        re.IGNORECASE
-    )
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
         re.IGNORECASE
     )
-    pagination_pattern = re.compile(
-        r".*page=(\d+)",
-        re.IGNORECASE
-    )
 
-    # Other settings
-    # Other settings
-    # custom_settings = {
-    #     "DOWNLOADER_MIDDLEWARES": {
-    #         'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
-    #     }
-    # }
     use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-    captcha_instruction = "Please ignore | and ^"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -75,6 +58,16 @@ class ApollonSpider(MarketPlaceSpider):
                 "User-Agent": USER_AGENT
             }
         )
+
+    def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
+
+        # Separate the metadata from the image data
+        head, data = image_url.split(',', 1)
+
+        # Decode the image data
+        plain_data = base64.b64decode(data)
+
+        return plain_data
 
     def synchronize_meta(self, response, default_meta={}):
         meta = {
@@ -87,21 +80,15 @@ class ApollonSpider(MarketPlaceSpider):
 
         return meta
 
-    def get_market_url(self, url):
-        base_url = f'{self.base_url}home.php'
-        if base_url not in url:
-            url = base_url + url
-        return url
-
     def get_user_id(self, url):
-        return url.rsplit('id=', 1)[-1]
+        return url.rsplit('vendor/', 1)[-1]
 
     def get_file_id(self, url):
-        return url.rsplit('id=', 1)[-1]
+        return url.rsplit('product/', 1)[-1]
 
     def start_requests(self):
         yield Request(
-            url=self.login_url,
+            url=self.base_url,
             headers=self.headers,
             callback=self.parse_login,
             dont_filter=True,
@@ -121,24 +108,20 @@ class ApollonSpider(MarketPlaceSpider):
             yield from self.start_requests()
             return
         # Load captcha url
-        captcha_url = f'{self.base_url}cap/capshow.php'
+        captcha_url = response.xpath(
+                self.captcha_url_xpath).extract_first()
         captcha = self.solve_captcha(
             captcha_url,
-            response,
-            headers={
-                "Referer": f"{self.base_url}login.php",
-                "Host": "apollionih4ocqyd.onion"
-            }
+            response
         )
-        captcha = captcha.lower()
         self.logger.info(
             "Captcha has been solved: %s" % captcha
         )
 
         formdata = {
-            'l_username': USERNAME,
-            'l_password': PASSWORD,
-            "capt_code": captcha
+            'username': USERNAME,
+            'password': PASSWORD,
+            "captcha": captcha
         }
 
         yield FormRequest.from_response(
@@ -152,6 +135,6 @@ class ApollonSpider(MarketPlaceSpider):
         )
 
 
-class ApollonScrapper(SiteMapScrapper):
-    spider_class = ApollonSpider
-    site_name = 'apollon (apollionih4ocqyd.onion)'
+class DarkbayScrapper(SiteMapScrapper):
+    spider_class = DarkBaySpider
+    site_name = 'darkbay (darkbayupenqdqvv.onion)'

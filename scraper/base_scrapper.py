@@ -1436,14 +1436,39 @@ class MarketPlaceSpider(SitemapSpider):
     next_page_xpath = None
     user_xpath = None
 
+    def get_market_url(self, url):
+        if self.base_url not in url:
+            url = self.base_url + url
+        return url
+
+    def get_product_url(self, url):
+        if self.base_url not in url:
+            url = self.base_url + url
+        return url
+
+    def get_user_url(self, url):
+        if self.base_url not in url:
+            url = self.base_url + url
+        return url
+
+    def get_avatar_url(self, url):
+        if self.base_url not in url:
+            url = self.base_url + url
+        return url
+
+    def get_user_id(self, url):
+        return user_url.rsplit('/', 1)[-1]
+
+    def get_file_id(self, url):
+        return url.rsplit('/', 1)[-1]
+
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
         urls = response.xpath(self.market_url_xpath).extract()
         for url in urls:
-            if self.base_url not in url:
-                url = self.base_url + url
+            url = self.get_market_url(url)
             yield Request(
                 url=url,
                 headers=self.headers,
@@ -1458,9 +1483,8 @@ class MarketPlaceSpider(SitemapSpider):
         self.logger.info('next_page_url: {}'.format(response.url))
         products = response.xpath(self.product_url_xpath).extract()
         for product_url in products:
-            if self.base_url not in product_url:
-                product_url = self.base_url + product_url
-            file_id = product_url.rsplit('/', 1)[-1]
+            product_url = self.get_product_url(product_url)
+            file_id = self.get_file_id(product_url)
             file_name = '{}/{}.html'.format(self.output_path, file_id)
             if os.path.exists(file_name):
                 continue
@@ -1478,8 +1502,7 @@ class MarketPlaceSpider(SitemapSpider):
 
         next_page_url = response.xpath(self.next_page_xpath).extract_first()
         if next_page_url:
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+            next_page_url = self.get_market_url(next_page_url)
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
@@ -1502,7 +1525,8 @@ class MarketPlaceSpider(SitemapSpider):
         user_url = response.xpath(self.user_xpath).extract_first()
         if not user_url:
             return
-        user_id = user_url.rsplit('/', 1)[-1]
+        user_url = self.get_user_url(user_url)
+        user_id = self.get_user_id(user_url)
         file_name = '{}/{}.html'.format(self.user_path, user_id)
         if os.path.exists(file_name):
             return
@@ -1532,6 +1556,7 @@ class MarketPlaceSpider(SitemapSpider):
         avatar_url = response.xpath(self.avatar_xpath).extract_first()
         if not avatar_url:
             return
+        avatar_url = self.get_avatar_url(avatar_url)
         ext = avatar_url.rsplit('.', 1)[-1]
         if not ext:
             ext = 'jpg'
