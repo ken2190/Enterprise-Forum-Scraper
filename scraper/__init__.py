@@ -311,9 +311,6 @@ SCRAPER_MAP = {
     'chf': ChfScrapper,
     'opencard': OpencardScrapper,
     'apollon': ApollonScrapper,
-<<<<<<< HEAD
     'maza': MazaScrapper
-=======
     'darkbay': DarkbayScrapper,
->>>>>>> a63c1c5ae88b4b8b3f9303c55cd4f0fbcd6bc285
 }
