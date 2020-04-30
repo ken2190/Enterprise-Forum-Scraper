@@ -151,11 +151,9 @@ from scraper.vlmi import VlmiScrapper
 from scraper.chf import ChfScrapper
 from scraper.opencard import OpencardScrapper
 from scraper.apollon import ApollonScrapper
-<<<<<<< HEAD
 from scraper.maza import MazaScrapper
-=======
 from scraper.darkbay import DarkbayScrapper
->>>>>>> a63c1c5ae88b4b8b3f9303c55cd4f0fbcd6bc285
+
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -311,6 +309,6 @@ SCRAPER_MAP = {
     'chf': ChfScrapper,
     'opencard': OpencardScrapper,
     'apollon': ApollonScrapper,
-    'maza': MazaScrapper
-    'darkbay': DarkbayScrapper,
+    'maza': MazaScrapper,
+    'darkbay': DarkbayScrapper
 }
