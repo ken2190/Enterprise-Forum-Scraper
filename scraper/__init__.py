@@ -154,6 +154,7 @@ from scraper.apollon import ApollonScrapper
 from scraper.maza import MazaScrapper
 from scraper.darkbay import DarkbayScrapper
 from scraper.darkmarket import DarkmarketScrapper
+from scraper.empire import EmpireScrapper
 
 
 SCRAPER_MAP = {
@@ -313,4 +314,5 @@ SCRAPER_MAP = {
     'maza': MazaScrapper,
     'darkbay': DarkbayScrapper,
     'darkmarket': DarkmarketScrapper,
+    'empire': EmpireScrapper,
 }
