@@ -2,7 +2,7 @@ import os
 import re
 import uuid
 import base64
-
+import requests
 from urllib.parse import unquote
 
 from scrapy import (
@@ -31,7 +31,26 @@ class EmpireSpider(MarketPlaceSpider):
     name = "empire_spider"
 
     # Url stuffs
-    base_url = "http://uhjru3mxpre7fgrmhdyd3c7kaenkzov3bxaiezp5pnsoxoqehhszi5yd.onion/"
+    urls = [
+        'http://oz3jlxp4oymxt4rzuzm266fvc357fnmwzvm7iigjmntxim2w4m43s2ad.onion',
+        'http://xhhk37ey4yal7mcgv5b6f2mwtgysh5zpm6o2j33s4htosik3nobobmid.onion',
+        'http://sgxye32vhffhn7d3twtgicbchznimd6guj27pyou7jhosmxttan7c2id.onion',
+        'http://cdtqz6ip57l6ugctdq33z6hr63xanlxtmpjbvzayygow6b4hkdvuctqd.onion',
+        'http://vxyl2wkhkmtjpvbb3eia26vdzhaphrr7dbf6ovwjqy63f27vjffjwiyd.onion',
+        'http://erj7kwqkdkl73ewsuq6stztehx2tehk2aidxlex3btrfnjqax3ucvgyd.onion',
+        'http://p3f5jyqooy3pqzmugzxq2fwcxmdttkshn57nca4pserrcvw6xj5mrfid.onion',
+        'http://m4itbrzwruzzzqfjie6ygxzqnqnjxhq6d24hyjpvyk7qdtycckr73mad.onion',
+        'http://wlwcklts7mes5zcs2muzgorikvdp44mpvjglpenphqo2jwvofr75xvad.onion',
+        'http://uvkxwkpeemv4frvju6ks5wveec5bxljfibknuioejpjkl3oq2up55lyd.onion',
+        'http://igoz2dm6vqo3nuweg3vztqszxprugx2lb6xxbrmz2tkec37gc2vkd5yd.onion',
+        'http://piifyattgybu3a2rwx675ptqzeb4f7sfjxslx6n4a7kccijlksxzroqd.onion',
+        'http://k7lwzkbirsizhvtrmafqzy7ut47junhdczab3766kok2xc3odvzdijad.onion',
+        'http://sczojdk73hhztnyc6omdelztijoejf2sucfvpwfzazgvgvsbsobo5dqd.onion',
+        'http://6o6vpjt6di2nf5lykqssx4e5wnjw7pjaq4ja6dsyx2onuadevqgcbjad.onion',
+        'http://i5kjii2y2jumlye6etmouksvdhech357urmj4txctrneedl4vkfjbsqd.onion',
+        'http://p4e6p65pal3s4zrva3q3gk44s3ejl7futx47qserb2slcwyjj7sao4id.onion',
+        'http://jfjkkvra7753bp7czrooipdeacc3ptwmeuurlbb3d42ntngonhq7ycad.onion',
+    ]
 
     # xpath stuffs
     login_form_xpath = '//form[@method="post"]'
@@ -61,6 +80,17 @@ class EmpireSpider(MarketPlaceSpider):
             }
         )
 
+    def get_base_url(self, ):
+        proxies = {'https': PROXY, 'http': PROXY}
+        for url in self.urls:
+            self.logger.info(f'Trying url: {url}')
+            try:
+                r = requests.get(url, proxies=proxies, timeout=15)
+                if 'placeholder="Username"' in r.text:
+                    return url
+            except Exception:
+                continue
+
     def synchronize_meta(self, response, default_meta={}):
         meta = {
             key: response.meta.get(key) for key in ["cookiejar", "ip"]
@@ -79,6 +109,7 @@ class EmpireSpider(MarketPlaceSpider):
         return url.rsplit('product/', 1)[-1].replace('/', '')
 
     def start_requests(self):
+        self.base_url = self.get_base_url()
         yield Request(
             url=self.base_url,
             headers=self.headers,
