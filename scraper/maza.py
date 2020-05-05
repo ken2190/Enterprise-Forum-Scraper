@@ -98,7 +98,7 @@ class MazaSpider(MarketPlaceSpider):
 
         # Init firefox options
         firefox_options = Options()
-        firefox_options.headless = True
+        firefox_options.headless = False
 
         # Init firefox profile
         firefox_profile = FirefoxProfile("/home/osboxes/Desktop/factory/forumparser/firefox_profile")
