@@ -172,8 +172,6 @@ class MazaSpider(SitemapSpider):
         time.sleep(10)
         self.parse_start()
 
-        self.save_avatar()
-
     def parse_start(self):
         self.logger.info('2nd phase login successful')
         response = fromstring(self.browser.page_source)
