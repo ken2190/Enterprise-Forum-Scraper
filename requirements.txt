@@ -10,3 +10,8 @@ polling
 selenium-wire
 aiohttp
 dateparser
+pymongo
+netaddr
+boto3
+elasticsearch
+cassandra-driver

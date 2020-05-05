@@ -1,4 +1,5 @@
 import argparse
+import sh
 
 
 class Collector:
@@ -54,24 +55,19 @@ class Collector:
         parser.add_argument(
             '-k', '--kill', help='Kill after this amount of topic page saved', required=False)
         parser.add_argument(
-            '-db', '--db',
-            help='Meta scraper module',
-            action='store_true'
-        )
-        parser.add_argument(
-            '-gather', '--gather',
+            '-gather',
             help='Meta scraper port scanner',
             action='store_true'
         )
         parser.add_argument(
-            '-scan', '--scan',
+            '-scan',
             help='Meta scraper scan',
             action='store_true'
         )
         self.parser = parser
 
     def get_args(self):
-        args = self.parser.parse_args()
+        args, unknown = self.parser.parse_known_args()
         return args._get_kwargs()
 
     def start(self):
@@ -82,13 +78,13 @@ class Collector:
         elif kwargs.get('scrape'):
             from run_scrapper import Scraper
             Scraper(kwargs).do_scrape()
-        elif kwargs.get("db"):
-            if kwargs.get("gather"):
-                pass
-            elif kwargs.get("scan"):
-                pass
-            else:
-                raise ValueError("Either gather or scan for db tools.")
+        elif kwargs.get("gather"):
+            # from noscrape_engine import Gatherer
+            # Gatherer.start()
+            pass
+        elif kwargs.get("scan"):
+            from noscrape_engine import Noscraper
+            Noscraper().do_scrape()
         else:
             self.parser.print_help()
 
