@@ -170,10 +170,10 @@ class MazaSpider(SitemapSpider):
         submit = self.browser.find_element_by_xpath('//input[@type="submit"]')
         submit.click()
         time.sleep(10)
+        self.logger.info('2nd phase login successful')
         self.parse_start()
 
     def parse_start(self):
-        self.logger.info('2nd phase login successful')
         response = fromstring(self.browser.page_source)
         all_forums = response.xpath(self.forum_xpath)
         for forum_url in all_forums:
