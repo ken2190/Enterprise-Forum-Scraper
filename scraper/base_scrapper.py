@@ -1582,3 +1582,219 @@ class MarketPlaceSpider(SitemapSpider):
             f.write(response.body)
             self.logger.info(
                 f"Avatar for user {response.meta['user_id']} done..!")
+
+
+class SeleniumSpider(SitemapSpider):
+    def parse_start(self):
+        response = fromstring(self.browser.page_source)
+        all_forums = response.xpath(self.forum_xpath)
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+            # self.logger.info(forum_url)
+            self.process_forum(forum_url)
+
+        self.browser.quit()
+
+    def process_forum(self, forum_url):
+        self.browser.get(forum_url)
+        response = fromstring(self.browser.page_source)
+        self.logger.info(f"Next_page_url: {forum_url}")
+        threads = response.xpath(self.thread_xpath)
+        lastmod_pool = []
+
+        for thread in threads:
+            thread_url, thread_lastmod = self.extract_thread_stats(thread)
+            if not thread_url:
+                continue
+
+            if self.start_date and thread_lastmod is None:
+                self.logger.info(
+                    "Thread %s has no last update in update scraping, "
+                    "so ignored." % thread_url
+                )
+                continue
+
+            lastmod_pool.append(thread_lastmod)
+
+            # If start date, check last mod
+            if self.start_date and thread_lastmod < self.start_date:
+                self.logger.info(
+                    "Thread %s last updated is %s before start date %s. "
+                    "Ignored." % (thread_url, thread_lastmod, self.start_date)
+                )
+                continue
+
+            # Standardize thread url
+            if self.base_url not in thread_url:
+                thread_url = self.base_url + thread_url
+
+            # Parse topic id
+            try:
+                topic_id = self.topic_pattern.findall(thread_url)[0]
+            except Exception:
+                continue
+
+            # Check file exist
+            if self.check_existing_file_date(
+                    topic_id=topic_id,
+                    thread_date=thread_lastmod,
+                    thread_url=thread_url
+            ):
+                continue
+
+            self.parse_thread(thread_url, topic_id)
+
+        # Pagination
+        if not lastmod_pool:
+            self.logger.info(
+                "Forum without thread, exit."
+            )
+            return
+
+        if self.start_date and self.start_date > max(lastmod_pool):
+            self.logger.info(
+                "Found no more thread update later than %s in forum %s. "
+                "Exit." % (self.start_date, forum_url)
+            )
+            return
+        next_page = self.get_forum_next_page(response)
+        if next_page:
+            self.process_forum(next_page)
+
+    def extract_thread_stats(self, thread):
+
+        # Load stats
+        thread_first_page_url = None
+        if self.thread_first_page_xpath:
+            thread_first_page_url = thread.xpath(
+                self.thread_first_page_xpath
+            )
+
+        thread_last_page_url = None
+        if self.thread_last_page_xpath:
+            thread_last_page_url = thread.xpath(
+                self.thread_last_page_xpath
+            )
+
+        thread_lastmod = thread.xpath(
+            self.thread_date_xpath
+        )
+
+        # Process stats
+        if thread_last_page_url:
+            thread_url = thread_last_page_url[0]
+        elif thread_first_page_url:
+            thread_url = thread_first_page_url[0]
+        else:
+            thread_url = None
+
+        try:
+            thread_lastmod = dateparser.parse(thread_lastmod[0].strip())
+        except Exception as err:
+            thread_lastmod = None
+
+        return thread_url, thread_lastmod
+
+    def get_forum_next_page(self, response):
+        next_page = response.xpath(self.pagination_xpath)
+        if not next_page:
+            return
+        next_page = next_page[0].strip()
+        if self.base_url not in next_page:
+            next_page = self.base_url + next_page
+        return next_page
+
+    def parse_thread(self, thread_url, topic_id):
+        self.browser.get(thread_url)
+        response = fromstring(self.browser.page_source)
+        post_dates = [
+            dateparser.parse(post_date.strip()) for post_date in
+            response.xpath(self.post_date_xpath)
+            if post_date.strip() and dateparser.parse(post_date.strip())
+        ]
+        if self.start_date and max(post_dates) < self.start_date:
+            self.logger.info(
+                "No more post to update."
+            )
+            return
+
+        current_page = self.get_thread_current_page(response)
+        with open(
+            file=os.path.join(
+                self.output_path,
+                "%s-%s.html" % (topic_id, current_page)
+            ),
+            mode="w+",
+            encoding="utf-8"
+        ) as file:
+            file.write(self.browser.page_source)
+            self.logger.info(
+                f'{topic_id}-{current_page} done..!'
+            )
+            self.topic_pages_saved += 1
+
+            # Update stats
+            self.crawler.stats.set_value(
+                "topic pages saved",
+                self.topic_pages_saved
+            )
+
+            # Kill task if kill count met
+            if self.kill and self.topic_pages_saved >= self.kill:
+                raise CloseSpider(reason="Kill count met, shut down.")
+        self.parse_avatars(response)
+        next_page = self.get_thread_next_page(response)
+        if next_page:
+            self.parse_thread(next_page, topic_id)
+
+    def get_thread_current_page(self, response):
+        current_page = response.xpath(self.thread_page_xpath)
+        return current_page[0] if current_page else '1'
+
+    def get_thread_next_page(self, response):
+        next_page = response.xpath(self.thread_pagination_xpath)
+        if not next_page:
+            return
+        next_page = next_page[0].strip()
+        if self.base_url not in next_page:
+            next_page = self.base_url + next_page
+        return next_page
+
+    def parse_avatars(self, response):
+
+        # Save avatar content
+        all_avatars = response.xpath(self.avatar_xpath)
+        for avatar_url in all_avatars:
+
+            # Standardize avatar url
+            if not avatar_url.lower().startswith("http"):
+                avatar_url = self.base_url + avatar_url
+
+            if 'image/svg' in avatar_url:
+                continue
+
+            try:
+                file_name = os.path.join(
+                    self.avatar_path,
+                    f'{self.avatar_name_pattern.findall(avatar_url)[0]}.png'
+                )
+            except Exception:
+                continue
+
+            if os.path.exists(file_name):
+                continue
+
+            self.save_avatar(avatar_url, file_name)
+
+    def save_avatar(self, avatar_url, file_name):
+        self.browser.get(avatar_url)
+        avatar_name = os.path.basename(file_name)
+        with open(file_name, 'wb') as file:
+            file.write(
+                self.browser.find_element_by_xpath(
+                    '//img').screenshot_as_png
+            )
+        self.logger.info(f"Avatar {avatar_name} done..!")
