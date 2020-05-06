@@ -1457,7 +1457,7 @@ class MarketPlaceSpider(SitemapSpider):
         return url
 
     def get_user_id(self, url):
-        return user_url.rsplit('/', 1)[-1]
+        return url.rsplit('/', 1)[-1]
 
     def get_file_id(self, url):
         return url.rsplit('/', 1)[-1]
