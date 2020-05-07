@@ -176,6 +176,9 @@ from templates.delfcode_template import DelfcodeParser
 from templates.opencard_template import OpenCardParser
 from templates.chf_template import ChfParser
 from templates.maza_template import MazaParser
+from templates.apollon_template import ApollonParser
+from templates.darkmarket_template import DarkmarketParser
+from templates.darkbay_template import DarkbayParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -355,4 +358,7 @@ PARSER_MAP = {
     'opencard': OpenCardParser,
     'chf': ChfParser,
     'maza': MazaParser,
+    'apollon': ApollonParser,
+    'darkmarket': DarkmarketParser,
+    'darkbay': DarkbayParser,
 }
