@@ -101,7 +101,7 @@ class MazaSpider(SeleniumSpider):
 
         # Init firefox options
         firefox_options = Options()
-        firefox_options.headless = False
+        firefox_options.headless = True
 
         # Init firefox profile
         profile_path = os.path.dirname(os.path.abspath(__file__)).replace(

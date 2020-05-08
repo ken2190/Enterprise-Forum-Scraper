@@ -264,8 +264,8 @@ class NulledSpider(SitemapSpider):
 
 class NulledToScrapper(SiteMapScrapper):
 
-    request_delay = 0.4
-    no_of_threads = 10
+    request_delay = 0.2
+    no_of_threads = 4
     spider_class = NulledSpider
     site_name = 'nulled.to'
 
