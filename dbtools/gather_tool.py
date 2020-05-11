@@ -8,6 +8,7 @@ class ShodanGatherer:
     token = "k2ibdtThKh6HU6E2uWCP7VhJDPfjUTTq"
 
     def scan(sample):
+        sample_part = pass
         
         
 

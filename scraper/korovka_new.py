@@ -159,14 +159,14 @@ class KorovkaSpider(SeleniumSpider):
             code_indexes = code_indexes[0]
             code = ''
             for c in code_indexes:
-                code += CODE[int(c) - 1]
+                code += CODE[int(c)-1]
             time.sleep(3)
             self.logger.info(f'Code to be entered is {code}')
             codebox = self.browser.find_element_by_name('apa_authcode')
             codebox.send_keys(code)
             time.sleep(3)
             submit = self.browser.find_element_by_xpath(
-                '//input[@type="submit"]')
+                '//form[contains(@action,"misc.php")]/input[@type="submit"]')
             submit.submit()
             time.sleep(100)
             self.parse_start()
