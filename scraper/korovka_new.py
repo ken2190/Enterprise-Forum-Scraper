@@ -8,8 +8,7 @@ from selenium.webdriver.firefox.options import Options
 from scrapy import Request
 from selenium.webdriver import (
     Chrome,
-    Firefox,
-    FirefoxProfile
+    ChromeOptions,
 )
 from scraper.base_scrapper import (
     SeleniumSpider,
@@ -34,7 +33,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:76.0) '\
 
 class KorovkaSpider(SeleniumSpider):
 
-    name = "maza_spider"
+    name = "korovka_spider"
 
     # Url stuffs
     base_url = "https://korovka.cc/"
@@ -55,7 +54,7 @@ class KorovkaSpider(SeleniumSpider):
     thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
     post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"]'\
                       '/a[contains(@name,"post")]/following-sibling::text()'
-    avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
+    avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]/img/@src'
 
     # Other settings
     use_proxy = False
@@ -91,28 +90,11 @@ class KorovkaSpider(SeleniumSpider):
         self.setup_browser()
 
     def setup_browser(self):
-
-        # Init firefox options
-        # firefox_options = Options()
-        # firefox_options.headless = True
-
-        # # Set proxy
-        # firefox_profile.set_preference("network.proxy.type", 1)
-        # firefox_profile.set_preference("network.proxy.http", PROXY_HOST)
-        # firefox_profile.set_preference("network.proxy.http_port", PROXY_PORT)
-        # firefox_profile.set_preference("network.proxy.ssl", PROXY_HOST)
-        # firefox_profile.set_preference("network.proxy.ssl_port", PROXY_PORT)
-
-        # Init web driver arguments
-        # webdriver_kwargs = {
-        #     "executable_path": "/usr/local/bin/geckodriver",
-        #     "firefox_profile": firefox_profile,
-        #     "options": firefox_options
-        # }
-
-        # Load chrome driver
-        # self.browser = Firefox(**webdriver_kwargs)
-        self.browser = Chrome()
+        options = ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
+        self.browser = Chrome(options=options)
 
     def start_requests(self):
         yield Request(
@@ -168,7 +150,7 @@ class KorovkaSpider(SeleniumSpider):
             submit = self.browser.find_element_by_xpath(
                 '//form[contains(@action,"misc.php")]/input[@type="submit"]')
             submit.submit()
-            time.sleep(100)
+            time.sleep(5)
             self.parse_start()
 
 
