@@ -20,8 +20,7 @@ from scrapy.exceptions import CloseSpider
 from lxml.html import fromstring
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
+REQUEST_DELAY = 2
 
 CODE = 'ghostman'
 USER = "gh0stpoodle"
@@ -30,24 +29,27 @@ PASS = 'xhuBLDwvTNn34PqS'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:76.0) '\
              'Gecko/20100101 Firefox/76.0'
 
+PROXY = 'http://127.0.0.1:8118'
+
 
 class KorovkaSpider(SeleniumSpider):
 
     name = "korovka_spider"
+    delay = REQUEST_DELAY
 
     # Url stuffs
-    base_url = "https://korovka.cc/"
-    login_url = "https://korovka.cc/login.php?do=login"
+    base_url = "http://korovka32xc3t5cg.onion/"
+    login_url = "http://korovka32xc3t5cg.onion/login.php?do=login"
 
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "forumdisplay.php?f=")]/@href'
     thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
-    thread_first_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div'\
+    thread_first_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
                               '/a[contains(@href, "showthread.php?")]/@href'
-    thread_last_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div/span'\
+    thread_last_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div/span'\
                              '/a[contains(@href, "showthread.php?")]'\
                              '[last()]/@href'
-    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
+    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
@@ -58,8 +60,6 @@ class KorovkaSpider(SeleniumSpider):
 
     # Other settings
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
 
@@ -93,6 +93,7 @@ class KorovkaSpider(SeleniumSpider):
         options = ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
+        options.add_argument('--proxy-server=%s' % PROXY)
         options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
         self.browser = Chrome(options=options)
 
@@ -101,11 +102,12 @@ class KorovkaSpider(SeleniumSpider):
             url=self.base_url,
             headers=self.headers,
             dont_filter=True,
+            meta={'proxy': PROXY}
         )
 
     def parse(self, response):
         self.browser.get(self.base_url)
-        time.sleep(1)
+        time.sleep(self.delay)
         userbox = self.browser.find_element_by_name('vb_login_username')
         passbox = self.browser.find_element_by_name('vb_login_password')
         checkbox = self.browser.find_element_by_name('cookieuser')
@@ -153,8 +155,30 @@ class KorovkaSpider(SeleniumSpider):
             time.sleep(5)
             self.parse_start()
 
+    def parse_start(self, ):
+        input_file = self.output_path + '/urls.txt'
+        if os.path.exists(input_file):
+            self.logger.info('URLs file found. Taking urls from this file')
+            self.thread_last_page_xpath = None
+            self.thread_pagination_xpath = '//a[@rel="next"]/@href'
+            for thread_url in open(input_file, 'r'):
+                thread_url = thread_url.strip()
+                topic_id = self.topic_pattern.findall(thread_url)
+                if not topic_id:
+                    continue
+                file_name = '{}/{}-1.html'.format(
+                    self.output_path, topic_id[0])
+                if os.path.exists(file_name):
+                    continue
+                self.parse_thread(thread_url, topic_id[0])
+                time.sleep(self.delay)
+            self.browser.quit()
+        else:
+            self.logger.info('URLs file not found. Performing normal scrape')
+            super().parse_start()
+
 
 class KorovkaNewScrapper(SiteMapScrapper):
 
     spider_class = KorovkaSpider
-    site_name = 'korovka.cc'
+    site_name = 'korovka (korovka32xc3t5cg.onion)'

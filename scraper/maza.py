@@ -21,7 +21,6 @@ from lxml.html import fromstring
 
 
 REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
 
 CODE = 'shithead'
 USER = "Sandman"
@@ -37,6 +36,7 @@ PROXY_PORT = "8118"
 class MazaSpider(SeleniumSpider):
 
     name = "maza_spider"
+    delay = REQUEST_DELAY
 
     # Url stuffs
     base_url = "https://mfclubjof2s67ire.onion/"
@@ -50,7 +50,7 @@ class MazaSpider(SeleniumSpider):
     thread_last_page_xpath = './/dl[@class="pagination"]/dd/span[last()]'\
                              '/a[contains(@href, "showthread.php?")]'\
                              '/@href'
-    thread_date_xpath = '//em[@class="time"]/preceding-sibling::text()'
+    thread_date_xpath = './/em[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
@@ -58,11 +58,6 @@ class MazaSpider(SeleniumSpider):
                         '//span[@class="selected"]/a/text()'
     post_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
     avatar_xpath = '//a[@class="postuseravatar"]/img/@src'
-
-    # Other settings
-    use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -76,8 +71,6 @@ class MazaSpider(SeleniumSpider):
 
     # Other settings
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     handle_httpstatus_list = [400]
 
     def __init__(self, *args, **kwargs):
@@ -137,7 +130,7 @@ class MazaSpider(SeleniumSpider):
 
     def parse(self, response):
         self.browser.get(self.base_url)
-        time.sleep(1)
+        time.sleep(self.delay)
         userbox = self.browser.find_element_by_name('vb_login_username')
         passbox = self.browser.find_element_by_name('vb_login_password')
         checkbox = self.browser.find_element_by_name('cookieuser')

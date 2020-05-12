@@ -1596,6 +1596,7 @@ class SeleniumSpider(SitemapSpider):
                 forum_url = self.base_url + forum_url
             # self.logger.info(forum_url)
             self.process_forum(forum_url)
+            time.sleep(self.delay)
 
         self.browser.quit()
 
@@ -1647,6 +1648,7 @@ class SeleniumSpider(SitemapSpider):
                 continue
 
             self.parse_thread(thread_url, topic_id)
+            time.sleep(self.delay)
 
         # Pagination
         if not lastmod_pool:
@@ -1789,6 +1791,7 @@ class SeleniumSpider(SitemapSpider):
                 continue
 
             self.save_avatar(avatar_url, file_name)
+            time.sleep(self.delay)
 
     def save_avatar(self, avatar_url, file_name):
         self.browser.get(avatar_url)
