@@ -1,8 +1,10 @@
 import re
 import os
 import json
+import asyncio
 
 from scrapy.signals import spider_closed
+from telethon import TelegramClient
 from pydispatch import dispatcher
 
 from datetime import (
@@ -19,37 +21,19 @@ from scraper.base_scrapper import (
 )
 
 
+api_id = "1207531"
+api_hash = "29d9d0a1e8edfc400ff6d94b539abafd"
+
 class TelegramChannelSpider(SitemapSpider):
 
-    name = "phreaker_spider"
+    name = "telegramss"
 
     # Url stuffs
-    base_url = "https://t.me"
     channel_url = "https://t.me/s/%s"
-
-    # Xpath stuffs
-    message_xpath = "//div[contains(@class,\"tgme_widget_message_wrap\")]"
-    pagination_xpath = "//a[@data-before]/@href"
-    single_mapper = {
-        "pid": "//div[@data-post]/@data-post",
-        "author": "//span[@dir=\"auto\"]/text()",
-        "author_url": "//a[@class=\"tgme_widget_message_owner_name\"]/@href",
-        "content": "//div[@class=\"tgme_widget_message_text js-message_text\"]",
-        "post_date": "//a[@class=\"tgme_widget_message_date\"]/time/@datetime",
-        "views": "//span[@class=\"tgme_widget_message_views\"]/text()",
-        "preview_url": "//a[@class=\"tgme_widget_message_link_preview\"]/@href",
-        "preview_site_name": "//div[@class=\"link_preview_site_name\"]/text()",
-        "preview_title": "//div[@class=\"link_preview_title\"]/text()"
-    }
-    multiple_mapper = {
-        "preview_content": "//div[@class=\"link_preview_description\"]/text()"
-    }
 
     # Other settings
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
-
-    def parse_post_date(self, post_date):
-        return super().parse_post_date(post_date[:-6])
+    chunk = 100
 
     def spider_closed(self, spider):
         self.stop_write()
@@ -59,6 +43,12 @@ class TelegramChannelSpider(SitemapSpider):
         dispatcher.connect(self.spider_closed, spider_closed)
         self.channel = kwargs.get("channel")
         self.first_write = False
+        
+        # Init client
+        self.client = TelegramClient(self.name, api_id, api_hash).start()
+
+        # Init loop
+        self.loop = asyncio.get_event_loop()
 
         # Load file date
         end_date = datetime.today().strftime(
@@ -85,87 +75,59 @@ class TelegramChannelSpider(SitemapSpider):
         # Init file
         self.start_write()
 
-    def get_post_date(self, message):
-        # Load selector
-        selector = Selector(text=message)
-
-        return self.parse_post_date(
-            selector.xpath(
-                self.single_mapper.get("post_date")
-            ).extract_first()
-        )
-
     def start_requests(self):
         yield Request(
-            url=self.channel_url % self.channel,
-            headers=self.headers,
-            callback=self.parse
+            url=self.channel_url % self.channel
         )
+        
 
     def parse(self, response):
+        yield from self.parse_message()
 
-        # Load all messages
-        all_messages = response.xpath(self.message_xpath).extract()
-        for message in all_messages:
-            yield from self.parse_message(message)
+    def parse_message(self, max_id=None):
 
-        # Pagination
-        pagination_url = response.xpath(self.pagination_xpath).extract_first()
-        last_date = max(
-            [
-                self.get_post_date(message) for message in all_messages
-            ]
-        )
+        # Init queue
+        if not max_id:
+            messages_queue = self.client.get_messages(self.channel, limit=self.chunk)
+        else:
+            messages_queue = self.client.get_messages(self.channel, limit=self.chunk, max_id=max_id)
 
-        if not pagination_url:
-            self.logger.info(
-                "Found no more page, aborting."
-            )
-            return
-        if self.start_date and last_date < self.start_date:
-            self.logger.info(
-                "No more post before %s, aborting." % self.start_date
-            )
-            return
+        # Execute queue
+        messages = self.loop.run_until_complete(messages_queue)
 
-        yield Request(
-            url=self.base_url + pagination_url,
-            headers=self.headers,
-            callback=self.parse
-        )
+        # Yield message
+        for message in messages:
+            
+            # Check date
+            if self.start_date and message.date.replace(tzinfo=None) < self.start_date:
+                self.logger.info(
+                    "Find no more message later than %s, ignoring." % self.start_date
+                )
+                return
 
-    def parse_message(self, message):
+            yield from self.process_message(message.__dict__)
 
-        # Load selector
-        selector = Selector(text=message)
+        # Load max id
+        max_id = messages[-1].id
 
-        # Load single item
+        yield from self.parse_message(max_id=max_id)
+
+    def process_message(self, message):
+
+        # Init item
         item = {
-            key: selector.xpath(xpath).extract_first()
-            for key, xpath in self.single_mapper.items()
+            "date": message.get("date").strftime(self.post_datetime_format)
         }
 
-        # Load multiple item
+        # Update item
         item.update(
             {
-                key: selector.xpath(xpath).extract()
-                for key, xpath in self.multiple_mapper.items()
+                key: value for key, value in message.items()
+                if type(value) in [str, int, bool]
             }
         )
 
-        # Handle preview contents
-        if item.get("preview_content"):
-            item["preview_content"] = "\n".join(item.get("preview_content"))
-        else:
-            item["preview_content"] = None
-
-        # Yield standardize item
-        yield from self.write_item(
-            {
-                key: value.strip() for key, value in item.items()
-                if value is not None
-            }
-        )
+        yield from self.write_item(item)
 
     def write_item(self, item):
         with open(
