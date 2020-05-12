@@ -1586,6 +1586,8 @@ class MarketPlaceSpider(SitemapSpider):
 
 
 class SeleniumSpider(SitemapSpider):
+    ban_text = ''
+
     def parse_start(self):
         response = fromstring(self.browser.page_source)
         all_forums = response.xpath(self.forum_xpath)
@@ -1603,10 +1605,11 @@ class SeleniumSpider(SitemapSpider):
     def process_forum(self, forum_url):
         self.browser.get(forum_url)
         response = fromstring(self.browser.page_source)
+        if self.ban_text and self.ban_text in self.browser.page_source.lower():
+            raise CloseSpider(reason="Account is banned")
         self.logger.info(f"Next_page_url: {forum_url}")
         threads = response.xpath(self.thread_xpath)
         lastmod_pool = []
-
         for thread in threads:
             thread_url, thread_lastmod = self.extract_thread_stats(thread)
             if not thread_url:
@@ -1713,6 +1716,8 @@ class SeleniumSpider(SitemapSpider):
     def parse_thread(self, thread_url, topic_id):
         self.browser.get(thread_url)
         response = fromstring(self.browser.page_source)
+        if self.ban_text and self.ban_text in self.browser.page_source.lower():
+            raise CloseSpider(reason="Account is banned")
         post_dates = [
             dateparser.parse(post_date.strip()) for post_date in
             response.xpath(self.post_date_xpath)

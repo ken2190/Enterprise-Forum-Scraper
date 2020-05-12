@@ -62,6 +62,7 @@ class KorovkaSpider(SeleniumSpider):
     use_proxy = False
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
+    ban_text = 'date the ban'
 
     # Regex stuffs
     topic_pattern = re.compile(
