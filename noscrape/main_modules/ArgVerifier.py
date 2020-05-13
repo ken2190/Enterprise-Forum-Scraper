@@ -56,7 +56,11 @@ class ArgVerifier:
         target_file = self.argparse_data['targetFile']
         targets = self.argparse_data['targets']
         if target_file is None and targets is None:
-            self.logger.error("No --targetFile or --targets provided")
+            self.logger.error(
+                "Missing target parameter:\n"
+                "- Either --targetFile: Path to csv path that contain list of ip and port\n"
+                "- Or --targets: List of ip, seperated by \",\""
+            )
             exit(1)
 
     def is_port_specified(self):
@@ -67,13 +71,21 @@ class ArgVerifier:
             exit()
         if port == -1 and targets is not None:
             self.logger.error(
-                "Missing arguments. Specify either --port argument, or just a --targetFile containing IPs,Port")
+                "Missing port arguments:\n"
+                "- Either --port: port to scan for\n"
+                "- Or --targetFile: Path to csv path that contain list of ip and port")
             exit(1)
 
     def is_nosql_scrape_types_true(self):
         scrape = self.argparse_data['scrape_type']
         if scrape not in ['basic', 'fields', 'index', 'all']:
-            self.logger.error("Scrape type should be either --scrape_type basic , --scrape_type fields")
+            self.logger.error(
+                "Scrape type should be either:\n"
+                "--scrape_type basic: Basic meta info\n"
+                "--scrape_type fields: Fields info\n"
+                "--scrape_type index: Indexes info\n"
+                "--scrape_type all: All meta data\n"
+            )
             exit(1)
 
     def is_elastic_scrape_types_true(self):

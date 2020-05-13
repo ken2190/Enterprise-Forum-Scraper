@@ -36,18 +36,18 @@ class ArgParser():
         nosql_and_elastic_options.add_argument('--limit', '-l', nargs='?', metavar="Limit", default=10,
                                                help='Number of records dumped per Elasticdump request (default & max = 10,000)',
                                                type=int)
-        #
-        #
-        #
+    
         # S3 Stuff
-        #
+        
         s3_opts = parser.add_argument_group('AWS Brute S3 Options')
         s3_opts.add_argument('--access', metavar="AccessKey", default=None, help='AWS Access Key', type=str)
         s3_opts.add_argument('--secret', metavar="SecretKey", default=None, help='AWS Secret Key', type=str)
         s3_opts.add_argument('--hitlist', metavar="DictionaryFile", default=None,
                              help='File containing brute-force keyword list', type=str)
-        args = parser.parse_args()
+        
+        args, unknown = parser.parse_known_args()
         new_config = args.__dict__
+
         return new_config
 
     def print_examples(self):
