@@ -1587,6 +1587,7 @@ class MarketPlaceSpider(SitemapSpider):
 
 class SeleniumSpider(SitemapSpider):
     ban_text = ''
+    skip_forums = None
 
     def parse_start(self):
         response = fromstring(self.browser.page_source)
@@ -1596,7 +1597,9 @@ class SeleniumSpider(SitemapSpider):
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-            # self.logger.info(forum_url)
+            if self.skip_forums and any(
+             forum_url.endswith(i) for i in self.skip_forums):
+                continue
             self.process_forum(forum_url)
             time.sleep(self.delay)
 
