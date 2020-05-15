@@ -16,3 +16,4 @@ netaddr
 boto3
 elasticsearch
 cassandra-driver
+telethon
