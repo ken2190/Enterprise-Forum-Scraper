@@ -79,6 +79,7 @@ class NoScrape:
     def run_nosql(self, argparse_data, nosql_type):
         # Verify some arguments
         arg_verifier = ArgVerifier(argparse_data)
+        arg_verifier.show_nosql_help()
         arg_verifier.is_nosql_scrape_types_true()
         arg_verifier.is_target_file_specified()
         arg_verifier.is_port_specified()
@@ -162,6 +163,7 @@ class NoScrape:
     def run_s3(self, argparse_data):
         # Verify some arguments
         arg_verifier = ArgVerifier(argparse_data)
+        arg_verifier.show_s3_help()
         arg_verifier.is_access_and_secret_key_specified()
         arg_verifier.is_hitlist_file_specified()
         arg_verifier.try_opening_hitlist_file()
@@ -193,6 +195,7 @@ class NoScrape:
     def run_es(self, argparse_data):
         # Verify some arguments
         arg_verifier = ArgVerifier(argparse_data)
+        arg_verifier.show_es_help()
         arg_verifier.is_filter_file_specified_for_matchdump()
         arg_verifier.is_output_file_specified_for_search()
         arg_verifier.is_target_file_specified()

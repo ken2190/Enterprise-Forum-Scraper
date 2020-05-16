@@ -76,6 +76,58 @@ class ArgVerifier:
                 "- Or --targetFile: Path to csv path that contain list of ip and port")
             exit(1)
 
+    def show_nosql_help(self):
+        scrape = self.argparse_data['scrape_type']
+        if scrape not in ['basic', 'fields', 'index', 'all']:
+            help_message = """
+            Usage: collector.py -scan [-d DATABASE] [-s SCRAPE_TYPE] [-p PORT] [-tf TARGET_FILE]
+                                      [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER]
+            Arguments:
+            -s | --scrape_type  :  Type of scrape to run
+            -p | --port PORT    :  Database port
+            -tf | --target_file :  A CSV formatted list of targets host,port
+            -u | --username     :  Username for standard authentication
+            -pw | --password    :  Password for standard authentication
+            -a | --authDB       :  Database within Mongo to auth against
+            -l | --limit        :  Number of records dumped per Elasticdump request (default & max = 10,000)
+            -f | --filter       :  Use to specify a list of keywords to filter within your scraped search results
+            """
+            print(help_message)
+            exit(1)
+
+    def show_es_help(self):
+        port = self.argparse_data['port']
+        targets = self.argparse_data['targets']
+        if port == -1 and targets is None:
+            help_message = """
+            Usage: collector.py -scan [-d DATABASE] [-s SCRAPE_TYPE] [-p PORT] [-tf TARGET_FILE]
+                                      [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER]
+            Arguments:
+            -s | --scrape_type  :  Type of scrape to run
+            -p | --port PORT    :  Database port
+            -tf | --target_file :  A CSV formatted list of targets host,port
+            -u | --username     :  Username for standard authentication
+            -pw | --password    :  Password for standard authentication
+            -a | --authDB       :  Database within Mongo to auth against
+            -l | --limit        :  Number of records dumped per Elasticdump request (default & max = 10,000)
+            -f | --filter       :  Use to specify a list of keywords to filter within your scraped search results
+            """
+            print(help_message)
+            exit(1)
+
+    def show_s3_help(self):
+        access_key = self.argparse_data['access']
+        secret_key = self.argparse_data['secret']
+        if access_key is None or secret_key is None:
+            help_message = """
+            Usage: collector.py -scan [-d DATABASE] [--access S3_ACCESS_KEY] [--secret S3_SECRET_KEY]
+            Arguments:
+            --access  :  S3 Access Key
+            --secret  :  S3 Secret Key
+            """
+            print(help_message)
+            exit(1)
+
     def is_nosql_scrape_types_true(self):
         scrape = self.argparse_data['scrape_type']
         if scrape not in ['basic', 'fields', 'index', 'all']:

@@ -12,38 +12,38 @@ class ArgParser():
         parser._optionals.title = "Standard arguments"
 
         parser.add_argument('--database', '-d', nargs='?', help='State the type of database', choices=databases, required=True)
-        parser.add_argument('--outFile', '-o', nargs='?', default=None, metavar="OutputFile", help='File to store results')
-        parser.add_argument('-v', action="store_true", help='Enable verbose output')
-        parser.add_argument('--examples', action="store_true", help='Print usage examples then exit')
+        parser.add_argument('--outFile', '-o', nargs='?', default=None, metavar="OutputFile", help=argparse.SUPPRESS)
+        parser.add_argument('-v', action="store_true", help=argparse.SUPPRESS)
+        parser.add_argument('--examples', action="store_true", help=argparse.SUPPRESS)
 
         # Mongo and Elastic stuff
         nosql_and_elastic_options = parser.add_argument_group('MongoDB and ElasticSearch Options')
         nosql_and_elastic_options.add_argument('--targetFile', '-tf', nargs='?', metavar="TargetFile", default=None,
-                                               help='A CSV formatted list of targets host,port', type=str)
+                                               help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--targets', '-t', nargs='?', metavar="Targets", default=None,
-                                               help='IP or CIDR of database(s)', type=str)
-        nosql_and_elastic_options.add_argument('--port', '-p', nargs='?', metavar="Port", default=-1, help='Database port',
+                                               help=argparse.SUPPRESS, type=str)
+        nosql_and_elastic_options.add_argument('--port', '-p', nargs='?', metavar="Port", default=-1, help=argparse.SUPPRESS,
                                                type=int)
-        nosql_and_elastic_options.add_argument('--scrape_type', '-s', nargs='?', default='basic', help='Type of scrape to run')
+        nosql_and_elastic_options.add_argument('--scrape_type', '-s', nargs='?', default='basic', help=argparse.SUPPRESS)
         nosql_and_elastic_options.add_argument('--filter', '-f', nargs='?', default=None, metavar="FilterFile",
-                                               help='Use to specify a list of keywords to filter within your scraped search results ')
+                                               help=argparse.SUPPRESS)
         nosql_and_elastic_options.add_argument('--username', '-u', nargs='?', metavar="Username", default=None,
-                                               help='Username for standard authentication', type=str)
+                                               help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--password', '-pw', nargs='?', metavar="Password", default=None,
-                                               help='Password for standard authentication', type=str)
+                                               help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--authDB', '-a', nargs='?', metavar="AuthDB", default=None,
-                                               help='Database within Mongo to auth against', type=str)
+                                               help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--limit', '-l', nargs='?', metavar="Limit", default=10,
-                                               help='Number of records dumped per Elasticdump request (default & max = 10,000)',
+                                               help=argparse.SUPPRESS,
                                                type=int)
     
         # S3 Stuff
         
         s3_opts = parser.add_argument_group('AWS Brute S3 Options')
-        s3_opts.add_argument('--access', metavar="AccessKey", default=None, help='AWS Access Key', type=str)
-        s3_opts.add_argument('--secret', metavar="SecretKey", default=None, help='AWS Secret Key', type=str)
+        s3_opts.add_argument('--access', metavar="AccessKey", default=None, help=argparse.SUPPRESS, type=str)
+        s3_opts.add_argument('--secret', metavar="SecretKey", default=None, help=argparse.SUPPRESS, type=str)
         s3_opts.add_argument('--hitlist', metavar="DictionaryFile", default=None,
-                             help='File containing brute-force keyword list', type=str)
+                             help=argparse.SUPPRESS, type=str)
         
         args, unknown = parser.parse_known_args()
         new_config = args.__dict__
