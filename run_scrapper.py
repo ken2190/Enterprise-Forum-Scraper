@@ -47,7 +47,7 @@ class Scraper:
 
             Optional:
             -s | --start_date START_DATE: Scrape threads that are newer than supplied date
-            -l | --list:                  List available parsers (tempalte namess)
+            -l | --list:                  List available scrapers (tempalte namess)
 
             """
             print(help_message)
