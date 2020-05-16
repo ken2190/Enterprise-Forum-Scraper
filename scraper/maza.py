@@ -72,6 +72,7 @@ class MazaSpider(SeleniumSpider):
     # Other settings
     use_proxy = False
     handle_httpstatus_list = [400]
+    skip_forums = [48, 190, 154, 64, 207, 218, 38, 223]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -81,6 +82,7 @@ class MazaSpider(SeleniumSpider):
             }
         )
         self.setup_browser()
+        self.skip_forums = [f'f={i}' for i in self.skip_forums]
 
     def setup_browser(self):
 

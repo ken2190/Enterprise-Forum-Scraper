@@ -39,7 +39,18 @@ class Scraper:
         template = self.kwargs.get('template')
 
         if not template:
-            print('template (-t/--template) missing')
+            help_message = """
+            Usage: collector.py -scrape [-t TEMPLATE] [-o OUTPUT] [-s START_DATE]\n
+            Arguments:
+            -t | --template TEMPLATE:     Template forum to scrape
+            -o | --output OUTPUT:         Output folder path
+
+            Optional:
+            -s | --start_date START_DATE: Scrape threads that are newer than supplied date
+            -l | --list:                  List available scrapers (tempalte namess)
+
+            """
+            print(help_message)
             return
 
         scraper = SCRAPER_MAP.get(template.lower())
