@@ -1654,7 +1654,6 @@ class SeleniumSpider(SitemapSpider):
                 continue
 
             self.parse_thread(thread_url, topic_id)
-            time.sleep(self.delay)
 
         # Pagination
         if not lastmod_pool:
@@ -1717,6 +1716,7 @@ class SeleniumSpider(SitemapSpider):
         return next_page
 
     def parse_thread(self, thread_url, topic_id):
+        time.sleep(self.delay)
         self.browser.get(thread_url)
         response = fromstring(self.browser.page_source)
         if self.ban_text and self.ban_text in self.browser.page_source.lower():

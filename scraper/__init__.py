@@ -4,6 +4,7 @@ from scraper.exploit import ExploitScrapper
 from scraper.exploit_private import ExploitPrivateScrapper
 from scraper.lolzteam import LolzScrapper
 from scraper.verified import VerifiedScScrapper
+from scraper.verified_new import VerifiedScrapper
 from scraper.sentryMBA import SentryMBAScrapper
 from scraper.bitcointalk import BitCoinTalkScrapper
 from scraper.psbdmp import PsbdmpScrapper
@@ -164,7 +165,7 @@ SCRAPER_MAP = {
     'exploit': ExploitScrapper,
     'exploitprivate': ExploitPrivateScrapper,
     'lolzteam': LolzScrapper,
-    'verified': VerifiedScScrapper,
+    'verified': VerifiedScrapper,
     'sentrymba': SentryMBAScrapper,
     'bitcointalk': BitCoinTalkScrapper,
     'psbdmp': PsbdmpScrapper,
