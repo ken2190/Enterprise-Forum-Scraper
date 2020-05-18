@@ -2,6 +2,7 @@ import re
 import os
 import json
 import asyncio
+import time
 
 from scrapy.signals import spider_closed
 from telethon import TelegramClient
@@ -21,8 +22,8 @@ from scraper.base_scrapper import (
 )
 
 
-api_id = "1207531"
-api_hash = "29d9d0a1e8edfc400ff6d94b539abafd"
+api_id = "1366434"
+api_hash = "1a4bc8ae740923572b1d7bd9bc9dbe08"
 
 class TelegramChannelSpider(SitemapSpider):
 
@@ -33,7 +34,8 @@ class TelegramChannelSpider(SitemapSpider):
 
     # Other settings
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
-    chunk = 100
+    chunk = 10  # Change this to change number of messages per request
+    delay = 1  # Change the delay between each request
 
     def spider_closed(self, spider):
         self.stop_write()
@@ -110,6 +112,9 @@ class TelegramChannelSpider(SitemapSpider):
         # Load max id
         max_id = messages[-1].id
 
+        # Delay before next request
+        time.sleep(self.delay)
+
         yield from self.parse_message(max_id=max_id)
 
     def process_message(self, message):
@@ -123,7 +128,7 @@ class TelegramChannelSpider(SitemapSpider):
         item.update(
             {
                 key: value for key, value in message.items()
-                if type(value) in [str, int, bool]
+                if type(value) in [str, int]
             }
         )
 
