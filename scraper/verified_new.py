@@ -145,6 +145,28 @@ class VerifiedSpider(SeleniumSpider):
             self.parse_start()
         self.browser.quit()
 
+    def parse_start(self, ):
+        input_file = self.output_path + '/urls.txt'
+        if os.path.exists(input_file):
+            self.logger.info('URLs file found. Taking urls from this file')
+            self.thread_last_page_xpath = None
+            self.thread_pagination_xpath = '//a[@rel="next"]/@href'
+            for thread_url in open(input_file, 'r'):
+                thread_url = thread_url.strip()
+                topic_id = self.topic_pattern.findall(thread_url)
+                if not topic_id:
+                    continue
+                file_name = '{}/{}-1.html'.format(
+                    self.output_path, topic_id[0])
+                if os.path.exists(file_name):
+                    continue
+                self.parse_thread(thread_url, topic_id[0])
+                time.sleep(self.delay)
+            self.browser.quit()
+        else:
+            self.logger.info('URLs file not found. Performing normal scrape')
+            super().parse_start()
+
 
 class VerifiedScrapper(SiteMapScrapper):
 
