@@ -97,6 +97,7 @@ class VerifiedSpider(SeleniumSpider):
         chrome_options = ChromeOptions()
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--proxy-server=%s' % PROXY)
         chrome_options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
         self.browser = Chrome(
             '/usr/local/bin/chromedriver',
@@ -104,7 +105,7 @@ class VerifiedSpider(SeleniumSpider):
 
     def start_requests(self):
         yield Request(
-            url=self.base_url,
+            url=self.login_url,
             headers=self.headers,
             dont_filter=True,
             meta={'proxy': PROXY}
