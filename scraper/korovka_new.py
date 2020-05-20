@@ -101,8 +101,8 @@ class KorovkaSpider(SeleniumSpider):
 
     def setup_browser(self):
         options = ChromeOptions()
-        # options.add_argument("--headless")
-        # options.add_argument("--no-sandbox")
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
         options.add_argument('--proxy-server=%s' % PROXY)
         options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
         self.browser = Chrome(options=options)
