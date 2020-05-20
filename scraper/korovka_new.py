@@ -28,11 +28,10 @@ REQUEST_DELAY = 2
 SCRAPE_PER_ACCOUNT = 20
 
 # Wait time(minutes) to login another account once scrape limit is reached
-ACCOUNT_DELAY = 30
+ACCOUNT_DELAY = 15
 
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:76.0) '\
-             'Gecko/20100101 Firefox/76.0'
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; rv:75.0) Gecko/20100101 Firefox/75.0"
 
 PROXY = 'http://127.0.0.1:8118'
 
@@ -121,7 +120,7 @@ class KorovkaSpider(SeleniumSpider):
 
     def read_credentials(self,):
         self.credentials = list()
-        with open('credentials/account.csv') as fp:
+        with open('credentials/korovka_accounts.csv') as fp:
             reader = csv.reader(fp)
             for index, row in enumerate(reader):
                 if index == 0:

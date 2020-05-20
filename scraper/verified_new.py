@@ -20,13 +20,12 @@ from scrapy.exceptions import CloseSpider
 from lxml.html import fromstring
 
 
-REQUEST_DELAY = 3
+REQUEST_DELAY = 4
 
 USERNAME = "xbyte"
 PASSWORD = "Night#Byte001"
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:76.0) '\
-             'Gecko/20100101 Firefox/76.0'
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; rv:75.0) Gecko/20100101 Firefox/75.0"
 
 PROXY = 'http://127.0.0.1:8118'
 

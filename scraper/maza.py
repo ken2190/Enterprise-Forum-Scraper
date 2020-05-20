@@ -20,14 +20,13 @@ from scrapy.exceptions import CloseSpider
 from lxml.html import fromstring
 
 
-REQUEST_DELAY = 0.5
+REQUEST_DELAY = 1.5
 
 CODE = 'shithead'
 USER = "Sandman"
 PASS = 'Night#MF_0010'
 
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:75.0) "\
-             "Gecko/20100101 Firefox/75.0"
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; rv:75.0) Gecko/20100101 Firefox/75.0"
 
 PROXY_HOST = "127.0.0.1"
 PROXY_PORT = "8118"
@@ -72,7 +71,7 @@ class MazaSpider(SeleniumSpider):
     # Other settings
     use_proxy = False
     handle_httpstatus_list = [400]
-    skip_forums = [48, 190, 154, 64, 207, 218, 38, 223]
+    skip_forums = [204, 194, 208, 221, 153, 171, 168, 203, 191, 192, 169, 211, 102, 28, 155, 162, 150, 224, 155, 84, 187, 90, 188, 196, 197, 47, 83, 189, 149, 121, 184, 112, 122, 186, 205, 114, 40, 76, 185, 219, 201, 206, 120, 217, 128, 111, 127, 170, 119, 181, 216, 82, 113, 118, 180, 182, 169, 198, 199, 110, 179, 65, 43, 44, 73, 178, 215, 100, 177, 202, 176, 214, 72, 42, 70, 146, 49, 78, 175, 173, 117, 174, 109, 213, 46, 159, 195, 210, 48, 190, 154, 64, 207, 218, 38, 223, 160, 193]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

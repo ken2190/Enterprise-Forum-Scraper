@@ -15,7 +15,7 @@ class BrokenPage(Exception):
 
 class MazaParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = "mfclubjof2s67ire.onion"
+        self.parser_name = "maza.la"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
