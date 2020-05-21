@@ -199,6 +199,13 @@ class MazaParser:
             '//a[contains(@href, "member.php")]'
             '/descendant::text()'
         )
+        if not author:
+            author = tag.xpath(
+                './/div[@class="username_container"]'
+                '/span[contains(@class,"username")]'
+                '/descendant::text()'
+            )
+
         return author[0].strip() if author else None
 
     def get_title(self, tag):
