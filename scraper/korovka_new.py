@@ -172,6 +172,8 @@ class KorovkaSpider(SeleniumSpider):
                 code_block = code_block[0]
                 pattern = re.compile(r'Type (\d+)-.*? and (\d+)')
         if not code_block:
+            self.logger.info('Invalid credentials. Trying with next user')
+            self.next_user_login()
             return
         self.logger.info('1st phase login successful. Entering code now..')
         self.logger.info(code_block)
