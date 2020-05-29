@@ -42,6 +42,7 @@ class NulledChSpider(SitemapSpider):
     # Url stuffs
     base_url = 'https://www.nulled.ch/'
     login_url = 'https://www.nulled.ch/user-login'
+    
     # Xpath stuffs
     login_form_xpath = '//form[@method="post"]'
     forum_xpath = '//a[contains(@href, "forum-")]/@href'
@@ -88,7 +89,7 @@ class NulledChSpider(SitemapSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update({
-            'user-agent': USER_AGENT
+            'User-Agent': USER_AGENT
         })
 
     def parse_thread_date(self, thread_date):

@@ -35,7 +35,10 @@ class IpHandler(object):
             response = await session.post(url, **kwargs)
 
         # Load text response
-        text = await response.text()
+        try:
+            text = await response.text()
+        except Exception as err:
+            text = None
 
         # Close session
         await session.close()
@@ -43,17 +46,20 @@ class IpHandler(object):
         return text
 
     async def get_fraud_score(self, ip):
+        
+        try:
+            # Load response
+            response = await self.fetch(self.fraudulent_api % ip)
 
-        # Load response
-        response = await self.fetch(self.fraudulent_api % ip)
+            # Load selector
+            selector = Selector(text=response)
 
-        # Load selector
-        selector = Selector(text=response)
-
-        # Load score
-        score = selector.xpath(
-            "//div[@class=\"score\"]/text()"
-        ).extract_first()
+            # Load score
+            score = selector.xpath(
+                "//div[@class=\"score\"]/text()"
+            ).extract_first()
+        except Exception as err:
+            score = None
 
         if not score:
             return self.fraudulent_threshold

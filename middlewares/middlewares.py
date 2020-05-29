@@ -205,7 +205,6 @@ class BypassCloudfareMiddleware(object):
     def get_cftoken(self, url, proxy=None):
         session = cloudscraper.create_scraper(
             delay=self.delay,
-            solveDepth=self.solve_depth,
             recaptcha={
                 "provider": self.captcha_provider,
                 "api_key": self.captcha_token
