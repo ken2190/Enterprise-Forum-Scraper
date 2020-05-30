@@ -160,6 +160,7 @@ from scraper.empire import EmpireScrapper
 from scraper.nulled_ch import NulledChScrapper
 from scraper.totalblackhat import TotalBlackHatScrapper
 from scraper.itshqip import ItshqipScrapper
+from scraper.digitalgangster import DigitalGangsterScrapper
 
 
 SCRAPER_MAP = {
@@ -323,4 +324,5 @@ SCRAPER_MAP = {
     'nulled_ch': NulledChScrapper,
     'totalblackhat': TotalBlackHatScrapper,
     'itshqip': ItshqipScrapper,
+    'digitalgangster': DigitalGangsterScrapper,
 }
