@@ -2,6 +2,7 @@ import re
 import uuid
 
 from datetime import datetime
+import dateparser
 from scrapy import (
     Request,
     FormRequest
@@ -16,11 +17,11 @@ REQUEST_DELAY = 0.3
 NO_OF_THREADS = 10
 
 
-class TotalBlackHatSpider(SitemapSpider):
-    name = 'totalblackhat_spider'
+class ItshqipSpider(SitemapSpider):
+    name = 'itshqip_spider'
 
     # Url stuffs
-    base_url = "https://www.totalblackhat.net/"
+    base_url = "https://forum.itshqip.com/"
 
     # Xpath stuffs
     forum_xpath = '//h3[@class="nodeTitle"]/a[contains(@href, "forums/")]/@href'
@@ -61,6 +62,18 @@ class TotalBlackHatSpider(SitemapSpider):
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
 
+    def parse_thread_date(self, thread_date):
+        thread_date = thread_date.strip()
+        if not thread_date:
+            return
+        return dateparser.parse(thread_date)
+
+    def parse_post_date(self, post_date):
+        post_date = post_date.strip()
+        if not post_date:
+            return
+        return dateparser.parse(post_date)
+
     def parse(self, response):
 
         # Synchronize user agent for cloudfare middleware
@@ -74,7 +87,6 @@ class TotalBlackHatSpider(SitemapSpider):
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-
             yield Request(
                 url=forum_url,
                 headers=self.headers,
@@ -91,10 +103,10 @@ class TotalBlackHatSpider(SitemapSpider):
         yield from super().parse_avatars(response)
 
 
-class TotalBlackHatScrapper(SiteMapScrapper):
+class ItshqipScrapper(SiteMapScrapper):
 
-    spider_class = TotalBlackHatSpider
-    site_name = 'totalblackhat.net'
+    spider_class = ItshqipSpider
+    site_name = 'itshqip.com'
 
     def load_settings(self):
         spider_settings = super().load_settings()
