@@ -94,8 +94,6 @@ class CrackForumSpider(SitemapSpider):
             # Standardize url
             if not forum_url.startswith('http'):
                 forum_url = self.base_url + forum_url
-            if 'f=17' not in forum_url:
-                continue
             yield Request(
                 url=forum_url,
                 headers=self.headers,
