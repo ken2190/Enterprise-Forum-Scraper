@@ -18,3 +18,4 @@ elasticsearch
 cassandra-driver
 telethon
 python-dotenv
+arrow
