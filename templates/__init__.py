@@ -179,6 +179,9 @@ from templates.maza_template import MazaParser
 from templates.apollon_template import ApollonParser
 from templates.darkmarket_template import DarkmarketParser
 from templates.darkbay_template import DarkbayParser
+from templates.itshqip_template import ItshqipParser
+from templates.totalblackhat_template import TotalBlackHatParser
+from templates.digitalgangster_template import DigitalGangsterParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -361,4 +364,5 @@ PARSER_MAP = {
     'apollon': ApollonParser,
     'darkmarket': DarkmarketParser,
     'darkbay': DarkbayParser,
+    'digitalgangster': DigitalGangsterParser,
 }

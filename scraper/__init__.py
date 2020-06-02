@@ -157,6 +157,10 @@ from scraper.maza import MazaScrapper
 from scraper.darkbay import DarkbayScrapper
 from scraper.darkmarket import DarkmarketScrapper
 from scraper.empire import EmpireScrapper
+from scraper.nulled_ch import NulledChScrapper
+from scraper.totalblackhat import TotalBlackHatScrapper
+from scraper.itshqip import ItshqipScrapper
+from scraper.digitalgangster import DigitalGangsterScrapper
 
 
 SCRAPER_MAP = {
@@ -317,4 +321,8 @@ SCRAPER_MAP = {
     'darkbay': DarkbayScrapper,
     'darkmarket': DarkmarketScrapper,
     'empire': EmpireScrapper,
+    'nulled_ch': NulledChScrapper,
+    'totalblackhat': TotalBlackHatScrapper,
+    'itshqip': ItshqipScrapper,
+    'digitalgangster': DigitalGangsterScrapper,
 }

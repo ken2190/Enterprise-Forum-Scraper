@@ -3,6 +3,7 @@ import os
 import uuid
 
 from datetime import datetime, timedelta
+import dateparser
 
 from scrapy import (
     Request,
@@ -15,8 +16,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
+REQUEST_DELAY = 1
+NO_OF_THREADS = 3
 
 
 class CrackForumSpider(SitemapSpider):
@@ -65,6 +66,18 @@ class CrackForumSpider(SitemapSpider):
     post_datetime_format = '%d.%m.%Y, %H:%M'
     sitemap_datetime_format = '%d.%m.%Y'
 
+    def parse_thread_date(self, thread_date):
+        thread_date = thread_date.strip()
+        if not thread_date:
+            return
+        return dateparser.parse(thread_date)
+
+    def parse_post_date(self, post_date):
+        post_date = post_date.strip()
+        if not post_date:
+            return
+        return dateparser.parse(post_date)
+
     def start_requests(self, ):
         url = f'{self.base_url}forum.php'
         yield Request(
@@ -79,7 +92,7 @@ class CrackForumSpider(SitemapSpider):
         for forum_url in all_forums:
 
             # Standardize url
-            if self.base_url not in forum_url:
+            if not forum_url.startswith('http'):
                 forum_url = self.base_url + forum_url
             yield Request(
                 url=forum_url,
