@@ -19,3 +19,4 @@ cassandra-driver
 telethon
 python-dotenv
 arrow
+schedule

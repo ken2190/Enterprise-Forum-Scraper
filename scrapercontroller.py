@@ -14,6 +14,8 @@ dv_base_url = os.getenv('DV_BASE_URL')
 headers = {
     'apiKey': os.getenv('API_TOKEN')
 }
+output_dir = os.getenv('OUTPUT_DIR')
+parse_dir = os.getenv('PARSE_DIR')
 
 def increment_start_date(start_date):
     """
@@ -25,7 +27,7 @@ def get_active_scrapers():
     """
     Retrieves the active scrapers from the Data Viper API.
     """
-    response = requests.get('{0}/api/scraper'.format(dv_base_url), headers=headers)
+    response = requests.get('{}/api/scraper'.format(dv_base_url), headers=headers)
     if response.status_code != 200:
         raise Exception('Failed to get scrapers from API')
     return response.json()
@@ -34,7 +36,7 @@ def update_scraper(scraper, payload):
     """
     Updates the scraper in the Data Viper API.
     """
-    scraper_url = '{0}/api/scraper/{1}'.format(dv_base_url, scraper['id'])
+    scraper_url = '{}/api/scraper/{}'.format(dv_base_url, scraper['id'])
     requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
 
 def process_scraper(scraper):
@@ -42,8 +44,8 @@ def process_scraper(scraper):
     Processes the scraper by running the scraper template and then parsing the data.
     """
     start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
+    subfolder = scraper['name']
     template = scraper['template']
-    output = 'output/{0}'.format(template)
 
     try:
         print('Scraping {} from {}...'.format(template, start_date))
@@ -53,7 +55,7 @@ def process_scraper(scraper):
         kwargs = {
             'start_date': start_date, 
             'template': template,
-            'output': 'output/{0}'.format(template)
+            'output': '{}/{}'.format(output_dir, subfolder)
         }
         Scraper(kwargs).do_scrape()
 
@@ -63,13 +65,13 @@ def process_scraper(scraper):
 
         kwargs = {
             'template': template,
-            'output': 'parse/{0}'.format(template),
-            'path': 'output/{0}'.format(template)
+            'output': '{}/{}'.format(parse_dir, subfolder),
+            'path': '{}/{}'.format(output_dir, subfolder)
         }
         Parser(kwargs).start()
 
-        next_start_date = increment_start_date(start_date)
-        print(next_start_date)
+        # update the scraper's next start date to the current date
+        next_start_date = arrow.now().format('YYYY-MM-DD')
         update_scraper(scraper, { 'status': 'Idle', 'nextStartDate': next_start_date })
 
     except Exception as e:
