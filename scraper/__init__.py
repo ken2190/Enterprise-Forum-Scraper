@@ -161,6 +161,7 @@ from scraper.nulled_ch import NulledChScrapper
 from scraper.totalblackhat import TotalBlackHatScrapper
 from scraper.itshqip import ItshqipScrapper
 from scraper.digitalgangster import DigitalGangsterScrapper
+from scraper.jstash_bazar import JstashBazarScrapper
 
 
 SCRAPER_MAP = {
@@ -325,4 +326,5 @@ SCRAPER_MAP = {
     'totalblackhat': TotalBlackHatScrapper,
     'itshqip': ItshqipScrapper,
     'digitalgangster': DigitalGangsterScrapper,
+    'jstash_bazar': JstashBazarScrapper
 }

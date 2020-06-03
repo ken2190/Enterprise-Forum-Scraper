@@ -9,7 +9,7 @@ import json
 import logging
 import dateparser
 
-
+from random import choice
 from glob import glob
 from requests import Session
 from lxml.html import fromstring
@@ -907,18 +907,27 @@ class SitemapSpider(BypassCloudfareSpider):
             pass
 
         # Load proxy
-        proxy = self.load_proxies(response)
+        if response:
+            proxy = self.load_proxies(response)
 
         # Load user agent
+        user_agent = self.headers.get("User-Agent")
+        if response:
+            user_agent = response.request.headers.get("User-Agent")
+        
+        # Update headers
         headers.update(
             {
-                "User-Agent": response.request.headers.get("User-Agent")
+                "User-Agent": user_agent
             }
         )
 
         # Download content
-        image_content = self.get_captcha_image_content(
-            image_url, cookies, headers, proxy)
+        try:
+            image_content = self.get_captcha_image_content(
+                image_url, cookies, headers, proxy)
+        except Exception as err:
+            image_content = b64decode(image_url)
 
         # Archive captcha content
         root_folder = os.path.dirname(os.path.abspath(__file__))
@@ -961,6 +970,27 @@ class SitemapSpider(BypassCloudfareSpider):
             "Download captcha image content with headers %s" % response.request.headers
         )
         return response.content
+
+    def get_blockchain_domain(self, domain):
+        # Get domain root only
+        domain = domain.split('/')[2] if '://' in domain else domain
+        
+        # List of apis and load api
+        apis = ['https://bdns.co/r/', 'https://bdns.us/r/', 'https://bdns.bz/r/']
+        
+        while True:
+            api = choice(apis)
+
+            # Load domain ip
+            try:
+                r = requests.get(api+domain)
+                if r.status_code == 200:
+                    ip = r.text.splitlines()[0]
+                    return ip
+                else:
+                    return
+            except Exception as err:
+                continue
 
     def start_requests(self, cookiejar=None, ip=None):
         """
