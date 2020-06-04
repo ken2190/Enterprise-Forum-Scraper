@@ -162,6 +162,7 @@ from scraper.totalblackhat import TotalBlackHatScrapper
 from scraper.itshqip import ItshqipScrapper
 from scraper.digitalgangster import DigitalGangsterScrapper
 from scraper.jstash_bazar import JstashBazarScrapper
+from scraper.stormfront import StormFrontScrapper
 
 
 SCRAPER_MAP = {
@@ -326,5 +327,6 @@ SCRAPER_MAP = {
     'totalblackhat': TotalBlackHatScrapper,
     'itshqip': ItshqipScrapper,
     'digitalgangster': DigitalGangsterScrapper,
-    'jstash_bazar': JstashBazarScrapper
+    'jstash_bazar': JstashBazarScrapper,
+    'stormfront': StormFrontScrapper,
 }

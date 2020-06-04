@@ -182,6 +182,7 @@ from templates.darkbay_template import DarkbayParser
 from templates.itshqip_template import ItshqipParser
 from templates.totalblackhat_template import TotalBlackHatParser
 from templates.digitalgangster_template import DigitalGangsterParser
+from templates.stormfront_template import StormFrontParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -365,4 +366,5 @@ PARSER_MAP = {
     'darkmarket': DarkmarketParser,
     'darkbay': DarkbayParser,
     'digitalgangster': DigitalGangsterParser,
+    'stormfront': StormFrontParser,
 }
