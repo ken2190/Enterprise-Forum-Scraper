@@ -10,3 +10,4 @@ input
 *.json
 output
 .env
+log
