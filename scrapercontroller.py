@@ -1,82 +1,71 @@
 import arrow
-from datetime import datetime
 import json
+import logging
 import os
 import requests
 import schedule
+import subprocess
 import time
 
 import settings
-from forumparse import Parser
-from run_scrapper import Scraper
+# from scraperprocessor import process_scraper
+from scraperprocessor import (
+    get_active_scrapers,
+    update_scraper
+)
 
 dv_base_url = os.getenv('DV_BASE_URL')
 headers = {
     'apiKey': os.getenv('API_TOKEN')
 }
-output_dir = os.getenv('OUTPUT_DIR')
-parse_dir = os.getenv('PARSE_DIR')
+output_basedir = os.getenv('OUTPUT_DIR')
+parse_basedir = os.getenv('PARSE_DIR')
+log_basedir = os.getenv('LOG_DIR')
 
-def increment_start_date(start_date):
-    """
-    Add 1 day to the start date.
-    """
-    return arrow.get(start_date).shift(days=1).format('YYYY-MM-DD')
+logger = logging.getLogger(__name__)
 
-def get_active_scrapers():
+def get_log_file(scraper):
     """
-    Retrieves the active scrapers from the Data Viper API.
+    Opens a handle to the log file for the scraper and current date.
+    Creates log directories if they do not exist.
     """
-    response = requests.get('{}/api/scraper'.format(dv_base_url), headers=headers)
-    if response.status_code != 200:
-        raise Exception('Failed to get scrapers from API')
-    return response.json()
+    dirname = os.path.join(log_basedir, scraper['name'])
+    if not os.path.exists(dirname): 
+        os.makedirs(dirname)
+    log_filename = os.path.join(log_basedir, scraper['name'], '{}.log'.format(arrow.now().format('YYYY-MM-DD')))
+    log_file = open(log_filename, 'a')
+    return log_file
 
-def update_scraper(scraper, payload):
+def check_pid(scraper):        
     """
-    Updates the scraper in the Data Viper API.
+    Check if scraper's PID is set and running.
     """
-    scraper_url = '{}/api/scraper/{}'.format(dv_base_url, scraper['id'])
-    requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
-
-def process_scraper(scraper):
-    """
-    Processes the scraper by running the scraper template and then parsing the data.
-    """
-    start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
-    subfolder = scraper['name']
-    template = scraper['template']
-
+    if scraper['pid'] is None:
+        return False
     try:
-        print('Scraping {} from {}...'.format(template, start_date))
+        os.kill(scraper['pid'], 0)
+        return True
+    except OSError:
+        return False
 
-        update_scraper(scraper, { 'status': 'Scraping' })
-
-        kwargs = {
-            'start_date': start_date, 
-            'template': template,
-            'output': '{}/{}'.format(output_dir, subfolder)
-        }
-        Scraper(kwargs).do_scrape()
-
-        print('Processing {}'.format(template))
-
-        update_scraper(scraper, { 'status': 'Processing' })
-
-        kwargs = {
-            'template': template,
-            'output': '{}/{}'.format(parse_dir, subfolder),
-            'path': '{}/{}'.format(output_dir, subfolder)
-        }
-        Parser(kwargs).start()
-
-        # update the scraper's next start date to the current date
-        next_start_date = arrow.now().format('YYYY-MM-DD')
-        update_scraper(scraper, { 'status': 'Idle', 'nextStartDate': next_start_date })
-
+def spawn_scraper(scraper):
+    print(scraper)
+    """
+    Spawns the scraper processor in a sub-process for the scraper ID.
+    Output for both stdout and stderr are redirected to a dedicated log file.
+    """
+    try:
+        # check if scraper PID is still running
+        if check_pid(scraper):
+            print('no soup, {} still running'.format(scraper['pid']))
+            return
+            
+        log_file = get_log_file(scraper)
+        script = os.path.join(os.path.dirname(__file__), 'scraperprocessor.py')
+        handle = subprocess.Popen(['python3', script, '-s', str(scraper['id'])], stdout=log_file, stderr=log_file)
+        update_scraper(scraper, { 'pid': handle.pid })
     except Exception as e:
-        print('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, { 'status': 'Error' })
+        logger.error('Failed to spawn scraper: {}'.format(e))
 
 def load_and_schedule_scrapers():
     """
@@ -84,14 +73,13 @@ def load_and_schedule_scrapers():
     one at their designated time. Also re-schedules this method after
     every minute.
     """
-    print('Loading and schedule scrapers...')
+    logger.info('Loading and schedule scrapers...')
     schedule.clear()
 
     scrapers = get_active_scrapers()
     for scraper in scrapers:
-        # FIXME would be nice to run in a thread/queue, but can't because scrapy uses signals
-        print('Scheduling {} to run daily at {}'.format(scraper['name'], scraper['runAtTime']))
-        schedule.every().days.at(scraper['runAtTime']).do(process_scraper, scraper)
+        logger.info('Scheduling {} to run daily at {}'.format(scraper['name'], scraper['runAtTime']))
+        schedule.every().days.at(scraper['runAtTime']).do(spawn_scraper, scraper)
 
     schedule.every().minute.do(load_and_schedule_scrapers)
 
@@ -106,4 +94,4 @@ try:
         time.sleep(1)
         
 except Exception as e:
-    print('ERROR: {}'.format(e))
+    logger.error('ERROR: {}'.format(e))
