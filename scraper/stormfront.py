@@ -16,8 +16,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
+REQUEST_DELAY = 0.3
+NO_OF_THREADS = 10
 
 
 class StormFrontSpider(SitemapSpider):
@@ -58,7 +58,7 @@ class StormFrontSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
     download_delay = REQUEST_DELAY

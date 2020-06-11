@@ -170,7 +170,7 @@ class MazaSpider(SeleniumSpider):
 
 class MazaScrapper(SiteMapScrapper):
     spider_class = MazaSpider
-    site_name = 'maza'
+    site_name = 'maza.la'
 
     def load_settings(self):
         settings = super().load_settings()

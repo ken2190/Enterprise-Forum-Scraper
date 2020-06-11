@@ -42,8 +42,8 @@ class KorovkaSpider(SeleniumSpider):
     delay = REQUEST_DELAY
 
     # Url stuffs
-    base_url = "http://korovka32xc3t5cg.onion/"
-    login_url = "http://korovka32xc3t5cg.onion/login.php?do=login"
+    base_url = "https://korovka.cc/"
+    login_url = "https://korovka.cc/login.php?do=login"
 
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "forumdisplay.php?f=")]/@href'
