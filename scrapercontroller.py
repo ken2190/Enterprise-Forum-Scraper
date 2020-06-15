@@ -7,20 +7,15 @@ import schedule
 import subprocess
 import time
 
-import settings
-# from scraperprocessor import process_scraper
+from settings import (
+    LOG_DIR,
+    PYTHON_BIN,
+)
+
 from scraperprocessor import (
     get_active_scrapers,
     update_scraper
 )
-
-dv_base_url = os.getenv('DV_BASE_URL')
-headers = {
-    'apiKey': os.getenv('API_TOKEN')
-}
-output_basedir = os.getenv('OUTPUT_DIR')
-parse_basedir = os.getenv('PARSE_DIR')
-log_basedir = os.getenv('LOG_DIR')
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +24,10 @@ def get_log_file(scraper):
     Opens a handle to the log file for the scraper and current date.
     Creates log directories if they do not exist.
     """
-    dirname = os.path.join(log_basedir, scraper['name'])
+    dirname = os.path.join(LOG_DIR, scraper['name'])
     if not os.path.exists(dirname): 
         os.makedirs(dirname)
-    log_filename = os.path.join(log_basedir, scraper['name'], '{}.log'.format(arrow.now().format('YYYY-MM-DD')))
+    log_filename = os.path.join(LOG_DIR, scraper['name'], '{}.log'.format(arrow.now().format('YYYY-MM-DD')))
     log_file = open(log_filename, 'a')
     return log_file
 
@@ -49,7 +44,6 @@ def check_pid(scraper):
         return False
 
 def spawn_scraper(scraper):
-    print(scraper)
     """
     Spawns the scraper processor in a sub-process for the scraper ID.
     Output for both stdout and stderr are redirected to a dedicated log file.
@@ -62,7 +56,7 @@ def spawn_scraper(scraper):
             
         log_file = get_log_file(scraper)
         script = os.path.join(os.path.dirname(__file__), 'scraperprocessor.py')
-        handle = subprocess.Popen(['python3', script, '-s', str(scraper['id'])], stdout=log_file, stderr=log_file)
+        handle = subprocess.Popen([PYTHON_BIN, script, '-s', str(scraper['id'])], stdout=log_file, stderr=log_file)
         update_scraper(scraper, { 'pid': handle.pid })
     except Exception as e:
         logger.error('Failed to spawn scraper: {}'.format(e))
