@@ -12,6 +12,7 @@ Options:
 
     Mongo And Cassandra Options
         -tf, --targetFile            : CSV formatted list of hosts (IP,port). One IPV4 or CIDR per line
+        -exif, --excludeIndexFile    : One keyword per line, all index contain these keyword will be excluded
         -t, --target Target          : IP or CIDR of database
         -p, --port Port              : Port of database(s)
         -s, --scrape                 : Type of scrape to run: basic, fields 
@@ -26,6 +27,7 @@ Options:
 
     Elastic Search Options
         -tf, --targetFile            : CSV formatted list of hosts (IP,port). One IPV4 or CIDR per line
+        -exif, --excludeIndexFile    : One keyword per line, all index contain these keyword will be excluded
         -t, --targets Targets        : IP or CIDR of database(s)
         -p, --port Port              : Port of database(s)
         -s, --scrape                 : Type of scrape to run: scan, search, dump

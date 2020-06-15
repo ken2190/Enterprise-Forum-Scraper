@@ -20,6 +20,8 @@ class ArgParser():
         nosql_and_elastic_options = parser.add_argument_group('MongoDB and ElasticSearch Options')
         nosql_and_elastic_options.add_argument('--targetFile', '-tf', nargs='?', metavar="TargetFile", default=None,
                                                help=argparse.SUPPRESS, type=str)
+        nosql_and_elastic_options.add_argument('--excludeIndexFile', '-exif', nargs='?', metavar="ExcludeIndexFile", default=None,
+                                               help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--targets', '-t', nargs='?', metavar="Targets", default=None,
                                                help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--port', '-p', nargs='?', metavar="Port", default=-1, help=argparse.SUPPRESS,

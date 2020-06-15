@@ -214,7 +214,19 @@ class NoScrape:
             arg_verifier.try_opening_output_file()
             out_file = argparse_data['outFile']
 
-        elastic_tool = ElasticScrape(scrape_type=argparse_data['scrape_type'], limit=argparse_data['limit'], keywords=filter_list)
+        exclude_indexes = []
+        if argparse_data['excludeIndexFile'] is not None:
+            with open(argparse_data['excludeIndexFile'], "r") as exclude_file:
+                exclude_indexes = [
+                    keyword.strip() for keyword in exclude_file.read().split("\n")
+                ]
+
+        elastic_tool = ElasticScrape(
+            scrape_type=argparse_data['scrape_type'], 
+            limit=argparse_data['limit'], 
+            keywords=filter_list,
+            exclude_indexes=exclude_indexes
+        )
 
         targets = IpTargets()
         if argparse_data['targets'] is not None:

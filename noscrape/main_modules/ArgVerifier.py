@@ -98,19 +98,21 @@ class ArgVerifier:
     def show_es_help(self):
         port = self.argparse_data['port']
         targets = self.argparse_data['targets']
-        if port == -1 and targets is None:
+        targetFile = self.argparse_data['targetFile']
+        if port == -1 and targetFile is None and targets is None:
             help_message = """
             Usage: collector.py -scan [-d DATABASE] [-s SCRAPE_TYPE] [-p PORT] [-tf TARGET_FILE]
                                       [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER]
             Arguments:
-            -s | --scrape_type  :  Type of scrape to run
-            -p | --port PORT    :  Database port
-            -tf | --target_file :  A CSV formatted list of targets host,port
-            -u | --username     :  Username for standard authentication
-            -pw | --password    :  Password for standard authentication
-            -a | --authDB       :  Database within Mongo to auth against
-            -l | --limit        :  Number of records dumped per Elasticdump request (default & max = 10,000)
-            -f | --filter       :  Use to specify a list of keywords to filter within your scraped search results
+            -s | --scrape_type             :  Type of scrape to run
+            -p | --port PORT               :  Database port
+            -exif | --excludeIndexFile     :  One keyword per line, all index contain these keyword will be excluded
+            -tf | --target_file            :  A CSV formatted list of targets host,port
+            -u | --username                :  Username for standard authentication
+            -pw | --password               :  Password for standard authentication
+            -a | --authDB                  :  Database within Mongo to auth against
+            -l | --limit                   :  Number of records dumped per Elasticdump request (default & max = 10,000)
+            -f | --filter                  :  Use to specify a list of keywords to filter within your scraped search results
             """
             print(help_message)
             exit(1)
