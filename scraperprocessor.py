@@ -22,7 +22,7 @@ headers = {
 }
 
 # shell script to combine JSON and create archives
-post_process_script = '../tools/post_process.sh'
+post_process_script = 'tools/post_process.sh'
 
 logger = logging.getLogger(__name__)
 
@@ -32,13 +32,13 @@ def get_active_scrapers():
     """
     response = requests.get('{}/api/scraper'.format(DV_BASE_URL), headers=headers)
     if response.status_code != 200:
-        raise Exception('Failed to get scrapers from API')
+        raise Exception('Failed to get scrapers from API (status={})'.format(response.status_code))
     return response.json()
 
 def get_scraper(scraper_id):
     response = requests.get('{}/api/scraper/{}'.format(DV_BASE_URL, scraper_id), headers=headers)
     if response.status_code != 200:
-        raise Exception('Failed to get scraper by ID from API')
+        raise Exception('Failed to get scraper by ID from API (status={})'.format(response.status_code))
     return response.json()
 
 def update_scraper(scraper, payload):
@@ -93,7 +93,7 @@ def process_scraper(scraper):
         ##############################
         # Post-process HTML & JSON
         ##############################
-        subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYYMM-DD')])
+        subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYY-MM-DD')])
 
         ##############################
         # Update Scraper Status / Date

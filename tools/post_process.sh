@@ -5,7 +5,7 @@ SITE_NAME=${1?Error: no site name provided}
 DATESTAMP=${2?Error: no datestamp provided}
 
 # directory containing output of scraped site (step 1)
-OUTPUT_DIR=data/processing/1
+OUTPUT_DIR=/data/processing/1
 
 # directory containing output of the parsed JSON files (step 2)
 PARSE_DIR=/data/processing/2
@@ -19,31 +19,31 @@ ARCHIVE_DIR=/data/processing/offsite
 # directory for JSON to be imported
 IMPORT_DIR=/data/processing/import
 
-if [ ! -f $OUTPUT_DIR ]
+if [ ! -d $OUTPUT_DIR ]
 then
     echo "ERROR: Scraper output directory does not exist $OUTPUT_DIR"
     exit 2
 fi
 
-if [ ! -f $PARSE_DIR ]
+if [ ! -d $PARSE_DIR ]
 then
     echo "ERROR: Parsing output directory does not exist $PARSE_DIR"
     exit 2
 fi
 
-if [ ! -f $COMBO_DIR ]
+if [ ! -d $COMBO_DIR ]
 then
     echo "ERROR: JSON combo directory does not exist $COMBO_DIR"
     exit 2
 fi
 
-if [ ! -f $ARCHIVE_DIR ]
+if [ ! -d $ARCHIVE_DIR ]
 then
     echo "ERROR: Archive directory does not exist $ARCHIVE_DIR"
     exit 2
 fi
 
-if [ ! -f $IMPORT_DIR ]
+if [ ! -d $IMPORT_DIR ]
 then
     echo "ERROR: Import directory does not exist $IMPORT_DIR"
     exit 2
@@ -59,13 +59,15 @@ RCLONE_BIN=rclone
 ##############################################
 # merge parsed files
 ##############################################
-CWD=`PWD`
+CWD=`pwd`
 cd $PARSE_DIR/$SITE_NAME
 $JQ_BIN . *.json -c >> $COMBO_DIR/$SITE_NAME-$DATESTAMP.json
 if [ $? -ne 0 ]
+then
     echo "ERROR: JQ exited with non-zero exit code"
     cd $CWD
     exit 2
+fi
 cd $CWD
 
 ##############################################
