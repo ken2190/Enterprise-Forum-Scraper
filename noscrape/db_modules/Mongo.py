@@ -231,7 +231,7 @@ class MongoScrape(NoScrapePlugin):
 
 			except Exception as e:
 				self.logger.error("An unexpected error occured on " + self.target + ":" + str(self.port) + " - " + str(e))
-sss
+				
 		return db_results
 
 	def process_index(self, stats, index):
