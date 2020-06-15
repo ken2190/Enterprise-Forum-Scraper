@@ -93,7 +93,7 @@ def process_scraper(scraper):
         ##############################
         # Post-process HTML & JSON
         ##############################
-        subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYY-MM-DD')])
+        subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYY_MM_DD')])
 
         ##############################
         # Update Scraper Status / Date
