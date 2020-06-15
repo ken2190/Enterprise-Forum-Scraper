@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import requests
+import subprocess
 import sys
 
 from forumparse import Parser
@@ -19,6 +20,9 @@ from settings import (
 headers = {
     'apiKey': API_TOKEN
 }
+
+# shell script to combine JSON and create archives
+post_process_script = '../tools/post_process.sh'
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +89,11 @@ def process_scraper(scraper):
             'path': scraper_output_dir
         }
         Parser(kwargs).start()
+
+        ##############################
+        # Post-process HTML & JSON
+        ##############################
+        subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYYMM-DD')])
 
         ##############################
         # Update Scraper Status / Date
