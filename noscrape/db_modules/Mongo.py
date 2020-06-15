@@ -11,7 +11,7 @@ class MongoScrape(NoScrapePlugin):
 
 	none_database_fields = ["indexes", "stats"]
 
-	def __init__(self, scrape_type='basic', username=None, password=None, auth_db=None):
+	def __init__(self, scrape_type='basic', username=None, password=None, auth_db=None, exclude_indexes=[]):
 		self.scrape_type = scrape_type
 		self.username = username
 		self.password = password
@@ -219,12 +219,19 @@ class MongoScrape(NoScrapePlugin):
 					if self.scrape_type in ['index', 'all']:
 						db_results["indexes"] = []
 						for index in csession.list_indexes():
-							db_results["indexes"].append(
-								self.process_index(stats, index)
-							)
+							is_exclude = False
+							for exclude_keyword in self.exclude_indexes:
+								if exclude_keyword.lower() in index.get("name").lower():
+									is_exclude = True
+									break
+							if not is_exclude:
+								db_results["indexes"].append(
+									self.process_index(stats, index)
+								)
+
 			except Exception as e:
 				self.logger.error("An unexpected error occured on " + self.target + ":" + str(self.port) + " - " + str(e))
-
+sss
 		return db_results
 
 	def process_index(self, stats, index):

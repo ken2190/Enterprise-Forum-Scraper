@@ -72,17 +72,23 @@ class ElasticScrape(NoScrapePlugin):
             os.makedirs(self.target)
         indexes = self.DBClient.indices.get('*')
         for index in indexes:
+            is_exclude = False
+            
             for keyword in self.exclude_indexes:
                 if keyword.lower() in index.lower():
                     print("Ignore index %s because contain keyword %s in exclude file." % (index, keyword))
-                    continue
-            print("Dumping to file for ip {}:{} and the index {}".format(self.target, self.port, index))
-            elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}".\
-                format(self.target, self.port, index, self.target, index, self.limit)
-            try:
-                sp.check_output(elastic_dump_command, shell=True)
-            except Exception as e:
-                print(e)
+                    is_exclude = True
+                    break
+
+            if not is_exclude:
+                print("Dumping to file for ip {}:{} and the index {}".format(self.target, self.port, index))
+                elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}".\
+                    format(self.target, self.port, index, self.target, index, self.limit)
+                try:
+                    sp.check_output(elastic_dump_command, shell=True)
+                except Exception as e:
+                    print(e)
+        
         return "dump"
 
     def matchdump(self):
