@@ -101,7 +101,7 @@ fi
 # delete scraped HTML and parsed JSON files
 ##############################################
 
-# TODO check if files exist and not 0 bytes
+# check if archive file exists and not 0 bytes
 if [ -f "$ARCHIVE_DIR/original/$SITE_NAME-html-$DATESTAMP.tar.gz" ] && 
    [ -s "$ARCHIVE_DIR/original/$SITE_NAME-html-$DATESTAMP.tar.gz" ]
 then
