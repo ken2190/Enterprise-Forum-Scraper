@@ -26,7 +26,7 @@ class ArgParser():
                                                help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--port', '-p', nargs='?', metavar="Port", default=-1, help=argparse.SUPPRESS,
                                                type=int)
-        nosql_and_elastic_options.add_argument('--scrape_type', '-s', nargs='?', default='basic', help=argparse.SUPPRESS)
+        nosql_and_elastic_options.add_argument('--scrape_type', '-st', nargs='?', default='basic', help=argparse.SUPPRESS)
         nosql_and_elastic_options.add_argument('--filter', '-f', nargs='?', default=None, metavar="FilterFile",
                                                help=argparse.SUPPRESS)
         nosql_and_elastic_options.add_argument('--username', '-u', nargs='?', metavar="Username", default=None,
