@@ -1,0 +1,12 @@
+1592325833093	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileZ0Qltk"
+*** You are running in headless mode.
+JavaScript error: resource://normandy/lib/PreferenceExperiments.jsm, line 221: TypeError: can't convert undefined to object
+1592325835386	Marionette	INFO	Listening on port 37941
+1592325835414	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: https://assets.hcaptcha.com/captcha/v1/a4e6e0c/hcaptcha-challenge.min.js, line 2: TypeError: t is null
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
