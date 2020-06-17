@@ -70,7 +70,7 @@ class MazaSpider(SeleniumSpider):
 
     # Other settings
     use_proxy = False
-    handle_httpstatus_list = [400]
+    handle_httpstatus_list = [400, 502]
     skip_forums = [204, 194, 208, 221, 153, 171, 168, 203, 191, 192, 169, 211, 102, 28, 155, 162, 150, 224, 155, 84, 187, 90, 188, 196, 197, 47, 83, 189, 149, 121, 184, 112, 122, 186, 205, 114, 40, 76, 185, 219, 201, 206, 120, 217, 128, 111, 127, 170, 119, 181, 216, 82, 113, 118, 180, 182, 169, 198, 199, 110, 179, 65, 43, 44, 73, 178, 215, 100, 177, 202, 176, 214, 72, 42, 70, 146, 49, 78, 175, 173, 117, 174, 109, 213, 46, 159, 195, 210, 48, 190, 154, 64, 207, 218, 38, 223, 160, 193]
 
     def __init__(self, *args, **kwargs):
@@ -83,7 +83,7 @@ class MazaSpider(SeleniumSpider):
         self.setup_browser()
         self.skip_forums = [f'f={i}' for i in self.skip_forums]
 
-    def setup_browser(self):
+    def setup_browser(self, proxy_host=PROXY_HOST):
 
         # Init logger
         selenium_logger = logging.getLogger("seleniumwire")
@@ -104,9 +104,9 @@ class MazaSpider(SeleniumSpider):
 
         # Set proxy
         firefox_profile.set_preference("network.proxy.type", 1)
-        firefox_profile.set_preference("network.proxy.http", PROXY_HOST)
+        firefox_profile.set_preference("network.proxy.http", proxy_host)
         firefox_profile.set_preference("network.proxy.http_port", PROXY_PORT)
-        firefox_profile.set_preference("network.proxy.ssl", PROXY_HOST)
+        firefox_profile.set_preference("network.proxy.ssl", proxy_host)
         firefox_profile.set_preference("network.proxy.ssl_port", PROXY_PORT)
 
         # Init web driver arguments
@@ -130,6 +130,11 @@ class MazaSpider(SeleniumSpider):
         )
 
     def parse(self, response):
+
+        if response.status != 400:
+            self.browser.quit()
+            self.setup_browser(proxy_host="tor")
+
         self.browser.get(self.base_url)
         time.sleep(self.delay)
         userbox = self.browser.find_element_by_name('vb_login_username')

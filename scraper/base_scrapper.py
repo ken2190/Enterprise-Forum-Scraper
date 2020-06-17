@@ -227,7 +227,7 @@ class SiteMapScrapper:
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
-        "LOG_LEVEL": "WARNING"
+        "LOG_LEVEL": "DEBUG"
     }
 
     time_format = "%Y-%m-%d"
@@ -291,14 +291,27 @@ class SiteMapScrapper:
             os.makedirs(self.avatar_path)
 
     def do_scrape(self):
+        
+        # Load process
         process = CrawlerProcess(
             self.load_settings()
         )
+        
+        # Load crawler
+        crawler = process.create_crawler(self.spider_class)
+
+        # Trigger running
         process.crawl(
-            self.spider_class,
+            crawler,
             **self.load_spider_kwargs()
         )
         process.start()
+        
+        # Load stats
+        stats_obj = crawler.stats
+        stats_dict = crawler.stats.get_stats()
+
+        return stats_dict
 
 
 class FromDateScrapper(BaseScrapper, SiteMapScrapper):
