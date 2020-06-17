@@ -10,3 +10,16 @@ Exiting due to channel error.
 [GFX1-]: Receive IPC close with reason=AbnormalShutdown
 Exiting due to channel error.
 Exiting due to channel error.
+1592328502575	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilewEnt22"
+*** You are running in headless mode.
+JavaScript error: resource://normandy/lib/PreferenceExperiments.jsm, line 221: TypeError: can't convert undefined to object
+1592328505165	Marionette	INFO	Listening on port 41341
+1592328505203	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: https://mfclubjof2s67ire.onion/clientscript/ckeditor/ckeditor.js?t=A7HG4HT&v=425b1, line 23: uncaught exception: [CKEDITOR.resourceManager.load] Resource name "default" was not found at "https://mfclubjof2s67ire.onion/clientscript/ckeditor/plugins/styles/styles/default.js?t=B8DJ5M3".
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
