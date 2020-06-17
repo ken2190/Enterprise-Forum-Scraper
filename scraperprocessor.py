@@ -46,7 +46,9 @@ def update_scraper(scraper, payload):
     Updates the scraper in the Data Viper API.
     """
     scraper_url = '{}/api/scraper/{}'.format(DV_BASE_URL, scraper['id'])
-    requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
+    response = requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
+    if response.status_code != 200:
+        logger.warn('Failed to update scraper (status={})'.format(response.status_code))
 
 def process_scraper(scraper):
     """
@@ -104,7 +106,7 @@ def process_scraper(scraper):
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, { 'status': 'Error: '.format(e), 'pid': None })
+        update_scraper(scraper, { 'status': 'Error', 'pid': None })
 
 def help():
     logger.info('scraperprocessor.py -s <scraper_id>')
