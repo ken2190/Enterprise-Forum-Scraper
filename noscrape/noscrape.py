@@ -274,7 +274,8 @@ class NoScrape:
                         result_is_empty = False
 
                     if out_file is not None:
-                        write_out = open(out_file, "a")
+                        outfile = '%s' % ip
+                        write_out = open(outfile, "a")
                         text = elastic_tool.result_to_file(results)
                         if not first_write and text:
                             text = '\n\n///////////////////////////////////////////////////////////////\n\n' + text
