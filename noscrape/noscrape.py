@@ -99,13 +99,29 @@ class NoScrape:
             if argparse_data['authDB'] is None:
                 argparse_data['authDB'] = "admin"
 
+        exclude_indexes = []
+        if argparse_data['excludeIndexFile'] is not None:
+            with open(argparse_data['excludeIndexFile'], "r") as exclude_file:
+                exclude_indexes = [
+                    keyword.strip() for keyword in exclude_file.read().split("\n")
+                ]
+
         # Build the tool
         if nosql_type == 'mongo':
-            nosql_tool = MongoScrape(scrape_type=argparse_data['scrape_type'], username=argparse_data['username'],
-                                     password=argparse_data['password'], auth_db=argparse_data['authDB'])
+            nosql_tool = MongoScrape(
+                scrape_type=argparse_data['scrape_type'], 
+                username=argparse_data['username'],
+                password=argparse_data['password'], 
+                auth_db=argparse_data['authDB'], 
+                exclude_indexes=exclude_indexes
+            )
         elif nosql_type == 'cassandra':
-            nosql_tool = CassandraScrape(scrape_type=argparse_data['scrape_type'], username=argparse_data['username'],
-                                         password=argparse_data['password'])
+            nosql_tool = CassandraScrape(
+                scrape_type=argparse_data['scrape_type'], 
+                username=argparse_data['username'],
+                password=argparse_data['password'], 
+                exclude_indexes=exclude_indexes
+            )
         else:
             raise ValueError("Type Should be either 'mongo' or 'cassandra'")
 
@@ -214,7 +230,19 @@ class NoScrape:
             arg_verifier.try_opening_output_file()
             out_file = argparse_data['outFile']
 
-        elastic_tool = ElasticScrape(scrape_type=argparse_data['scrape_type'], limit=argparse_data['limit'], keywords=filter_list)
+        exclude_indexes = []
+        if argparse_data['excludeIndexFile'] is not None:
+            with open(argparse_data['excludeIndexFile'], "r") as exclude_file:
+                exclude_indexes = [
+                    keyword.strip() for keyword in exclude_file.read().split("\n")
+                ]
+
+        elastic_tool = ElasticScrape(
+            scrape_type=argparse_data['scrape_type'], 
+            limit=argparse_data['limit'], 
+            keywords=filter_list,
+            exclude_indexes=exclude_indexes
+        )
 
         targets = IpTargets()
         if argparse_data['targets'] is not None:

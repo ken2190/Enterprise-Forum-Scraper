@@ -5,18 +5,24 @@ import json
 import logging
 import os
 import requests
+import subprocess
 import sys
 
-import settings
 from forumparse import Parser
 from run_scrapper import Scraper
+from settings import (
+    API_TOKEN,
+    DV_BASE_URL,
+    OUTPUT_DIR,
+    PARSE_DIR,
+)
 
-dv_base_url = os.getenv('DV_BASE_URL')
 headers = {
-    'apiKey': os.getenv('API_TOKEN')
+    'apiKey': API_TOKEN
 }
-output_basedir = os.getenv('OUTPUT_DIR')
-parse_basedir = os.getenv('PARSE_DIR')
+
+# shell script to combine JSON and create archives
+post_process_script = 'tools/post_process.sh'
 
 logger = logging.getLogger(__name__)
 
@@ -24,23 +30,25 @@ def get_active_scrapers():
     """
     Retrieves the active scrapers from the Data Viper API.
     """
-    response = requests.get('{}/api/scraper'.format(dv_base_url), headers=headers)
+    response = requests.get('{}/api/scraper'.format(DV_BASE_URL), headers=headers)
     if response.status_code != 200:
-        raise Exception('Failed to get scrapers from API')
+        raise Exception('Failed to get scrapers from API (status={})'.format(response.status_code))
     return response.json()
 
 def get_scraper(scraper_id):
-    response = requests.get('{}/api/scraper/{}'.format(dv_base_url, scraper_id), headers=headers)
+    response = requests.get('{}/api/scraper/{}'.format(DV_BASE_URL, scraper_id), headers=headers)
     if response.status_code != 200:
-        raise Exception('Failed to get scraper by ID from API')
+        raise Exception('Failed to get scraper by ID from API (status={})'.format(response.status_code))
     return response.json()
 
 def update_scraper(scraper, payload):
     """
     Updates the scraper in the Data Viper API.
     """
-    scraper_url = '{}/api/scraper/{}'.format(dv_base_url, scraper['id'])
-    requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
+    scraper_url = '{}/api/scraper/{}'.format(DV_BASE_URL, scraper['id'])
+    response = requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
+    if response.status_code != 200:
+        logger.warn('Failed to update scraper (status={})'.format(response.status_code))
 
 def process_scraper(scraper):
     """
@@ -52,8 +60,13 @@ def process_scraper(scraper):
     process_date = arrow.now().format('YYYY-MM-DD')
 
     # the output dirs for the scraper and parser
+<<<<<<< HEAD:scraperprocessor.py
     scraper_output_dir = '{}/{}'.format(output_basedir, subfolder)
     parse_output_dir = '{}/{}'.format(parse_basedir, subfolder)
+=======
+    scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
+    parse_output_dir = os.path.join(PARSE_DIR, subfolder)
+>>>>>>> cada925208f87f3cbaea2153032da623c9f679bf:scraperprocessor.py
 
     try:
         ############################
@@ -85,6 +98,11 @@ def process_scraper(scraper):
         Parser(kwargs).start()
 
         ##############################
+        # Post-process HTML & JSON
+        ##############################
+        subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYY_MM_DD')])
+
+        ##############################
         # Update Scraper Status / Date
         ##############################
         
@@ -93,7 +111,7 @@ def process_scraper(scraper):
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, { 'status': 'Error: '.format(e), 'pid': None })
+        update_scraper(scraper, { 'status': 'Error', 'pid': None })
 
 def help():
     logger.info('scraperprocessor.py -s <scraper_id>')
