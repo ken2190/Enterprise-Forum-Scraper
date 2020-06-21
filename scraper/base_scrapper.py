@@ -227,7 +227,7 @@ class SiteMapScrapper:
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
-	"LOG_LEVEL": "WARNING"
+	"LOG_LEVEL": "DEBUG"
     }
 
     time_format = "%Y-%m-%d"
