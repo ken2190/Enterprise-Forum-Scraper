@@ -19,7 +19,7 @@ class BrokenPage(Exception):
 
 class StormFrontParser:
     def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = "storefront.org"
+        self.parser_name = "stormfront.org"
         self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'

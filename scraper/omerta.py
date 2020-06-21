@@ -16,7 +16,7 @@ from scraper.base_scrapper import (
 
 
 USERNAME = "darkcylon"
-PASSWORD = "Night#Omerta01"
+PASSWORD = "Night#Omerta"
 MD5PASS = "abb74c9967202f878f101cc9baa1f4be"
 
 
