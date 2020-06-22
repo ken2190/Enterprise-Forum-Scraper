@@ -60,13 +60,8 @@ def process_scraper(scraper):
     process_date = arrow.now().format('YYYY-MM-DD')
 
     # the output dirs for the scraper and parser
-<<<<<<< HEAD:scraperprocessor.py
-    scraper_output_dir = '{}/{}'.format(output_basedir, subfolder)
-    parse_output_dir = '{}/{}'.format(parse_basedir, subfolder)
-=======
     scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
     parse_output_dir = os.path.join(PARSE_DIR, subfolder)
->>>>>>> cada925208f87f3cbaea2153032da623c9f679bf:scraperprocessor.py
 
     try:
         ############################
