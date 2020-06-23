@@ -84,14 +84,7 @@ class Scraper:
         else:
             stats = scraper_obj.do_scrape()
 
-        # ------------ log stats, if any -----------------
-        if stats:
-            print(stats)
-
-            # ------------ raise exception if any errors -----------------
-            num_errors = stats.get('log_count/ERROR', 0)
-            if num_errors > 0:
-                raise Exception('Scraper had {} errors'.format(num_errors))
+        return stats
 
 def main():
     Scraper().do_scrape()

@@ -7,7 +7,7 @@ import json
 import utils
 import datetime
 import dateutil.parser as dparser
-import pandas as pd
+#import pandas as pd
 
 USERS = '/Users/PathakUmesh/Downloads/DreamMarket_2017/users.csv'
 
