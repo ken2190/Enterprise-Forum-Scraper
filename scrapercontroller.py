@@ -6,6 +6,7 @@ import requests
 import schedule
 import subprocess
 import time
+import sys
 
 from settings import (
     LOG_DIR,
@@ -16,6 +17,8 @@ from scraperprocessor import (
     get_active_scrapers,
     update_scraper
 )
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +70,7 @@ def load_and_schedule_scrapers():
     one at their designated time. Also re-schedules this method after
     every minute.
     """
-    logger.info('Loading and schedule scrapers...')
+    logger.debug('Loading and schedule scrapers...')
     schedule.clear()
 
     scrapers = get_active_scrapers()
@@ -79,7 +82,7 @@ def load_and_schedule_scrapers():
                 update_scraper(scraper, { 'runNow': 0 })
                 continue
 
-            logger.info('Scheduling {} to run daily at {}'.format(scraper['name'], scraper['runAtTime']))
+            logger.debug('Scheduling {} to run daily at {}'.format(scraper['name'], scraper['runAtTime']))
             schedule.every().days.at(scraper['runAtTime']).do(spawn_scraper, scraper)
         except Exception:
             logger.error('Failed to schedule {}: {}'.format(scraper['name'], e))
