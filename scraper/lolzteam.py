@@ -21,7 +21,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36
 
 class LolzSpider(SitemapSpider):
     name = 'lolz_spider'
-    sitemap_url = 'https://www.lolzteam.online/sitemap.xml'
+    sitemap_url = 'https://www.lolz.guru/sitemap.xml'
     # Xpath stuffs
     forum_sitemap_xpath = "//loc/text()"
     thread_url_xpath = "//loc/text()"
@@ -50,7 +50,7 @@ class LolzSpider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = "https://lolzteam.online/"
+        self.base_url = "https://lolz.guru/"
         self.topic_pattern = re.compile(r'threads/(\d+)')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)')
