@@ -68,19 +68,18 @@ class Scraper:
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        stats = None
-        
+        stats = None        
         scraper_obj = scraper(self.kwargs)
         if self.kwargs.get('rescan'):
             scraper_obj.do_rescan()
-        elif self.kwargs.get("start_date"):
-            try:
-                scraper_obj.do_scrape_from_date()
-            except Exception as err:
-                print(
-                    "Error running do scrape from date: %s" % err
-                )
-                stats = scraper_obj.do_scrape()
+        # elif self.kwargs.get("start_date"):
+        #     try:
+        #         scraper_obj.do_scrape_from_date()
+        #     except Exception as err:
+        #         print(
+        #             "Error running do scrape from date: %s" % err
+        #         )
+        #         stats = scraper_obj.do_scrape()
         else:
             stats = scraper_obj.do_scrape()
 
