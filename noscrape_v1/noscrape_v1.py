@@ -50,7 +50,6 @@ class NoScrapeV1:
             elastic = Elastic(scrape_type=scan_option, ip=ip, port=port)
             if scan_option == 'meta':
                 metadata = elastic.fetch_metadata()
-                print(metadata)
             elif scan_option == 'dump':
                 db_data = elastic.fetch_data()
 
