@@ -31,19 +31,25 @@ class Elastic:
 
 		return record_count
 
+	# get index names and count of each index
 	def get_index_names(self, db):
-		index_names, record_count = [], 0
+		indexes_count = {}
 		self.logger.info("----Requesting for cross-section of each index for {}:{}".format(self.ip, self.port))
 		indexes = db.cat.indices(v=True, format='json')
-		record_count = self.get_record_count(indexes)
+		for index in indexes:
+			index_name = index['index']
+			index_record_count = index['docs.count']
+			indexes_count[index_name] = index_record_count
 		index_names = list(indexes[0].keys())
-		return index_names, record_count
+		return index_names, indexes_count
 
 	def fetch_metadata(self):
 		try:
 			elastic_db = self.connect()
 			if elastic_db:
-				index_names, record_count = self.get_index_names(elastic_db)
+				index_names, indexes_count = self.get_index_names(elastic_db)
+				print(index_names)
+				print(indexes_count)
 				# self.logger.info("----Results: {}:{}".format(self.ip, self.port))
 				elastic_db.close()
 				# return results
