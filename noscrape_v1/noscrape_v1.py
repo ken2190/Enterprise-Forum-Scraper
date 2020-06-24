@@ -3,6 +3,7 @@ from .config import noscrape_parser_arguments
 from cli_parser import CliParser
 from .db_modules.elastic import Elastic
 
+
 class NoScrapeV1:
     def __init__(self, args):
         self.logger = NoScrapeLogger(__name__)
