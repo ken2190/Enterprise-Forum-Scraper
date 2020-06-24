@@ -2,18 +2,20 @@
 from datetime import datetime
 from elasticsearch import Elasticsearch
 from base_logger import BaseLogger
+from elasticsearch.exceptions import RequestError
 from urllib3.exceptions import ConnectTimeoutError
 import socket
 
 class Elastic:
-	def __init__(self, scrape_type=None, ip=None, port=None, limit=None, keywords=None, exclude_indexes=[]):
-		self.scrape_type = scrape_type
-		self.limit = limit
-		self.keywords = keywords
+	def __init__(self, ip=None, port=None, limit=None, exclude_indexes=[]):
+		# self.scrape_type = scrape_type
+		self.limit = limit or 10000
+		# self.keywords = keywords
 		self.exclude_indexes = exclude_indexes
 		self.logger = BaseLogger(__name__, None)
 		self.ip = ip
 		self.port = int(port)
+		self.db_type = 'es'
 		self.timeout = 5
 
 	def connect(self):
@@ -34,17 +36,6 @@ class Elastic:
 			self.logger.error("Error connecting to " + str(self.ip) + ":" + str(self.port) + " - " + str(e))
 			return False
 
-	def get_record_count(self, index_data):
-		record_count = 0
-		for index_obj in index_data:
-			index_count = index_obj.get("docs.count", None)
-			if index_count:
-				record_count += int(index_count)
-			else:
-				print("No Index count")
-
-		return record_count
-
 	def get_index_count(self, indexes):
 		indexes_count = {}
 		for index in indexes:
@@ -53,39 +44,75 @@ class Elastic:
 			indexes_count[index_name] = index_record_count
 		return indexes_count
 
-	# get index names and count of each index
+	# get index names
 	def get_index_names(self, indexes):
 		return [index["index"] for index in indexes]
 
-	def fetch_metadata(self, db_type):
+	def valid_index(self, index):
+		for keyword in self.exclude_indexes:
+			if keyword.lower() in index.lower():
+				self.logger.info("Ignore index %s because contain keyword %s in exclude file." % (index, keyword))
+				return False
+		return True
+
+	def dump(self):
+		max_elasticdump_limit = 10000
+		if self.limit > max_elasticdump_limit:
+			self.limit = max_elasticdump_limit
+
+		elastic_db = self.get_db()
+		if elastic_db:
+			pass
+		# for index in indexes:
+		# 	if self.valid_index(index)
+		# 		print("Dumping to file for ip {}:{} and the index {}".format(self.target, self.port, index))
+		# 		elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}". \
+		# 			format(self.target, self.port, index, self.target, index, self.limit)
+		# 		try:
+		# 			sp.check_output(elastic_dump_command, shell=True)
+		# 		except Exception as e:
+		# 			print(e)
+		#
+		# return "dump"
+
+	def get_db(self):
+		connection_verified = self.test_connection()
+		if connection_verified:
+			return self.connect()
+		return False
+
+	# once known as index headers, get the nodeattrs
+	def get_nodeattrs(self, elastic_db):
+		try:
+			return elastic_db.cat.nodeattrs(format='json')
+		except RequestError as re:
+			self.logger.error("Request Error fetching nodeattrs {}:{}".format(self.ip, self.port))
+			return []
+
+	def fetch_metadata(self):
 		try:
 			# self.logger.info("----Requesting for cross-section of each index for {}:{}".format(self.ip, self.port))
-			connection_verified = self.test_connection()
-			if connection_verified:
-				elastic_db = self.connect()
-				if elastic_db:
-					indexes = elastic_db.cat.indices(v=True, format='json')
-					index_names = self.get_index_names(indexes)
-					indexes_count = self.get_index_count(indexes)
-					index_headers = list(indexes[0].keys())
-					json_to_store = {
-						"index_names": index_names,
-						"index_headers": index_headers,
-						"indexes_count": indexes_count,
-						"ip": self.ip,
-						"port": self.port,
-						"database_type": db_type,
-						"date": str(datetime.now())
-					}
-					# self.logger.info("----Results: {}:{}".format(self.ip, self.port))
-					elastic_db.close()
-					return json_to_store
+			elastic_db = self.get_db()
+			if elastic_db:
+				indexes = elastic_db.cat.indices(v=True, format='json')
+				index_names = self.get_index_names(indexes)
+				indexes_count = self.get_index_count(indexes)
+				nodeattrs = self.get_nodeattrs(elastic_db)
+				json_to_store = {
+					"index_names": index_names,
+					"index_headers": nodeattrs,
+					"indexes_count": indexes_count,
+					"ip": self.ip,
+					"port": self.port,
+					"database_type": self.db_type,
+					"date": str(datetime.now())
+				}
+				# self.logger.info("----Results: {}:{}".format(self.ip, self.port))
+				elastic_db.close()
+				return json_to_store
 
 			return False
 
 		except Exception as e:
-			print(str(e))
+			self.logger.error("Unknown Exception: {}".format(str(e)))
 			return False
-
-	def dump(self):
-		pass

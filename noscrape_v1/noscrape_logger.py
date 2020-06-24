@@ -24,10 +24,6 @@ class NoScrapeLogger(BaseLogger):
 			with open(filepath, 'w') as f:
 				json.dump(existing_json, f)
 
-			#
-			# with open(filepath, 'a') as f:
-			# 	f.write(json.dumps(existing_json))
-
 		else:
 			with open(filepath, 'w') as f:
 				json.dump([metadata], f)
