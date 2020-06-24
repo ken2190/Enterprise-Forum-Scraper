@@ -24,3 +24,6 @@ class BaseLogger:
 			return
 		else:
 			os.makedirs(path)
+
+	def error(self, msg):
+		self.logger.error(msg)

@@ -49,9 +49,12 @@ class NoScrapeV1:
         for (ip, port) in targets.items():
             elastic = Elastic(scrape_type=scan_option, ip=ip, port=port)
             if scan_option == 'meta':
-                metadata = elastic.fetch_metadata()
-            elif scan_option == 'dump':
-                db_data = elastic.fetch_data()
+                metadata = elastic.fetch_metadata('es')
+                if metadata:
+                    self.logger.append_json(metadata)
+
+            # elif scan_option == 'dump':
+            #     db_data = elastic.fetch_data()
 
 
 
