@@ -28,7 +28,7 @@ class ElasticScrape(NoScrapePlugin):
 
     def connect(self):
         try:
-            self.DBClient = Elasticsearch([{'host': self.target, 'port': 443, 'use_ssl': True}])
+            self.DBClient = Elasticsearch([{'host': self.target, 'port': self.port}])
         except Exception as e:
             return False
         return True
@@ -74,7 +74,7 @@ class ElasticScrape(NoScrapePlugin):
         indexes = self.DBClient.indices.get('*')
         for index in indexes:
             is_exclude = False
-            
+
             for keyword in self.exclude_indexes:
                 if keyword.lower() in index.lower():
                     print("Ignore index %s because contain keyword %s in exclude file." % (index, keyword))
@@ -89,7 +89,7 @@ class ElasticScrape(NoScrapePlugin):
                     sp.check_output(elastic_dump_command, shell=True)
                 except Exception as e:
                     print(e)
-        
+
         return "dump"
 
     def matchdump(self):

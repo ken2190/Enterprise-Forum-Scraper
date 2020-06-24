@@ -1,10 +1,12 @@
 
 from datetime import datetime
 from elasticsearch import Elasticsearch
+
 from base_logger import BaseLogger
 from elasticsearch.exceptions import RequestError
 from urllib3.exceptions import ConnectTimeoutError
 import socket
+import subprocess as sp
 
 class Elastic:
 	def __init__(self, ip=None, port=None, limit=None, exclude_indexes=[]):
@@ -56,24 +58,32 @@ class Elastic:
 		return True
 
 	def dump(self):
+		dumped = []
+
 		max_elasticdump_limit = 10000
 		if self.limit > max_elasticdump_limit:
 			self.limit = max_elasticdump_limit
 
 		elastic_db = self.get_db()
 		if elastic_db:
-			pass
-		# for index in indexes:
-		# 	if self.valid_index(index)
-		# 		print("Dumping to file for ip {}:{} and the index {}".format(self.target, self.port, index))
-		# 		elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}". \
-		# 			format(self.target, self.port, index, self.target, index, self.limit)
-		# 		try:
-		# 			sp.check_output(elastic_dump_command, shell=True)
-		# 		except Exception as e:
-		# 			print(e)
-		#
-		# return "dump"
+			indexes = elastic_db.indices.get("*")
+			for index in indexes:
+				if self.valid_index(index):
+					print("Dumping to file for ip {}:{} and the index {}".format(self.ip, self.port, index))
+					records = elastic_db.search(index=index)
+					records = records["hits"]["hits"]
+					for hit in records:
+						dumped.append(hit)
+
+
+					# elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}". \
+					# 	format(self.target, self.port, index, self.target, index, self.limit)
+					# try:
+					# 	sp.check_output(elastic_dump_command, shell=True)
+					# except Exception as e:
+					# 	print(e)
+
+			return "dump"
 
 	def get_db(self):
 		connection_verified = self.test_connection()
