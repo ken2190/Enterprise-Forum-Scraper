@@ -1,6 +1,5 @@
 import argparse
 
-
 # Parses the arguments
 class ArgParser():
     def parse_command_line(self):

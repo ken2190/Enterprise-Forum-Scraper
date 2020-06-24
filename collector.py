@@ -1,77 +1,16 @@
 import argparse
+from config import main_parser_arguments
+from parser import Parser
+from config import main_parser_arguments
 
 
 class Collector:
 
     def __init__(self):
-        parser = argparse.ArgumentParser(
-            description='Scrapping Forums Framework'
-        )
-        # Main arguments
-        parser.add_argument(
-            '-scrape', '--scrape', help='Do scraping',
-            action='store_true')
-        parser.add_argument(
-            '-parse', '--parse', help='Do parsing',
-            action='store_true')
-        parser.add_argument(
-            '-t', '--template', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-p', '--path', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-o', '--output', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-x', '--proxy', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-usr', '--user', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-pwd', '--password', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-w', '--wait_time', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-ts', '--topic_start', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-te', '--topic_end', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-rs', '--rescan', help=argparse.SUPPRESS,
-            action='store_true')
-        parser.add_argument(
-            '-up', '--update', help=argparse.SUPPRESS,
-            action='store_true')
-        parser.add_argument(
-            '-uo', '--useronly', help=argparse.SUPPRESS,
-            action='store_true')
-        parser.add_argument(
-            '-fr', '--firstrun', help=argparse.SUPPRESS,
-            action='store_true')
-        parser.add_argument(
-            '-s', '--start_date', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-b', '--banlist', help=argparse.SUPPRESS, action='store_true')
-        parser.add_argument(
-            '-l', '--list', help=argparse.SUPPRESS, action='store_true')
-        parser.add_argument(
-            '-ch', '--channel', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-k', '--kill', help=argparse.SUPPRESS, required=False)
-        parser.add_argument(
-            '-gather',
-            help=argparse.SUPPRESS,
-            action='store_true'
-        )
-        parser.add_argument(
-            '-scan', '--scan', help='Do scan db ip port',
-            action='store_true'
-        )
-
-        self.parser = parser
-
-    def get_args(self):
-        args, unknown = self.parser.parse_known_args()
-        return args._get_kwargs()
+        self.parser = Parser(description='Framework For Scrapping Forums', arguments=main_parser_arguments)
 
     def start(self):
-        kwargs = {k: v for k, v in self.get_args()}
+        kwargs = self.parser.get_args()
         if kwargs.get('parse'):
             from forumparse import Parser
             Parser(kwargs).start()
@@ -83,8 +22,8 @@ class Collector:
             # Gatherer.start()
             pass
         elif kwargs.get("scan"):
-            from noscrape_engine import Noscraper
-            Noscraper().do_scrape()
+            from noscrape_v1.noscrape_v1 import NoScrapeV1
+            NoScrapeV1(kwargs).run()
         else:
             self.parser.print_help()
 
