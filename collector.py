@@ -27,6 +27,5 @@ class Collector:
         else:
             self.parser.print_help()
 
-
 if __name__ == '__main__':
     Collector().start()

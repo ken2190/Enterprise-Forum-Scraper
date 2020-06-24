@@ -28,7 +28,7 @@ class ElasticScrape(NoScrapePlugin):
 
     def connect(self):
         try:
-            self.DBClient = Elasticsearch([{'host': self.target, 'port': self.port}])
+            self.DBClient = Elasticsearch([{'host': self.target, 'port': 443, 'use_ssl': True}])
         except Exception as e:
             return False
         return True
@@ -40,6 +40,7 @@ class ElasticScrape(NoScrapePlugin):
             self.logger.info("----Results: {}:{}".format(self.target, self.port))
             self.logger.info(results)
             return results
+
         except Exception as e:
             if 'NotFoundError' in str(e):
                 self.logger.error("404 not Found for the " + str(self.target) + ":" + str(self.port))
