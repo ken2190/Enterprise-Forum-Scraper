@@ -1,13 +1,13 @@
 import argparse
 from config import main_parser_arguments
-from parser import Parser
+from cli_parser import CliParser
 from config import main_parser_arguments
 
 
 class Collector:
 
     def __init__(self):
-        self.parser = Parser(description='Framework For Scrapping Forums', arguments=main_parser_arguments)
+        self.parser = CliParser(description='Framework For Scrapping Forums', arguments=main_parser_arguments)
 
     def start(self):
         kwargs = self.parser.get_args()

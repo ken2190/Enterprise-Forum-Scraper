@@ -1,12 +1,12 @@
 from .noscrape_logger import NoScrapeLogger
 from .config import noscrape_parser_arguments
-from parser import Parser
+from cli_parser import CliParser
 from .db_modules.elastic import Elastic
 
 class NoScrapeV1:
     def __init__(self, args):
         self.logger = NoScrapeLogger(__name__)
-        self.parser = Parser(description="Noscrape parsing tool", arguments=noscrape_parser_arguments)
+        self.parser = CliParser(description="Noscrape parsing tool", arguments=noscrape_parser_arguments)
         self.args = args
 
     def verify_args(self):

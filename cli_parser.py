@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 
-class Parser:
+class CliParser:
 
 	def __init__(self, description=None, arguments=[]):
 		self.parser = ArgumentParser(description=description)
