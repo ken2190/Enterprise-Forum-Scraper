@@ -151,6 +151,12 @@ class NoScrapeV1:
                     keyword.strip() for keyword in exclude_file.read().split("\n")
                 ]
 
+        tf = new_config.get('targetFile')
+        try:
+            with open(tf, 'r') as f:
+                pass
+        except Exception as e:
+            print("--Error parsing targetFile:", tf)
         targets = self.get_targets(new_config)
         # targets = IpTargets()
         # if argparse_data['targets'] is not None:
