@@ -13,9 +13,10 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-USERNAME = "thecreator101@protonmail.com"
-PASSWORD = "Night#Bhf01"
-
+#USERNAME = "thecreator101@protonmail.com"
+#PASSWORD = "Night#Bhf01"
+USERNAME = "vrx9@protonmail.com"
+PASSWORD = "Vr#Bhf987"
 
 class BHFIOSpider(SitemapSpider):
 
