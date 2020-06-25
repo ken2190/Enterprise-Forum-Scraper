@@ -8,6 +8,7 @@ import json
 import utils
 import datetime
 from lxml.html import fromstring
+import dateutil.parser as dparser
 
 
 class BrokenPage(Exception):
@@ -132,7 +133,6 @@ class LolzTeamParser:
                     'date': comment_date
                 })
             comments.append({
-                
                 '_source': source,
             })
             self.comment_index += 1
@@ -166,7 +166,6 @@ class LolzTeamParser:
                    'date': date
                 })
             return {
-                
                 '_source': source
             }
         except:
@@ -188,8 +187,8 @@ class LolzTeamParser:
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
-            # traceback.print_exc()
-            return ""
+            date = dparser.parse(date).timestamp()
+            return str(date)
 
     def get_author(self, tag):
         author = tag.xpath(
