@@ -14,8 +14,8 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 USER = "darkcylon1@protonmail.com"
 PASS = "Night#Kgg2"
-REQUEST_DELAY = 0.4
-NO_OF_THREADS = 12
+REQUEST_DELAY = 0.6
+NO_OF_THREADS = 8
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
