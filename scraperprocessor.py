@@ -48,7 +48,7 @@ def update_scraper(scraper, payload):
     scraper_url = '{}/api/scraper/{}'.format(DV_BASE_URL, scraper['id'])
     response = requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
     if response.status_code != 200:
-        logger.warn('Failed to update scraper (status={})'.format(response.status_code))
+        logger.warning('Failed to update scraper (status={})'.format(response.status_code))
 
 def process_scraper(scraper):
     """
@@ -72,7 +72,7 @@ def process_scraper(scraper):
         update_scraper(scraper, { 'status': 'Scraping' })
 
         kwargs = {
-            'start_date': start_date, 
+            'start_date': start_date,
             'template': template,
             'output': scraper_output_dir
         }
@@ -95,12 +95,14 @@ def process_scraper(scraper):
         ##############################
         # Post-process HTML & JSON
         ##############################
-        subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYY_MM_DD')])
+        retcode = subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYY_MM_DD')])
+        if retcode != 0:
+            raise Exception('Post Processing failed')
 
         ##############################
         # Update Scraper Status / Date
         ##############################
-        
+
         # set the scraper's next start date to the current date and clear PID
         update_scraper(scraper, { 'status': 'Idle', 'nextStartDate': process_date, 'pid': None })
 
@@ -110,7 +112,7 @@ def process_scraper(scraper):
 
 def help():
     logger.info('scraperprocessor.py -s <scraper_id>')
-    
+
 def main(argv):
     ##############################
     # Parse CLI Args
@@ -120,7 +122,7 @@ def main(argv):
     except getopt.GetoptError:
         help()
         sys.exit(2)
-    
+
     scraper_id = None
 
     for opt, arg in opts:
@@ -129,7 +131,7 @@ def main(argv):
          sys.exit()
       elif opt in ("-s", "--scraperid"):
          scraper_id = arg
-         
+
     if scraper_id is None:
         logger.error('Missing required option scraper ID')
         help()

@@ -54,7 +54,7 @@ def spawn_scraper(scraper):
     try:
         # check if scraper PID is still running
         if check_pid(scraper):
-            logger.warn('{} still running [PID={}'.format(scraper['name'], scraper['pid']))
+            logger.warning('{} still running [PID={}'.format(scraper['name'], scraper['pid']))
             return
 
         log_file = get_log_file(scraper)
@@ -73,21 +73,24 @@ def load_and_schedule_scrapers():
     logger.debug('Loading and schedule scrapers...')
     schedule.clear()
 
-    scrapers = get_active_scrapers()
-    for scraper in scrapers:
-        try:
-            if scraper.get('runNow', 0) != 0:
-                logger.info('Spawning {} now!'.format(scraper['name']))
-                spawn_scraper(scraper)
-                update_scraper(scraper, { 'runNow': 0 })
-                continue
+    try:
+        scrapers = get_active_scrapers()
+        for scraper in scrapers:
+            try:
+                if scraper.get('runNow', 0) != 0:
+                    logger.info('Spawning {} now!'.format(scraper['name']))
+                    spawn_scraper(scraper)
+                    update_scraper(scraper, { 'runNow': 0 })
+                    continue
 
-            logger.debug('Scheduling {} to run daily at {}'.format(scraper['name'], scraper['runAtTime']))
-            schedule.every().days.at(scraper['runAtTime']).do(spawn_scraper, scraper)
-        except Exception:
-            logger.error('Failed to schedule {}: {}'.format(scraper['name'], e))
+                logger.debug('Scheduling {} to run daily at {}'.format(scraper['name'], scraper['runAtTime']))
+                schedule.every().days.at(scraper['runAtTime']).do(spawn_scraper, scraper)
+            except Exception:
+                logger.error('Failed to schedule {}: {}'.format(scraper['name'], e))
 
-    schedule.every().minute.do(load_and_schedule_scrapers)
+        schedule.every().minute.do(load_and_schedule_scrapers)
+    except Exception as e:
+        logger.error('Failed to load and schedule scrapers: {}'.format(e))
 
 ###########################
 # Main Start
@@ -100,4 +103,6 @@ try:
         time.sleep(1)
 
 except Exception as e:
+    # this is for absolutely fatal errors, as it will exit the process
+    # make sure non-fatal errors are caught and logged
     logger.error('ERROR: {}'.format(e))
