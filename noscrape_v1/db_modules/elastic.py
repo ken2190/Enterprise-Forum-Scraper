@@ -118,7 +118,6 @@ class Elastic:
 					"date": str(datetime.now())
 				}
 				# self.logger.info("----Results: {}:{}".format(self.ip, self.port))
-				elastic_db.close()
 				return json_to_store
 
 			return False
