@@ -1,6 +1,6 @@
 import logging
 
-database_types = ["mongo", "es", "cassandra"]
+database_types = ["mongo", "es", 's3', "cassandra"]
 
 noscrape_parser_arguments = [
 	{
