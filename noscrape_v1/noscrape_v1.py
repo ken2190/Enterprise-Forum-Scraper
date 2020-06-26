@@ -1,7 +1,7 @@
 import re
 from .noscrape_logger import NoScrapeLogger
-from .config import noscrape_parser_arguments
-from cli_parser import CliParser
+# from .config import noscrape_parser_arguments
+# from cli_parser import CliParser
 from .db_modules.elastic import Elastic
 from .main_modules.arg_verifier import ArgVerifier
 from .main_modules.arg_parser import ArgParser
@@ -10,6 +10,7 @@ import os
 import logging
 
 VERSION = "2.0.2"
+
 
 class NoScrapeV1:
     def __init__(self, args):
@@ -204,7 +205,7 @@ class NoScrapeV1:
                 if scrape_type == 'meta':
                     metadata = elastic.fetch_metadata()
                     if metadata:
-                        self.logger.write_json(metadata, output_folder)
+                        self.logger.write_json(metadata)
 
                 elif scrape_type == 'dump':
                     dumped_data = elastic.dump()
@@ -212,4 +213,3 @@ class NoScrapeV1:
 
             except Exception as e:
                 print(str(e))
-

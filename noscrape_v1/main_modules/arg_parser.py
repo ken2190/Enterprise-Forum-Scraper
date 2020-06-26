@@ -2,6 +2,8 @@ import argparse
 
 scrape_types = ["meta", "dump"]
 # Parses the arguments
+
+
 class ArgParser():
     def parse_command_line(self):
         """This function parses and return arguments passed in"""
@@ -15,7 +17,7 @@ class ArgParser():
         parser.add_argument('--out_file', '-o', nargs='?', default=None, metavar="OutputFile", help=argparse.SUPPRESS)
         parser.add_argument('-v', action="store_true", help=argparse.SUPPRESS)
         parser.add_argument('--examples', action="store_true", help=argparse.SUPPRESS)
-        parser.add_argument('--out_folder', '-of', action="store_true", help=argparse.SUPPRESS)
+        parser.add_argument('--out_folder', '-of', action="store_true",help=argparse.SUPPRESS)
 
         # Mongo and Elastic stuff
         nosql_and_elastic_options = parser.add_argument_group('MongoDB and ElasticSearch Options')
