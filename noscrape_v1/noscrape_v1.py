@@ -1,11 +1,11 @@
 import re
 from .noscrape_logger import NoScrapeLogger
-# from .config import noscrape_parser_arguments
-# from cli_parser import CliParser
+from .config import noscrape_parser_arguments
+from cli_parser import CliParser
 from .db_modules.elastic import Elastic
 from .main_modules.arg_verifier import ArgVerifier
 from .main_modules.arg_parser import ArgParser
-import os
+import os, sys
 
 import logging
 
@@ -169,7 +169,8 @@ class NoScrapeV1:
                 exit(1)
         else:
             print("Exclude file not specified. Using default")
-            default_exclude = os.path.join(os.getcwd(), "noscrape_v1", "exclude.txt")
+            # default_exclude = os.path.join(os.getcwd(), "noscrape_v1", "exclude.txt")
+            default_exclude = sys.path[0]+'/noscrape_v1/exclude.txt'
             print("Using default exclude:", default_exclude)
             try:
                 with open(default_exclude, 'r') as f:
@@ -203,7 +204,7 @@ class NoScrapeV1:
             try:
                 elastic = Elastic(ip=ip, port=port, exclude_indexes=exclude_indexes)
                 if scrape_type == 'meta':
-                    metadata = elastic.fetch_metadata()
+                    metadata = elastic.fetch_metadata()                
                     if metadata:
                         self.logger.write_json(metadata)
 
