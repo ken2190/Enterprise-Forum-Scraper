@@ -4,6 +4,7 @@ from cli_parser import CliParser
 from .db_modules.elastic import Elastic
 from .main_modules.arg_verifier import ArgVerifier
 from .main_modules.arg_parser import ArgParser
+import os
 
 import logging
 
@@ -47,7 +48,6 @@ class NoScrapeV1:
         if new_config['v']:
             self.logger.logger.setLevel(logging.DEBUG)
 
-        try:
             # if new_config['type'] == 'mongo':
             #     self.run_nosql(new_config, 'mongo')
             #
@@ -57,11 +57,8 @@ class NoScrapeV1:
             # if new_config['type'] == 's3':
             #     self.run_s3(new_config)
 
-            if new_config['type'] == 'es':
-                self.run_es(new_config)
-
-        except:
-            pass
+        if new_config['type'] == 'es':
+            self.run_es(new_config)
 
         # scan_option, db_type, target_file = self.verify_args()
         # if scan_option:
@@ -78,38 +75,40 @@ class NoScrapeV1:
         return None
 
     def load_from_file(self, file_path):
-        try:
-            with open(file_path, 'r') as file_handle:
-                first_line = file_handle.readline()
-                delimeter = self.find_delimeter(first_line)
-        except Exception as e:
-            raise Exception("Error when trying to open '" + file_path + "' - " + str(e))
-
-        if delimeter is None:
-            raise Exception("CSV delimeter of input file should be one of: [',', ':', '|']")
+        # try:
+        #     with open(file_path, 'r') as file_handle:
+        #         first_line = file_handle.readline()
+        #         delimeter = self.find_delimeter(first_line)
+        # except Exception as e:
+        #     raise Exception("Error when trying to open '" + file_path + "' - " + str(e))
+        #
+        # if delimeter is None:
+        #     raise Exception("CSV delimeter of input file should be one of: [',', ':', '|']")
 
         try:
             result_targets = {}
             with open(file_path, 'r') as f:
                 lines = f.readlines()
                 for line in lines:
-                    line = line.replace("\n", "").replace("\x00", "").replace("\r", "").replace("\b", "").replace(" ", "")
+                    line = line.strip()
                     if line:
-                        ip, port = line.split(delimeter)
-                        result_targets[ip] = port
-
+                        try:
+                            ip, port = line.split(",")
+                            result_targets[ip] = port
+                        except:
+                            pass
             return result_targets
 
         except Exception as e:
             print("--Error reading target file: %s--" % file_path)
+            raise e
             # self.parser.error("--Error reading target file: %s--" % target_file)
 
     def get_targets(self, new_config):
-        target_file = new_config.get("targetFile")
+        target_file = new_config.get("target_file")
         if target_file:
             return self.load_from_file(target_file)
         return {}
-
 
     def create_filter_list(self, file_path):
         filter_list = []
@@ -140,42 +139,76 @@ class NoScrapeV1:
             filter_list = self.create_filter_list(new_config['filter'])
 
         out_file = None
-        if new_config['outFile'] is not None:
+        if new_config['out_file'] is not None:
             arg_verifier.try_opening_output_file()
-            out_file = new_config['outFile']
+            out_file = new_config['out_file']
+
+        output_folder = new_config["out_folder"]
+        if output_folder:
+            try:
+                if os.path.exists(output_folder):
+                    pass
+                else:
+                    os.makedirs(output_folder)
+            except:
+                print("--Could not create output folder:", output_folder)
+                exit(1)
 
         exclude_indexes = []
-        if new_config['excludeIndexFile'] is not None:
-            with open(new_config['excludeIndexFile'], "r") as exclude_file:
-                exclude_indexes = [
-                    keyword.strip() for keyword in exclude_file.read().split("\n")
-                ]
+        if new_config['exclude_index_file'] is not None:
+            try:
+                with open(new_config['exclude_index_file'], "r") as exclude_file:
+                    for line in exclude_file.readlines():
+                        line = line.strip()
+                        if line:
+                            exclude_indexes.append(line)
+            except:
+                print("--Error parsing exclude_index_file")
+                exit(1)
+        else:
+            print("Exclude file not specified. Using default")
+            default_exclude = os.path.join(os.getcwd(), "noscrape_v1", "exclude.txt")
+            print("Using default exclude:", default_exclude)
+            try:
+                with open(default_exclude, 'r') as f:
+                    lines = f.readlines()
+                    for line in lines:
+                        line = line.strip()
+                        if line:
+                            exclude_indexes.append(line)
+            except:
+                print("--Error reading default exclude file--")
+                exit(1)
 
-        tf = new_config.get('targetFile')
-        try:
-            with open(tf, 'r') as f:
-                pass
-        except Exception as e:
-            print("--Error parsing targetFile:", tf)
+        # tf = new_config.get('target_file')
+        # try:
+        #     with open(tf, 'r') as f:
+        #         pass
+        # except Exception as e:
+        #     print("--Error parsing target_file:", tf)
+
         targets = self.get_targets(new_config)
         # targets = IpTargets()
         # if argparse_data['targets'] is not None:
         #     targets.load_from_input(argparse_data['targets'], argparse_data['port'])
         #
-        # if argparse_data['targetFile'] is not None:
-        #     targets.load_from_file(argparse_data['targetFile'])
+        # if argparse_data['target_file'] is not None:
+        #     targets.load_from_file(argparse_data['target_file'])
 
-        scan_option = self.verify_args(new_config)
+        scrape_type = new_config.get("scrape_type")
+        print(exclude_indexes)
         for (ip, port) in targets.items():
-            elastic = Elastic(ip=ip, port=port)
-            if scan_option == 'meta':
-                metadata = elastic.fetch_metadata()
-                if metadata:
-                    self.logger.append_json(metadata)
-            elif scan_option == 'dump':
-                dumped_data = elastic.dump()
-                print(dumped_data)
+            try:
+                elastic = Elastic(ip=ip, port=port, exclude_indexes=exclude_indexes)
+                if scrape_type == 'meta':
+                    metadata = elastic.fetch_metadata()
+                    if metadata:
+                        self.logger.write_json(metadata, output_folder)
 
+                elif scrape_type == 'dump':
+                    dumped_data = elastic.dump()
+                    print(dumped_data)
 
-
+            except Exception as e:
+                print(str(e))
 

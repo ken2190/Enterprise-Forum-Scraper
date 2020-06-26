@@ -1,5 +1,6 @@
 import argparse
 
+scrape_types = ["meta", "dump"]
 # Parses the arguments
 class ArgParser():
     def parse_command_line(self):
@@ -11,23 +12,22 @@ class ArgParser():
         parser._optionals.title = "Standard arguments"
 
         parser.add_argument('--type', '-type', nargs='?', help='State the type of database', choices=databases, required=True)
-        parser.add_argument('--outFile', '-o', nargs='?', default=None, metavar="OutputFile", help=argparse.SUPPRESS)
+        parser.add_argument('--out_file', '-o', nargs='?', default=None, metavar="OutputFile", help=argparse.SUPPRESS)
         parser.add_argument('-v', action="store_true", help=argparse.SUPPRESS)
         parser.add_argument('--examples', action="store_true", help=argparse.SUPPRESS)
-        parser.add_argument('--meta', help=argparse.SUPPRESS, action='store_true')
-
+        parser.add_argument('--out_folder', '-of', action="store_true", help=argparse.SUPPRESS)
 
         # Mongo and Elastic stuff
         nosql_and_elastic_options = parser.add_argument_group('MongoDB and ElasticSearch Options')
-        nosql_and_elastic_options.add_argument('--targetFile', '-tf', nargs='?', metavar="TargetFile", default=None,
+        nosql_and_elastic_options.add_argument('--target_file', '-tf', nargs='?', metavar="TargetFile", default=None,
                                                help=argparse.SUPPRESS, type=str)
-        nosql_and_elastic_options.add_argument('--excludeIndexFile', '-exif', nargs='?', metavar="ExcludeIndexFile", default=None,
+        nosql_and_elastic_options.add_argument('--exclude_index_file', '-exif', nargs='?', metavar="ExcludeIndexFile", default=None,
                                                help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--targets', '-t', nargs='?', metavar="Targets", default=None,
                                                help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--port', '-p', nargs='?', metavar="Port", default=-1, help=argparse.SUPPRESS,
                                                type=int)
-        nosql_and_elastic_options.add_argument('--scrape_type', '-st', nargs='?', default='basic', help=argparse.SUPPRESS)
+        nosql_and_elastic_options.add_argument('--scrape_type', '-st', nargs='?', default='basic', help=argparse.SUPPRESS, choices=scrape_types, required=True)
         nosql_and_elastic_options.add_argument('--filter', '-f', nargs='?', default=None, metavar="FilterFile",
                                                help=argparse.SUPPRESS)
         nosql_and_elastic_options.add_argument('--username', '-u', nargs='?', metavar="Username", default=None,
@@ -93,3 +93,4 @@ class CustomArgumentParser(argparse.ArgumentParser):
 
     def format_help(self):
         return self.get_help_file_content()
+

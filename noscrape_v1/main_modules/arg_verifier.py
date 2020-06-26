@@ -43,7 +43,6 @@ class ArgVerifier:
 
     def try_opening_output_file(self):
         file_path = self.argparse_data['outFile']
-
         try:
             z = open(file_path, "w+")
             z.close()
@@ -52,7 +51,7 @@ class ArgVerifier:
             exit(1)
 
     def is_target_file_specified(self):
-        target_file = self.argparse_data['targetFile']
+        target_file = self.argparse_data['target_file']
         targets = self.argparse_data['targets']
         if target_file is None and targets is None:
             self.logger.error(
@@ -79,7 +78,7 @@ class ArgVerifier:
         scrape = self.argparse_data['scrape_type']
         port = self.argparse_data['port']
         targets = self.argparse_data['targets']
-        targetFile = self.argparse_data['targetFile']
+        targetFile = self.argparse_data['target_file']
         if ((scrape not in ['basic', 'fields', 'index', 'all'])
             or (port == -1 and targetFile is None)
             or (targets is None and targetFile is None)):
@@ -102,7 +101,7 @@ class ArgVerifier:
     def show_es_help(self):
         port = self.argparse_data['port']
         targets = self.argparse_data['targets']
-        targetFile = self.argparse_data['targetFile']
+        targetFile = self.argparse_data['target_file']
         if ((port == -1 and targetFile is None)
             or (targets is None and targetFile is None)):
             help_message = """
@@ -180,3 +179,4 @@ class ArgVerifier:
         except Exception as e:
             self.logger.error("Failed to open '" + str(hitlist_file) + "' - " + str(e))
             exit(1)
+

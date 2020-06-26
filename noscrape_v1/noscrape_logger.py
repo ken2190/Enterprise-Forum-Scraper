@@ -14,6 +14,13 @@ class NoScrapeLogger(BaseLogger):
 		with open(filepath, 'r') as f:
 			return json.loads(f.read())
 
+	def write_json(self, metadata, out_folder=None):
+		ip = metadata["_source"]["ip"]
+		filename = "%s.json" % ip
+		filepath = os.path.join(out_folder, filename) if out_folder else os.path.join(self.metadata_path, filename)
+		with open(filepath, 'w') as ip_json:
+			json.dump(metadata, ip_json)
+
 	def append_json(self, metadata):
 		ip = metadata["ip"]
 		filename = "%s.json" % ip
@@ -27,10 +34,6 @@ class NoScrapeLogger(BaseLogger):
 		else:
 			with open(filepath, 'w') as f:
 				json.dump([metadata], f)
-
-
-
-
 
 
 
