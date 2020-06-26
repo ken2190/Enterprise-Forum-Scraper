@@ -124,16 +124,19 @@ class Elastic:
 				obj["_source"]["date"] = str(datetime.now())
 
 				for index in indexes:
-					index_name = index["index"]
-
+					index_name = index["index"]				
+					
 					if self.valid_index(index_name):
 						index_data = self.init_index_json()
+						
 						index_data["name"] = index_name
 						index_data["count"] = self.get_index_count(indexes, index_name)
 						mappings = elastic_db.indices.get(index_name)
 
 						try:
-							properties = mappings[index_name]["mappings"]["doc"]["properties"]
+							# properties = mappings[index_name]["mappings"]["doc"]["properties"]
+							properties = mappings[index_name]["mappings"]["properties"]														
+
 							fields = list(properties.keys())
 							index_data["fields"] = fields
 						except:
@@ -142,6 +145,7 @@ class Elastic:
 						obj["_source"]["indexes"].append(index_data)
 					else:
 						continue
+
 
 				try:
 					elastic_db.close()
