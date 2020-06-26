@@ -1,3 +1,4 @@
+import re
 from .noscrape_logger import NoScrapeLogger
 from .config import noscrape_parser_arguments
 from cli_parser import CliParser
@@ -93,7 +94,7 @@ class NoScrapeV1:
                     line = line.strip()
                     if line:
                         try:
-                            ip, port = line.split(",")
+                            ip, port = re.split(r'[,:]', line)
                             result_targets[ip] = port
                         except:
                             pass
