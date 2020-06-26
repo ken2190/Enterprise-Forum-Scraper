@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from elasticsearch import Elasticsearch
 
@@ -6,6 +5,7 @@ from base_logger import BaseLogger
 from elasticsearch.exceptions import RequestError
 from urllib3.exceptions import ConnectTimeoutError
 import socket
+import json
 import subprocess as sp
 
 class Elastic:
@@ -38,13 +38,13 @@ class Elastic:
 			self.logger.error("Error connecting to " + str(self.ip) + ":" + str(self.port) + " - " + str(e))
 			return False
 
-	def get_index_count(self, indexes):
-		indexes_count = {}
+	def get_index_count(self, indexes, index_name):
 		for index in indexes:
-			index_name = index['index']
-			index_record_count = index['docs.count']
-			indexes_count[index_name] = index_record_count
-		return indexes_count
+			name = index['index']
+			if name == index_name:
+				index_record_count = index['docs.count']
+				return index_record_count
+		return 0
 
 	# get index names
 	def get_index_names(self, indexes):
@@ -99,29 +99,92 @@ class Elastic:
 			self.logger.error("Request Error fetching nodeattrs {}:{}".format(self.ip, self.port))
 			return []
 
+	def get_index_tables(self, index, elastic_db):
+		pass
+
+	def init_index_json(self):
+		return {
+			"name": '',
+			"fields": [],
+		}
 	def fetch_metadata(self):
 		try:
 			# self.logger.info("----Requesting for cross-section of each index for {}:{}".format(self.ip, self.port))
 			elastic_db = self.get_db()
 			if elastic_db:
 				indexes = elastic_db.cat.indices(v=True, format='json')
-				index_names = self.get_index_names(indexes)
-				indexes_count = self.get_index_count(indexes)
-				nodeattrs = self.get_nodeattrs(elastic_db)
-				json_to_store = {
-					"index_names": index_names,
-					"index_headers": nodeattrs,
-					"indexes_count": indexes_count,
-					"ip": self.ip,
-					"port": self.port,
-					"database_type": self.db_type,
-					"date": str(datetime.now())
+				obj = {
+					"_source": {
+						"indexes": []
+					}
 				}
-				# self.logger.info("----Results: {}:{}".format(self.ip, self.port))
-				return json_to_store
 
-			return False
+				obj["_source"]["ip"] = self.ip
+				obj["_source"]["port"] = self.port
+				obj["_source"]["date"] = str(datetime.now())
+
+				for index in indexes:
+					index_name = index["index"]
+
+					if self.valid_index(index_name):
+						index_data = self.init_index_json()
+						index_data["name"] = index_name
+						index_data["count"] = self.get_index_count(indexes, index_name)
+						mappings = elastic_db.indices.get(index_name)
+
+						try:
+							properties = mappings[index_name]["mappings"]["doc"]["properties"]
+							fields = list(properties.keys())
+							index_data["fields"] = fields
+						except:
+							index_data["fields"] = []
+
+						obj["_source"]["indexes"].append(index_data)
+					else:
+						continue
+
+				try:
+					elastic_db.close()
+				except Exception:
+					pass
+
+				return obj
+
 
 		except Exception as e:
 			self.logger.error("Unknown Exception: {}".format(str(e)))
 			return False
+
+	'''
+	{
+	“_source”: {
+		“index”: {
+			“name”: “indexname”,
+			“fields”: [
+				“x”,
+				“x2”,
+				“x3"
+			],
+			“properties”: [{
+				“count”: “818198018”,
+				“attr”: “attrname”
+			}]
+		}
+		{
+			“index”: {
+				“name”: “indexname”,
+				“tables”: [
+					“x”,
+					“x2”,
+					“x3"
+				],
+				“properties”: [{
+					“count”: “818198018”
+				}],
+			},
+			“ip”: “only one IP”,
+			“port”: “9200”,
+			“date”: “date of scrape”
+		}
+	}
+	'''
