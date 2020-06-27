@@ -147,8 +147,15 @@ class Elastic:
 									properties = mappings[index_name]["mappings"]["index_type"]["properties"]
 									print("-------third format-------")
 								except:
-									print("No mappings found for index", index_name)
-									print(json.dumps(mappings, indent=4))
+									try:
+										current_mappings = mappings[index_name]["mappings"]
+										all_mapping_keys = list(current_mappings.keys())
+										first_key = all_mapping_keys[0]
+										properties = current_mappings[first_key]["properties"]
+										print("---------fourth format---------")
+									except:
+										print("No mappings found for index", index_name)
+										print(json.dumps(mappings, indent=4))
 
 						index_data["fields"] = list(properties.keys())
 						obj["_source"]["indexes"].append(index_data)
