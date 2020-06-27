@@ -291,12 +291,12 @@ class SiteMapScrapper:
             os.makedirs(self.avatar_path)
 
     def do_scrape(self):
-        
+
         # Load process
         process = CrawlerProcess(
             self.load_settings()
         )
-        
+
         # Load crawler
         crawler = process.create_crawler(self.spider_class)
 
@@ -306,7 +306,7 @@ class SiteMapScrapper:
             **self.load_spider_kwargs()
         )
         process.start()
-        
+
         # Load stats
         stats_obj = crawler.stats
         stats_dict = crawler.stats.get_stats()
@@ -431,7 +431,7 @@ class SitemapSpider(BypassCloudfareSpider):
     # 2captcha api #
     recaptcha_solve_api = "https://2captcha.com/in.php"
     recaptcha_request_api = "https://2captcha.com/res.php"
-    captcha_token = "76228b91f256210cf20e6d8428818e23"
+    captcha_token = "4ff5509065246ba33f9fb73bd86121a0"
     captcha_instruction = "All character in picture"
 
     # Payload stuffs
@@ -663,7 +663,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 return
 
         return
-    
+
     def get_existing_file_date(self, topic_id):
 
         # Load first page file name
@@ -928,7 +928,7 @@ class SitemapSpider(BypassCloudfareSpider):
         user_agent = self.headers.get("User-Agent")
         if response:
             user_agent = response.request.headers.get("User-Agent")
-        
+
         # Update headers
         headers.update(
             {
@@ -988,10 +988,10 @@ class SitemapSpider(BypassCloudfareSpider):
     def get_blockchain_domain(self, domain):
         # Get domain root only
         domain = domain.split('/')[2] if '://' in domain else domain
-        
+
         # List of apis and load api
         apis = ['https://bdns.co/r/', 'https://bdns.us/r/', 'https://bdns.bz/r/']
-        
+
         while True:
             api = choice(apis)
 
