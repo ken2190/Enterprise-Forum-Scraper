@@ -167,8 +167,8 @@ class NoScrapeV1:
                 exit(1)
         else:
             print("Exclude file not specified. Using default")        
-            # default_exclude = os.path.join(os.getcwd(), "noscrape_v1", "exclude.txt")
-            default_exclude = sys.path[0]+'/noscrape_v1/exclude.txt'
+            # default_exclude = os.path.join(os.getcwd(), "noscrape", "exclude.txt")
+            default_exclude = sys.path[0]+'/noscrape/exclude.txt'
             print("Using default exclude:", default_exclude)
             try:
                 with open(default_exclude, 'r') as f:
