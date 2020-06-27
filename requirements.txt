@@ -20,3 +20,5 @@ telethon
 python-dotenv
 arrow
 schedule
+python3-anticaptcha
+python-anticaptcha

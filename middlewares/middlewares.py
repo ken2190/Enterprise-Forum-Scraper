@@ -121,8 +121,8 @@ class DedicatedProxyMiddleware(object):
 
 class BypassCloudfareMiddleware(object):
 
-    captcha_provider = "2captcha"
-    captcha_token = "76228b91f256210cf20e6d8428818e23"
+    captcha_provider = "anticaptcha"
+    captcha_token = "d7da71f33665a41fca21ecd11dc34015"
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -139,15 +139,19 @@ class BypassCloudfareMiddleware(object):
         first_recaptcha_text = "Why do I have to complete a CAPTCHA"
         second_recaptcha_text = "cf_chl_captcha_tk"
 
-        cloudfare_test = ((response.status in (503, 429, 403)
-                           and response.headers.get("Server", "").startswith(b"cloudflare")
-                           and first_cloudfare_text in response.text
-                           and second_cloudfare_text in response.text)
-                          or (response.status in (503, 429, 403)
-                              and first_recaptcha_text in response.text
-                              and third_cloudfare_text in response.text)
-                          or (response.status in (503, 429, 403)
-                              and second_recaptcha_text in response.text))
+        cloudfare_test = (
+                response.status in (503, 429, 403)
+                and response.headers.get("Server", "").startswith(b"cloudflare")
+                and first_cloudfare_text in response.text
+                and second_cloudfare_text in response.text
+            ) or (
+                response.status in (503, 429, 403)
+                and first_recaptcha_text in response.text
+                and third_cloudfare_text in response.text
+            ) or (
+                response.status in (503, 429, 403)
+                and second_recaptcha_text in response.text
+            )
 
         return cloudfare_test
 
@@ -210,6 +214,7 @@ class BypassCloudfareMiddleware(object):
                 "api_key": self.captcha_token
             }
         )
+
         ip = None
 
         request_args = {
