@@ -3,3 +3,7 @@ log
 filebeat
 apm
 kibana
+metricbeat
+metric
+monitoring
+monitor
