@@ -7,6 +7,7 @@ import traceback
 import json
 import utils
 import datetime
+import dateutil.parser as dparser
 from lxml.html import fromstring
 
 
@@ -139,7 +140,6 @@ class CrackedToParser:
                     'img': avatar
                 })
             comments.append({
-                
                 '_source': source,
             })
         return comments
@@ -177,7 +177,6 @@ class CrackedToParser:
                     'img': avatar
                 })
             return {
-                
                 '_source': source
             }
         except:
@@ -186,36 +185,40 @@ class CrackedToParser:
 
     def get_date(self, tag):
         date_block = tag.xpath(
-            'div//span[@class="post_date"]/text()'
+            './/span[@class="post_date"]//@title'
         )
         date = date_block[0].strip() if date_block else ""
         try:
-            pattern = "%d %B, %Y - %I:%M %p"
+            pattern = "%H:%M %p - %d %B, %Y"
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
-            return ""
-        return ""
+            try:
+                date = dparser.parse(date).timestamp()
+            except:
+                return ""
+
+        return str(date)
 
     def get_author(self, tag):
         author = tag.xpath(
-            'aside/div[@class="post-username"]/span/a/text()'
+            './/div[@class="post-username"]/span/a/text()'
         )
         if not author:
             author = tag.xpath(
-                'aside/div[@class="post-username"]/span/a/s/text()'
+                './/div[@class="post-username"]/span/a/s/text()'
             )
         if not author:
             author = tag.xpath(
-                'aside/div[@class="post-username"]/span/a/span/text()'
+                './/div[@class="post-username"]/span/a/span/text()'
             )
         if not author:
             author = tag.xpath(
-                'aside/div[@class="post-username"]/span/a/strong/span/text()'
+                './/div[@class="post-username"]/span/a/strong/span/text()'
             )
         if not author:
             author = tag.xpath(
-                'aside/div[@class="post-username"]/span/text()'
+                './/div[@class="post-username"]/span/text()'
             )
 
         author = author[0].strip() if author else None
@@ -230,12 +233,10 @@ class CrackedToParser:
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
-            'div//div[@class="post_body scaleimages"]'
-            '/descendant::text()['
-            'not(ancestor::blockquote)]'
+            './/div[starts-with(@id, "pid_")]/text()'
         )
         protected_email = tag.xpath(
-            'div//div[@class="post_body scaleimages"]/'
+            './/div//div[@class="post_body scaleimages"]/'
             'descendant::*[@class="__cf_email__"]/@data-cfemail'
         )
         post_text = " ".join([
@@ -254,7 +255,7 @@ class CrackedToParser:
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
-            'aside//div[@class="post-avatar"]//a/img/@src'
+            './/div[@class="post-avatar"]//a/img/@src'
         )
         if not avatar_block:
             return ""
@@ -266,7 +267,7 @@ class CrackedToParser:
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(
-            'div//div[@class="right postbit-number"]/strong/a/text()'
+            './/span[contains(@class, "posturl")]//strong/a/text()'
         )
         # print(comment_block)
         if comment_block:

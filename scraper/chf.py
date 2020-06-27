@@ -29,7 +29,7 @@ class ChfSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//header[@class="message-attribution"]'\
+    post_date_xpath = '//header[contains(@class,"message-attribution")]'\
                       '//time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
@@ -108,7 +108,8 @@ class ChfSpider(SitemapSpider):
 
             # Standardize url
             if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                forum_url = self.base_url + forum_url        
+
             yield Request(
                 url=forum_url,
                 headers=self.headers,

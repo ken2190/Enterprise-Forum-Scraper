@@ -9,5 +9,5 @@ input
 *.csv
 *.json
 output
-.env
 log
+.env

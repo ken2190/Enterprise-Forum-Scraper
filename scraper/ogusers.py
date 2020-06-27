@@ -17,7 +17,7 @@ from scraper.base_scrapper import (
 
 
 USER = 'Exabyte'
-PASS = 'Night#OG009'
+PASS = 'OG-new!pass'
 REQUEST_DELAY = .6
 NO_OF_THREADS = 16
 
@@ -32,8 +32,7 @@ class OgUsersSpider(SitemapSpider):
 
     # Css stuffs
     login_form_css = "#quick_login>form"
-    forum_css = "td.col_row>a[href*=Forum-]::attr(href), " \
-                "td.col_row>a[href*=Forum-] + div.smalltext>div>a[href*=Forum-]::attr(href)"
+    forum_xpath = "//a[contains(@href, 'Forum-')]/@href"
 
     # Xpath stuffs
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
@@ -152,7 +151,7 @@ class OgUsersSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         # Load all forums
-        all_forums = response.css(self.forum_css).extract()
+        all_forums = response.xpath(self.forum_xpath).extract()
         for forum in all_forums:
 
             if self.base_url not in forum:
