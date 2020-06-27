@@ -8,6 +8,7 @@ Options:
         -tf --outFile OutputFile     : File to store results
         -v                           : Enable verbose output
         --examples                   : Print usage examples then exit
+        -o, --out_folder             : Output folder to save result
 
 
     Mongo And Cassandra Options

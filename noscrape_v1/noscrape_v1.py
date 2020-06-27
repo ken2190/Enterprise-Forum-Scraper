@@ -1,12 +1,12 @@
 import re
 from .noscrape_logger import NoScrapeLogger
-from .config import noscrape_parser_arguments
-from cli_parser import CliParser
+# from .config import noscrape_parser_arguments
+# from cli_parser import CliParser
 from .db_modules.elastic import Elastic
 from .main_modules.arg_verifier import ArgVerifier
 from .main_modules.arg_parser import ArgParser
-import os, sys
-
+import os
+import sys
 import logging
 
 VERSION = "2.0.2"
@@ -26,7 +26,6 @@ class NoScrapeV1:
             scan_option = 'meta' if new_config.get('meta') else 'dump'
             # db_type = new_config.get('type')
             # target_file = noscrape_args.get('target_file')
-
         return scan_option
 
         # scan_option, db_type, target_file = None, None, None
@@ -60,7 +59,7 @@ class NoScrapeV1:
             #     self.run_s3(new_config)
 
         if new_config['type'] == 'es':
-            self.run_es(new_config)
+            self.run_es(new_config)            
 
         # scan_option, db_type, target_file = self.verify_args()
         # if scan_option:
@@ -141,17 +140,16 @@ class NoScrapeV1:
             filter_list = self.create_filter_list(new_config['filter'])
 
         out_file = None
-        if new_config['out_file'] is not None:
-            arg_verifier.try_opening_output_file()
-            out_file = new_config['out_file']
-
-        output_folder = new_config["out_folder"]
+        # if new_config['out_file'] is not None:
+        #     arg_verifier.try_opening_output_file()
+        #     out_file = new_config['out_file']            
+        output_folder = new_config["out_folder"]            
         if output_folder:
             try:
                 if os.path.exists(output_folder):
                     pass
                 else:
-                    os.makedirs(output_folder)
+                    os.makedirs(output_folder)                    
             except:
                 print("--Could not create output folder:", output_folder)
                 exit(1)
@@ -168,7 +166,7 @@ class NoScrapeV1:
                 print("--Error parsing exclude_index_file")
                 exit(1)
         else:
-            print("Exclude file not specified. Using default")
+            print("Exclude file not specified. Using default")        
             # default_exclude = os.path.join(os.getcwd(), "noscrape_v1", "exclude.txt")
             default_exclude = sys.path[0]+'/noscrape_v1/exclude.txt'
             print("Using default exclude:", default_exclude)
@@ -204,9 +202,19 @@ class NoScrapeV1:
             try:
                 elastic = Elastic(ip=ip, port=port, exclude_indexes=exclude_indexes)
                 if scrape_type == 'meta':
-                    metadata = elastic.fetch_metadata()                
-                    if metadata:
-                        self.logger.write_json(metadata)
+                    metadata = elastic.fetch_metadata()                    
+                    if metadata:                        
+                        self.logger.write_json(metadata, output_folder)
+
+                        if metadata.get('_source', {}).get('ip'):
+                            ip = metadata['_source']['ip']
+                        elif metadata.get('ip'):
+                            ip = metadata["ip"]
+                        else:
+                            print("IP not found.")
+                            return
+                        print('----------------------------------')
+                        print("JSON Written in "+output_folder+'/'+ip+'.json')
 
                 elif scrape_type == 'dump':
                     dumped_data = elastic.dump()

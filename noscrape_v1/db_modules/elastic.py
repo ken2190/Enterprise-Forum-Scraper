@@ -145,22 +145,22 @@ class Elastic:
 
 						try:
 							properties = mappings[index_name]["mappings"]["doc"]["properties"]
-							print("------first format-------")
+							# print("------first format-------")
 						except:
 							try:
 								properties = mappings[index_name]["mappings"]["properties"]
-								print("------second format-------")
+								# print("------second format-------")
 							except:
 								try:
 									properties = mappings[index_name]["mappings"]["index_type"]["properties"]
-									print("-------third format-------")
+									# print("-------third format-------")
 								except:
 									try:
 										current_mappings = mappings[index_name]["mappings"]
 										all_mapping_keys = list(current_mappings.keys())
 										first_key = all_mapping_keys[0]
 										properties = current_mappings[first_key]["properties"]
-										print("---------fourth format---------")
+										# print("---------fourth format---------")
 									except:
 										print("No mappings found for index", index_name)
 										print(json.dumps(mappings, indent=4))
