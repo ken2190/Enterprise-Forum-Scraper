@@ -54,7 +54,7 @@ class BHFIOSpider(SitemapSpider):
     use_proxy = False
     sitemap_datetime_format = "%b %d, %Y at %I:%M %p"
     post_datetime_format = "%b %d, %Y at %I:%M %p"
-    download_delay = 0.3
+    download_delay = 1.5
     download_thread = 10
 
     def __init__(self, *args, **kwargs):
@@ -151,8 +151,7 @@ class BHFIOSpider(SitemapSpider):
             formcss=self.login_form_css,
             formdata={
                 "code": code.replace(" ", ""),
-                "trust": "0",
-                "remember": "0"
+                "_xfResponseType": "json"
             },
             meta=self.synchronize_meta(
                 response,
@@ -162,7 +161,7 @@ class BHFIOSpider(SitemapSpider):
                 }
             ),
             dont_filter=True,
-            callback=self.parse_post_backup_code
+            callback=self.parse_post_backup_code,
         )
 
     def parse_post_backup_code(self, response):
@@ -182,11 +181,11 @@ class BHFIOSpider(SitemapSpider):
         # Load code
         code = response.meta.get("code")
 
-        # Load account
-        account = response.css(self.account_css).extract_first()
+        # Check if code is verified
+        raw_response = response.json()
 
         # If not account and no more backup codes, return
-        if not account and not self.backup_codes:
+        if raw_response['status'].lower() != 'ok' and not self.backup_codes:
             self.logger.info(
                 "None of backup code work."
             )
@@ -194,7 +193,7 @@ class BHFIOSpider(SitemapSpider):
             return
 
         # If not account, try other code
-        if not account:
+        if raw_response['status'].lower() != 'ok':
             self.logger.info(
                 "Code %s failed." % code
             )
