@@ -17,12 +17,12 @@ from scraper.base_scrapper import (
 
 USERNAME = "darkcylon"
 PASSWORD = "Night#Omerta"
-MD5PASS = "abb74c9967202f878f101cc9baa1f4be"
+MD5PASS = "8956fb126e264fcf3da8a553e271a0c9"
 
 
 class OmertaSpider(SitemapSpider):
     name = 'omerta_spider'
-    
+
     # Url stuffs
     base_url = "https://omerta.cc/"
 
@@ -186,10 +186,10 @@ class OmertaSpider(SitemapSpider):
                 "Thread %s has been protected by password. Ignored." % response.url
             )
             return
-        
+
         # Parse generic thread
         yield from super().parse_thread(response)
-        
+
         # Save avatars
         avatars = response.xpath("//a[contains(@href,\"member.php?\")]/img")
         for avatar in avatars:
