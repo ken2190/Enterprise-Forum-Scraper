@@ -1,8 +1,8 @@
 import os
 import re
 import uuid
-
-from datetime import datetime
+import json
+import dateparser
 
 from scrapy import (
     Request,
@@ -13,9 +13,8 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-USERNAME = "thecreator101@protonmail.com"
-PASSWORD = "Night#Bhf01"
-
+USERNAME = "heisenberg404"
+PASSWORD = "helloworld"
 
 class BHFIOSpider(SitemapSpider):
 
@@ -33,7 +32,8 @@ class BHFIOSpider(SitemapSpider):
 
     # Css stuffs
     login_form_css = "form[action]"
-    backup_code_css = "a[href*=\"provider=backup\"]::attr(href)"
+    backup_code_url = f'{base_url}/login/two-step?provider=backup&remember=1&'\
+                      f'_xfRedirect={base_url}/'
     account_css = r'a[href="/account/"]'
 
     # Xpath stuffs
@@ -41,11 +41,16 @@ class BHFIOSpider(SitemapSpider):
     pagination_xpath = "//a[contains(@class,\"pageNav-jump--next\")]/@href"
     thread_xpath = "//div[contains(@class,\"structItem--thread\")]"
     thread_first_page_xpath = "//div[@class=\"structItem-title\"]/a/@href"
-    thread_last_page_xpath = "//span[@class=\"structItem-pageJump\"]/a[last()]/@href"
-    thread_date_xpath = "//time[contains(@class,\"structItem-latestDate\")]/@title"
-    thread_pagination_xpath = "//a[contains(@class,\"pageNav-jump--prev\")]/@href"
-    thread_page_xpath = "//li[contains(@class,\"pageNav-page--current\")]/a/text()"
-    post_date_xpath = "//div[@class=\"message-attribution-main\"]/a[@class=\"u-concealed\"]/time/@title"
+    thread_last_page_xpath = "//span[@class=\"structItem-pageJump\"]/"\
+                             "a[last()]/@href"
+    thread_date_xpath = "//time[contains(@class,\"structItem-latestDate\")]"\
+                        "/@title"
+    thread_pagination_xpath = "//a[contains(@class,\"pageNav-jump--prev\")]"\
+                              "/@href"
+    thread_page_xpath = "//li[contains(@class,\"pageNav-page--current\")]"\
+                        "/a/text()"
+    post_date_xpath = "//div[@class=\"message-attribution-main\"]"\
+                      "/a[@class=\"u-concealed\"]/time/@title"
 
     avatar_xpath = "//img[contains(@class,\"avatar\")]/@src"
 
@@ -63,6 +68,9 @@ class BHFIOSpider(SitemapSpider):
         self.headers.update(
             {
                 'referer': 'https://bhf.io/',
+                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) '
+                              'AppleWebKit/537.36 (KHTML, like Gecko) '
+                              'Chrome/83.0.4103.106 Safari/537.36',
             }
         )
 
@@ -77,8 +85,18 @@ class BHFIOSpider(SitemapSpider):
             encoding="utf-8"
         ) as file:
             self.backup_codes = [
-                code.strip() for code in file.read().split("\n")
+                re.sub(r'\s+', '', code) for code in file.read().split("\n")
             ]
+
+    def parse_thread_date(self, thread_date):
+        if not thread_date:
+            return
+        return dateparser.parse(thread_date.strip())
+
+    def parse_post_date(self, post_date):
+        if not post_date:
+            return
+        return dateparser.parse(post_date.strip())
 
     def write_backup_codes(self):
         with open(
@@ -102,90 +120,105 @@ class BHFIOSpider(SitemapSpider):
         )
 
     def parse_login(self, response):
-        # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
-
-        yield FormRequest.from_response(
-            response=response,
-            formcss=self.login_form_css,
-            formdata={
-                "login": USERNAME,
-                "password": PASSWORD
-            },
-            dont_filter=True,
+        token = response.xpath(
+            '//input[@name="_xfToken"]/@value').extract_first()
+        params = {
+            'login': USERNAME,
+            'password': PASSWORD,
+            "remember": '1',
+            '_xfRedirect': self.base_url,
+            '_xfToken': token
+        }
+        self.logger.info(f'Login Token is: {token}')
+        yield FormRequest(
+            url=self.login_url,
             callback=self.parse_post_login,
-            headers=self.post_headers,
-            meta=self.synchronize_meta(response)
+            formdata=params,
+            headers=self.headers,
+            dont_filter=True,
+
         )
 
     def parse_post_login(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
-
         # Load backup code url
-        backup_code_url = "%s%s" % (
-            self.base_url,
-            response.css(self.backup_code_css).extract_first()
-        )
-
         yield Request(
-            url=backup_code_url,
+            url=self.backup_code_url,
             headers=self.headers,
             dont_filter=True,
             callback=self.parse_backup_code,
-            meta=self.synchronize_meta(response)
         )
 
     def parse_backup_code(self, response):
 
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+        if response.url == f'{self.base_url}/':
+            yield from self.parse(response)
+            return
 
         # Load backup code
         code = self.backup_codes[0]
         self.backup_codes = self.backup_codes[1:]
-
-        yield FormRequest.from_response(
-            response=response,
-            formcss=self.login_form_css,
-            formdata={
-                "code": code.replace(" ", ""),
-                "trust": "0",
-                "remember": "0"
-            },
-            meta=self.synchronize_meta(
-                response,
-                default_meta={
-                    "backup_code_url": response.request.url,
-                    "code": code
-                }
-            ),
+        token = response.xpath(
+            '//input[@name="_xfToken"]/@value').extract_first()
+        self.headers.update({
+            'accept': 'application/json, text/javascript, */*; q=0.01',
+            'accept-language': 'en-US,en;q=0.9,hi;q=0.8,ru;q=0.7',
+            'origin': 'https://bhf.io',
+            'referer': self.backup_code_url,
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'x-requested-with': 'XMLHttpRequest',
+        })
+        self.logger.info(f'Code is: {code}')
+        self.logger.info(f'Two-step Token is: {token}')
+        params = {
+            'code': code,
+            'trust': '1',
+            'trust_permanent': '1',
+            'confirm': '1',
+            'provider': 'backup',
+            'remember': '1',
+            '_xfRedirect': f'{self.base_url}/',
+            '_xfToken': token,
+            '_xfRequestUri': '/login/two-step?provider=backup&remember=1&'
+                             '_xfRedirect=https://bhf.io/',
+            '_xfWithData': '1',
+            '_xfToken': token,
+            '_xfResponseType': 'json',
+        }
+        yield FormRequest(
+            url='https://bhf.io/login/two-step',
+            callback=self.parse_post_backup_code,
+            formdata=params,
+            headers=self.headers,
             dont_filter=True,
-            callback=self.parse_post_backup_code
+            meta={'code': code}
         )
 
     def parse_post_backup_code(self, response):
 
-        # Synchronize user agent for cloudfare middleware
+        code = response.meta.get("code")
         self.synchronize_headers(response)
 
-        # Load cookiejar
-        cookiejar = response.meta.get("cookiejar")
-
-        # Load ip
-        ip = response.meta.get("ip")
-
-        # Load backup code
-        backup_code_url = response.meta.get("backup_code_url")
-
-        # Load code
-        code = response.meta.get("code")
-
-        # Load account
-        account = response.css(self.account_css).extract_first()
+        json_data = json.loads(response.text)
+        if json_data.get('status') == 'ok':
+            self.logger.info("Code %s success." % code)
+            yield Request(
+                url=self.base_url,
+                headers=self.headers,
+                dont_filter=True,
+                callback=self.parse,
+            )
+            self.write_backup_codes()
+            return
 
         # If not account and no more backup codes, return
-        if not account and not self.backup_codes:
+        if not self.backup_codes:
             self.logger.info(
                 "None of backup code work."
             )
@@ -193,34 +226,23 @@ class BHFIOSpider(SitemapSpider):
             return
 
         # If not account, try other code
-        if not account:
-            self.logger.info(
-                "Code %s failed." % code
-            )
-            yield Request(
-                url=backup_code_url,
-                headers=self.headers,
-                dont_filter=True,
-                callback=self.parse_backup_code,
-                meta=self.synchronize_meta(response)
-            )
-            return
-
-        # If account, success
         self.logger.info(
-            "Code %s success." % code
+            "Code %s failed." % code
         )
-        yield from super().start_requests(
-            cookiejar=cookiejar,
-            ip=ip
+        yield Request(
+            url=self.backup_code_url,
+            headers=self.headers,
+            dont_filter=True,
+            callback=self.parse_backup_code,
+            meta=self.synchronize_meta(response)
         )
-        self.write_backup_codes()
+        return
 
     def get_topic_id(self, url=None):
         topic_id = self.topic_pattern.findall(url)
         try:
             return topic_id[0]
-        except Exception as err:
+        except Exception:
             return
 
     def parse_thread_url(self, thread_url):
@@ -233,12 +255,12 @@ class BHFIOSpider(SitemapSpider):
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
-
         for forum_url in all_forums:
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-
+            # if 'forums/161/' not in forum_url:
+            #     continue
             yield Request(
                 url=forum_url,
                 headers=self.headers,
@@ -272,7 +294,3 @@ class BHFIOScrapper(SiteMapScrapper):
             }
         )
         return spider_settings
-
-
-if __name__ == '__main__':
-    run_spider('/Users/PathakUmesh/Desktop/BlackHatWorld')
