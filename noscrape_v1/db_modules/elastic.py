@@ -133,14 +133,24 @@ class Elastic:
 						index_data["count"] = self.get_index_count(indexes, index_name)
 						mappings = elastic_db.indices.get(index_name)
 
-						try:
-							# properties = mappings[index_name]["mappings"]["doc"]["properties"]
-							properties = mappings[index_name]["mappings"]["properties"]														
+						fields = []
 
+						try:
+							properties = mappings[index_name]["mappings"]["doc"]["properties"]
 							fields = list(properties.keys())
-							index_data["fields"] = fields
+							print("------first format-------")
+
 						except:
-							index_data["fields"] = []
+							try:
+								properties = mappings[index_name]["mappings"]["properties"]
+								fields = list(properties.keys())
+								print("------second format-------")
+
+							except:
+								print("Analyze Index Mapping Format", index_name)
+								index_data["fields"] = []
+
+						index_data["fields"] = fields
 
 						obj["_source"]["indexes"].append(index_data)
 					else:
