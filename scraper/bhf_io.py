@@ -51,7 +51,7 @@ class BHFIOSpider(SitemapSpider):
     avatar_xpath = "//img[contains(@class,\"avatar\")]/@src"
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     sitemap_datetime_format = "%b %d, %Y at %I:%M %p"
     post_datetime_format = "%b %d, %Y at %I:%M %p"
     download_delay = 0.3
