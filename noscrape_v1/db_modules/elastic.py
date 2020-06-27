@@ -46,6 +46,13 @@ class Elastic:
 				return index_record_count
 		return 0
 
+
+	def get_index_size(self, indexes, index_name):
+		for index in indexes:			
+			if index['index'] == index_name:				
+				return index['store.size']				
+		return 0
+
 	# get index names
 	def get_index_names(self, indexes):
 		return [index["index"] for index in indexes]
@@ -117,21 +124,22 @@ class Elastic:
 					"_source": {
 						"indexes": []
 					}
-				}
+				}					
 
 				obj["_source"]["ip"] = self.ip
 				obj["_source"]["port"] = self.port
 				obj["_source"]["date"] = str(datetime.now())
 
 				for index in indexes:
-					index_name = index["index"]				
+					index_name = index["index"]
 					
 					if self.valid_index(index_name):
 						index_data = self.init_index_json()
 						
 						index_data["name"] = index_name
 						index_data["count"] = self.get_index_count(indexes, index_name)
-						mappings = elastic_db.indices.get(index_name)
+						index_data["size"] = self.get_index_size(indexes, index_name)						
+						mappings = elastic_db.indices.get(index_name)						
 
 						properties = {}
 
