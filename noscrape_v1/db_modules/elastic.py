@@ -133,26 +133,26 @@ class Elastic:
 						index_data["count"] = self.get_index_count(indexes, index_name)
 						mappings = elastic_db.indices.get(index_name)
 
-						fields = []
+						properties = {}
 
 						try:
 							properties = mappings[index_name]["mappings"]["doc"]["properties"]
-							fields = list(properties.keys())
 							print("------first format-------")
-
 						except:
 							try:
 								properties = mappings[index_name]["mappings"]["properties"]
-								fields = list(properties.keys())
 								print("------second format-------")
-
 							except:
-								print("Analyze Index Mapping Format", index_name)
-								index_data["fields"] = []
+								try:
+									properties = mappings[index_name]["mappings"]["index_type"]["properties"]
+									print("-------third format-------")
+								except:
+									print("No mappings found for index", index_name)
+									print(json.dumps(mappings, indent=4))
 
-						index_data["fields"] = fields
-
+						index_data["fields"] = list(properties.keys())
 						obj["_source"]["indexes"].append(index_data)
+
 					else:
 						continue
 
