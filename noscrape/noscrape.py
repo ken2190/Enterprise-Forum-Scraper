@@ -1,322 +1,224 @@
-#!/usr/bin/env python3
-'''
-
-
-##    ##  #######   ######   ######  ########     ###    ########  ########
-###   ## ##     ## ##    ## ##    ## ##     ##   ## ##   ##     ## ##
-####  ## ##     ## ##       ##       ##     ##  ##   ##  ##     ## ##
-## ## ## ##     ##  ######  ##       ########  ##     ## ########  ######
-##  #### ##     ##       ## ##       ##   ##   ######### ##        ##
-##   ### ##     ## ##    ## ##    ## ##    ##  ##     ## ##        ##
-##    ##  #######   ######   ######  ##     ## ##     ## ##        ########
-
-A Python3 application for searching and scraping public datastorage
-
-Installation:
-	This application assumes you have python3 and pip3 installed.
-
-	pip3 install -r requirements.txt
-
-Sample usage:
-
-	./__main__.py --help
-
-This software is provided subject to the MIT license stated below.
---------------------------------------------------
-	MIT License
-
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
-
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
---------------------------------------------------
-'''
-
-from noscrape.db_modules import MongoScrape
-from noscrape.db_modules import S3BruteForce
-from noscrape.db_modules import ElasticScrape
-from noscrape.db_modules import CassandraScrape
-from noscrape.main_modules import IpTargets
-from noscrape.main_modules import ArgVerifier
-from noscrape.main_modules import ArgParser
-
+import re
+from .noscrape_logger import NoScrapeLogger
+# from .config import noscrape_parser_arguments
+# from cli_parser import CliParser
+from .db_modules.elastic import Elastic
+from .main_modules.arg_verifier import ArgVerifier
+from .main_modules.arg_parser import ArgParser
+import os
+import sys
 import logging
-import json
 
-VERSION = "2.0.2"
+VERSION = "2.2"
 
 
-class NoScrape:
-    def __init__(self):
-        logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
-        self.logger = logging.getLogger(__name__)
+class NoScrapeV1:
+    def __init__(self, args):
+        self.logger = NoScrapeLogger(__name__)
+        # self.parser = CliParser(description="Noscrape parsing tool", arguments=noscrape_parser_arguments)
+        self.args = args
+
+    def verify_args(self, new_config):
+        scan_option = None
+        if not new_config.get('dump') and not new_config.get('meta'):
+            scan_option = False
+        else:
+            scan_option = 'meta' if new_config.get('meta') else 'dump'
+            # db_type = new_config.get('type')
+            # target_file = noscrape_args.get('target_file')
+        return scan_option
+
+        # scan_option, db_type, target_file = None, None, None
+        # noscrape_args = self.parser.get_args()
+        # if not noscrape_args.get('dump') and not noscrape_args.get('meta'):
+        #     scan_option = False
+        # else:
+        #     scan_option = 'meta' if noscrape_args.get('meta') else 'dump'
+        #     db_type = noscrape_args.get('type')
+        #     target_file = noscrape_args.get('target_file')
+        #
+        # return scan_option, db_type, target_file
+
+    def run(self):
+        new_parser = ArgParser()
+        new_config = new_parser.parse_command_line()
+        self.verify_args(new_config)
+        if new_config['examples']:
+            new_parser.print_examples()
+
+        if new_config['v']:
+            self.logger.logger.setLevel(logging.DEBUG)
+
+            # if new_config['type'] == 'mongo':
+            #     self.run_nosql(new_config, 'mongo')
+            #
+            # if new_config['type'] == 'cassandra':
+            #     self.run_nosql(new_config, 'cassandra')
+            #
+            # if new_config['type'] == 's3':
+            #     self.run_s3(new_config)
+
+        if new_config['type'] == 'es':
+            self.run_es(new_config)            
+
+        # scan_option, db_type, target_file = self.verify_args()
+        # if scan_option:
+        #     if db_type == 'es':
+        #         self.run_es(scan_option, target_file)
+        # else:
+        #     self.parser.error('--either -d/--dump or -m/--meta is required')
+
+    def find_delimeter(self, first_line):
+        delimeter_options = [',', ':', '|']
+        for delimeter_option in delimeter_options:
+            if delimeter_option in first_line:
+                return delimeter_option
+        return None
+
+    def load_from_file(self, file_path):
+        # try:
+        #     with open(file_path, 'r') as file_handle:
+        #         first_line = file_handle.readline()
+        #         delimeter = self.find_delimeter(first_line)
+        # except Exception as e:
+        #     raise Exception("Error when trying to open '" + file_path + "' - " + str(e))
+        #
+        # if delimeter is None:
+        #     raise Exception("CSV delimeter of input file should be one of: [',', ':', '|']")
+
+        try:
+            result_targets = {}
+            with open(file_path, 'r') as f:
+                lines = f.readlines()
+                for line in lines:
+                    line = line.strip()
+                    if line:
+                        try:
+                            ip, port = re.split(r'[,:]', line)
+                            result_targets[ip] = port
+                        except:
+                            pass
+            return result_targets
+
+        except Exception as e:
+            print("--Error reading target file: %s--" % file_path)
+            raise e
+            # self.parser.error("--Error reading target file: %s--" % target_file)
+
+    def get_targets(self, new_config):
+        target_file = new_config.get("target_file")
+        if target_file:
+            return self.load_from_file(target_file)
+        return {}
+
+    def create_filter_list(self, file_path):
+        filter_list = []
+        with open(file_path, "r") as f:
+            for line in f.readlines():
+                filter_list.append(
+                    line.replace("\n", "").replace("\x00", "").replace("\r", "").replace("\b", "").lower())
+        return filter_list
 
     # Prints the basic banner
     def banner(self):
         banner = '''__main__.py - A data discovery tool\nv''' + VERSION + '''\n'''
         print(banner)
 
-    def create_filter_list(self, file_path):
-        filter_list = []
-        for line in open(file_path, "r"):
-            filter_list.append(line.replace("\n", "").replace("\x00", "").replace("\r", "").replace("\b", "").lower())
-        return filter_list
-
-    # Run the MongoDB scraping module
-    def run_nosql(self, argparse_data, nosql_type):
-        # Verify some arguments
-        arg_verifier = ArgVerifier(argparse_data)
-        arg_verifier.show_nosql_help()
-        arg_verifier.is_nosql_scrape_types_true()
-        arg_verifier.is_target_file_specified()
-        arg_verifier.is_port_specified()
-        # Verify some arguments
-
-        filter_list = []
-        if argparse_data['filter'] is not None:
-            arg_verifier.try_opening_filter_file()
-            filter_list = self.create_filter_list(argparse_data['filter'])
-
-        out_file = None
-        if argparse_data['outFile'] is not None:
-            arg_verifier.try_opening_output_file()
-            out_file = argparse_data['outFile']
-
-        if argparse_data['username'] is not None or argparse_data['password'] is not None:
-            if argparse_data['authDB'] is None:
-                argparse_data['authDB'] = "admin"
-
-        exclude_indexes = []
-        if argparse_data['excludeIndexFile'] is not None:
-            with open(argparse_data['excludeIndexFile'], "r") as exclude_file:
-                exclude_indexes = [
-                    keyword.strip() for keyword in exclude_file.read().split("\n")
-                ]
-
-        # Build the tool
-        if nosql_type == 'mongo':
-            nosql_tool = MongoScrape(
-                scrape_type=argparse_data['scrape_type'], 
-                username=argparse_data['username'],
-                password=argparse_data['password'], 
-                auth_db=argparse_data['authDB'], 
-                exclude_indexes=exclude_indexes
-            )
-        elif nosql_type == 'cassandra':
-            nosql_tool = CassandraScrape(
-                scrape_type=argparse_data['scrape_type'], 
-                username=argparse_data['username'],
-                password=argparse_data['password'], 
-                exclude_indexes=exclude_indexes
-            )
-        else:
-            raise ValueError("Type Should be either 'mongo' or 'cassandra'")
-
-        # Load the IPsa
-        targets = IpTargets()
-        if argparse_data['targets'] is not None:
-            targets.load_from_input(argparse_data['targets'], argparse_data['port'])
-        if argparse_data['targetFile'] is not None:
-            targets.load_from_file(argparse_data['targetFile'])
-
-        # Prep the output file
-        first_write = True
-        result_is_empty = True
-        for network in targets:
-            for ip in network[0]:
-                try:
-                    nosql_tool.set_target(str(ip), int(network[1]))
-                    if not nosql_tool.test_connection():
-                        # TCP connection failed
-                        continue
-                    if not nosql_tool.connect():
-                        # Tool failed to attach to the instance
-                        continue
-
-                    results = nosql_tool.run()
-                    results = nosql_tool.filter_results(results, filter_list)
-                    nosql_tool.print_results(results)
-                    nosql_tool.disconnect()
-                    if results is not None:
-                        result_is_empty = False
-                    # Write out the data to the file
-                    if out_file is not None:
-                        write_out = open(out_file, "a")
-                        if "xml" in write_out.name:
-                            xml = nosql_tool.results_to_xml(results)
-                            if not first_write:
-                                xml = '\n'.join(xml.split("\n")[1:])
-                            first_write = False
-                            write_out.write(xml)
-                            write_out.close()
-                        elif "json" in write_out.name:
-                            write_out.write(
-                                "%s\n" % json.dumps(
-                                    nosql_tool.results_to_json(results)
-                                )
-                            )
-
-                except Exception as e:
-                    self.logger.error("Error on " + str(ip) + ":" + str(network[1]) + " - " + str(e))
-                    continue
-        if out_file is not None and not result_is_empty:
-            self.logger.error("Results written out to '" + out_file + "'")
-
-    # Run the AWS S3 Bruteforce module
-    def run_s3(self, argparse_data):
-        # Verify some arguments
-        arg_verifier = ArgVerifier(argparse_data)
-        arg_verifier.show_s3_help()
-        arg_verifier.is_access_and_secret_key_specified()
-        arg_verifier.is_hitlist_file_specified()
-        arg_verifier.try_opening_hitlist_file()
-        # Verify some arguments
-
-        out_file = None
-        if argparse_data['outFile'] is not None:
-            arg_verifier.try_opening_output_file()
-            out_file = argparse_data['outFile']
-
-        s3_tool = S3BruteForce(argparse_data['access'], argparse_data['secret'], argparse_data['hitlist'])
-        logging.getLogger('boto3').setLevel(9999)
-        logging.getLogger('botocore').setLevel(9999)
-        logging.getLogger('nose').setLevel(9999)
-        logging.getLogger('urllib3').setLevel(9999)
-
-        if not argparse_data['v']:
-            self.logger.info("Beginning S3 bucket bruteforcing - use '-v' to see progress/failures")
-        else:
-            self.logger.info("Beginning S3 bucket bruteforcing")
-
-        if not s3_tool.connect():
-            exit(1)
-
-        s3_tool.runAttack(out_file)
-        if argparse_data['outFile'] is not None:
-            self.logger.error("Results written out to '" + argparse_data['outFile'] + "'")
-
-    def run_es(self, argparse_data):
-        # Verify some arguments
-        arg_verifier = ArgVerifier(argparse_data)
+    def run_es(self, new_config):
+        arg_verifier = ArgVerifier(new_config)
         arg_verifier.show_es_help()
         arg_verifier.is_filter_file_specified_for_matchdump()
-        arg_verifier.is_output_file_specified_for_search()
+        # arg_verifier.is_output_file_specified_for_search()
         arg_verifier.is_target_file_specified()
         arg_verifier.is_port_specified()
-        arg_verifier.is_elastic_scrape_types_true()
+        # arg_verifier.is_elastic_scrape_types_true()
         arg_verifier.is_elastic_limit_verified()
-        # Verify some arguments
 
         filter_list = []
-        if argparse_data['filter'] is not None:
+        if new_config['filter'] is not None:
             arg_verifier.try_opening_filter_file()
-            filter_list = self.create_filter_list(argparse_data['filter'])
+            filter_list = self.create_filter_list(new_config['filter'])
 
         out_file = None
-        if argparse_data['outFile'] is not None:
-            arg_verifier.try_opening_output_file()
-            out_file = argparse_data['outFile']
+        # if new_config['out_file'] is not None:
+        #     arg_verifier.try_opening_output_file()
+        #     out_file = new_config['out_file']            
+        output_folder = new_config["out_folder"]            
+        if output_folder:
+            try:
+                if os.path.exists(output_folder):
+                    pass
+                else:
+                    os.makedirs(output_folder)                    
+            except:
+                print("--Could not create output folder:", output_folder)
+                exit(1)
 
         exclude_indexes = []
-        if argparse_data['excludeIndexFile'] is not None:
-            with open(argparse_data['excludeIndexFile'], "r") as exclude_file:
-                exclude_indexes = [
-                    keyword.strip() for keyword in exclude_file.read().split("\n")
-                ]
+        if new_config['exclude_index_file'] is not None:
+            try:
+                with open(new_config['exclude_index_file'], "r") as exclude_file:
+                    for line in exclude_file.readlines():
+                        line = line.strip()
+                        if line:
+                            exclude_indexes.append(line)
+            except:
+                print("--Error parsing exclude_index_file")
+                exit(1)
+        else:
+            print("Exclude file not specified. Using default")        
+            # default_exclude = os.path.join(os.getcwd(), "noscrape_v1", "exclude.txt")
+            default_exclude = sys.path[0]+'/noscrape_v1/exclude.txt'
+            print("Using default exclude:", default_exclude)
+            try:
+                with open(default_exclude, 'r') as f:
+                    lines = f.readlines()
+                    for line in lines:
+                        line = line.strip()
+                        if line:
+                            exclude_indexes.append(line)
+            except:
+                print("--Error reading default exclude file--")
+                exit(1)
 
-        elastic_tool = ElasticScrape(
-            scrape_type=argparse_data['scrape_type'], 
-            limit=argparse_data['limit'], 
-            keywords=filter_list,
-            exclude_indexes=exclude_indexes
-        )
+        # tf = new_config.get('target_file')
+        # try:
+        #     with open(tf, 'r') as f:
+        #         pass
+        # except Exception as e:
+        #     print("--Error parsing target_file:", tf)
 
-        targets = IpTargets()
-        if argparse_data['targets'] is not None:
-            targets.load_from_input(argparse_data['targets'], argparse_data['port'])
+        targets = self.get_targets(new_config)
+        # targets = IpTargets()
+        # if argparse_data['targets'] is not None:
+        #     targets.load_from_input(argparse_data['targets'], argparse_data['port'])
+        #
+        # if argparse_data['target_file'] is not None:
+        #     targets.load_from_file(argparse_data['target_file'])
 
-        if argparse_data['targetFile'] is not None:
-            targets.load_from_file(argparse_data['targetFile'])
+        scrape_type = new_config.get("scrape_type")
+        print(exclude_indexes)
+        for (ip, port) in targets.items():
+            try:
+                elastic = Elastic(ip=ip, port=port, exclude_indexes=exclude_indexes)
+                if scrape_type == 'meta':
+                    metadata = elastic.fetch_metadata()                    
+                    if metadata:                        
+                        self.logger.write_json(metadata, output_folder)
 
-        result_is_empty = True
-        first_write = True
-        for network in targets:
-            for ip in network[0]:
-                try:
-                    elastic_tool.set_target(str(ip), int(network[1]))
-                    if not elastic_tool.test_connection():
-                        # TCP connection failed
-                        print("failed")
-                        continue
-                    if not elastic_tool.connect():
-                        print("connection failed")
-                        # Tool failed to attach to the instance
-                        continue
-                    results = elastic_tool.run()
+                        if metadata.get('_source', {}).get('ip'):
+                            ip = metadata['_source']['ip']
+                        elif metadata.get('ip'):
+                            ip = metadata["ip"]
+                        else:
+                            print("IP not found.")
+                            return
+                        print('----------------------------------')
+                        print("JSON Written in "+output_folder+'/'+ip+'.json')
 
-                    if argparse_data['scrape_type'] == 'dump' or argparse_data['scrape_type'] == 'matchdump':
-                        continue
+                elif scrape_type == 'dump':
+                    dumped_data = elastic.dump()
+                    print(dumped_data)
 
-                    if results is not None:
-                        result_is_empty = False
-
-                    if out_file is not None:
-                        outfile = '%s' % ip
-                        write_out = open(outfile, "a")
-                        text = elastic_tool.result_to_file(results)
-                        if not first_write and text:
-                            text = '\n\n///////////////////////////////////////////////////////////////\n\n' + text
-                        first_write = False
-                        write_out.write(text)
-                        write_out.close()
-
-                except Exception as e:
-                    self.logger.error("Error on " + str(ip) + ":" + str(network[1]) + " - " + str(e))
-                    continue
-
-        if out_file is not None and not result_is_empty:
-            self.logger.error("Results written out to '" + out_file + "'")
-
-    def run(self):
-        arg_parser = ArgParser()
-        new_config = arg_parser.parse_command_line()
-
-        if new_config['examples']:
-            arg_parser.print_examples()
-                  
-        if new_config['v']:
-            logging.getLogger().setLevel(logging.DEBUG)
-
-        try:
-            if new_config['database'] == 'mongo':
-                self.run_nosql(new_config, 'mongo')
-
-            if new_config['database'] == 'cassandra':
-                self.run_nosql(new_config, 'cassandra')
-
-            if new_config['database'] == 's3':
-                self.run_s3(new_config)
-
-            if new_config['database'] == 'es':
-                self.run_es(new_config)
-
-        except KeyboardInterrupt as e:
-            self.logger.error("Caught ^C - cleaning up and exiting")
-            exit(1)
-
-
-if __name__ == '__main__':
-    NoScrape().run()
+            except Exception as e:
+                print(str(e))

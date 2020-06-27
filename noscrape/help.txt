@@ -4,10 +4,11 @@ Options:
 
     Standard arguments
         -h, --help                   : This help
-        -d --database Database Type  : State the type of database. DATABASES = ["mongo", "s3", "es", "cassandra"]
-        -o --outFile OutputFile      : File to store results
+        -t --type  : State the type of database. DATABASES = ["mongo", "es", "cassandra"]
+        -tf --outFile OutputFile     : File to store results
         -v                           : Enable verbose output
         --examples                   : Print usage examples then exit
+        -o, --out_folder             : Output folder to save result
 
 
     Mongo And Cassandra Options
