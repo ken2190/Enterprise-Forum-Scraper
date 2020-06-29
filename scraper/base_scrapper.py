@@ -501,7 +501,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         self.ip_handler = IpHandler(
             logger=self.logger,
-            fraudulent_threshold=getattr(self, "fraudulent_threshold", 35),
+            fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20)
         )
 

@@ -13,7 +13,7 @@ class IpHandler(object):
 
     def __init__(self, **kwargs):
         self.logger = kwargs.get("logger")
-        self.fraudulent_threshold = kwargs.get("fraudulent_threshold", 35)
+        self.fraudulent_threshold = kwargs.get("fraudulent_threshold", 50)
         self.ip_batch_size = kwargs.get("ip_batch_size", 20)
 
     async def fetch(self, url, **kwargs):

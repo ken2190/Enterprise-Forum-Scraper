@@ -11,10 +11,10 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 16
-USERNAME = "night_cyrax"
-PASSWORD = "DPO$s)sC3xzO"
+REQUEST_DELAY = 0.4
+NO_OF_THREADS = 10
+USERNAME = "bishop99"
+PASSWORD = "Night-Hack011"
 
 
 class HackForumsSpider(SitemapSpider):
