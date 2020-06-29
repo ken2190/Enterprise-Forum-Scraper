@@ -29,10 +29,10 @@ def keyed_hashing_algorithm(value):
 	return hash_string
 
 
-def update(d, u):
+def hash_dataset(d, u):
 	for k, v in u.items():
 		if isinstance(v, dict):
-			d[k] = update(d.get(k, {}), v)
+			d[k] = hash_dataset(d.get(k, {}), v)
 		elif isinstance(v, list):
 			d[k] = [keyed_hashing_algorithm(val) for val in v]
 		else:
@@ -40,6 +40,6 @@ def update(d, u):
 	return d
 
 
-doit = update(test_data, test_data)
+doit = hash_dataset(test_data, test_data)
 print(json.dumps(doit, indent=4))
 
