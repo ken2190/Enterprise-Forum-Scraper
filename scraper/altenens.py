@@ -29,7 +29,7 @@ class AltenensSpider(SitemapSpider):
     name = 'altenens_spider'
 
     # Url stuffs
-    base_url = "https://altenens.org/"
+    base_url = "https://altenen.is/"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
@@ -84,7 +84,7 @@ class AltenensSpider(SitemapSpider):
             '_xfToken': match[0],
             '_xfResponseType': 'json'
         }
-        token_url = 'https://altenens.org/login/?' + urlencode(params)
+        token_url = 'https://altenen.is/login/?' + urlencode(params)
         yield Request(
             url=token_url,
             headers=self.headers,
@@ -111,7 +111,7 @@ class AltenensSpider(SitemapSpider):
             '_xfToken': token
         }
         yield FormRequest(
-            url="https://altenens.org/login/login",
+            url="https://altenen.is/login/login",
             callback=self.parse_start,
             formdata=params,
             headers=self.headers,
@@ -169,7 +169,7 @@ class AltenensSpider(SitemapSpider):
 class AltenensScrapper(SiteMapScrapper):
 
     spider_class = AltenensSpider
-    site_name = 'altenens.org'
+    site_name = 'altenen.is'
 
     def load_settings(self):
         settings = super().load_settings()
