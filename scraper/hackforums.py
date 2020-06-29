@@ -25,7 +25,7 @@ class HackForumsSpider(SitemapSpider):
     login_url = "https://hackforums.net/member.php?action=login"
 
     # Css stuffs
-    login_form_css = "form[action=\"member.php\"]"
+    login_form_css = 'form[action*="/member.php"]'
 
     # Xpath stuffs
     forum_xpath = "//a[contains(@href,\"forumdisplay.php\")]/@href"
@@ -63,6 +63,16 @@ class HackForumsSpider(SitemapSpider):
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
     handle_httpstatus_list = [403, 503]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Accept": "*/*",
+            }
+        )
 
     def parse_captcha(self, response):
         ip_ban_check = response.xpath(
