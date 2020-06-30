@@ -64,11 +64,12 @@ class HackForumsSpider(SitemapSpider):
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
     handle_httpstatus_list = [403, 503]
 
+    proxy_countries = ['us']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
                 "Accept-Encoding": "gzip, deflate, br",
                 "Accept": "*/*",
             }
