@@ -37,14 +37,14 @@ from base64 import (
 )
 
 #Test Proxy
-#PROXY_USERNAME = "lum-customer-sashulyamikhayl-zone-exa"
-#PROXY_PASSWORD = "tyuywkrzeb7s"
-#PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
+PROXY_PASSWORD = "gg0ui4yamw16"
+PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
 # Luminati Proxy
-PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
-PROXY_PASSWORD = "8jywfhrmovdh"
-PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+#PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
+#PROXY_PASSWORD = "8jywfhrmovdh"
+#PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
 
 ###############################################################################
