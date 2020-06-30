@@ -10,7 +10,7 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.2
+REQUEST_DELAY = 0.4
 NO_OF_THREADS = 10
 
 USER = 'Cyrax_011'
@@ -21,6 +21,9 @@ class DemonForumsSpider(BypassCloudfareSpider):
     name = 'demonforums_spider'
 
     use_proxy = True
+    handle_httpstatus_list = [403, 503]
+
+    ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,10 +31,7 @@ class DemonForumsSpider(BypassCloudfareSpider):
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page=(\d+)')
         self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'referer': 'https://demonforums.net/',
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         }
 
     def start_requests(self):
@@ -39,9 +39,32 @@ class DemonForumsSpider(BypassCloudfareSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.process_login,
+            dont_filter=True
         )
 
+    def parse_captcha(self, response):
+        ip_ban_check = response.xpath(
+            self.ip_check_xpath
+        ).extract_first()
+
+        # Report bugs
+        if "error code: 1005" in response.text:
+            self.logger.info(
+                "Ip for error 1005 code. Rotating."
+            )
+        elif ip_ban_check:
+            self.logger.info(
+                "%s has been permanently banned. Rotating." % ip_ban_check
+            )
+
+        yield from self.start_requests()
+
     def process_login(self, response):
+
+        if response.status == 403:
+            yield from self.parse_captcha(response)
+            return
+
         my_post_key = response.xpath(
             '//input[@name="my_post_key"]/@value').extract_first()
         if not my_post_key:
@@ -62,10 +85,16 @@ class DemonForumsSpider(BypassCloudfareSpider):
             formdata=form_data,
             callback=self.parse,
             headers=response.request.headers,
-            meta=response.meta
+            meta=response.meta,
+            dont_filter=True
         )
 
     def parse(self, response):
+
+        if response.status == 403:
+            yield from self.parse_captcha(response)
+            return
+
         forums = response.xpath(
             '//a[contains(@href, "Forum-")]')
         for forum in forums:

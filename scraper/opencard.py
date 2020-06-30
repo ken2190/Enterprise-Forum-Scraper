@@ -13,7 +13,8 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 from scrapy.http import HtmlResponse
-
+from anticaptchaofficial.recaptchav2proxyon import *
+from anticaptchaofficial.recaptchav2proxyless import *
 
 REQUEST_DELAY = 0.3
 NO_OF_THREADS = 5
@@ -99,7 +100,6 @@ class OpencardSpider(SitemapSpider):
             '_xfRequestUri': '/index.php',
             '_xfWithData': '1',
             '_xfToken': match[0],
-            '_xfResponseType': 'json'
         }
         token_url = 'https://opencard.us/index.php?login/&' + urlencode(params)
         yield Request(
@@ -112,13 +112,9 @@ class OpencardSpider(SitemapSpider):
     def proceed_for_login(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
-        # Load json data
-        json_response = json.loads(response.text)
-        html_response = HtmlResponse(
-            url='test', body=json_response['html']['content'], encoding='utf-8')
 
         # Exact token
-        token = html_response.xpath(
+        token = response.xpath(
             '//input[@name="_xfToken"]/@value').extract_first()
 
         # Load params
@@ -126,11 +122,13 @@ class OpencardSpider(SitemapSpider):
             'login': USER,
             'password': PASS,
             'remember': '1',
-            'g-recaptcha-response': self.solve_recaptcha(response, html_response),
+            'g-recaptcha-response': self.solve_recaptcha(response),
             '_xfRedirect': 'https://opencard.us/index.php',
             '_xfToken': token
         }
+
         login_url = 'https://opencard.us/index.php?login/login'
+
         yield FormRequest(
             url=login_url,
             callback=self.parse_start,
@@ -138,38 +136,6 @@ class OpencardSpider(SitemapSpider):
             headers=self.headers,
             dont_filter=True,
             meta=self.synchronize_meta(response)
-            )
-
-    def solve_recaptcha(self, response, html_response):
-        """
-        :param response: scrapy response => response that contains regular recaptcha
-        :return: str => recaptcha solved token to submit login
-        """
-        # Init session
-        session = requests.Session()
-
-        # Load proxy
-        proxy = self.load_proxies(response)
-        if proxy:
-            session.proxies = {
-                "http": proxy,
-                "https": proxy
-            }
-
-        # Init site url and key
-        site_url = response.url
-        site_key = html_response.xpath(self.recaptcha_site_key_xpath).extract_first()
-
-        try:
-            jobID = self.request_solve_recaptcha(
-                session,
-                site_url,
-                site_key
-            )
-            return self.request_job_recaptcha(jobID)
-        except RuntimeError:
-            raise (
-                "2Captcha: reCaptcha solve took to long to execute, aborting."
             )
 
     def parse_start(self, response):

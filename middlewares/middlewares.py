@@ -1,6 +1,7 @@
 import cloudscraper
 import uuid
 import re
+from random import choice
 
 from scraper.base_scrapper import (
     PROXY_USERNAME,
@@ -27,6 +28,7 @@ class LuminatyProxyMiddleware(object):
         session = (request.meta.get("cookiejar")
                    or uuid.uuid1().hex)
         country = request.meta.get("country")
+        country = [country] if country else getattr(spider, 'proxy_countries', [])
         ip = request.meta.get("ip")
 
         # Init username
@@ -41,6 +43,7 @@ class LuminatyProxyMiddleware(object):
 
         # Add country to session if available
         if country and not ip:
+            country = choice(country)
             username = "%s-country-%s" % (
                 username,
                 country
@@ -82,6 +85,7 @@ class DedicatedProxyMiddleware(object):
         session = (request.meta.get("cookiejar")
                    or uuid.uuid1().hex)
         country = request.meta.get("country")
+        country = [country] if country else getattr(spider, 'proxy_countries', [])
         ip = request.meta.get("ip")
 
         # Init username
@@ -96,6 +100,7 @@ class DedicatedProxyMiddleware(object):
 
         # Add country to session if available
         if country and not ip:
+            country = choice(country)
             username = "%s-country-%s" % (
                 username,
                 country
@@ -121,8 +126,8 @@ class DedicatedProxyMiddleware(object):
 
 class BypassCloudfareMiddleware(object):
 
-    captcha_provider = "2captcha"
-    captcha_token = "76228b91f256210cf20e6d8428818e23"
+    captcha_provider = "anticaptcha"
+    captcha_token = "d7da71f33665a41fca21ecd11dc34015"
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -139,15 +144,19 @@ class BypassCloudfareMiddleware(object):
         first_recaptcha_text = "Why do I have to complete a CAPTCHA"
         second_recaptcha_text = "cf_chl_captcha_tk"
 
-        cloudfare_test = ((response.status in (503, 429, 403)
-                           and response.headers.get("Server", "").startswith(b"cloudflare")
-                           and first_cloudfare_text in response.text
-                           and second_cloudfare_text in response.text)
-                          or (response.status in (503, 429, 403)
-                              and first_recaptcha_text in response.text
-                              and third_cloudfare_text in response.text)
-                          or (response.status in (503, 429, 403)
-                              and second_recaptcha_text in response.text))
+        cloudfare_test = (
+                response.status in (503, 429, 403)
+                and response.headers.get("Server", "").startswith(b"cloudflare")
+                and first_cloudfare_text in response.text
+                and second_cloudfare_text in response.text
+            ) or (
+                response.status in (503, 429, 403)
+                and first_recaptcha_text in response.text
+                and third_cloudfare_text in response.text
+            ) or (
+                response.status in (503, 429, 403)
+                and second_recaptcha_text in response.text
+            )
 
         return cloudfare_test
 
@@ -159,7 +168,7 @@ class BypassCloudfareMiddleware(object):
         self.allow_retry = getattr(crawler.spider, "cloudfare_allow_retry", 5)
         self.delay = getattr(crawler.spider, "cloudfare_delay", 5)
         self.solve_depth = getattr(crawler.spider, "cloudfare_solve_depth", 5)
-        self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 35)
+        self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 50)
         self.ip_batch_size = getattr(crawler.spider, "ip_batch_size", 20)
 
         # Load ip handler
@@ -210,6 +219,7 @@ class BypassCloudfareMiddleware(object):
                 "api_key": self.captcha_token
             }
         )
+
         ip = None
 
         request_args = {

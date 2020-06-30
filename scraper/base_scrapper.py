@@ -19,6 +19,9 @@ from scrapy.exceptions import CloseSpider
 from copy import deepcopy
 from datetime import datetime
 from middlewares.utils import IpHandler
+from anticaptchaofficial.recaptchav2proxyon import *
+from anticaptchaofficial.recaptchav2proxyless import *
+from anticaptchaofficial.imagecaptcha import *
 
 from seleniumwire.webdriver import (
     Chrome,
@@ -33,6 +36,12 @@ from base64 import (
     b64encode
 )
 
+#Test Proxy
+#PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
+#PROXY_PASSWORD = "gg0ui4yamw16"
+#PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+# Luminati Proxy
 PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
 PROXY_PASSWORD = "8jywfhrmovdh"
 PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
@@ -227,7 +236,7 @@ class SiteMapScrapper:
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
-	"LOG_LEVEL": "DEBUG"
+        "LOG_LEVEL": "DEBUG"
     }
 
     time_format = "%Y-%m-%d"
@@ -291,12 +300,12 @@ class SiteMapScrapper:
             os.makedirs(self.avatar_path)
 
     def do_scrape(self):
-        
+
         # Load process
         process = CrawlerProcess(
             self.load_settings()
         )
-        
+
         # Load crawler
         crawler = process.create_crawler(self.spider_class)
 
@@ -306,7 +315,7 @@ class SiteMapScrapper:
             **self.load_spider_kwargs()
         )
         process.start()
-        
+
         # Load stats
         stats_obj = crawler.stats
         stats_dict = crawler.stats.get_stats()
@@ -351,8 +360,7 @@ class BypassCloudfareSpider(scrapy.Spider):
     proxy = None
     download_delay = 0.3
     download_thread = 10
-    default_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) " \
-                        "Gecko/20100101 Firefox/71.0"
+    default_useragent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -428,10 +436,8 @@ class SitemapSpider(BypassCloudfareSpider):
     sitemap_url = None
     ip_url = "https://api.ipify.org?format=json"
 
-    # 2captcha api #
-    recaptcha_solve_api = "https://2captcha.com/in.php"
-    recaptcha_request_api = "https://2captcha.com/res.php"
-    captcha_token = "76228b91f256210cf20e6d8428818e23"
+    # anticaptcha api #
+    captcha_token = "d7da71f33665a41fca21ecd11dc34015"
     captcha_instruction = "All character in picture"
 
     # Payload stuffs
@@ -494,7 +500,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         self.ip_handler = IpHandler(
             logger=self.logger,
-            fraudulent_threshold=getattr(self, "fraudulent_threshold", 35),
+            fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20)
         )
 
@@ -663,7 +669,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 return
 
         return
-    
+
     def get_existing_file_date(self, topic_id):
 
         # Load first page file name
@@ -748,157 +754,43 @@ class SitemapSpider(BypassCloudfareSpider):
 
         return proxy
 
-    # Main method to request to solve captcha #
-
-    def request_solve_recaptcha(self, session, site_url, site_key):
-        """
-        :param session: requests.session => session to send request for solve
-                recaptcha include proxy settings.
-        :param site_url: str => url that recaptcha showing up
-        :param site_key: str => site key that use to solve recaptcha
-        :return: str => 2captcha service job id to query for if job has been
-                finished solving
-        """
-        try:
-            response = session.post(
-                self.recaptcha_solve_api,
-                data={
-                    "key": self.captcha_token,
-                    "method": "userrecaptcha",
-                    "googlekey": site_key,
-                    "pageurl": site_url,
-                    "json": "1",
-                    "soft_id": "2612"
-                },
-                allow_redirects=False
-            )
-        except Exception as err:
-            response = None
-
-        if response:
-            self.logger.info(
-                response.content
-            )
-            return response.json().get("request")
-        else:
-            raise RuntimeError(
-                "2Captcha: Error no job id was returned."
-            )
-
-    def request_job_recaptcha(self, job_id):
-        """
-        :param job_id: str => 2captcha service job id to call for recaptcha solved result
-        :return: str => recaptcha solved result
-        """
-
-        def _checkRequest(response):
-
-            if response.ok and response.json().get("status") == 1:
-                return response
-
-            return
-
-        response = polling.poll(
-            lambda: requests.get(
-                self.recaptcha_request_api,
-                params={
-                    "key": self.captcha_token,
-                    "action": "get",
-                    "id": job_id,
-                    "json": "1"
-                }
-            ),
-            check_success=_checkRequest,
-            step=5,
-            timeout=180
-        )
-
-        if response:
-            return response.json().get("request")
-        else:
-            raise RuntimeError(
-                "2Captcha: Error failed to solve reCaptcha."
-            )
-
-    # Main method to check for captcha solving request result #
-
-    def request_solve_captcha(self, image_content, instruction):
-        """
-        :param image_content: byte => Content of image downloaded
-        :param instruction: str => Instruction how to solve captcha
-        :return: str => Content of image captcha
-        """
-        try:
-            response = requests.post(
-                self.recaptcha_solve_api,
-                data={
-                    "key": self.captcha_token,
-                    "method": "base64",
-                    "body": b64encode(image_content),
-                    "regsense": "1",
-                    "textinstructions": instruction,
-                    "json": "1",
-                    "soft_id": "2612"
-                },
-                allow_redirects=False
-            )
-        except Exception as err:
-            print(err)
-            response = None
-
-        if response:
-            self.logger.info(
-                response.content
-            )
-            return response.json().get("request")
-        else:
-            raise RuntimeError(
-                "2Captcha: Error no job id was returned."
-            )
-
-    def request_job_captcha(self, job_id):
-        """
-        Share the same solution as recaptcha request job
-        :param job_id: str => 2captcha service job id to call for captcha solved result
-        :return: str => captcha solved result
-        """
-        return self.request_job_recaptcha(job_id)
-
-    # Main method to solve all kind of captcha: recaptcha, image captcha #
+    # Main method to solve all kind of captcha: recaptcha #
 
     def solve_recaptcha(self, response):
         """
         :param response: scrapy response => response that contains regular recaptcha
         :return: str => recaptcha solved token to submit login
         """
-        # Init session
-        session = requests.Session()
-
+        solver = recaptchaV2Proxyless()
         # Load proxy
         proxy = self.load_proxies(response)
         if proxy:
-            session.proxies = {
-                "http": proxy,
-                "https": proxy
-            }
+            user_pwd, host_port = proxy.split('@')
+            solver = recaptchaV2Proxyon()
+            solver.set_proxy_address(host_port.split(":")[0])
+            solver.set_proxy_port(host_port.split(":")[1])
+            solver.set_proxy_login(user_pwd.split(":")[0])
+            solver.set_proxy_password(user_pwd.split(":")[1])
 
         # Init site url and key
         site_url = response.url
         site_key = response.xpath(self.recaptcha_site_key_xpath).extract_first()
 
-        try:
-            jobID = self.request_solve_recaptcha(
-                session,
-                site_url,
-                site_key
-            )
-            return self.request_job_recaptcha(jobID)
-        except RuntimeError:
-            raise (
-                "2Captcha: reCaptcha solve took to long to execute, aborting."
-            )
+        solver.set_verbose(1)
+        solver.set_key(self.captcha_token)
+        solver.set_website_url(site_url)
+        solver.set_website_key(site_key)
+
+        g_response = solver.solve_and_return_solution()
+        if g_response != 0:
+            return g_response
+        else:
+            return ''
 
     def solve_captcha(self, image_url, response, cookies={}, headers={}):
+        solver = imagecaptcha()
+        solver.set_verbose(1)
+        solver.set_key(self.captcha_token)
 
         # Load cookies from request
         try:
@@ -928,7 +820,7 @@ class SitemapSpider(BypassCloudfareSpider):
         user_agent = self.headers.get("User-Agent")
         if response:
             user_agent = response.request.headers.get("User-Agent")
-        
+
         # Update headers
         headers.update(
             {
@@ -951,17 +843,11 @@ class SitemapSpider(BypassCloudfareSpider):
         with open(f"{captcha_folder}/captcha.png", "wb") as file:
             file.write(image_content)
 
-        # Solve captcha
-        try:
-            jobID = self.request_solve_captcha(
-                image_content=image_content,
-                instruction=self.captcha_instruction
-            )
-            return self.request_job_captcha(jobID)
-        except RuntimeError:
-            raise (
-                "2Captcha: Captcha solve took to long to execute, aborting."
-            )
+        captcha_text = solver.solve_and_return_solution(f"{captcha_folder}/captcha.png")
+        if captcha_text != 0:
+            return captcha_text.replace(' ', '')
+        else:
+            return ''
 
     def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
         # Load session
@@ -988,10 +874,10 @@ class SitemapSpider(BypassCloudfareSpider):
     def get_blockchain_domain(self, domain):
         # Get domain root only
         domain = domain.split('/')[2] if '://' in domain else domain
-        
+
         # List of apis and load api
         apis = ['https://bdns.co/r/', 'https://bdns.us/r/', 'https://bdns.bz/r/']
-        
+
         while True:
             api = choice(apis)
 

@@ -11,10 +11,10 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 16
-USERNAME = "night_cyrax"
-PASSWORD = "DPO$s)sC3xzO"
+REQUEST_DELAY = 0.4
+NO_OF_THREADS = 10
+USERNAME = "vrx9"
+PASSWORD = "Night#Hack001"
 
 
 class HackForumsSpider(SitemapSpider):
@@ -25,7 +25,7 @@ class HackForumsSpider(SitemapSpider):
     login_url = "https://hackforums.net/member.php?action=login"
 
     # Css stuffs
-    login_form_css = "form[action=\"member.php\"]"
+    login_form_css = 'form[action*="/member.php"]'
 
     # Xpath stuffs
     forum_xpath = "//a[contains(@href,\"forumdisplay.php\")]/@href"
@@ -63,6 +63,17 @@ class HackForumsSpider(SitemapSpider):
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
     handle_httpstatus_list = [403, 503]
+
+    proxy_countries = ['us']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "Accept-Encoding": "gzip, deflate, br",
+                "Accept": "*/*",
+            }
+        )
 
     def parse_captcha(self, response):
         ip_ban_check = response.xpath(
