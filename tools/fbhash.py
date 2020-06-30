@@ -83,9 +83,7 @@ test_data_2 = {
 
 
 def keyed_hashing_algorithm(value):
-	if isinstance(value, str) and not len(value):
-		return value
-	elif not value:
+	if value is None:
 		return value
 
 	value_string = str(value).lower().strip()
