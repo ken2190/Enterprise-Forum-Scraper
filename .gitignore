@@ -11,4 +11,58 @@ input
 output
 log
 .env
+
+*.py[cod]
+.DS_Store
+
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+var
+sdist
+develop-eggs
+.installed.cfg
+__pycache__
+setup.py
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
 .idea
+
+# virtualenv
+.venv
+projectenv/
+ENV/
+
+# Scrapy
+.scrapy
+*.log
+*.csv
+local_settings.py
+lib/ansible/*.txt
+*.json
+nohup.out
+
+*.save.*
+*.save
