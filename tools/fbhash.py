@@ -3,7 +3,7 @@ import hmac, base64, json
 from collections import OrderedDict
 
 from settings import DATASET_HASH_KEY
-
+print(DATASET_HASH_KEY)
 
 def keyed_hashing_algorithm(value):
     if value is None:
