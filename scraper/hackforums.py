@@ -13,8 +13,8 @@ from scraper.base_scrapper import (
 
 REQUEST_DELAY = 0.4
 NO_OF_THREADS = 10
-USERNAME = "bishop99"
-PASSWORD = "Night-Hack011"
+USERNAME = "vrx9"
+PASSWORD = "Night#Hack001"
 
 
 class HackForumsSpider(SitemapSpider):
