@@ -102,11 +102,15 @@ class ArgVerifier:
         port = self.argparse_data['port']
         targets = self.argparse_data['targets']
         targetFile = self.argparse_data['target_file']
+        outputFolder = self.argparse_data['out_folder']
+        scrape_type = self.argparse_data['scrape_type']
         if ((port == -1 and targetFile is None)
-            or (targets is None and targetFile is None)):
+            or (targets is None and targetFile is None)
+            or (scrape_type is None)
+            or (outputFolder is None) ):
             help_message = """
             Usage: collector.py -scan [-d DATABASE] [-s SCRAPE_TYPE] [-p PORT] [-tf TARGET_FILE]
-                                      [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER]
+                                      [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER] [-o OUPUT_FOLDER]
             Arguments:
             -st | --scrape_type             :  Type of scrape to run es: search, scan, dump, matchdump
             -p | --port PORT               :  Database port
@@ -114,6 +118,7 @@ class ArgVerifier:
             -tf | --target_file            :  A CSV formatted list of targets host,port
             -l | --limit                   :  Number of records dumped per Elasticdump request (default & max = 10,000)
             -f | --filter                  :  Use to specify a list of keywords to filter within your scraped search results
+            -o | --out_folder              :  Use to specify destination folder to save JSON file
             """
             print(help_message)
             exit(1)
