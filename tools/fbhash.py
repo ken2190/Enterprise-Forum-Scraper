@@ -2,8 +2,9 @@
 import hmac, base64, json
 from collections import OrderedDict
 
-from settings import DATASET_HASH_KEY
+# from settings import DATASET_HASH_KEY
 
+DATASET_HASH_KEY = 'facebook,instagram,oculus,whatsapp'
 
 def keyed_hashing_algorithm(value):
 	if value is None:
@@ -16,10 +17,10 @@ def keyed_hashing_algorithm(value):
 	return hash_string
 
 
-def hash_dataset(payload_1, payload_2):
-	for k, v in payload_2.items():
+def hash_dataset(payload_1):
+	for k, v in payload_1.items():
 		if isinstance(v, dict):
-			payload_1[k] = hash_dataset(payload_1.get(k, {}), v)
+			payload_1[k] = hash_dataset(payload_1.get(k, {}))
 		elif isinstance(v, list):
 			payload_1[k] = [keyed_hashing_algorithm(val) for val in v]
 		else:
