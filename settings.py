@@ -8,5 +8,4 @@ OUTPUT_DIR = os.getenv('OUTPUT_DIR') or 'output'
 PARSE_DIR = os.getenv('PARSE_DIR') or 'parse'
 LOG_DIR = os.getenv('LOG_DIR') or 'log'
 PYTHON_BIN = os.getenv('PYTHON_BIN') or 'python'
-DATASET_HASH_KEY = os.getenv('DATASET_HASH_KEY') or 'facebook,instagram,oculus,whatsapp'
 
