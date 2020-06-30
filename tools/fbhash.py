@@ -1,7 +1,9 @@
 
 import hmac, base64, json
 from collections import OrderedDict
-TEST_KEY = 'facebook,instagram,oculus,whatsapp'
+
+from settings import DATASET_HASH_KEY
+
 
 test_data_1 = {
 	"a": 1,
@@ -88,7 +90,7 @@ def keyed_hashing_algorithm(value):
 
 	value_string = str(value).lower().strip()
 	value_bytes = value_string.encode('utf-8', errors='surrogatepass')
-	hash_bytes = hmac.digest(TEST_KEY.encode('utf-8'), value_bytes, 'sha256')
+	hash_bytes = hmac.digest(DATASET_HASH_KEY.encode('utf-8'), value_bytes, 'sha256')
 	hash_string = base64.standard_b64encode(hash_bytes).decode('utf-8')
 	return hash_string
 
@@ -106,4 +108,71 @@ def hash_dataset(d, u):
 
 doit = hash_dataset(test_data_2, test_data_2)
 print(json.dumps(doit, indent=4))
+
+'''
+current output of running this file. python fbhash.py
+'''
+
+'''
+{
+    "numbers": {
+        "positive_integer": "lH7PGrhCgWu5EZiDGxhqDp1B6vZOiZpiW4wljGyUFIk=",
+        "negative_integer": "rHdpVGt3cD44bKRyxRedWEEjag+Rf8F4AlE3dKGdprU=",
+        "float": "kLXhk3WSlyfSPhbh04gAUSAQSs1NAnGzunOmgQ37yU8=",
+        "e_notation": [
+            "d/ByQCL34oujV5mjRpyc4BPpVPLNrKZV+Jq0aPgFSW8=",
+            "YoUARpWDIEISHHXbVoMa/eUcLDbvPDY5AyxDObFTRMk=",
+            "lEeIDPMzELEY2chgIG+CyBhjQeWGFyCibT0qa706LYA=",
+            "8Cu5th9rOapd4z1fxFBysTNpId7utfjSkzVaJBWF7XY="
+        ],
+        "zero": "dAmBkJj0gBvEoz69NzIbgMGKkcFwufbDxHKob7oZFL8=",
+        "positive_integers": [
+            "ChWxbELCMFLEfnGsBHWbOzVrQ0dy06TGelJVrbdVIhU=",
+            "ubX6uXkUyGqPbzAfzHOSGVQ26Rrsu9ET0yFGl+gpXAU=",
+            "lH7PGrhCgWu5EZiDGxhqDp1B6vZOiZpiW4wljGyUFIk="
+        ],
+        "negative_integers": [
+            "K7Dck9sVZiFCVLWX/sxuMJ9Rk9JuYv+YDkGpWR3yths=",
+            "rHdpVGt3cD44bKRyxRedWEEjag+Rf8F4AlE3dKGdprU=",
+            "w4fkYzKGgOpokdAn4rO3XjoFUveUEaqCqoRUwJo0mwo="
+        ],
+        "floats": [
+            "AzxBffj/uhIT7QRh3Cvk7m7a6sp6bOlf8y8Q3mJ7TuY=",
+            "sT+pkWbuFWBtCRCA3TsxV04o/1x6t4TZAuxSvs88stM=",
+            "j8lz4xERnt4rJ7uCfyicyWy2qEXXrReWB60Dau2ENJU="
+        ]
+    },
+    "strings": {
+        "empty_string": "JlXjnP8yYK0Hx6ffW6yDrkUK8yEjcdYVxT7oYLqka1M=",
+        "basic_string": "x5rtE313pdjhsnJTkiJEubvoVhwgbSyvSA3AA3bJca8=",
+        "newline": "1FC/dtS38ydMAGtWY6+qhbaqauIHGJF24+xobwtnmPQ=",
+        "non_ascii": "u39221UO3IvHq4Sd9jyhu0cT+QRsI8Y14dCRdZE9EY8=",
+        "escaped_double_quotes": "AiXKxCZtKfUhldfinvWrvKgDWSfN2CXeXwmOjq9XKa0=",
+        "string_encoded_number": "A02zCKWXl2PIA1UXR8tDgB3NM7ydSQtrhTGWiUNIE0Y=",
+        "basic_strings": [
+            "t17EvmXyWfE1FY0qBli+QDwn29CmI+Q5ZSxfls3tTF0=",
+            "Ks0uaD+SLrPusOQHYNHIc7sN9r+8gM8Z3NdIFZayZb4=",
+            "x5rtE313pdjhsnJTkiJEubvoVhwgbSyvSA3AA3bJca8=",
+            "dA6zoEAjApbgQShIGU8lOd67tapahaYiT8P+kXMoQaU="
+        ]
+    },
+    "other": {
+        "boolean_true": "lMTtoQNvqveZ+tCqMK8nht+Va//MCnF0+ayXL8wrnRk=",
+        "boolean_false": "YJYbTg0WTs4gSxaHSiaU5tDS57/SPcAoLxpLwZqjc7w=",
+        "null": null
+    },
+    "data": {
+        "bigint": "h2F1c1Ys1ne6jpxdZNI8BKaB6uwgOdHm781iusNhKTc=",
+        "bigint-string": "h2F1c1Ys1ne6jpxdZNI8BKaB6uwgOdHm781iusNhKTc=",
+        "name": "7UG9jSsdXY1sMSHnFnbYzdV/sk5TY6hwd1hCizH3XO0=",
+        "url": "p7MfT4XKZ+C4Z5BArgHWxY84keepaX2gQwyuR2RI5is=",
+        "email": "aAYdz1+MFCnw2c5Rrsbrs3yy1OAEjtHos/kVBJpQIlY="
+    },
+    "edge_cases": {
+        "60-bit int": "8V30LzNzQz2/RuBmgrYI+bMLQMHk2zY1w/UvnPgWZxU="
+    },
+    "long string": "YfYXM9KB0yShxLxx1l+q/ZIxpRlnIVxGyH5/eHnQpb4="
+}
+
+'''
 
