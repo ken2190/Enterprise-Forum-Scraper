@@ -85,6 +85,7 @@ class DedicatedProxyMiddleware(object):
         session = (request.meta.get("cookiejar")
                    or uuid.uuid1().hex)
         country = request.meta.get("country")
+        country = [country] if country else getattr(spider, 'proxy_countries', [])
         ip = request.meta.get("ip")
 
         # Init username
@@ -99,6 +100,7 @@ class DedicatedProxyMiddleware(object):
 
         # Add country to session if available
         if country and not ip:
+            country = choice(country)
             username = "%s-country-%s" % (
                 username,
                 country
