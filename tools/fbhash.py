@@ -4,7 +4,6 @@ from collections import OrderedDict
 
 from settings import DATASET_HASH_KEY
 
-
 test_data_1 = {
 	"a": 1,
 	"b": 2,
