@@ -75,7 +75,7 @@ def write_datasets_to_out_dir(out_dir, hashed_datasets):
     except Exception as e:
         argument_parser.error("Error writing hashed datasets to directory %s" % out_dir)
         exit(1)
-        
+
 if __name__ == '__main__':
     known_args, _ = argument_parser.parse_known_args()
     args = {k: v for k, v in known_args._get_kwargs()}
@@ -94,6 +94,9 @@ if __name__ == '__main__':
         write_datasets_to_out_dir(out_dir, hashed_datasets)
         # for k, v in hashed_datasets.items():
         #     # print(k, v)
+
+    elif args.get("help"):
+        argument_parser.print_help()
 
     else:
         argument_parser.error("Please enter one of the following combinations. Input file and Ouput File, or Input directory and Output Directory")
