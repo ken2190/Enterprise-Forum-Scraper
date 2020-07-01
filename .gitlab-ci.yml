@@ -1,7 +1,7 @@
 deploy_production:
     stage: production
     variables:
-        ID_RSA_NAME: $CI_PROJECT_PATH_SLUG"_prod"
+        ID_RSA_NAME: "gitcicdkey"
     environment:
         name: production
         url: project_url
@@ -11,6 +11,6 @@ deploy_production:
         - chmod 600 ~/.ssh/$ID_RSA_NAME
         - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     script:
-        - ssh -i "~/.ssh/$ID_RSA_NAME" "$PROD_USER_NAME"@"$PROD_SERVER_HOST" "cd $PROD_PATH && git checkout master && git pull origin master && rm -rf public/build/ && npm install && npm run prod && exit"
+        - ssh -i "~/.ssh/$ID_RSA_NAME" "$PROD_USER_NAME"@"$PROD_SERVER_HOST" "cd $PROD_PATH && git checkout master && git pull origin master && exit"
     only:
         - master
