@@ -6,6 +6,8 @@ import json
 
 from datetime import datetime, timedelta
 
+import js2py
+import requests
 from scrapy import (
     Request,
     FormRequest,
@@ -72,17 +74,50 @@ class YouGameSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        yield FormRequest.from_response(
-            response,
-            formxpath=self.captcha_form_xpath,
-            formdata={
-                "g-recaptcha-response": self.solve_recaptcha(response)
-            },
-            meta=self.synchronize_meta(response),
-            dont_filter=True,
-            headers=self.headers,
-            callback=self.parse_start
-        )
+        if "slowAES.decrypt" in response.text:
+            protected2 = self.get_protected_cookies(response)
+            headers = self.headers.copy()
+            headers['cookie'] = protected2
+            yield response.follow(
+                url=self.base_url,
+                callback=self.parse,
+                dont_filter=True,
+                meta=self.synchronize_meta(response),
+                headers=headers
+            )
+            return
+
+        if response.xpath(self.captcha_form_xpath):
+            yield FormRequest.from_response(
+                response,
+                formxpath=self.captcha_form_xpath,
+                formdata={
+                    "g-recaptcha-response": self.solve_recaptcha(response)
+                },
+                meta=self.synchronize_meta(response),
+                dont_filter=True,
+                headers=self.headers,
+                callback=self.parse_start
+            )
+        else:
+            yield from self.parse_start(response)
+
+    def get_protected_cookies(self, response):
+        toNumbers = re.findall(r'(function toNumbers.*)function', response.text)[0]
+        toHex = re.findall(r'(function toHex.*})var', response.text)[0]
+        f_n, s_n, t_n = re.findall(r'toNumbers\(\"(\w*)\"\)', response.text)
+        checkjs_url = response.xpath('//script[@type]//@src').extract()[0]
+        checkjs = requests.get(checkjs_url).text
+        checkjs = js2py.eval_js(checkjs)
+        toNumbers = js2py.eval_js(toNumbers)
+        toHex = js2py.eval_js(toHex)
+        f_n = toNumbers(f_n)
+        s_n = toNumbers(s_n)
+        t_n = toNumbers(t_n)
+        tmp = checkjs.decrypt(t_n, 2, f_n, s_n)
+        cookie = f"Protected2={toHex(tmp)}; expires=Thu, 31-Dec-37 23:55:55 GMT; path=/"
+
+        return cookie
 
     def parse_thread_date(self, thread_date):
         """
