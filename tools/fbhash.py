@@ -64,7 +64,7 @@ def hash_datasets_from_input_dir(input_folder):
 
     except Exception as e:
         argument_parser.error("Error reading files from: %s" % input_folder)
-
+        exit(1)
 
 def write_datasets_to_out_dir(out_dir, hashed_datasets):
     try:
@@ -74,7 +74,8 @@ def write_datasets_to_out_dir(out_dir, hashed_datasets):
                 json.dump(v, f)
     except Exception as e:
         argument_parser.error("Error writing hashed datasets to directory %s" % out_dir)
-
+        exit(1)
+        
 if __name__ == '__main__':
     known_args, _ = argument_parser.parse_known_args()
     args = {k: v for k, v in known_args._get_kwargs()}
