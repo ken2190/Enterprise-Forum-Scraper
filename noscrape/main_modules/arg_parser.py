@@ -14,10 +14,10 @@ class ArgParser():
         parser._optionals.title = "Standard arguments"
 
         parser.add_argument('--type', '-type', nargs='?', help='State the type of database', choices=databases, required=True)
-        # parser.add_argument('--out_file', '-o', nargs='?', default=None, metavar="OutputFile", help=argparse.SUPPRESS, required=True)
+        # parser.add_argument('--out_file', '-o', nargs='?', default=None, metavar="OutputFile", help=argparse.SUPPRESS)
         parser.add_argument('-v', action="store_true", help=argparse.SUPPRESS)
         parser.add_argument('--examples', action="store_true", help=argparse.SUPPRESS)
-        parser.add_argument('--out_folder', '-o', nargs='?', default=None, metavar="OutputFolder", help=argparse.SUPPRESS, required=True)
+        parser.add_argument('--out_folder', '-o', nargs='?', default=None, metavar="OutputFolder", help=argparse.SUPPRESS)
 
         # Mongo and Elastic stuff
         nosql_and_elastic_options = parser.add_argument_group('MongoDB and ElasticSearch Options')
@@ -29,7 +29,7 @@ class ArgParser():
                                                help=argparse.SUPPRESS, type=str)
         nosql_and_elastic_options.add_argument('--port', '-p', nargs='?', metavar="Port", default=-1, help=argparse.SUPPRESS,
                                                type=int)
-        nosql_and_elastic_options.add_argument('--scrape_type', '-st', nargs='?', default='basic', help=argparse.SUPPRESS, choices=scrape_types, required=True)
+        nosql_and_elastic_options.add_argument('--scrape_type', '-st', nargs='?', default='basic', help=argparse.SUPPRESS, choices=scrape_types)
         nosql_and_elastic_options.add_argument('--filter', '-f', nargs='?', default=None, metavar="FilterFile",
                                                help=argparse.SUPPRESS)
         nosql_and_elastic_options.add_argument('--username', '-u', nargs='?', metavar="Username", default=None,
