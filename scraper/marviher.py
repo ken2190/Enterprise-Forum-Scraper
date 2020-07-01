@@ -41,17 +41,17 @@ class MarviherSpider(SitemapSpider):
     avatar_xpath = '//li[@class="cAuthorPane_photo"]/a/img/@src'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
     post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = "https://marviher.com/"
+        self.base_url = "https://marviher.club/"
         self.topic_pattern = re.compile(r'topic/(\d+)-')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*/page/(\d+)/')
-        self.start_url = 'https://marviher.com/'
+        self.start_url = 'https://marviher.club/'
         self.headers = {
             "user-agent": USER_AGENT
         }
@@ -60,7 +60,7 @@ class MarviherSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        login_url = 'https://marviher.com/login/'
+        login_url = 'https://marviher.club/login/'
         csrf = response.xpath(
             '//input[@name="csrfKey"]/@value').extract_first()
         formdata = {
@@ -86,8 +86,8 @@ class MarviherSpider(SitemapSpider):
 
         all_forums = response.xpath(self.forum_xpath).extract()
         all_forums.extend([
-            'https://marviher.com/forum/91-sdelayu-zaliv/',
-            'https://marviher.com/forum/92-primu-zaliv/'
+            'https://marviher.club/forum/91-sdelayu-zaliv/',
+            'https://marviher.club/forum/92-primu-zaliv/'
         ])
         for forum_url in all_forums:
 
@@ -114,7 +114,7 @@ class MarviherSpider(SitemapSpider):
 class MarviherScrapper(SiteMapScrapper):
 
     spider_class = MarviherSpider
-    site_name = 'marviher.com'
+    site_name = 'marviher.club'
 
     def load_settings(self):
         settings = super().load_settings()
