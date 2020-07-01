@@ -14,7 +14,7 @@ NO_OF_THREADS = 5
 
 class MMMLCSpider(SitemapSpider):
     name = 'mmmlc_spider'
-    base_url = "https://mmm.lc/"
+    base_url = "https://tor.vc/"
 
     # xpaths
     forum_xpath = '//div[@class="ipsDataItem_main"]//h4/a/@href|'\
@@ -85,4 +85,4 @@ class MMMLCSpider(SitemapSpider):
 class MMMLCScrapper(SiteMapScrapper):
 
     spider_class = MMMLCSpider
-    site_name = 'mmm.lc'
+    site_name = 'tor.vc'
