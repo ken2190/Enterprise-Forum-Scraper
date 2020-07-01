@@ -64,7 +64,7 @@ def hash_datasets_from_input_dir(input_folder):
 
     except Exception as e:
         argument_parser.error("Error reading files from: %s" % input_folder)
-        raise e
+
 
 def write_datasets_to_out_dir(out_dir, hashed_datasets):
     try:
