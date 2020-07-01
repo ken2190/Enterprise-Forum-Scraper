@@ -115,7 +115,8 @@ fi
 ##############################################
 # send archives offset
 ##############################################
-rclone copy $ARCHIVE_DIR/ $OFFSITE_DEST -v
+#disable
+#rclone copy $ARCHIVE_DIR/ $OFFSITE_DEST -v
 if [ $? -ne 0 ]
 then
     echo "ERROR: Failed to copy archive directory offset"
