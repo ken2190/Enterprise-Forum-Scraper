@@ -21,9 +21,13 @@ class DemonForumsSpider(BypassCloudfareSpider):
     name = 'demonforums_spider'
 
     use_proxy = True
+    proxy_countries = ['us', 'uk']
+
     handle_httpstatus_list = [403, 503]
 
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
+
+    rotation_tries = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,6 +35,7 @@ class DemonForumsSpider(BypassCloudfareSpider):
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page=(\d+)')
         self.headers = {
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         }
 
@@ -57,7 +62,12 @@ class DemonForumsSpider(BypassCloudfareSpider):
                 "%s has been permanently banned. Rotating." % ip_ban_check
             )
 
-        yield from self.start_requests()
+        if not self.use_proxy:
+            return
+
+        if self.rotation_tries < 20:
+            self.rotation_tries += 1
+            yield from self.start_requests()
 
     def process_login(self, response):
 
@@ -95,6 +105,30 @@ class DemonForumsSpider(BypassCloudfareSpider):
             yield from self.parse_captcha(response)
             return
 
+        yield Request(
+            url=self.base_url,
+            callback=self.parse_start,
+            headers=response.request.headers,
+            meta=response.meta,
+            dont_filter=True
+        )
+
+    def parse_start(self, response):
+
+        if response.status == 403:
+            meta = response.meta.copy()
+            tries = meta.get('tries', 1)
+            if tries < 20:
+                meta['tries'] = tries + 1
+                yield Request(
+                    url=self.base_url,
+                    callback=self.parse_start,
+                    headers=response.request.headers,
+                    meta=meta,
+                    dont_filter=True
+                )
+                return
+
         forums = response.xpath(
             '//a[contains(@href, "Forum-")]')
         for forum in forums:
@@ -107,10 +141,25 @@ class DemonForumsSpider(BypassCloudfareSpider):
                 url=url,
                 callback=self.parse_forum,
                 headers=response.request.headers,
-                meta=response.meta
+                meta=response.meta,
             )
 
     def parse_forum(self, response):
+
+        if response.status == 403:
+            meta = response.meta.copy()
+            tries = meta.get('tries', 1)
+            if tries < 20:
+                meta['tries'] = tries + 1
+                yield Request(
+                    url=response.url,
+                    callback=self.parse_forum,
+                    headers=response.request.headers,
+                    meta=meta,
+                    dont_filter=True
+                )
+                return
+
         self.logger.info('next_page_url: {}'.format(response.url))
         threads = response.xpath(
             '//span[contains(@class, "subject_") and contains(@id, "tid_")]/a')
@@ -152,6 +201,21 @@ class DemonForumsSpider(BypassCloudfareSpider):
             )
 
     def parse_thread(self, response):
+
+        if response.status == 403:
+            meta = response.meta.copy()
+            tries = meta.get('tries', 1)
+            if tries < 20:
+                meta['tries'] = tries + 1
+                yield Request(
+                    url=response.url,
+                    callback=self.parse_forum,
+                    headers=response.request.headers,
+                    meta=meta,
+                    dont_filter=True
+                )
+                return
+
         topic_id = response.meta['topic_id']
         pagination = self.pagination_pattern.findall(response.url)
         paginated_value = pagination[0] if pagination else 1
@@ -206,6 +270,21 @@ class DemonForumsSpider(BypassCloudfareSpider):
             )
 
     def parse_avatar(self, response):
+
+        if response.status == 403:
+            meta = response.meta.copy()
+            tries = meta.get('tries', 1)
+            if tries < 20:
+                meta['tries'] = tries + 1
+                yield Request(
+                    url=response.url,
+                    callback=self.parse_forum,
+                    headers=response.request.headers,
+                    meta=meta,
+                    dont_filter=True
+                )
+                return
+
         file_name = response.meta['file_name']
         file_name_only = file_name.rsplit('/', 1)[-1]
         with open(file_name, 'wb') as f:
