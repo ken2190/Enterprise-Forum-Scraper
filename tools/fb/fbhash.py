@@ -56,9 +56,10 @@ def hash_datasets_from_input_dir(input_folder):
         all_files = os.listdir(input_folder)
         for f in all_files:
             absolute_filepath = os.path.join(input_folder, f)
-            file_json = read_input_file(absolute_filepath)
-            hashed_json = hash_dataset(file_json)
-            hashed_datasets[f] = hashed_json
+            if os.path.isfile(absolute_filepath) and absolute_filepath.endswith("json"):
+                file_json = read_input_file(absolute_filepath)
+                hashed_json = hash_dataset(file_json)
+                hashed_datasets[f] = hashed_json
 
         return hashed_datasets
 
