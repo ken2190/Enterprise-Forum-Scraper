@@ -129,7 +129,7 @@ from templates.vigilante_template import VigilanteParser
 from templates.sinfulsite_template import SinfulSiteParser
 from templates.runtime_template import RuntimeParser
 from templates.bigmmo_template import BigMMOParser
-from templates.wildersecurity_template import WilderSecurityParser
+from templates.wilderssecurity_template import WildersSecurityParser
 from templates.zyberph_template import ZyberphParser
 from templates.yougame_template import YougameParser
 from templates.whitehat_template import WhiteHatParser
@@ -315,7 +315,7 @@ PARSER_MAP = {
     'sinfulsite': SinfulSiteParser,
     'runtime': RuntimeParser,
     'bigmmo': BigMMOParser,
-    'wildersecurity': WilderSecurityParser,
+    'wilderssecurity': WildersSecurityParser,
     'zyberph': ZyberphParser,
     'yougame': YougameParser,
     'whitehat': WhiteHatParser,
@@ -367,4 +367,5 @@ PARSER_MAP = {
     'darkbay': DarkbayParser,
     'digitalgangster': DigitalGangsterParser,
     'stormfront': StormFrontParser,
+    'totalblackhat': TotalBlackHatParser
 }
