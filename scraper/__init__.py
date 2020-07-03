@@ -80,7 +80,7 @@ from scraper.oxsec import Ox00SecScrapper
 from scraper.rosa_negra import RosaNegraScrapper
 from scraper.envoy import EnvoyScrapper
 from scraper.bitshacking import BitsHackingScrapper
-from scraper.safetyskyhacks import SafetySkyHacksScrapper
+from scraper.safeskyhacks import SafeSkyHacksScrapper
 from scraper.skynetzone import SkyNetZoneScrapper
 from scraper.mashacker import MasHackerScrapper
 from scraper.hackthissite import HackThisSiteScrapper
@@ -246,7 +246,7 @@ SCRAPER_MAP = {
     'rosanegra': RosaNegraScrapper,
     'envoy': EnvoyScrapper,
     'bitshacking': BitsHackingScrapper,
-    'safetyskyhacks': SafetySkyHacksScrapper,
+    'safeskyhacks': SafeSkyHacksScrapper,
     'skynetzone': SkyNetZoneScrapper,
     'mashacker': MasHackerScrapper,
     'hackthissite': HackThisSiteScrapper,
