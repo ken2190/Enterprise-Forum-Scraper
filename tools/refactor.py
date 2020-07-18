@@ -9,6 +9,10 @@ IPS = ['ip', 'ip1', 'ip2', 'ip3', 'ip4', 'ip5']
 KEYS_TO_CHECK = ['r']
 
 
+KEY_LENGTH = 5
+KEYS_WITH_LESS_CHARS = set()
+
+
 class Parser:
     def __init__(self):
         self.parser = argparse.ArgumentParser(
@@ -27,12 +31,16 @@ class Parser:
 
 
 def process_line(out_file, single_json, mapper):
+    global KEYS_WITH_LESS_CHARS
     json_response = json.loads(single_json)
     data = deepcopy(json_response['_source'])
     email = list()
     ip = list()
     error = not all(k in data.keys() for k in KEYS_TO_CHECK)
     for key, value in data.items():
+        if len(key) < KEY_LENGTH:
+            KEYS_WITH_LESS_CHARS.add(key)
+
         json_response['_source'].pop(key)
         if key in EMAILS:
             email.append(value)
@@ -71,6 +79,10 @@ def main():
                     print('Error in line number:', line_number)
                     traceback.print_exc()
                     break
+    if err_file:
+        err_file.write(
+            f'Keys with length less than {KEY_LENGTH} '
+            f'chars: {KEYS_WITH_LESS_CHARS}')
 
 
 if __name__ == '__main__':
