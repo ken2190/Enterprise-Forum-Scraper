@@ -62,7 +62,8 @@ def main():
     args = Parser().get_args()
     input_file = args.input
     output_file = args.output
-    error_file = output_file.rsplit('/', 1)[0] + '/error.txt'
+    error_file = output_file.rsplit('/', 1)[0] + '/error.txt'\
+        if '/' in output_file else 'error.txt'
     mapper_file = args.mapper
     with open(mapper_file, 'r') as fp:
         mapper = json.load(fp)
