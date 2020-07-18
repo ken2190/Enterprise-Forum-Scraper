@@ -89,6 +89,7 @@ def main():
         with open(error_file, 'w') as err_file:
             with open(input_file, 'r') as fp:
                 for line_number, single_json in enumerate(fp, 1):
+                    print('Checking line number:', line_number)
                     error = check_line(single_json)
                     if error:
                         err_file.write(str(line_number) + '\n')
