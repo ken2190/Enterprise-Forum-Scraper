@@ -85,7 +85,8 @@ def main():
                         traceback.print_exc()
                         break
     if args.check:
-        error_file = 'error.txt'
+        file_name_only = input_file.rsplit('.', 1)[0]
+        error_file = f'{file_name_only}.txt'
         with open(error_file, 'w') as err_file:
             with open(input_file, 'r') as fp:
                 for line_number, single_json in enumerate(fp, 1):
