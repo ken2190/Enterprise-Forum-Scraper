@@ -33,12 +33,13 @@ class Parser:
         return self.parser.parse_args()
 
 
-def check_line(single_json):
+def check_line(err_file, single_json):
     global KEYS_WITH_LESS_CHARS
     json_response = json.loads(single_json)
     data = deepcopy(json_response['_source'])
     for key, value in data.items():
-        if len(key) < KEY_LENGTH:
+        if len(key) < KEY_LENGTH and key not in KEYS_WITH_LESS_CHARS:
+            err_file.write(key + '\n')
             KEYS_WITH_LESS_CHARS.add(key)
     error = not all(k in data.keys() for k in KEYS_TO_CHECK)
     return error
@@ -91,12 +92,9 @@ def main():
             with open(input_file, 'r') as fp:
                 for line_number, single_json in enumerate(fp, 1):
                     print('Checking line number:', line_number)
-                    error = check_line(single_json)
+                    error = check_line(err_file, single_json)
                     if error:
                         err_file.write(str(line_number) + '\n')
-            err_file.write(
-                f'Keys with length less than {KEY_LENGTH} '
-                f'chars: {KEYS_WITH_LESS_CHARS}')
 
 
 if __name__ == '__main__':
