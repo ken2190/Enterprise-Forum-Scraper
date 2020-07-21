@@ -8,7 +8,7 @@ import collections.abc
 from glob import glob
 
 
-ENC_KEY = 'J17%1s(1xQ!'
+ENC_KEY = "7C++Zx+hUufpL3YnrYj/vWNfDpMLgSJem+jsNDn1IgQ="
 
 
 class Parser:
