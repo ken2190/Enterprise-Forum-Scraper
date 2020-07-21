@@ -27,7 +27,7 @@ class Parser:
 def generate_hash(value):
     normalized_value = str(value).lower().strip().encode('utf-8')
     digested_value = hmac.digest(
-        ENC_KEY.encode('utf-8'),
+        base64.b64decode(ENC_KEY),
         normalized_value,
         'sha256'
     )
