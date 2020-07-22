@@ -39,6 +39,8 @@ def update_json(u, d=dict()):
     for k, v in u.items():
         if isinstance(v, collections.abc.Mapping):
             d[k] = update_json(v, d.get(k, {}))
+        elif isinstance(v, list):
+            d[k] = [generate_hash(i) for i in v]
         else:
             d[k] = generate_hash(v)
     return d
