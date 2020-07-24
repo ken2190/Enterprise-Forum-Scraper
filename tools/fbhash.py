@@ -1,3 +1,4 @@
+import csv
 import os
 import hmac
 import base64
@@ -19,6 +20,8 @@ class Parser:
             '-i', '--input', help='Input File', required=True)
         self.parser.add_argument(
             '-o', '--output', help='Output File', required=True)
+        self.parser.add_argument(
+            '-t', '--type', help='Input file type (csv/json)', required=True)
 
     def get_args(self,):
         return self.parser.parse_args()
@@ -52,24 +55,51 @@ def process_line(out_file, single_json):
     out_file.write(json.dumps(hashed_json) + '\n')
 
 
+def process_row(out_file, row):
+    print(row)
+    hashed_row = [generate_hash(r) for r in row]
+    hashed_row_str = ','.join(hashed_row)
+    out_file.write(hashed_row_str + '\n')
+
+
 def main():
     args = Parser().get_args()
     input_folder = args.input
     output_folder = args.output
+    file_type = args.type
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
-
-    for input_file in glob(f'{input_folder}/*.json'):
-        output_file = os.path.join(output_folder, input_file.rsplit('/')[-1])
-        print(f"\nProcessing file {input_file.rsplit('/')[-1]}")
-        with open(output_file, 'w') as out_file:
-            with open(input_file, 'r') as fp:
-                for line_number, single_json in enumerate(fp, 1):
-                    try:
-                        process_line(out_file, single_json)
-                        print('Writing line number:', line_number)
-                    except Exception:
-                        print(f'Error in line number: {line_number}, IGNORING')
+    if file_type == 'json':
+        for input_file in glob(f'{input_folder}/*.json'):
+            output_file = os.path.join(
+                output_folder, input_file.rsplit('/')[-1])
+            print(f"\nProcessing file {input_file.rsplit('/')[-1]}")
+            with open(output_file, 'w') as out_file:
+                with open(input_file, 'r') as fp:
+                    for line_number, single_json in enumerate(fp, 1):
+                        try:
+                            process_line(out_file, single_json)
+                            print('Writing line number:', line_number)
+                        except Exception:
+                            print(f'Error in line number: '
+                                  f'{line_number}, IGNORING')
+    elif file_type == 'csv':
+        for input_file in glob(f'{input_folder}/*.csv'):
+            output_file = os.path.join(
+                output_folder, input_file.rsplit('/')[-1])
+            print(f"\nProcessing file {input_file.rsplit('/')[-1]}")
+            with open(output_file, 'w') as out_file:
+                with open(input_file, 'r') as fp:
+                    reader = csv.reader(fp)
+                    for line_number, row in enumerate(reader, 1):
+                        try:
+                            process_row(out_file, row)
+                            print('Writing line number:', line_number)
+                        except Exception:
+                            print(f'Error in line number: '
+                                  f'{line_number}, IGNORING')
+    else:
+        print('Invalid file type')
 
 
 if __name__ == '__main__':
