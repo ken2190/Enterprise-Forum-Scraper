@@ -112,7 +112,7 @@ class ArgVerifier:
             Usage: collector.py -scan [-d DATABASE] [-s SCRAPE_TYPE] [-p PORT] [-tf TARGET_FILE]
                                       [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER] [-o OUPUT_FOLDER]
             Arguments:
-            -st | --scrape_type             :  Type of scrape to run es: search, scan, dump, matchdump
+            -st | --scrape_type             :  Type of scrape to run es: meta, dump
             -p | --port PORT               :  Database port
             -exif | --excludeIndexFile     :  One keyword per line, all index contain these keyword will be excluded
             -tf | --target_file            :  A CSV formatted list of targets host,port
@@ -150,10 +150,9 @@ class ArgVerifier:
 
     def is_elastic_scrape_types_true(self):
         scrape = self.argparse_data['scrape_type']
-        if scrape != 'scan' and scrape != 'search' and scrape != 'dump' and scrape != 'matchdump':
+        if scrape not in ['meta', 'dump']:
             self.logger.error(
-                "Missing arguments. Specify the scrape type either "
-                "--scrape scan , --scrape search, --scrape dump, --scrape matchdump")
+                "Missing arguments --st/scrape_type. Allowed values: [\"meta\", \"dump\"]")
             exit(1)
 
     def is_elastic_limit_verified(self):

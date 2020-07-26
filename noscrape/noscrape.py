@@ -228,7 +228,7 @@ class NoScrape:
         # arg_verifier.is_output_file_specified_for_search()
         arg_verifier.is_target_file_specified()
         arg_verifier.is_port_specified()
-        # arg_verifier.is_elastic_scrape_types_true()
+        arg_verifier.is_elastic_scrape_types_true()
         arg_verifier.is_elastic_limit_verified()
 
         filter_list = []
