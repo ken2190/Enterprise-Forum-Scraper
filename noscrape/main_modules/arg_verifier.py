@@ -79,7 +79,7 @@ class ArgVerifier:
         port = self.argparse_data['port']
         targets = self.argparse_data['targets']
         targetFile = self.argparse_data['target_file']
-        if ((scrape not in ['basic', 'fields', 'index', 'all'])
+        if ((scrape not in ['meta', 'dump'])
             or (port == -1 and targetFile is None)
             or (targets is None and targetFile is None)):
             help_message = """

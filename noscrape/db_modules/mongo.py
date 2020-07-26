@@ -93,8 +93,8 @@ class MongoScrape(NoScrapePlugin):
 		return mydata
 
 	def results_to_json(self, results):
-		return {
-			'host': self.clean(str(self.target)),
+		data = {
+			'ip': self.clean(str(self.target)),
 			'port': self.clean(str(self.port)),
 			'dbType': self.clean(str("mongo")),
 			'username': self.clean(str(self.username)),
@@ -105,6 +105,10 @@ class MongoScrape(NoScrapePlugin):
 				if key not in ["stats", "indexes"]
 			}
 		}
+		if results.get('stats'):
+			data.update({'stats': results['stats']})
+		return {'_source': data}
+
 
 	# Connect & Log into the DB. Sets the "self.DBClient"
 	def connect(self):

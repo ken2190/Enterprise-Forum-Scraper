@@ -199,6 +199,8 @@ class NoScrape:
                         continue
 
                     results = nosql_tool.run()
+                    if not results:
+                        continue
                     results = nosql_tool.filter_results(results, filter_list)
                     nosql_tool.print_results(results)
                     nosql_tool.disconnect()
