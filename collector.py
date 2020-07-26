@@ -22,8 +22,8 @@ class Collector:
             # Gatherer.start()
             pass
         elif kwargs.get("scan"):
-            from noscrape.noscrape import NoScrapeV1
-            NoScrapeV1(kwargs).run()
+            from noscrape.noscrape import NoScrape
+            NoScrape(kwargs).run()
         else:
             self.parser.print_help()
 

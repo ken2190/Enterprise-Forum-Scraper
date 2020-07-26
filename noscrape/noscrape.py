@@ -1,10 +1,14 @@
 import re
+import json
 from .noscrape_logger import NoScrapeLogger
 # from .config import noscrape_parser_arguments
 # from cli_parser import CliParser
 from .db_modules.elastic import Elastic
+from .db_modules.mongo import MongoScrape
+
 from .main_modules.arg_verifier import ArgVerifier
 from .main_modules.arg_parser import ArgParser
+from .main_modules.ip_targets import IpTargets
 import os
 import sys
 import logging
@@ -12,7 +16,7 @@ import logging
 VERSION = "2.2"
 
 
-class NoScrapeV1:
+class NoScrape:
     def __init__(self, args):
         self.logger = NoScrapeLogger(__name__)
         # self.parser = CliParser(description="Noscrape parsing tool", arguments=noscrape_parser_arguments)
@@ -46,11 +50,8 @@ class NoScrapeV1:
         if new_config['examples']:
             new_parser.print_examples()
 
-        if new_config['v']:
-            self.logger.logger.setLevel(logging.DEBUG)
-
-            # if new_config['type'] == 'mongo':
-            #     self.run_nosql(new_config, 'mongo')
+        if new_config['type'] == 'mongo':
+            self.run_nosql(new_config, 'mongo')
             #
             # if new_config['type'] == 'cassandra':
             #     self.run_nosql(new_config, 'cassandra')
@@ -123,6 +124,102 @@ class NoScrapeV1:
     def banner(self):
         banner = '''__main__.py - A data discovery tool\nv''' + VERSION + '''\n'''
         print(banner)
+
+    # Run the MongoDB scraping module
+    def run_nosql(self, argparse_data, nosql_type):
+        # Verify some arguments
+        arg_verifier = ArgVerifier(argparse_data)
+        arg_verifier.show_nosql_help()
+        arg_verifier.is_nosql_scrape_types_true()
+        arg_verifier.is_target_file_specified()
+        arg_verifier.is_port_specified()
+        # Verify some arguments
+
+        filter_list = []
+        if argparse_data['filter'] is not None:
+            arg_verifier.try_opening_filter_file()
+            filter_list = self.create_filter_list(argparse_data['filter'])
+
+
+        out_folder = None
+        if argparse_data['out_folder'] is not None:
+            out_folder = argparse_data['out_folder']
+            if not os.path.exists(out_folder):
+                os.makedirs(out_folder)
+
+        if argparse_data['username'] is not None or argparse_data['password'] is not None:
+            if argparse_data['authDB'] is None:
+                argparse_data['authDB'] = "admin"
+
+        exclude_indexes = []
+        if argparse_data['exclude_index_file'] is not None:
+            with open(argparse_data['exclude_index_file'], "r") as exclude_file:
+                exclude_indexes = [
+                    keyword.strip() for keyword in exclude_file.read().split("\n")
+                ]
+
+        # Build the tool
+        if nosql_type == 'mongo':
+            nosql_tool = MongoScrape(
+                scrape_type=argparse_data['scrape_type'], 
+                username=argparse_data['username'],
+                password=argparse_data['password'], 
+                auth_db=argparse_data['authDB'], 
+                exclude_indexes=exclude_indexes
+            )
+        elif nosql_type == 'cassandra':
+            nosql_tool = CassandraScrape(
+                scrape_type=argparse_data['scrape_type'], 
+                username=argparse_data['username'],
+                password=argparse_data['password'], 
+                exclude_indexes=exclude_indexes
+            )
+        else:
+            raise ValueError("Type Should be either 'mongo' or 'cassandra'")
+
+        # Load the IPsa
+        targets = IpTargets()
+        if argparse_data['targets'] is not None:
+            targets.load_from_input(argparse_data['targets'], argparse_data['port'])
+        if argparse_data['target_file'] is not None:
+            targets.load_from_file(argparse_data['target_file'])
+
+        # Prep the output file
+        first_write = True
+        result_is_empty = True
+        for network in targets:
+            for ip in network[0]:
+                try:
+                    nosql_tool.set_target(str(ip), int(network[1]))
+                    if not nosql_tool.test_connection():
+                        # TCP connection failed
+                        continue
+                    if not nosql_tool.connect():
+                        # Tool failed to attach to the instance
+                        continue
+
+                    results = nosql_tool.run()
+                    results = nosql_tool.filter_results(results, filter_list)
+                    nosql_tool.print_results(results)
+                    nosql_tool.disconnect()
+                    if results is not None:
+                        result_is_empty = False
+                    # Write out the data to the file
+                    if out_folder is not None:
+                        outfile = '%s/%s.json' % (out_folder, ip)
+                        write_out = open(outfile, "a", 1)
+                        write_out.write(
+                            "%s\n" % json.dumps(
+                                nosql_tool.results_to_json(results)
+                            )
+                        )
+
+                except Exception as e:
+                    self.logger.error("Error on " + str(ip) + ":" + str(network[1]) + " - " + str(e))
+                    continue
+        if out_file is not None and not result_is_empty:
+            self.logger.error("Results written out to '" + out_file + "'")
+
 
     def run_es(self, new_config):
         arg_verifier = ArgVerifier(new_config)
