@@ -86,7 +86,7 @@ class ArgVerifier:
             Usage: collector.py -scan [-d DATABASE] [-st SCRAPE_TYPE] [-p PORT] [-tf TARGET_FILE]
                                       [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER]
             Arguments:
-            -st | --scrape_type             :  Type of scrape to run: basic, all, fields, index
+            -st | --scrape_type             :  Type of scrape to run es: meta, dump
             -p | --port PORT               :  Database port
             -tf | --target_file            :  A CSV formatted list of targets host,port
             -exif | --excludeIndexFile     :  One keyword per line, all index contain these keyword will be excluded
@@ -136,19 +136,7 @@ class ArgVerifier:
             print(help_message)
             exit(1)
 
-    def is_nosql_scrape_types_true(self):
-        scrape = self.argparse_data['scrape_type']
-        if scrape not in ['basic', 'fields', 'index', 'all']:
-            self.logger.error(
-                "Scrape type should be either:\n"
-                "--scrape_type basic: Basic meta info\n"
-                "--scrape_type fields: Fields info\n"
-                "--scrape_type index: Indexes info\n"
-                "--scrape_type all: All meta data\n"
-            )
-            exit(1)
-
-    def is_elastic_scrape_types_true(self):
+    def is_scrape_types_true(self):
         scrape = self.argparse_data['scrape_type']
         if scrape not in ['meta', 'dump']:
             self.logger.error(
