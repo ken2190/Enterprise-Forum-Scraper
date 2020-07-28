@@ -68,7 +68,7 @@ class Scraper:
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        stats = None        
+        stats = None
         scraper_obj = scraper(self.kwargs)
         if self.kwargs.get('rescan'):
             scraper_obj.do_rescan()
