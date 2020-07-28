@@ -79,21 +79,24 @@ class ArgVerifier:
         port = self.argparse_data['port']
         targets = self.argparse_data['targets']
         targetFile = self.argparse_data['target_file']
+        output_folder = self.argparse_data['out_folder']
         if ((scrape not in ['meta', 'dump'])
             or (port == -1 and targetFile is None)
-            or (targets is None and targetFile is None)):
+            or (targets is None and targetFile is None)
+            or not output_folder):
             help_message = """
             Usage: collector.py -scan [-d DATABASE] [-st SCRAPE_TYPE] [-p PORT] [-tf TARGET_FILE]
                                       [-u USERNAME] [-pw PASSWORD] [-a AUTHDB] [-l LIMIT] [-f FILTER]
             Arguments:
-            -st | --scrape_type             :  Type of scrape to run es: meta, dump
-            -p | --port PORT               :  Database port
-            -tf | --target_file            :  A CSV formatted list of targets host,port
-            -exif | --excludeIndexFile     :  One keyword per line, all index contain these keyword will be excluded
-            -u | --username                :  Username for standard authentication
-            -pw | --password               :  Password for standard authentication
-            -a | --authDB                  :  Database within Mongo to auth against
-            -f | --filter                  :  Use to specify a list of keywords to filter within your scraped search results
+            -st   | --scrape_type               :  Type of scrape to run es: meta, dump
+            -p    | --port PORT                 :  Database port
+            -tf   | --target_file               :  A CSV formatted list of targets host,port
+            -exif | --excludeIndexFile          :  One keyword per line, all index contain these keyword will be excluded
+            -u    | --username                  :  Username for standard authentication
+            -pw   | --password                  :  Password for standard authentication
+            -a    | --authDB                    :  Database within Mongo to auth against
+            -f    | --filter                    :  Use to specify a list of keywords to filter within your scraped search results
+            -o    | --out_folder                :  Use to specify the output folder
             """
             print(help_message)
             exit(1)

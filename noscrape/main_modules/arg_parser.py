@@ -41,15 +41,15 @@ class ArgParser():
         nosql_and_elastic_options.add_argument('--limit', '-l', nargs='?', metavar="Limit", default=10,
                                                help=argparse.SUPPRESS,
                                                type=int)
-    
+
         # S3 Stuff
-        
+
         s3_opts = parser.add_argument_group('AWS Brute S3 Options')
         s3_opts.add_argument('--access', metavar="AccessKey", default=None, help=argparse.SUPPRESS, type=str)
         s3_opts.add_argument('--secret', metavar="SecretKey", default=None, help=argparse.SUPPRESS, type=str)
         s3_opts.add_argument('--hitlist', metavar="DictionaryFile", default=None,
                              help=argparse.SUPPRESS, type=str)
-        
+
         args, unknown = parser.parse_known_args()
         new_config = args.__dict__
 

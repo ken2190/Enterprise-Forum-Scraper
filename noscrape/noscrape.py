@@ -60,7 +60,7 @@ class NoScrape:
             #     self.run_s3(new_config)
 
         if new_config['type'] == 'es':
-            self.run_es(new_config)            
+            self.run_es(new_config)
 
         # scan_option, db_type, target_file = self.verify_args()
         # if scan_option:
@@ -161,17 +161,17 @@ class NoScrape:
         # Build the tool
         if nosql_type == 'mongo':
             nosql_tool = MongoScrape(
-                scrape_type=argparse_data['scrape_type'], 
+                scrape_type=argparse_data['scrape_type'],
                 username=argparse_data['username'],
-                password=argparse_data['password'], 
-                auth_db=argparse_data['authDB'], 
+                password=argparse_data['password'],
+                auth_db=argparse_data['authDB'],
                 exclude_indexes=exclude_indexes
             )
         elif nosql_type == 'cassandra':
             nosql_tool = CassandraScrape(
-                scrape_type=argparse_data['scrape_type'], 
+                scrape_type=argparse_data['scrape_type'],
                 username=argparse_data['username'],
-                password=argparse_data['password'], 
+                password=argparse_data['password'],
                 exclude_indexes=exclude_indexes
             )
         else:
@@ -219,8 +219,8 @@ class NoScrape:
                 except Exception as e:
                     self.logger.error("Error on " + str(ip) + ":" + str(network[1]) + " - " + str(e))
                     continue
-        if out_file is not None and not result_is_empty:
-            self.logger.error("Results written out to '" + out_file + "'")
+        if out_folder is not None and not result_is_empty:
+            self.logger.error("Results written out to '" + out_folder + "'")
 
 
     def run_es(self, new_config):
@@ -241,14 +241,14 @@ class NoScrape:
         out_file = None
         # if new_config['out_file'] is not None:
         #     arg_verifier.try_opening_output_file()
-        #     out_file = new_config['out_file']            
-        output_folder = new_config["out_folder"]            
+        #     out_file = new_config['out_file']
+        output_folder = new_config["out_folder"]
         if output_folder:
             try:
                 if os.path.exists(output_folder):
                     pass
                 else:
-                    os.makedirs(output_folder)                    
+                    os.makedirs(output_folder)
             except:
                 print("--Could not create output folder:", output_folder)
                 exit(1)
@@ -265,7 +265,7 @@ class NoScrape:
                 print("--Error parsing exclude_index_file")
                 exit(1)
         else:
-            print("Exclude file not specified. Using default")        
+            print("Exclude file not specified. Using default")
             # default_exclude = os.path.join(os.getcwd(), "noscrape", "exclude.txt")
             default_exclude = sys.path[0]+'/noscrape/exclude.txt'
             print("Using default exclude:", default_exclude)
@@ -301,8 +301,8 @@ class NoScrape:
             try:
                 elastic = Elastic(ip=ip, port=port, exclude_indexes=exclude_indexes)
                 if scrape_type == 'meta':
-                    metadata = elastic.fetch_metadata()                    
-                    if metadata:                        
+                    metadata = elastic.fetch_metadata()
+                    if metadata:
                         self.logger.write_json(metadata, output_folder)
 
                         if metadata.get('_source', {}).get('ip'):

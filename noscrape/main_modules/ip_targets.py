@@ -8,7 +8,7 @@ class IpTargets:
 		self.logger = logging.getLogger(__name__)
 
 		self.targetList = [] 	# Each item is a tuple of (IPNetwork, port)
-		
+
 		if cidr is not None and port is None:
 			raise Exception("Port is missing")
 		if cidr is None and port is not None:
@@ -37,7 +37,7 @@ class IpTargets:
 
 		if delimeter is None:
 			raise Exception("CSV delimeter of input file should be one of: [',', ':', '|']")
-		
+
 		file_handle = open(file_path, "r")
 
 		for line in file_handle:
