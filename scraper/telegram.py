@@ -45,7 +45,7 @@ class TelegramChannelSpider(SitemapSpider):
         dispatcher.connect(self.spider_closed, spider_closed)
         self.channel = kwargs.get("channel")
         self.first_write = False
-        
+
         # Init client
         self.client = TelegramClient(self.name, api_id, api_hash).start()
 
@@ -81,7 +81,7 @@ class TelegramChannelSpider(SitemapSpider):
         yield Request(
             url=self.channel_url % self.channel
         )
-        
+
 
     def parse(self, response):
         yield from self.parse_message()
@@ -99,7 +99,6 @@ class TelegramChannelSpider(SitemapSpider):
 
         # Yield message
         for message in messages:
-            
             # Check date
             if self.start_date and message.date.replace(tzinfo=None) < self.start_date:
                 self.logger.info(
@@ -110,12 +109,13 @@ class TelegramChannelSpider(SitemapSpider):
             yield from self.process_message(message.__dict__)
 
         # Load max id
-        max_id = messages[-1].id
+        if messages:
+            max_id = messages[-1].id
 
-        # Delay before next request
-        time.sleep(self.delay)
+            # Delay before next request
+            time.sleep(self.delay)
 
-        yield from self.parse_message(max_id=max_id)
+            yield from self.parse_message(max_id=max_id)
 
     def process_message(self, message):
 
