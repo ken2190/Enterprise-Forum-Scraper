@@ -122,7 +122,7 @@ class SafeskyhacksParser:
             comment_date = self.get_date(comment_block)
             pid = self.thread_id
             avatar = self.get_avatar(comment_block)
-            comment_id = self.get_comment_id(comment_block)            
+            comment_id = self.get_comment_id(comment_block)
             if not comment_id or comment_id == "1":
                 continue
             source = {
@@ -130,7 +130,7 @@ class SafeskyhacksParser:
                 'pid': pid,
                 'message': comment_text.strip(),
                 'cid': comment_id,
-                'author': user, 
+                'author': user,
             }
             if comment_date:
                 source.update({
@@ -158,13 +158,13 @@ class SafeskyhacksParser:
             if not self.get_comment_id(header[0]) == "1":
                 return
             title = self.get_title(html_response)
-            
+
             date = self.get_date(header[0])
             author = self.get_author(header[0])
             post_text = self.get_post_text(header[0])
             pid = self.thread_id
             avatar = self.get_avatar(header[0])
-            
+
             source = {
                 'forum': self.parser_name,
                 'pid': pid,
@@ -188,14 +188,14 @@ class SafeskyhacksParser:
             raise BrokenPage(ex)
 
     def get_date(self, tag):
-        
+
         date_block = tag.xpath(
             './/span[@class="date"]//text()'
         )
-        
+
         date_block = ' '.join(date_block)
-        date = date_block.strip() if date_block else ""       
-        
+        date = date_block.strip() if date_block else ""
+
         try:
             date = dparser.parse(date).timestamp()
             return str(date)
@@ -218,15 +218,15 @@ class SafeskyhacksParser:
         return title
 
     def get_post_text(self, tag):
-        post_text_block = tag.xpath(            
+        post_text_block = tag.xpath(
             './/div[contains(@class,"postbody")]//div[@class="content"]//descendant::text()[not(ancestor::div[@class="quote_container"])]'
         )
-    
+
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
         ])
         return post_text.strip()
-    
+
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(
@@ -244,8 +244,8 @@ class SafeskyhacksParser:
         comment_block = tag.xpath(
             './/div[contains(@class,"posthead")]//span[@class="nodecontrols"]/a//text()'
         )
-        
+
         if comment_block:
             comment_id = comment_block[0].strip().split('#')[-1]
-        
+
         return comment_id.replace(',', '').replace('.', '')

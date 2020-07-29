@@ -21,8 +21,8 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
              'Chrome/79.0.3945.117 Safari/537.36',
 
 
-class SafetySkyHacksSpider(scrapy.Spider):
-    name = 'safetyskyhacks_spider'
+class SafeSkyHacksSpider(scrapy.Spider):
+    name = 'safeskyhacks_spider'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -147,11 +147,11 @@ class SafetySkyHacksSpider(scrapy.Spider):
             self.logger.info(f"Avatar for {file_name_only} done..!")
 
 
-class SafetySkyHacksScrapper(SiteMapScrapper):
+class SafeSkyHacksScrapper(SiteMapScrapper):
 
-    spider_class = SafetySkyHacksSpider
-    site_name = 'safetyskyhacks.com'
-    
+    spider_class = SafeSkyHacksSpider
+    site_name = 'safeskyhacks.com'
+
     def load_settings(self):
         spider_settings = super().load_settings()
         spider_settings.update(
