@@ -180,13 +180,14 @@ class NoScrape:
         # Load the IPsa
         targets = IpTargets()
         if argparse_data['targets'] is not None:
-            targets.load_from_input(argparse_data['targets'], argparse_data['port'])
+            targets.load_from_input(
+                argparse_data['targets'],
+                argparse_data['port']
+            )
         if argparse_data['target_file'] is not None:
             targets.load_from_file(argparse_data['target_file'])
 
         # Prep the output file
-        first_write = True
-        result_is_empty = True
         for network in targets:
             for ip in network[0]:
                 try:
@@ -199,28 +200,26 @@ class NoScrape:
                         continue
 
                     results = nosql_tool.run()
-                    if not results:
-                        continue
                     results = nosql_tool.filter_results(results, filter_list)
                     nosql_tool.print_results(results)
                     nosql_tool.disconnect()
-                    if results is not None:
-                        result_is_empty = False
+
                     # Write out the data to the file
                     if out_folder is not None:
                         outfile = '%s/%s.json' % (out_folder, ip)
+                        if os.path.exists(outfile):
+                            continue
                         write_out = open(outfile, "a", 1)
+                        if results:
+                            to_write = nosql_tool.results_to_json(results)
+                        else:
+                            to_write = nosql_tool.failed_results_to_json()
                         write_out.write(
-                            "%s\n" % json.dumps(
-                                nosql_tool.results_to_json(results)
-                            )
+                            "%s\n" % json.dumps(to_write)
                         )
-
                 except Exception as e:
                     self.logger.error("Error on " + str(ip) + ":" + str(network[1]) + " - " + str(e))
                     continue
-        if out_folder is not None and not result_is_empty:
-            self.logger.error("Results written out to '" + out_folder + "'")
 
 
     def run_es(self, new_config):
