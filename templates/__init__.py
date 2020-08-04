@@ -367,5 +367,6 @@ PARSER_MAP = {
     'darkbay': DarkbayParser,
     'digitalgangster': DigitalGangsterParser,
     'stormfront': StormFrontParser,
-    'totalblackhat': TotalBlackHatParser
+    'totalblackhat': TotalBlackHatParser,
+    'itshqip': ItshqipParser
 }

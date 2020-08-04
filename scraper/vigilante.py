@@ -15,7 +15,7 @@ class VigilanteSpider(SitemapSpider):
     base_url = "https://vigilante.tech/"
 
     # Xpaths
-    forum_xpath = '//a[contains(@href, "forum-")]/@href'
+    forum_xpath = '//a[contains(@href, "Forum-")]/@href'
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
     thread_xpath = '//tr[@class="inline_row"]'
@@ -40,10 +40,6 @@ class VigilanteSpider(SitemapSpider):
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
-        re.IGNORECASE
-    )
-    topic_pattern = re.compile(
-        r".*thread-(\d+)",
         re.IGNORECASE
     )
 
@@ -93,7 +89,8 @@ class VigilanteSpider(SitemapSpider):
 
             # Standardize url
             if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                forum_url = response.urljoin(forum_url)
+
             # if 'forum-6.html' not in forum_url:
             #     continue
             yield Request(

@@ -44,7 +44,7 @@ class FreeHackSpider(SitemapSpider):
     avatar_xpath = '//a[@class="postuseravatar"]/img/@src'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = '%d.%m.%Y,'
     post_datetime_format = '%d.%m.%Y,'
 

@@ -1,47 +1,26 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
-import datetime
 import dateutil.parser as dparser
-from lxml.html import fromstring
+
+from .base_template import BaseTemplate, BrokenPage
 
 
-class BrokenPage(Exception):
-    pass
+class AlphaBayParser(BaseTemplate):
 
-
-class AlphaBayParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "alphabay"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.author_xpath = '//p[contains(text(), "Sold by")]/a/text()'
+        self.date_xpath = '//text()[contains(.,"sold since")]/following-sibling::i[1]/text()'
         # main function
         self.main()
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
-
-        return sorted_files
 
     def main(self):
         comments = []
@@ -91,22 +70,22 @@ class AlphaBayParser:
             data.update({
                 'subject': subject[0].strip()
             })
-        author = html_response.xpath(
-            '//p[contains(text(), "Sold by")]/a/text()')
+
+        author = html_response.xpath(self.author_xpath)
         if author:
             data.update({
                 'author': author[0].strip()
             })
 
-        date = html_response.xpath(
-            '//text()[contains(.,"sold since")]'
-            '/following-sibling::i[1]/text()')
+        date = html_response.xpath(self.date_xpath)
         if date:
             data.update({
                 'date': str(dparser.parse(date[0].strip()).timestamp())
             })
+
         description_block = html_response.xpath(
             '//h2[text()="Product Description"]/following-sibling::p[1]')
+
         message = "\n".join([
             m.xpath('string()') for m in description_block
         ])
@@ -114,4 +93,5 @@ class AlphaBayParser:
             data.update({
                 'message': message.strip()
             })
+
         return data

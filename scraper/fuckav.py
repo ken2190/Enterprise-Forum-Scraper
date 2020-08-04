@@ -52,7 +52,7 @@ class FuckavSpider(SitemapSpider):
     post_date_xpath = "//a[contains(@name,\"post\")]/following-sibling::text()[1][contains(.,\"-\")]"
     avatar_xpath = "//div[@class=\"smallfont\"]/a/img/@src"
     captcha_xpath = "//img[@id=\"imagereg\"]/@src"
-    
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -72,7 +72,7 @@ class FuckavSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = "%d-%m-%Y"
     post_datetime_format = "%d-%m-%Y"
     download_delay = REQUEST_DELAY

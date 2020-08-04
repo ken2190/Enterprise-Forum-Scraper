@@ -1,31 +1,30 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
 import datetime
 from lxml.html import fromstring
 
-
-class BrokenPage(Exception):
-    pass
+from .base_template import BaseTemplate, BrokenPage
 
 
-class AndromedaParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+class AndromedaParser(BaseTemplate):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "andromeda market"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'index.php.*topic[=,](\d+)'
         )
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.data_dic = OrderedDict()
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.header_xpath = '//div[@class="windowbg"]'
+        self.comments_xpath = '//div[contains(@class, "windowbg")]'
+        self.date_xpath = 'div[@class="date_post"]/div/text()'
+        self.date_pattern = '%B %d, %Y, %I:%M:%S  %p'
+        self.author_xpath = 'div[@class="post_wrapper"]/div[@class="poster"]/h4/a/text()'
+        self.title_xpath = 'div[@class="post_wrapper"]/div[@class="postarea"]//h5/a/text()'
+        self.comment_block_xpath = 'div[@class="date_post"]/span/text()'
+
         # main function
         self.main()
 
@@ -33,21 +32,8 @@ class AndromedaParser:
         pid_pattern = re.compile(r'topic[=,](\d+)')
         pid = pid_pattern.findall(self.thread_id)
         pid = pid[0] if pid else self.thread_id
+
         return pid
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
-
-        return sorted_files
 
     def get_html_response(self, file):
         with open(file, 'rb') as f:
@@ -75,11 +61,13 @@ class AndromedaParser:
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
                     continue
+
                 self.thread_id = match[0]
                 pid = self.get_pid()
                 final = utils.is_file_final(
                     self.thread_id, self.thread_name_pattern, self.files, index
                 )
+
                 output_file = None
                 if self.thread_id not in self.distinct_files and\
                    not output_file:
@@ -89,6 +77,7 @@ class AndromedaParser:
                     if not data:
                         comments.extend(self.extract_comments(html_response))
                         continue
+
                     self.distinct_files.add(self.thread_id)
 
                     # write file
@@ -114,107 +103,6 @@ class AndromedaParser:
                 traceback.print_exc()
                 continue
 
-    def extract_comments(self, html_response):
-        comments = list()
-        comment_blocks = html_response.xpath(
-          '//div[contains(@class, "windowbg")]'
-        )
-        for comment_block in comment_blocks:
-
-            user = self.get_author(comment_block)
-            authorID = self.get_author_link(comment_block)
-            commentID = self.get_comment_id(comment_block)
-            if not commentID:
-                continue
-            comment_text = self.get_post_text(comment_block)
-            comment_date = self.get_date(comment_block)
-            pid = self.get_pid()
-            comments.append({
-                
-                '_source': {
-                    'pid': pid,
-                    'date': comment_date,
-                    'message': comment_text.strip(),
-                    'cid': commentID,
-                    'author': user,
-                },
-            })
-        return comments
-
-    def header_data_extract(self, html_response, template):
-        try:
-
-            # ---------------extract header data ------------
-            header = html_response.xpath(
-                '//div[@class="windowbg"]'
-            )
-            if not header:
-                return
-            if self.get_comment_id(header[0]):
-                return
-            title = self.get_title(header[0])
-            date = self.get_date(header[0])
-            author = self.get_author(header[0])
-            author_link = self.get_author_link(header[0])
-            post_text = self.get_post_text(header[0])
-            pid = self.get_pid()
-            return {
-                
-                '_source': {
-                    'pid': pid,
-                    'subject': title,
-                    'date': date,
-                    'author': author,
-                    'message': post_text.strip(),
-                }
-            }
-        except:
-            ex = traceback.format_exc()
-            raise BrokenPage(ex)
-
-    def get_date(self, tag):
-        date = tag.xpath(
-            'div[@class="date_post"]'
-            '/div/text()'
-        )
-        date = date[0].strip() if date else None
-        try:
-            pattern = '%B %d, %Y, %I:%M:%S  %p'
-            date = datetime.datetime.strptime(date, pattern).timestamp()
-            return str(date)
-        except:
-            return ""
-
-    def get_author(self, tag):
-        author = tag.xpath(
-            'div[@class="post_wrapper"]/'
-            'div[@class="poster"]'
-            '/h4/a/text()'
-        )
-        author = author[0].strip() if author else None
-        return author
-
-    def get_title(self, tag):
-        title = tag.xpath(
-            'div[@class="post_wrapper"]/'
-            'div[@class="postarea"]'
-            '//h5/a/text()'
-        )
-        title = title[0].strip() if title else None
-        return title
-
-    def get_author_link(self, tag):
-        author_link = tag.xpath(
-            'div[@class="post_wrapper"]/'
-            'div[@class="poster"]'
-            '/h4/a/@href'
-        )
-        if author_link:
-            pattern = re.compile(r'u=(\d+)')
-            match = pattern.findall(author_link[0])
-            author_link = match[0] if match else None
-        return author_link
-
     def get_post_text(self, tag):
         post_text = tag.xpath(
             'div[@class="post_wrapper"]/'
@@ -234,16 +122,15 @@ class AndromedaParser:
         post_text = "\n".join(
             [text.strip() for text in post_text]
         ) if post_text else ""
+
         return post_text
 
     def get_comment_id(self, tag):
         commentID = ""
-        comment_block = tag.xpath(
-            'div[@class="date_post"]'
-            '/span/text()'
-        )
+        comment_block = tag.xpath(self.comment_block_xpath)
         if comment_block:
             comment_pattern = re.compile(r'Reply #(\d+)')
             match = comment_pattern.findall(comment_block[0])
             commentID = match[0] if match else ""
+
         return commentID.replace(',', '')

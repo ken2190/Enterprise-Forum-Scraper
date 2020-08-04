@@ -1,33 +1,34 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
+import dateutil.parser as dparser
 import traceback
-import json
 import datetime
 import utils
 
-
-class BrokenPage(Exception):
-    pass
+from .base_template import BaseTemplate
 
 
-class SilkRoad3Parser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+class SilkRoad3Parser(BaseTemplate):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "silk road 3"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
         )
         self.pagination_pattern = re.compile(
             r'\d+-(\d+)\.html$'
         )
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.avatar_name_pattern = re.compile(r'.*avatar=(\S+\.\w+)')
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.comments_xpath = '//div[@class="inner"][div[@class="postbody"]]'
+        self.header_xpath = '//div[@class="inner"][div[@class="postbody"]]'
+        self.date_xpath = 'div//p[@class="author"]/text()'
+        self.author_xpath = 'div//p[@class="author"]/span/strong/a/text()'
+        self.title_xpath = 'div//h3/a/text()'
+        self.post_text_xpath = 'div//div[@class="content"]//descendant::text()[not(ancestor::blockquote)]'
+        self.avatar_xpath = 'div//img[@class="avatar"]/@src'
+
         # main function
         self.main()
 
@@ -107,17 +108,17 @@ class SilkRoad3Parser:
 
     def extract_comments(self, html_response, pagination):
         comments = list()
-        comment_blocks = html_response.xpath(
-          '//div[@class="inner"][div[@class="postbody"]]'
-        )
+        comment_blocks = html_response.xpath(self.comments_xpath)
+
         comment_blocks = comment_blocks[1:]\
             if pagination == 1 else comment_blocks
+
         for comment_block in comment_blocks:
             user = self.get_author(comment_block)
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
-            pid = self.thread_id
             avatar = self.get_avatar(comment_block)
+            pid = self.thread_id
 
             source = {
                 'forum': self.parser_name,
@@ -138,101 +139,41 @@ class SilkRoad3Parser:
                 '_source': source,
             })
             self.index += 1
+
         return comments
 
-    def header_data_extract(self, html_response, template):
-        try:
-
-            # ---------------extract header data ------------
-            header = html_response.xpath(
-                '//div[@class="inner"][div[@class="postbody"]]'
-            )
-            if not header:
-                return
-            title = self.get_title(header[0])
-            date = self.get_date(header[0])
-            author = self.get_author(header[0])
-            post_text = self.get_post_text(header[0])
-            pid = self.thread_id
-            avatar = self.get_avatar(header[0])
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'subject': title,
-                'author': author,
-                'message': post_text.strip(),
-            }
-            if date:
-                source.update({
-                   'date': date
-                })
-            if avatar:
-                source.update({
-                    'img': avatar
-                })
-            return {
-                '_source': source
-            }
-        except:
-            ex = traceback.format_exc()
-            raise BrokenPage(ex)
-
     def get_date(self, tag):
-        date = tag.xpath(
-            'div//p[@class="author"]/text()'
-        )
+        date = tag.xpath(self.date_xpath)
         date = date[-1].strip() if date else None
+
         patterns = [
             '%B %dst, %Y, %I:%M %p',
             '%B %dnd, %Y, %I:%M %p',
             '%B %drd, %Y, %I:%M %p',
             '%B %dth, %Y, %I:%M %p',
         ]
+
         for pattern in patterns:
             try:
                 date = datetime.datetime.strptime(date, pattern).timestamp()
                 return str(date)
             except:
                 pass
+
+        try:
+            date = dparser.parse(date).timestamp()
+            return str(date)
+        except:
+            pass
+
         return ""
 
     def get_author(self, tag):
-        author = tag.xpath(
-            'div//p[@class="author"]/span/strong/a/text()'
-        )
+        author = tag.xpath(self.author_xpath)
         if not author:
             author = tag.xpath(
                 'div/h4/text()'
             )
+
         author = author[0].strip() if author else None
         return author
-
-    def get_title(self, tag):
-        title = tag.xpath(
-            'div//h3/a/text()'
-        )
-        title = title[0].strip() if title else None
-        return title
-
-    def get_post_text(self, tag):
-        post_text = tag.xpath(
-            'div//div[@class="content"]/'
-            '/descendant::text()['
-            'not(ancestor::blockquote)]'
-        )
-        post_text = "\n".join(
-            [text.strip() for text in post_text]
-        ) if post_text else ""
-        return post_text
-
-    def get_avatar(self, tag):
-        avatar_block = tag.xpath(
-            'div//img[@class="avatar"]/@src'
-        )
-        if not avatar_block:
-            return ""
-        avatar_name_pattern = re.compile(r'.*avatar=(\S+\.\w+)')
-        name_match = avatar_name_pattern.findall(avatar_block[0])
-        if not name_match:
-            return ""
-        return name_match[0]

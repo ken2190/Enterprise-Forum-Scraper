@@ -34,7 +34,7 @@ class CardingTeamSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://cardingteam.cc/"
-    sitemap_url = 'https://cardingteam.cc/sitemap-index.xml'
+    # sitemap_url = 'https://cardingteam.cc/sitemap-index.xml'
 
     # Sitemap Stuffs
     forum_sitemap_xpath = '//sitemap[loc[contains(text(),"sitemap-threads.xml")] and lastmod]/loc/text()'
@@ -43,7 +43,7 @@ class CardingTeamSpider(SitemapSpider):
     thread_lastmod_xpath = "//lastmod/text()"
 
     # Xpath stuffs
-    login_form_xpath = '//form[@method="post"]'
+    login_form_xpath = '//form[@action="member.php"]'
     forum_xpath = '//a[contains(@href, "Forum-")]/@href'
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
@@ -75,7 +75,7 @@ class CardingTeamSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
 
@@ -142,7 +142,7 @@ class CardingTeamSpider(SitemapSpider):
 
             # Standardize url
             if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                forum_url = response.urljoin(forum_url)
 
             yield Request(
                 url=forum_url,
