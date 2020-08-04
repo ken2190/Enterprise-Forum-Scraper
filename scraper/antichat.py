@@ -46,7 +46,7 @@ class AntichatSpider(SitemapSpider):
                       '//abbr[@class="DateTime"]/text()'
 
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
-    
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"/threads/(\d+)/",

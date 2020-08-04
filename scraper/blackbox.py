@@ -57,7 +57,7 @@ class BlackBoxsSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
     download_delay = REQUEST_DELAY

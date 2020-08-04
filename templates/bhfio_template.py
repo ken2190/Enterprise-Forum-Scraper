@@ -1,22 +1,15 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
-import traceback
-import json
 import utils
-import datetime
-from lxml.html import fromstring
+
+from .base_template import BaseTemplate
 
 
-class BrokenPage(Exception):
-    pass
+class BHFIOParser(BaseTemplate):
 
-
-class BHFIOParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "bhf.io"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+)-\d+\.html$'
         )
@@ -24,10 +17,17 @@ class BHFIOParser:
             r'\d+-(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'members/(\d+)/')
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.comments_xpath = '//div[@class="message-inner"]'
+        self.header_xpath = '//div[@class="message-inner"]'
+        self.date_xpath = 'div//div[@class="message-attribution-main"]/a/time/@data-time'
+        self.author_xpath = './/div[@class="message-userDetails"]/h4/a/descendant::text()'
+        self.title_xpath = '//h1[@class="p-title-value"]/text()'
+        self.comment_block_xpath = 'div//ul[@class="message-attribution-opposite message-attribution-opposite--list"]/li/a/text()'
+        self.avatar_xpath = 'div//div[@class="message-avatar-wrapper"]/a[img/@src]/@href'
+        self.avatar_ext = 'jpg'
+        self.mode = 'r'
+
         # main function
         self.main()
 
@@ -48,156 +48,12 @@ class BHFIOParser:
 
         return sorted_files
 
-    def get_html_response(self, template):
-        """
-        returns the html response from the `template` contents
-        """
-        with open(template, 'r') as f:
-            content = f.read()
-            try:
-                html_response = fromstring(content)
-            except ParserError as ex:
-                return
-            return html_response
-
-    def main(self):
-        comments = []
-        output_file = None
-        for index, template in enumerate(self.files):
-            print(template)
-            try:
-                html_response = self.get_html_response(template)
-                file_name_only = template.split('/')[-1]
-                match = self.thread_name_pattern.findall(file_name_only)
-                if not match:
-                    continue
-                pid = self.thread_id = match[0]
-                pagination = self.pagination_pattern.findall(file_name_only)
-                if pagination:
-                    pagination = int(pagination[0])
-                final = utils.is_file_final(
-                    self.thread_id,
-                    self.thread_name_pattern,
-                    self.files,
-                    index
-                )
-                if pagination == 1 or (final and not output_file):
-
-                    # header data extract
-                    data = self.header_data_extract(
-                        html_response, template)
-                    if not data:
-                        continue
-
-                    # write file
-                    output_file = '{}/{}.json'.format(
-                        str(self.output_folder),
-                        pid
-                    )
-                    file_pointer = open(output_file, 'w', encoding='utf-8')
-                    utils.write_json(file_pointer, data)
-                # extract comments
-                comments.extend(
-                    self.extract_comments(html_response))
-
-                if final:
-                    utils.write_comments(file_pointer, comments, output_file)
-                    comments = []
-                    output_file = None
-                    final = None
-            except BrokenPage as ex:
-                utils.handle_error(
-                    pid,
-                    self.error_folder,
-                    ex
-                )
-            except Exception:
-                traceback.print_exc()
-                continue
-
-    def extract_comments(self, html_response):
-        comments = list()
-        comment_blocks = html_response.xpath(
-          '//div[@class="message-inner"]'
-        )
-        # print(comment_blocks)
-        for index, comment_block in enumerate(comment_blocks, 1):
-            user = self.get_author(comment_block)
-            comment_text = self.get_post_text(comment_block)
-            comment_date = self.get_date(comment_block)
-            pid = self.thread_id
-            avatar = self.get_avatar(comment_block)
-            comment_id = self.get_comment_id(comment_block)
-            if not comment_id or comment_id == "1":
-                continue
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'message': comment_text.strip(),
-                'cid': comment_id,
-                'author': user,
-            }
-            if comment_date:
-                source.update({
-                    'date': comment_date
-                })
-            if avatar:
-                source.update({
-                    'img': avatar
-                })
-            comments.append({
-                '_source': source,
-            })
-        return comments
-
-    def header_data_extract(self, html_response, template):
-        try:
-
-            # ---------------extract header data ------------
-            header = html_response.xpath(
-                '//div[@class="message-inner"]'
-            )
-            if not header:
-                return
-
-            title = self.get_title(html_response)
-            date = self.get_date(header[0])
-            author = self.get_author(header[0])
-            post_text = self.get_post_text(header[0])
-            pid = self.thread_id
-            avatar = self.get_avatar(header[0])
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'subject': title,
-                'author': author,
-                'message': post_text.strip(),
-            }
-            if date:
-                source.update({
-                   'date': date
-                })
-            if avatar:
-                source.update({
-                    'img': avatar
-                })
-            return {
-                '_source': source
-            }
-        except Exception:
-            ex = traceback.format_exc()
-            raise BrokenPage(ex)
-
     def get_date(self, tag):
-        date = tag.xpath(
-            'div//div[@class="message-attribution-main"]/a/time/@data-time'
-        )
+        date = tag.xpath(self.date_xpath)
         return date[0] if date else ''
 
     def get_author(self, tag):
-        author_block = tag.xpath(
-            './/div[@class="message-userDetails"]/h4/a/descendant::text()'
-        )
+        author_block = tag.xpath(self.author_xpath)
         author = " ".join([
             author.strip() for author in author_block
         ])
@@ -216,14 +72,8 @@ class BHFIOParser:
                     author,
                     count=1
                 )
-        return author
 
-    def get_title(self, tag):
-        title = tag.xpath(
-            '//h1[@class="p-title-value"]/text()'
-        )
-        title = title[0].strip() if title else None
-        return title
+        return author
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(
@@ -250,23 +100,9 @@ class BHFIOParser:
                 )
         return post_text.strip()
 
-    def get_avatar(self, tag):
-        avatar_block = tag.xpath(
-            'div//div[@class="message-avatar-wrapper"]/a[img/@src]/@href'
-        )
-        if not avatar_block:
-            return ""
-        name_match = self.avatar_name_pattern.findall(avatar_block[0])
-        if not name_match:
-            return ""
-        return name_match[0] + '.jpg'
-
     def get_comment_id(self, tag):
         comment_id = ""
-        comment_block = tag.xpath(
-            'div//ul[@class="message-attribution-opposite '
-            'message-attribution-opposite--list"]/li/a/text()'
-        )
+        comment_block = tag.xpath(self.comment_block_xpath)
         if comment_block:
             comment_id = comment_block[-1].strip().split('#')[-1]
 

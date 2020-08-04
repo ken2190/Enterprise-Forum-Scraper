@@ -36,7 +36,7 @@ class SecurityLabSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y %H:%M:%S'
@@ -57,7 +57,8 @@ class SecurityLabSpider(SitemapSpider):
 
             # Standardize url
             if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                forum_url = response.urljoin(forum_url)
+
             yield Request(
                 url=forum_url,
                 headers=self.headers,

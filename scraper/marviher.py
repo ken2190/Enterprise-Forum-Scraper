@@ -93,7 +93,7 @@ class MarviherSpider(SitemapSpider):
 
             # Standardize url
             if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                forum_url = response.urljoin(forum_url)
 
             yield Request(
                 url=forum_url,

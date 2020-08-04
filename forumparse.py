@@ -47,19 +47,25 @@ class Parser:
             print('Input Path missing')
             return
 
+        self.kwargs['folder_path'] = folder_path
+
         # -----------filter files which user want to parse --------------
         files = []
         for filee in glob(folder_path+'/*'):
             if os.path.isfile(filee):
                 files.append(filee)
 
+        self.kwargs['files'] = files
+
         output_folder = self.kwargs.get('output')
         if not output_folder:
             print('Output Path missing')
             return
 
+        self.kwargs['output_folder'] = output_folder
+
         # ------------make folder if not exist -----------------
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        parser(parser_name, files, output_folder, folder_path)
+        parser(**self.kwargs)

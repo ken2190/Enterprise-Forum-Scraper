@@ -1,25 +1,20 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
 import locale
-import json
 import utils
 import datetime
-from lxml.html import fromstring
 import dateutil.parser as dparser
 
-
-class BrokenPage(Exception):
-    pass
+from .base_template import BaseTemplate
 
 
-class LolzTeamParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+class LolzTeamParser(BaseTemplate):
+
+    def __init__(self, *args, **kwargs):
         locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+        super().__init__(*args, **kwargs)
         self.parser_name = "lolzteam.net"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html'
         )
@@ -27,28 +22,17 @@ class LolzTeamParser:
             r'\d+-(\d+)\.html'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.data_dic = OrderedDict()
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.comments_xpath = '//ol[@class="messageList"]/li[contains(@id, "post-")]'
+        self.header_xpath = '//ol[@class="messageList"]/li[contains(@id, "post-")]'
+        self.date_xpath = 'div//span[@class="DateTime"]/@title'
+        self.author_xpath = 'div//div[@class="userText"]/span/a/span/text()'
+        self.title_xpath = '//div[@class="titleBar"]/h1/text()'
+        self.post_text_xpath = 'div//div[@class="messageContent"]/article/blockquote/text()'
+        self.avatar_xpath = 'div//div[@class="avatarHolder"]/a/span/@style'
+
         # main function
         self.main()
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
-
-        return sorted_files
 
     def main(self):
         comments = []
@@ -108,9 +92,8 @@ class LolzTeamParser:
 
     def extract_comments(self, html_response):
         comments = list()
-        comment_blocks = html_response.xpath(
-          '//ol[@class="messageList"]/li[contains(@id, "post-")]'
-        )
+        comment_blocks = html_response.xpath(self.comments_xpath)
+
         if self.comment_index == 1:
             comment_blocks = comment_blocks[1:]
 
@@ -136,46 +119,11 @@ class LolzTeamParser:
                 '_source': source,
             })
             self.comment_index += 1
+
         return comments
 
-    def header_data_extract(self, html_response, template):
-        try:
-
-            # ---------------extract header data ------------
-            header = html_response.xpath(
-                '//ol[@class="messageList"]/li[contains(@id, "post-")]'
-            )
-            if not header:
-                return
-            title = self.get_title(html_response)
-            date = self.get_date(header[0])
-            author = self.get_author(header[0])
-            post_text = self.get_post_text(header[0])
-            pid = self.thread_id
-            avatar = self.get_avatar(header[0])
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'subject': title,
-                'author': author,
-                'img': avatar,
-                'message': post_text.strip(),
-            }
-            if date:
-                source.update({
-                   'date': date
-                })
-            return {
-                '_source': source
-            }
-        except:
-            ex = traceback.format_exc()
-            raise BrokenPage(ex)
-
     def get_date(self, tag):
-        date_block = tag.xpath(
-            'div//span[@class="DateTime"]/@title'
-        )
+        date_block = tag.xpath(self.date_xpath)
         if not date_block:
             date_block = tag.xpath(
                 'div//abbr[@class="DateTime"]/text()'
@@ -187,42 +135,25 @@ class LolzTeamParser:
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except:
-            date = dparser.parse(date).timestamp()
-            return str(date)
+            try:
+                date = dparser.parse(date).timestamp()
+                return str(date)
+            except:
+                pass
+
+        return ""
 
     def get_author(self, tag):
-        author = tag.xpath(
-            'div//div[@class="userText"]/span/a/span/text()')
+        author = tag.xpath(self.author_xpath)
         if not author:
             author = tag.xpath(
                 'div//div[@class="userText"]/span/a/text()')
+
         author = author[0].strip() if author else None
         return author
 
     def get_title(self, tag):
-        title = tag.xpath(
-            '//div[@class="titleBar"]/h1/text()'
-        )
+        title = tag.xpath(self.title_xpath)
         title = title[-1].strip() if title else None
+
         return title
-
-    def get_post_text(self, tag):
-        post_text = tag.xpath(
-            'div//div[@class="messageContent"]/article/blockquote/text()'
-        )
-
-        post_text = "\n".join(
-            [text.strip() for text in post_text if text.strip()]
-        ) if post_text else ""
-        return post_text.strip()
-
-    def get_avatar(self, tag):
-        avatar_block = tag.xpath(
-            'div//div[@class="avatarHolder"]/a/span/@style'
-        )
-        if not avatar_block:
-            return ""
-        name_match = self.avatar_name_pattern.findall(avatar_block[0])
-        if not name_match:
-            return ""
-        return name_match[0]

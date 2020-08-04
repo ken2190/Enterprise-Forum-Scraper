@@ -1,31 +1,22 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
-import datetime
-import dateutil.parser as dparser
-from lxml.html import fromstring
+
+from .base_template import BaseTemplate
 
 
-class BrokenPage(Exception):
-    pass
+class DarkmarketParser(BaseTemplate):
 
-
-class DarkmarketParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "darkevuygggqkqhq.onion"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.files = files
-        self.folder_path = folder_path
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
+        self.files = kwargs.get('files')
+
         # main function
         self.main()
 
@@ -59,17 +50,21 @@ class DarkmarketParser:
             'forum': self.parser_name,
             'pid': pid
         }
+
         additional_data = self.extract_page_info(html_response)
         if not additional_data:
             return
+
         data.update(additional_data)
         final_data = {
             '_source': data
         }
+
         output_file = '{}/{}.json'.format(
             str(self.output_folder),
             pid
         )
+
         with open(output_file, 'w', encoding='utf-8') as file_pointer:
             utils.write_json(file_pointer, final_data)
             print('\nJson written in {}'.format(output_file))
@@ -84,6 +79,7 @@ class DarkmarketParser:
             data.update({
                 'subject': subject[0].strip()
             })
+
         author = html_response.xpath(
             '//div[@class="card"]/div[@class="card-body"]/div/a/span/text()')
 
@@ -94,9 +90,11 @@ class DarkmarketParser:
 
         description_block = html_response.xpath(
             '//div[@class="mt-4"]/p//text()')
+
         message = " ".join([
             desc.strip() for desc in description_block
         ])
+
         if message:
             data.update({
                 'message': message.strip()

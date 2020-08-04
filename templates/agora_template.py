@@ -1,42 +1,34 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
 import datetime
+import dateutil.parser as dparser
 from lxml.html import fromstring
 
+from .base_template import BaseTemplate, BrokenPage
 
-class BrokenPage(Exception):
-    pass
-
-
-class AgoraParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+class AgoraParser(BaseTemplate):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "agora market"
-        self.output_folder = output_folder
         self.thread_name_pattern1 = re.compile(
             r'index.php.topic[=,](\d+)'
         )
         self.thread_name_pattern2 = re.compile(
             r'(\d+).txt$'
         )
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.data_dic = OrderedDict()
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.header_xpath = '//div[@class="post_wrapper"]'
+        self.comment_block_xpath = 'div[@class="postarea"]//div[@class="smalltext"]/strong/text()'
+        self.title_xpath = 'div[@class="postarea"]//h5/a/text()'
+        self.date_xpath = 'div[@class="postarea"]//div[@class="smalltext"]/text()'
+        self.date_pattern = "%B %d, %Y, %I:%M:%S %p"
+        self.author_xpath =  'div[@class="poster"]/h4/a/text()'
+        self.post_text_xpath = 'div[@class="postarea"]//div[@class="post"]//div[@class="inner"]/text()'
+        self.comments_xpath = '//div[@class="post_wrapper"]'
         # main function
         self.main()
-
-    def get_pid(self):
-        pid_pattern = re.compile(r'topic[=,](\d+)')
-        pid = pid_pattern.findall(self.thread_id)
-        pid = pid[0] if pid else self.thread_id
-        return pid
 
     def get_filtered_files(self, files):
         filtered_files_1 = list(
@@ -71,6 +63,7 @@ class AgoraParser:
                              .replace('\\t', '')\
                              .strip()
             html_response = fromstring(content)
+
             return html_response
 
     def get_html_response_2(self, file):
@@ -78,11 +71,13 @@ class AgoraParser:
             content = str(f.read())
             content = content.replace('<-', '')
             html_response = fromstring(content)
+
             return html_response
 
     def main(self):
         comments = []
         output_file = None
+
         for index, template in enumerate(self.files):
             file_type = None
             print(template)
@@ -100,9 +95,12 @@ class AgoraParser:
                         html_response = self.get_html_response_2(template)
                         self.thread_id = match[0]
                         file_type = 2
+
                 if not file_type:
                     continue
+
                 pid = self.thread_id = match[0]
+
                 if file_type == 1:
                     final = utils.is_file_final(
                         self.thread_id,
@@ -117,6 +115,7 @@ class AgoraParser:
                         self.files,
                         index
                     )
+
                 if self.thread_id not in self.distinct_files and\
                    not output_file:
                     self.distinct_files.add(self.thread_id)
@@ -157,12 +156,11 @@ class AgoraParser:
     def extract_comments(self, html_response, file_type):
         comments = list()
         if file_type == 1:
-            comment_blocks = html_response.xpath(
-              '//div[@class="post_wrapper"]'
-            )
+            comment_blocks = html_response.xpath(self.comments_xpath)
         else:
             whole_text = html_response.text
             comment_blocks = whole_text.split('Title: Re:')[1:]
+
         for index, comment_block in enumerate(comment_blocks, 1):
             user = self.get_author(comment_block, file_type)
             comment_text = self.get_post_text(comment_block, file_type)
@@ -191,26 +189,25 @@ class AgoraParser:
                     'img': avatar
                 })
             comments.append({
-                
                 '_source': source,
             })
+
         return comments
 
     def header_data_extract(self, html_response, template, file_type):
         try:
-
             # ---------------extract header data ------------
             if file_type == 2:
                 whole_text = html_response.text
                 header = [whole_text.split('Title:')[1]]
             else:
-                header = html_response.xpath(
-                    '//div[@class="post_wrapper"]'
-                )
+                header = html_response.xpath(self.header_xpath)
                 if self.get_comment_id(header[0]):
                     return
+
             if not header:
                 return
+
             title = self.get_title(header[0], file_type)
             date = self.get_date(header[0], file_type)
             author = self.get_author(header[0], file_type)
@@ -233,7 +230,6 @@ class AgoraParser:
                     'img': avatar
                 })
             return {
-                
                 '_source': source
             }
         except:
@@ -248,20 +244,22 @@ class AgoraParser:
             if match:
                 date = match[0].strip()
         else:
-            date = tag.xpath(
-                'div[@class="postarea"]//'
-                'div[@class="smalltext"]/text()'
-            )
+            date = tag.xpath(self.date_xpath)
             date_pattern = re.compile(r'(.*[aApP][mM])')
             match = date_pattern.findall(date[-1])
             date = match[0].strip() if match else None
 
         try:
-            pattern = "%B %d, %Y, %I:%M:%S %p"
-            date = datetime.datetime.strptime(date, pattern).timestamp()
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
             return str(date)
         except:
-            return ""
+            try:
+                date = dparser.parse(date).timestamp()
+                return str(date)
+            except:
+                pass
+
+        return ""
 
     def get_author(self, tag, file_type):
         if file_type == 2:
@@ -270,12 +268,7 @@ class AgoraParser:
             if match:
                 return match[0].strip()
         else:
-            author = tag.xpath(
-                'div[@class="poster"]'
-                '/h4/a/text()'
-            )
-            author = author[0].strip() if author else None
-            return author
+            return super().get_author(tag)
 
     def get_title(self, tag, file_type):
         if file_type == 2:
@@ -283,12 +276,7 @@ class AgoraParser:
             title = title.replace('\\t', ' ')
             return title
         else:
-            title = tag.xpath(
-                'div[@class="postarea"]//'
-                'h5/a/text()'
-            )
-            title = title[0].strip() if title else None
-        return title
+            return super().get_title(tag)
 
     def get_post_text(self, tag, file_type):
         if file_type == 2:
@@ -300,25 +288,11 @@ class AgoraParser:
                 post_text = post_text.replace('\\n', ' ').replace('\\t', ' ')
                 return post_text
         else:
-            post_text_block = tag.xpath(
-                'div[@class="postarea"]//'
-                'div[@class="post"]/'
-                '/div[@class="inner"]/text()'
-            )
-            post_text = "\n".join(
-                [text.strip() for text in post_text_block]
-            ) if post_text_block else ""
-            return post_text.strip()
-
-    def get_avatar(self, tag, file_type):
-        return
+            return super().get_post_text(tag)
 
     def get_comment_id(self, tag):
         comment_id = ""
-        comment_block = tag.xpath(
-            'div[@class="postarea"]'
-            '//div[@class="smalltext"]/strong/text()'
-        )
+        comment_block = tag.xpath(self.comment_block_xpath)
         if comment_block:
             comment_pattern = re.compile(r'Reply #(\d+) on:')
             match = comment_pattern.findall(comment_block[0])

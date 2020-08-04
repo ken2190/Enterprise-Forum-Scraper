@@ -44,7 +44,7 @@ class LCPSpider(scrapy.Spider):
         action_url = response.xpath(
             '//form[@method="post"]/@action').extract_first()
         if self.base_url not in action_url:
-            action_url = self.base_url + action_url
+            action_url = response.urljoin(action_url)
         code_block = response.xpath(
             '//td[input[@name="m"]]/'
             'preceding-sibling::td[1]/font/text()').extract_first()

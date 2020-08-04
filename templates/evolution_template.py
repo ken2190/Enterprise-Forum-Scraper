@@ -1,45 +1,28 @@
-import os
-import shutil
 import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
-import datetime
 from lxml.html import fromstring
 
-
-class BrokenPage(Exception):
-    pass
+from .base_template import BaseTemplate
 
 
-class EvolutionParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+class EvolutionParser(BaseTemplate):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "evolution marketplace"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(r'viewtopic\.php.*id=(\d+)')
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.data_dic = OrderedDict()
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.comments_xpath = '//div[@id="brdmain"]/div[@id and @id!="quickpost"]'
+        self.header_xpath = '//div[@id="brdmain"]/div[contains(@class,"blockpost1")]'
+        self.date_xpath = 'h2/span/a/text()'
+        self.date_pattern = '%Y-%m-%d %H:%M:%S'
+        self.title_xpath = '//div[@class="postright"]/h3/text()'
+        self.post_text_xpath = 'div//div[@class="postmsg"]/*'
+        self.comment_block_xpath = 'h2/span/span/text()'
+
         # main function
         self.main()
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
-
-        return sorted_files
 
     def get_html_response(self, file):
         with open(file, 'rb') as f:
@@ -102,15 +85,14 @@ class EvolutionParser:
 
     def extract_comments(self, html_response):
         comments = list()
-        comment_blocks = html_response.xpath(
-          '//div[@id="brdmain"]/div[@id and @id!="quickpost"]'
-        )
-        for comment_block in comment_blocks[1:]:
+        comment_blocks = html_response.xpath(self.comments_xpath)
 
+        for comment_block in comment_blocks[1:]:
             user = self.get_author(comment_block)
             commentID = self.get_comment_id(comment_block)
             if not commentID:
                 continue
+
             pid = self.thread_id
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
@@ -129,53 +111,8 @@ class EvolutionParser:
             comments.append({
                 '_source': source,
             })
+
         return comments
-
-    def header_data_extract(self, html_response, template):
-        try:
-            title = self.get_title(html_response)
-
-            # ---------------extract header data ------------
-            header = html_response.xpath(
-                '//div[@id="brdmain"]/'
-                'div[contains(@class,"blockpost1")]'
-            )
-            if not header:
-                print('no header')
-                return
-            date = self.get_date(header[0])
-            author = self.get_author(header[0])
-            post_text = self.get_post_text(header[0])
-            pid = self.thread_id
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'subject': title,
-                'author': author,
-                'message': post_text.strip(),
-            }
-            if date:
-                source.update({
-                   'date': date
-                })
-            return {
-                '_source': source
-            }
-        except:
-            ex = traceback.format_exc()
-            raise BrokenPage(ex)
-
-    def get_date(self, tag):
-        date = tag.xpath(
-                'h2/span/a/text()'
-        )
-        date = date[0].strip() if date else None
-        try:
-            pattern = '%Y-%m-%d %H:%M:%S'
-            date = datetime.datetime.strptime(date, pattern).timestamp()
-            return str(date)
-        except:
-            return ""
 
     def get_author(self, tag):
         author = tag.xpath(
@@ -198,29 +135,19 @@ class EvolutionParser:
         return author
 
     def get_title(self, tag):
-        title = tag.xpath(
-            '//div[@class="postright"]/h3/text()'
-        )
+        title = tag.xpath(self.title_xpath)
         title = title[0].replace('Re:', '').strip() if title else None
+
         return title
 
     def get_post_text(self, tag):
         post_text = None
-        post_text_block = tag.xpath(
-            'div//div[@class="postmsg"]/*'
-        )
+        post_text_block = tag.xpath(self.post_text_xpath)
         post_text = "\n".join([
             post_text.xpath('string()') for post_text in post_text_block
         ])
+
         return post_text
 
-    def get_comment_id(self, tag):
-        commentID = tag.xpath(
-            'h2/span/span/text()'
-        )
-        commentID = commentID[0].strip() if commentID else None
-        commentID = commentID.replace(',', '').replace('#', '')
-        # Exclude first comment as this is the post
-        if commentID == "1":
-            return
-        return commentID.replace(',', '')
+    def get_avatar(self, tag):
+        pass

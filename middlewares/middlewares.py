@@ -236,7 +236,7 @@ class BypassCloudfareMiddleware(object):
                 "Trying this ip: %s" % ip
             )
 
-        response = session.get(**request_args)
+        # response = session.get(**request_args)
         response = session.get(**request_args)
 
         headers = response.request.headers

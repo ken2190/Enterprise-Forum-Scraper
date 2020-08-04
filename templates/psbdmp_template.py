@@ -1,24 +1,17 @@
 # -- coding: utf-8 --
 import os
-import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
-import datetime
 import dateutil.parser as dparser
-from lxml.html import fromstring
+
+from .base_template import BaseTemplate
 
 
-class BrokenPage(Exception):
-    pass
+class PsbdmpParser(BaseTemplate):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-class PsbdmpParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
-        self.output_folder = output_folder
-        self.folder_path = folder_path
-        self.error_folder = "{}/Errors".format(output_folder)
         # main function
         self.main()
 
@@ -32,16 +25,22 @@ class PsbdmpParser:
                     ts = dparser.parse(_dir).timestamp()
                 except ValueError:
                     continue
+
                 print(f'Proceeding for Folder {_dir}')
                 with os.scandir(path) as dp:
                     for i in dp:
                         if not i.name.endswith('.txt'):
                             continue
+
                         input_file_path = os.path.join(path, i.name)
                         output_file_path = os.path.join(
-                            self.output_folder, f'{_dir}.json')
+                            self.output_folder, f'{_dir}.json'
+                        )
+
                         self.process_file(
-                            input_file_path, output_file_path, ts)
+                            input_file_path, output_file_path, ts
+                        )
+
                 print('----------------------------------------\n')
             except Exception:
                 traceback.print_exc()
@@ -55,11 +54,12 @@ class PsbdmpParser:
                 'date': ts,
                 'paste_id': paste_id
             }
-
         }
+
         with open(input_file_path, 'r') as fp:
             content = fp.read()
             data['_source'].update({'content': content})
+
             with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
                 utils.write_json(file_pointer, data)
                 print(f'Json for paste_id {paste_id} '

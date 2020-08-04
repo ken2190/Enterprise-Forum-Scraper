@@ -1,23 +1,17 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
-import datetime
 import utils
-from lxml.html import fromstring
 import dateutil.parser as dparser
 
-
-class BrokenPage(Exception):
-    pass
+from .base_template import BaseTemplate
 
 
-class EnclaveParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
-        self.parser_name = "enclave.ac"
-        self.output_folder = output_folder
+class EnclaveParser(BaseTemplate):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parser_name = "enclave.cc"
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
         )
@@ -25,11 +19,15 @@ class EnclaveParser:
             r'\d+-(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.mode = 'r'
+        self.comments_xpath = '//article[@id]'
+        self.header_xpath = '//article[@id]'
+        self.date_xpath = 'div//div[@class="ipsType_reset"]//time/@title'
+        self.title_xpath = '//span[@class="ipsType_break ipsContained"]/span/text()'
+        self.post_text_xpath = 'div//div[@data-role="commentContent"]/descendant::text()[not(ancestor::blockquote)]'
+        self.avatar_xpath = 'aside//li[@class="cAuthorPane_photo"]//a/img/@src'
+
         # main function
         self.main()
 
@@ -48,18 +46,6 @@ class EnclaveParser:
             ))
 
         return sorted_files
-
-    def get_html_response(self, template):
-        """
-        returns the html response from the `template` contents
-        """
-        with open(template, 'r') as f:
-            content = f.read()
-            try:
-                html_response = fromstring(content)
-            except ParserError as ex:
-                return
-            return html_response
 
     def main(self):
         comments = []
@@ -122,11 +108,11 @@ class EnclaveParser:
 
     def extract_comments(self, html_response, pagination):
         comments = list()
-        comment_blocks = html_response.xpath(
-          '//article[@id]'
-        )
+        comment_blocks = html_response.xpath(self.comments_xpath)
+
         comment_blocks = comment_blocks[1:]\
             if pagination == 1 else comment_blocks
+
         for comment_block in comment_blocks:
             user = self.get_author(comment_block)
             comment_text = self.get_post_text(comment_block)
@@ -152,51 +138,13 @@ class EnclaveParser:
             comments.append({
                 '_source': source,
             })
+
             self.index += 1
+
         return comments
 
-    def header_data_extract(self, html_response, template):
-        try:
-
-            # ---------------extract header data ------------
-            header = html_response.xpath(
-                '//article[@id]'
-            )
-            if not header:
-                return
-            title = self.get_title(html_response)
-            date = self.get_date(header[0])
-            author = self.get_author(header[0])
-            post_text = self.get_post_text(header[0])
-            pid = self.thread_id
-            avatar = self.get_avatar(header[0])
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'subject': title,
-                'author': author,
-                'message': post_text.strip(),
-            }
-            if date:
-                source.update({
-                   'date': date
-                })
-            if avatar:
-                source.update({
-                    'img': avatar
-                })
-            return {
-                '_source': source
-            }
-        except Exception:
-            ex = traceback.format_exc()
-            raise BrokenPage(ex)
-
     def get_date(self, tag):
-        date_block = tag.xpath(
-            'div//div[@class="ipsType_reset"]'
-            '//time/@title'
-        )
+        date_block = tag.xpath(self.date_xpath)
         date = date_block[0].strip() if date_block else ""
         try:
             date = dparser.parse(date, fuzzy=True).timestamp()
@@ -212,31 +160,13 @@ class EnclaveParser:
         author = author[0].strip() if author else None
         return author
 
-    def get_title(self, tag):
-        title = tag.xpath(
-            '//span[@class="ipsType_break ipsContained"]/span/text()'
-        )
-        title = title[0].strip() if title else None
-        return title
-
-    def get_post_text(self, tag):
-        post_text_block = tag.xpath(
-            'div//div[@data-role="commentContent"]/descendant::text()['
-            'not(ancestor::blockquote)]'
-        )
-        post_text = " ".join([
-            post_text.strip() for post_text in post_text_block
-        ])
-        return post_text.strip()
-
     def get_avatar(self, tag):
-        avatar_block = tag.xpath(
-            'aside//li[@class="cAuthorPane_photo"]/'
-            '/a/img/@src'
-        )
+        avatar_block = tag.xpath(self.avatar_xpath)
         if not avatar_block:
             return ""
+
         name_match = self.avatar_name_pattern.findall(avatar_block[0])
         if not name_match:
             return ""
+
         return name_match[0] if 'svg' not in name_match[0] else ''
