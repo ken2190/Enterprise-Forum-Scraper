@@ -29,6 +29,7 @@ class Parser:
 def process_line(out_file, single_json, args):
     out_fields = args.keep
     out_fields = [i.strip() for i in out_fields.split(',')] if out_fields else []
+    nested_fields = {f.split('/')[0]:f.split('/')[1] for f in out_fields if '/' in f}
     json_response = json.loads(single_json)
     address = 'city state zip'
     name = 'fn ln'
@@ -38,6 +39,10 @@ def process_line(out_file, single_json, args):
     else:
         data = json_response.items()
     for key, value in data:
+        if key in nested_fields:
+            final_data.update({
+                nested_fields[key]: value[nested_fields[key]]     
+            })
         if out_fields and key not in out_fields:
             continue
         if key in ['email', 'e'] and args.domain:
