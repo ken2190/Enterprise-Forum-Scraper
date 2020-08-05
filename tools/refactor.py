@@ -5,7 +5,7 @@ import argparse
 from copy import deepcopy
 
 EMAILS = ['e', 'e1', 'e2', 'e3', 'e4', 'e5']
-IPS = ['ip', 'ip1', 'ip2', 'ip3', 'ip4', 'ip5']
+IPS = ['i', 'i1', 'i2', 'i3', 'i4', 'i5']
 TELEPHONES = ['t', 't1', 't2', 't3', 't4', 't5']
 ADDRESS = ['address', 'a1', 'a2', 'a3', 'a4']
 
