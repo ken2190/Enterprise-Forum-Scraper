@@ -32,7 +32,7 @@ class ChkNetSpider(SitemapSpider):
 
     # Xpaths
     forum_xpath = '//a[contains(@href, "viewforum.php")]/@href'
-    thread_xpath = '//div[@class="list-inner"]'
+    thread_xpath = '//dl[contains(@class, "row-item")]'
     thread_first_page_xpath = '//a[@class="topictitle"]/@href'
     thread_last_page_xpath = '//div[@class="pagination"]'\
                              '/ul/li[last()]/a/@href'
@@ -70,13 +70,8 @@ class ChkNetSpider(SitemapSpider):
 
         for forum_url in all_forums:
 
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
-            # if 'f=18' not in forum_url:
-            #     continue
             yield Request(
-                url=forum_url,
+                url=response.urljoin(forum_url),
                 headers=self.headers,
                 meta=self.synchronize_meta(response),
                 callback=self.parse_forum

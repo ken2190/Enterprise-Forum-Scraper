@@ -16,7 +16,7 @@ class EnclaveSpider(scrapy.Spider):
     name = 'enclave_spider'
 
     def __init__(self, output_path, avatar_path):
-        self.base_url = 'https://www.enclave.ac/index.php'
+        self.base_url = 'https://www.enclave.cc/index.php'
         self.topic_pattern = re.compile(r'topic/(\d+)-')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page=(\d+)')
@@ -34,7 +34,7 @@ class EnclaveSpider(scrapy.Spider):
         )
 
     def process_for_login(self, response):
-        login_url = 'https://www.enclave.ac/index.php?/login/'
+        login_url = 'https://www.enclave.cc/index.php?/login/'
         csrf = response.xpath(
             '//input[@name="csrfKey"]/@value').extract_first()
         ref = response.xpath(

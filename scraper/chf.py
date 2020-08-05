@@ -12,7 +12,7 @@ NO_OF_THREADS = 5
 
 class ChfSpider(SitemapSpider):
     name = 'chf_spider'
-    base_url = 'https://chf.su'
+    base_url = 'https://goldway.bz/'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href|'\
@@ -36,7 +36,7 @@ class ChfSpider(SitemapSpider):
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"/threads/(\d+)",
+        r"[/?]threads/(\d+)",
         re.IGNORECASE
     )
 
@@ -61,18 +61,10 @@ class ChfSpider(SitemapSpider):
                  => request sitemap url if sitemap url and start date
         """
 
-        # Load cookies
-        cookies, ip = self.get_cookies(
-            proxy=self.use_proxy,
-            fraud_check=True
-        )
-
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            cookies=cookies,
             meta={
-                "ip": ip,
                 "cookiejar": uuid.uuid1().hex
             }
         )
@@ -103,15 +95,12 @@ class ChfSpider(SitemapSpider):
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
         all_forums = response.xpath(self.forum_xpath).extract()
         for forum_url in all_forums:
 
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url        
-
             yield Request(
-                url=forum_url,
+                url=response.urljoin(forum_url),
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response),
@@ -129,7 +118,7 @@ class ChfSpider(SitemapSpider):
 class ChfScrapper(SiteMapScrapper):
 
     spider_class = ChfSpider
-    site_name = 'chf.su'
+    site_name = 'goldway.bz'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -1,22 +1,15 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
-import datetime
 import utils
-from lxml.html import fromstring
+
+from .base_template import BaseTemplate
 
 
-class BrokenPage(Exception):
-    pass
+class MarviherParser(BaseTemplate):
 
-
-class MarviherParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+    def __init__(self, *args, **kwargs):
         self.parser_name = "marviher.com"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
         )
@@ -24,11 +17,17 @@ class MarviherParser:
             r'\d+-(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.files = self.get_filtered_files(files)
-        self.folder_path = folder_path
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
-        self.thread_id = None
+        self.files = self.get_filtered_files(kwargs.get('files'))
+        self.mode = 'r'
+        self.comments_xpath = '//article[@id]'
+        self.header_xpath = '//article[@id]'
+        self.date_xpath = 'div//div[@class="ipsType_reset"]//time/@title'
+        self.date_pattern = "%d.%m.%Y %H:%M"
+        self.author_xpath = 'aside/h3/strong/a/text()'
+        self.title_xpath = '//span[@class="ipsType_break ipsContained"]/span/text()'
+        self.post_text_xpath = 'div//div[@data-role="commentContent"]/descendant::text()[not(ancestor::blockquote)]'
+        self.avatar_xpath = 'aside//li[@class="cAuthorPane_photo"]//a/img/@src'
+
         # main function
         self.main()
 
@@ -46,18 +45,6 @@ class MarviherParser:
                 x.split('/')[-1]).group(1)))
 
         return sorted_files
-
-    def get_html_response(self, template):
-        """
-        returns the html response from the `template` contents
-        """
-        with open(template, 'r') as f:
-            content = f.read()
-            try:
-                html_response = fromstring(content)
-            except ParserError as ex:
-                return
-            return html_response
 
     def main(self):
         comments = []
@@ -120,17 +107,17 @@ class MarviherParser:
 
     def extract_comments(self, html_response, pagination):
         comments = list()
-        comment_blocks = html_response.xpath(
-          '//article[@id]'
-        )
+        comment_blocks = html_response.xpath(self.comments_xpath)
+
         comment_blocks = comment_blocks[1:]\
             if pagination == 1 else comment_blocks
+
         for comment_block in comment_blocks:
             user = self.get_author(comment_block)
             comment_text = self.get_post_text(comment_block)
             comment_date = self.get_date(comment_block)
-            pid = self.thread_id
             avatar = self.get_avatar(comment_block)
+            pid = self.thread_id
 
             source = {
                 'forum': self.parser_name,
@@ -151,83 +138,20 @@ class MarviherParser:
                 '_source': source,
             })
             self.index += 1
+
         return comments
 
-    def header_data_extract(self, html_response, template):
-        try:
-
-            # ---------------extract header data ------------
-            header = html_response.xpath(
-                '//article[@id]'
-            )
-            if not header:
-                return
-            title = self.get_title(html_response)
-            date = self.get_date(header[0])
-            author = self.get_author(header[0])
-            post_text = self.get_post_text(header[0])
-            pid = self.thread_id
-            avatar = self.get_avatar(header[0])
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'subject': title,
-                'author': author,
-                'message': post_text.strip(),
-            }
-            if date:
-                source.update({
-                   'date': date
-                })
-            if avatar:
-                source.update({
-                    'img': avatar
-                })
-            return {
-                '_source': source
-            }
-        except:
-            ex = traceback.format_exc()
-            raise BrokenPage(ex)
-
-    def get_date(self, tag):
-        date_block = tag.xpath(
-            'div//div[@class="ipsType_reset"]'
-            '//time/@title'
-        )
-        date = date_block[0].strip() if date_block else ""
-        try:
-            pattern = "%d.%m.%Y %H:%M"
-            date = datetime.datetime.strptime(date, pattern).timestamp()
-            return str(date)
-        except:
-            return ""
-
-    def get_author(self, tag):
-        author = tag.xpath('aside/h3/strong/a/text()')
-
-        author = author[0].strip() if author else None
-        return author
-
-    def get_title(self, tag):
-        title = tag.xpath(
-            '//span[@class="ipsType_break ipsContained"]/span/text()'
-        )
-        title = title[0].strip() if title else None
-        return title
-
     def get_post_text(self, tag):
-        post_text_block = tag.xpath(
-            'div//div[@data-role="commentContent"]/descendant::text()['
-            'not(ancestor::blockquote)]'
-        )
+        post_text_block = tag.xpath(self.post_text_xpath)
         protected_email = tag.xpath(
             'div//div[@data-role="commentContent"]/'
             'descendant::*[@class="__cf_email__"]/@data-cfemail'
         )
+
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
         ])
+
         if protected_email:
             decoded_values = [
                 utils.get_decoded_email(e) for e in protected_email]
@@ -238,16 +162,5 @@ class MarviherParser:
                     post_text,
                     count=1
                 )
-        return post_text.strip()
 
-    def get_avatar(self, tag):
-        avatar_block = tag.xpath(
-            'aside//li[@class="cAuthorPane_photo"]/'
-            '/a/img/@src'
-        )
-        if not avatar_block:
-            return ""
-        name_match = self.avatar_name_pattern.findall(avatar_block[0])
-        if not name_match:
-            return ""
-        return name_match[0]
+        return post_text.strip()

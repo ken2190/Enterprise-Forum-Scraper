@@ -30,7 +30,7 @@ class FraudstercrewSpider(SitemapSpider):
     base_url = "https://fraudstercrew.su"
     # Regex stuffs
     topic_pattern = re.compile(
-        r"threads/.*\.(\d+)/",
+        r"threads/(\d+)/",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
@@ -50,7 +50,7 @@ class FraudstercrewSpider(SitemapSpider):
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

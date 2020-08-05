@@ -1,7 +1,7 @@
 import re
 
 from datetime import (
-    datetime, 
+    datetime,
     timedelta
 )
 from scrapy import (
@@ -18,24 +18,23 @@ class HoxForumSpider(SitemapSpider):
     name = "hoxforum_spider"
 
     # Url stuffs
-    base_url = "http://hoxforum.com/"
+    base_url = "http://www.hoxforum.com/"
 
     # Xpath stuffs
-    forum_xpath = "//td[contains(@class,\"trow\")]/strong/a/@href|" \
-                  "//td[contains(@class,\"trow\")]/div[@class=\"smalltext\"]/a/@href"
-    pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
+    forum_xpath = '//div[contains(@class,"trow")]//h4/a/@href'
+    pagination_xpath = '//a[@class="pagination_next"]/@href'
 
-    thread_xpath = "//tr[@class=\"inline_row\"]"
-    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
-    thread_last_page_xpath = "//span/span[@class=\"smalltext\"]/a[last()]/@href"
-    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/text()[1]"
+    thread_xpath = '//div[contains(@class,"inline_row")]'
+    thread_first_page_xpath = '//span[contains(@id,"tid")]/a/@href'
+    thread_last_page_xpath = '//div[@class="smalltext"]/span[contains(@class, "smalltext")]/a[last()]/@href'
+    thread_date_xpath = '//div[@class="threadbit_lastpost smalltext"]/span/text()[last()]'
 
-    thread_pagination_xpath = "//div[@class=\"pagination\"]/a[@class=\"pagination_previous\"]/@href"
-    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
-    post_date_xpath = "//span[@class=\"post_date\"]/text()"
+    thread_pagination_xpath = '//div[@class="pagination"]/a[@class="pagination_previous"]/@href'
+    thread_page_xpath = '//span[@class="pagination_current"]/text()'
+    post_date_xpath = '//span[@class="post_date"]/text()'
 
-    avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"
-    
+    avatar_xpath = '//div[contains(@class, "author_avatar")]/a/img/@src'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -76,7 +75,7 @@ class HoxForumSpider(SitemapSpider):
         for forum_url in all_forums:
             # Standardize forum url
             if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                forum_url = response.urljoin(forum_url)
 
             yield Request(
                 url=forum_url,

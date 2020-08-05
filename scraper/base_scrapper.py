@@ -8,6 +8,7 @@ import polling
 import json
 import logging
 import dateparser
+import dateutil.parser as dparser
 
 from random import choice
 from glob import glob
@@ -607,10 +608,13 @@ class SitemapSpider(BypassCloudfareSpider):
         :return: datetime => thread date as datetime converted from string,
                             using class sitemap_datetime_format
         """
-        return datetime.strptime(
-            thread_date.strip(),
-            self.sitemap_datetime_format
-        )
+        try:
+            return datetime.strptime(
+                thread_date.strip(),
+                self.post_datetime_format
+            )
+        except:
+            return dparser.parse(thread_date)
 
     def parse_post_date(self, post_date):
         """
@@ -618,10 +622,13 @@ class SitemapSpider(BypassCloudfareSpider):
         :return: datetime => post date as datetime converted from string,
                             using class post_datetime_format
         """
-        return datetime.strptime(
-            post_date.strip(),
-            self.post_datetime_format
-        )
+        try:
+            return datetime.strptime(
+                post_date.strip(),
+                self.post_datetime_format
+            )
+        except:
+            return dparser.parse(post_date)
 
     def parse_thread_url(self, thread_url):
         """
@@ -986,7 +993,7 @@ class SitemapSpider(BypassCloudfareSpider):
             selector.xpath(self.thread_lastmod_xpath).extract_first()
         )
 
-        if self.start_date > thread_date:
+        if self.start_date > thread_date.replace(tzinfo=None):
             self.logger.info(
                 "Thread %s ignored because last update in the past. Detail: %s" % (
                     thread_url,
@@ -1059,9 +1066,15 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
                 continue
 
+            temp_url = thread_url
             # Standardize thread url
             if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
+                temp_url = response.urljoin(thread_url)
+
+            if self.base_url not in temp_url:
+                temp_url = self.base_url + thread_url
+
+            thread_url = temp_url
 
             # Parse topic id
             topic_id = self.get_topic_id(thread_url)
@@ -1121,8 +1134,16 @@ class SitemapSpider(BypassCloudfareSpider):
         if not next_page:
             return
         next_page = next_page.strip()
+        temp_url = next_page
+
         if self.base_url not in next_page:
-            next_page = self.base_url + next_page
+            temp_url = response.urljoin(next_page)
+
+        if self.base_url not in temp_url:
+            temp_url = self.base_url + next_page
+
+        next_page = temp_url
+
         return next_page
 
     def parse_thread(self, response):
@@ -1201,9 +1222,18 @@ class SitemapSpider(BypassCloudfareSpider):
         next_page = response.xpath(self.thread_pagination_xpath).extract_first()
         if not next_page:
             return
+
         next_page = next_page.strip()
+        temp_url = next_page
+
         if self.base_url not in next_page:
-            next_page = self.base_url + next_page
+            temp_url = response.urljoin(next_page)
+
+        if self.base_url not in temp_url:
+            temp_url = self.base_url + next_page
+
+        next_page = temp_url
+
         return next_page
 
     def parse_avatars(self, response):
@@ -1215,9 +1245,15 @@ class SitemapSpider(BypassCloudfareSpider):
         all_avatars = response.xpath(self.avatar_xpath).extract()
         for avatar_url in all_avatars:
 
+            temp_url = avatar_url
             # Standardize avatar url
             if not avatar_url.lower().startswith("http"):
-                avatar_url = self.base_url + avatar_url
+                temp_url = response.urljoin(avatar_url)
+
+            if self.base_url not in temp_url:
+                temp_url = self.base_url + avatar_url
+
+            avatar_url = temp_url
 
             if 'image/svg' in avatar_url:
                 continue
@@ -1641,8 +1677,16 @@ class SeleniumSpider(SitemapSpider):
         if not next_page:
             return
         next_page = next_page[0].strip()
+        temp_url = next_page
+
         if self.base_url not in next_page:
-            next_page = self.base_url + next_page
+            temp_url = response.urljoin(next_page)
+
+        if self.base_url not in temp_url:
+            temp_url = self.base_url + next_page
+
+        next_page = temp_url
+
         return next_page
 
     def parse_thread(self, thread_url, topic_id):
@@ -1700,8 +1744,16 @@ class SeleniumSpider(SitemapSpider):
         if not next_page:
             return
         next_page = next_page[0].strip()
+        temp_url = next_page
+
         if self.base_url not in next_page:
-            next_page = self.base_url + next_page
+            temp_url = response.urljoin(next_page)
+
+        if self.base_url not in temp_url:
+            temp_url = self.base_url + next_page
+
+        next_page = temp_url
+
         return next_page
 
     def parse_avatars(self, response):
@@ -1710,9 +1762,15 @@ class SeleniumSpider(SitemapSpider):
         all_avatars = response.xpath(self.avatar_xpath)
         for avatar_url in all_avatars:
 
+            temp_url = avatar_url
             # Standardize avatar url
             if not avatar_url.lower().startswith("http"):
-                avatar_url = self.base_url + avatar_url
+                temp_url = response.urljoin(avatar_url)
+
+            if self.base_url not in temp_url:
+                temp_url = self.base_url + avatar_url
+
+            avatar_url = temp_url
 
             if 'image/svg' in avatar_url:
                 continue

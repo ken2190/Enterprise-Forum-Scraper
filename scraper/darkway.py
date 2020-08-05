@@ -49,7 +49,7 @@ class DarkWaySpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     post_datetime_format = '%Y-%m-%dT%H:%M:%S'
     sitemap_datetime_format = 'on %B %d, %Y %H:%M:%S'
 

@@ -15,9 +15,9 @@ NO_OF_THREADS = 3
 
 
 class CrackCommunitySpider(SitemapSpider):
-    
+
     name = "crackcommunity_spider"
-    
+
     # Url stuffs
     base_url = "http://crackcommunity.com/"
 
@@ -56,7 +56,7 @@ class CrackCommunitySpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = "%b %d, %Y at %I:%M %p"
     post_datetime_format = "%b %d, %Y at %I:%M %p"
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(

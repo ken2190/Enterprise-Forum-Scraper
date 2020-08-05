@@ -1,31 +1,22 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
-import datetime
-import dateutil.parser as dparser
-from lxml.html import fromstring
+
+from .base_template import BaseTemplate, BrokenPage
 
 
-class BrokenPage(Exception):
-    pass
+class ApollonParser(BaseTemplate):
 
-
-class ApollonParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "apollionih4ocqyd.onion"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.files = files
-        self.folder_path = folder_path
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
+        self.files = self.get_filtered_files(kwargs.get('files'))
+
         # main function
         self.main()
 
@@ -53,17 +44,21 @@ class ApollonParser:
             'forum': self.parser_name,
             'pid': pid
         }
+
         additional_data = self.extract_page_info(html_response)
         if not additional_data:
             return
+
         data.update(additional_data)
         final_data = {
             '_source': data
         }
+
         output_file = '{}/{}.json'.format(
             str(self.output_folder),
             pid
         )
+
         with open(output_file, 'w', encoding='utf-8') as file_pointer:
             utils.write_json(file_pointer, final_data)
             print('\nJson written in {}'.format(output_file))
@@ -73,13 +68,16 @@ class ApollonParser:
         data = dict()
         subject = html_response.xpath(
             '//table[@class="table"]/tbody/tr[1]/td[1]/div[1]/a/text()')
+
         subject = ''.join(subject).strip()
         if subject:
             data.update({
                 'subject': subject
             })
+
         author = html_response.xpath(
             '//table[@class="table"]/tbody/tr[1]/td[1]/div[2]/div[2]//a//text()')
+
         author = author[0].split(" (")[0].strip()
         if author:
             data.update({
@@ -88,10 +86,11 @@ class ApollonParser:
 
         description_block = html_response.xpath(
             '//div[@class="tab-content"]//div[@class="panel-body"]//pre//text()')
+
         message = " ".join(description_block)
         if message:
             data.update({
                 'message': message.strip()
             })
-        
+
         return data

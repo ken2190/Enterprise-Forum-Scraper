@@ -1,31 +1,22 @@
 # -- coding: utf-8 --
-import os
 import re
-from collections import OrderedDict
 import traceback
-import json
 import utils
-import datetime
-import dateutil.parser as dparser
-from lxml.html import fromstring
+
+from .base_template import BaseTemplate, BrokenPage
 
 
-class BrokenPage(Exception):
-    pass
+class DarkbayParser(BaseTemplate):
 
-
-class DarkbayParser:
-    def __init__(self, parser_name, files, output_folder, folder_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "darkbayupenqdqvv.onion"
-        self.output_folder = output_folder
         self.thread_name_pattern = re.compile(
             r'(\d+)\.html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.files = files
-        self.folder_path = folder_path
-        self.distinct_files = set()
-        self.error_folder = "{}/Errors".format(output_folder)
+        self.files = kwargs.get('files')
+
         # main function
         self.main()
 
