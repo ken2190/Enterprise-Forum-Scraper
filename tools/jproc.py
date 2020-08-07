@@ -57,6 +57,8 @@ def process_line(out_file, single_json, args):
     for key, value in data:
         if key in nested_fields:
             for nested_value in nested_fields[key]:
+                if not value.get(nested_value):
+                    continue
                 final_data.update({
                     nested_value: value[nested_value]
                 })
