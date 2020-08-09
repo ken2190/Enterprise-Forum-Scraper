@@ -1,3 +1,4 @@
+import re
 import csv
 import os
 import hmac
@@ -7,6 +8,7 @@ import traceback
 import argparse
 import collections.abc
 from glob import glob
+from datetime import datetime
 
 
 ENC_KEY = "7C++Zx+hUufpL3YnrYj/vWNfDpMLgSJem+jsNDn1IgQ="
@@ -42,20 +44,41 @@ def generate_hash(value):
     return hashed_value
 
 
+def get_hash_for_list(k, values):
+    converted = list()
+    for v in values:
+        if isinstance(v, collections.abc.Mapping):
+            converted.append(update_nested_json(v))
+        else:
+            converted.append(generate_hash(v))
+    return converted
+
+
+def update_nested_json(u, d=dict()):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update_nested_json(v, d.get(k, {}))
+        else:
+            d[k] = generate_hash(v)
+    return d
+
+
 def update_json(u, d=dict()):
     for k, v in u.items():
         if isinstance(v, collections.abc.Mapping):
             d[k] = update_json(v, d.get(k, {}))
         elif isinstance(v, list):
-            d[k] = [generate_hash(i) for i in v]
+            d[k] = get_hash_for_list(k, v)
         else:
             d[k] = generate_hash(v)
     return d
 
 
 def process_line(out_file, single_json):
+    if 'ObjectId' in single_json:
+        single_json = re.sub(r'ObjectId\((.*?)\)', '\\1', single_json)
     json_response = json.loads(single_json)
-    hashed_json = update_json(json_response)
+    hashed_json = update_json(json_response, {})
     out_file.write(json.dumps(hashed_json) + '\n')
 
 
@@ -67,6 +90,7 @@ def process_row(out_file, row):
 
 
 def main():
+    start = datetime.now()
     args = Parser().get_args()
     input_folder = args.input_folder
     output_folder = args.output_folder
@@ -147,6 +171,8 @@ def main():
                                   f'{line_number}, IGNORING')
     else:
         print('Invalid file type')
+    end = datetime.now()
+    print(f'Time Taken: {end - start}')
 
 
 if __name__ == '__main__':
