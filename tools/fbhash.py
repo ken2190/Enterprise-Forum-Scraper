@@ -90,7 +90,6 @@ def process_row(out_file, row):
 
 
 def main():
-    start = datetime.now()
     args = Parser().get_args()
     input_folder = args.input_folder
     output_folder = args.output_folder
@@ -111,6 +110,7 @@ def main():
     if file_type == 'json':
         if input_folder:
             for input_file in glob(f'{input_folder}/*.json'):
+                start = datetime.now()
                 output_file = os.path.join(
                     output_folder, input_file.rsplit('/')[-1])
                 print(f"\nProcessing file {input_file.rsplit('/')[-1]}")
@@ -123,6 +123,14 @@ def main():
                             except Exception:
                                 print(f'Error in line number: '
                                       f'{line_number}, IGNORING')
+                end = datetime.now()
+                time_taken = f'Time Taken: {end - start}'
+                time_file = os.path.join(
+                    output_folder, input_file.rsplit(
+                        '/')[-1].rsplit('.', 1)[0] + '_time.txt')
+                with open(time_file, 'w') as tf:
+                    tf.write(time_taken + '\n')
+
         else:
             if output_folder:
                 output_file = os.path.join(
@@ -141,6 +149,7 @@ def main():
     elif file_type == 'csv':
         if input_folder:
             for input_file in glob(f'{input_folder}/*.csv'):
+                start = datetime.now()
                 output_file = os.path.join(
                     output_folder, input_file.rsplit('/')[-1])
                 print(f"\nProcessing file {input_file.rsplit('/')[-1]}")
@@ -154,6 +163,13 @@ def main():
                             except Exception:
                                 print(f'Error in line number: '
                                       f'{line_number}, IGNORING')
+                end = datetime.now()
+                time_taken = f'Time Taken: {end - start}'
+                time_file = os.path.join(
+                    output_folder, input_file.rsplit(
+                        '/')[-1].rsplit('.', 1)[0] + '_time.txt')
+                with open(time_file, 'w') as tf:
+                    tf.write(time_taken + '\n')
         else:
             if output_folder:
                 output_file = os.path.join(
@@ -171,8 +187,6 @@ def main():
                                   f'{line_number}, IGNORING')
     else:
         print('Invalid file type')
-    end = datetime.now()
-    print(f'Time Taken: {end - start}')
 
 
 if __name__ == '__main__':
