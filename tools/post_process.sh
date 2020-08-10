@@ -105,8 +105,8 @@ fi
 if [ -f "$ARCHIVE_DIR/original/$SITE_NAME-html-$DATESTAMP.tar.gz" ] && 
    [ -s "$ARCHIVE_DIR/original/$SITE_NAME-html-$DATESTAMP.tar.gz" ]
 then
-    rm -rf $OUTPUT_DIR/$SITE_NAME
-    rm -rf $PARSE_DIR/$SITE_NAME
+    #rm -rf $OUTPUT_DIR/$SITE_NAME
+    #rm -rf $PARSE_DIR/$SITE_NAME
 else
     echo "WARNING: missing or empty archive file $ARCHIVE_DIR/original/$SITE_NAME-html-$DATESTAMP.tar.gz"
     exit 2

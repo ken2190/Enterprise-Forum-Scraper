@@ -42,6 +42,11 @@ from base64 import (
 #PROXY_PASSWORD = "gg0ui4yamw16"
 #PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
+#PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
+#PROXY_PASSWORD = "5d2ad17825b0"
+#PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+
 # Luminati Proxy
 PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
 PROXY_PASSWORD = "8jywfhrmovdh"

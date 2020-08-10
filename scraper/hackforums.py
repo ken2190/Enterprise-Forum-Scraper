@@ -64,7 +64,7 @@ class HackForumsSpider(SitemapSpider):
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
     handle_httpstatus_list = [403, 503]
 
-    proxy_countries = ['us']
+    proxy_countries = ['uk']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

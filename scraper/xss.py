@@ -55,7 +55,7 @@ class XSSSpider(SitemapSpider):
     avatar_xpath = "//div[contains(@class,\"message-avatar\")]/div/a/img/@src"
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
