@@ -55,6 +55,8 @@ def process_line(out_file, single_json, args):
     else:
         data = json_response.items()
     for key, value in data:
+        if not value:
+            continue
         if key in nested_fields:
             for nested_value in nested_fields[key]:
                 if not value.get(nested_value):
@@ -83,7 +85,7 @@ def process_line(out_file, single_json, args):
         filtered_json = {'_source': final_data}
     else:
         filtered_json = final_data
-    out_file.write(json.dumps(filtered_json) + '\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
 
 
 def main():
