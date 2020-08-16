@@ -22,11 +22,11 @@ REQUEST_DELAY = 0.8
 NO_OF_THREADS = 2
 
 
-class DedicatetSpider(SitemapSpider):
-    name = 'dedicatet_spider'
+class DarkMarketCmSpider(SitemapSpider):
+    name = 'DarkMarketCm_spider'
 
     # Url stuffs
-    base_url = "http://dedicatet.com"
+    base_url = "http://darkmarket.cm"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
@@ -114,10 +114,10 @@ class DedicatetSpider(SitemapSpider):
         yield from super().parse_avatars(response)
 
 
-class DedicatetScrapper(SiteMapScrapper):
+class DarkMarketCmScrapper(SiteMapScrapper):
 
-    spider_class = DedicatetSpider
-    site_name = 'altenen.is'
+    spider_class = DarkMarketCmSpider
+    site_name = 'darkmarket.cm'
 
     def load_settings(self):
         settings = super().load_settings()
