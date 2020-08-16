@@ -166,6 +166,8 @@ from scraper.stormfront import StormFrontScrapper
 from scraper.hackthebox import HackTheBoxScrapper
 from scraper.dedicatet import DedicatetScrapper
 from scraper.darkmarket_cm import DarkMarketCmScrapper
+from scraper.ifud import IfudScrapper
+from scraper.gerki import GerkiScrapper
 
 
 SCRAPER_MAP = {
@@ -334,5 +336,7 @@ SCRAPER_MAP = {
     'stormfront': StormFrontScrapper,
     'hackthebox': HackTheBoxScrapper,
     'dedicatet': DedicatetScrapper,
-    'darkmarket_cm': DarkMarketCmScrapper
+    'darkmarket_cm': DarkMarketCmScrapper,
+    'ifud': IfudScrapper,
+    'gerki': GerkiScrapper,
 }

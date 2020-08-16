@@ -22,11 +22,11 @@ REQUEST_DELAY = 0.8
 NO_OF_THREADS = 2
 
 
-class DedicatetSpider(SitemapSpider):
-    name = 'dedicatet_spider'
+class IfudSpider(SitemapSpider):
+    name = 'ifud_spider'
 
     # Url stuffs
-    base_url = "http://dedicatet.com"
+    base_url = "http://ifud.ws"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
@@ -114,10 +114,10 @@ class DedicatetSpider(SitemapSpider):
         yield from super().parse_avatars(response)
 
 
-class DedicatetScrapper(SiteMapScrapper):
+class IfudScrapper(SiteMapScrapper):
 
-    spider_class = DedicatetSpider
-    site_name = 'dedicatet.com'
+    spider_class = IfudSpider
+    site_name = 'ifud.ws'
 
     def load_settings(self):
         settings = super().load_settings()
