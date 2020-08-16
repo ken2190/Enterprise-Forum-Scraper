@@ -164,6 +164,7 @@ from scraper.digitalgangster import DigitalGangsterScrapper
 from scraper.jstash_bazar import JstashBazarScrapper
 from scraper.stormfront import StormFrontScrapper
 from scraper.hackthebox import HackTheBoxScrapper
+from scraper.dedicatet import DedicatetScrapper
 
 
 SCRAPER_MAP = {
@@ -331,4 +332,5 @@ SCRAPER_MAP = {
     'jstash_bazar': JstashBazarScrapper,
     'stormfront': StormFrontScrapper,
     'hackthebox': HackTheBoxScrapper,
+    'dedicatet': DedicatetScrapper
 }
