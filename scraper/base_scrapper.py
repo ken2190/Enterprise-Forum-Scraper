@@ -22,6 +22,8 @@ from datetime import datetime
 from middlewares.utils import IpHandler
 from anticaptchaofficial.recaptchav2proxyon import *
 from anticaptchaofficial.recaptchav2proxyless import *
+from anticaptchaofficial.hcaptchaproxyless import *
+from anticaptchaofficial.hcaptchaproxyon import *
 from anticaptchaofficial.imagecaptcha import *
 
 from seleniumwire.webdriver import (
@@ -37,10 +39,15 @@ from base64 import (
     b64encode
 )
 
-#Test Proxy
-#PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
-#PROXY_PASSWORD = "gg0ui4yamw16"
-#PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+# Vip Proxy
+VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
+VIP_PROXY_PASSWORD = "5d2ad17825b0"
+VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+# Residential proxy
+# PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
+# PROXY_PASSWORD = "hh27g7gkk11"
+# PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
 #PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
 #PROXY_PASSWORD = "5d2ad17825b0"
@@ -363,6 +370,7 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
 class BypassCloudfareSpider(scrapy.Spider):
 
     use_proxy = True
+    use_vip_proxy = False
     proxy = None
     download_delay = 0.3
     download_thread = 10
@@ -485,6 +493,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Recaptcha regular xpath #
     recaptcha_site_key_xpath = None  # Xpath to get recaptcha site key #
+    hcaptcha_site_key_xpath = None  # Xpath to get hcaptcha site key #
 
     # Other settings
     get_cookies_delay = 2
@@ -767,7 +776,58 @@ class SitemapSpider(BypassCloudfareSpider):
         return proxy
 
     # Main method to solve all kind of captcha: recaptcha #
+    
+    def solve_hcaptcha(self, response, proxy=None, site_url=None):
+        """
+        :param response: scrapy response => response that contains regular recaptcha
+        :return: str => recaptcha solved token to submit login
+        """
+        solver = hCaptchaProxyless()
 
+        # Load proxy
+        if proxy is None:
+            try:
+                proxy = self.load_proxies(response)
+            except Exception as err:
+                proxy = None
+
+        if proxy:
+            # Trim prototal
+            proxy = proxy.replace(
+                "https://", ""
+            ).replace(
+                "http://", ""
+            )
+            # Load authen vs domain part
+            user_pwd, host_port = proxy.split('@')
+
+            # Load solver with proxy
+            solver = hCaptchaProxyon()
+            solver.set_proxy_address(host_port.split(":")[0])
+            solver.set_proxy_port(int(host_port.split(":")[1]))
+            solver.set_proxy_login(user_pwd.split(":")[0])
+            solver.set_proxy_password(user_pwd.split(":")[1])
+
+        # Init site url and key
+        if site_url is None:
+            site_url = response.url
+        site_key = response.xpath(self.hcaptcha_site_key_xpath).extract_first()
+
+        # Init solver params
+        solver.set_verbose(1)
+        solver.set_key(self.captcha_token)
+        solver.set_website_url(site_url)
+        solver.set_website_key(site_key)
+
+        # Solve and return h response
+        h_response = solver.solve_and_return_solution()
+        if h_response != 0:
+            return h_response
+        else:
+            return ''
+
+    # Main method to solve all kind of captcha: recaptcha #
+    
     def solve_recaptcha(self, response):
         """
         :param response: scrapy response => response that contains regular recaptcha
@@ -1296,7 +1356,23 @@ class SitemapSpider(BypassCloudfareSpider):
                 f"Avatar {avatar_name} done..!"
             )
 
-    def get_cookies(self, proxy=False, fraud_check=False):
+    def solve_cookies_captcha(self, browser, proxy=None):
+        return browser, True
+
+    def get_cookies_extra(self, browser):
+        return browser, True
+
+    def get_cookies(self, base_url=None, proxy=False, fraud_check=False, check_captcha=False):
+
+        # Load proxy
+        if self.use_vip_proxy:
+            proxy_username = VIP_PROXY_USERNAME
+            proxy_password = VIP_PROXY_PASSWORD
+            super_proxy = VIP_PROXY
+        else:
+            proxy_username = PROXY_USERNAME
+            proxy_password = PROXY_PASSWORD
+            super_proxy = PROXY
 
         # Init logger
         selenium_logger = logging.getLogger("seleniumwire")
@@ -1304,7 +1380,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Init options
         options = ChromeOptions()
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
 
@@ -1314,92 +1390,114 @@ class SitemapSpider(BypassCloudfareSpider):
             "options": options
         }
 
-        # Fraud check
-        ip = None
-        if fraud_check:
-            ip = self.ip_handler.get_good_ip()
+        # Loop create cookies
+        while True:
+            # Fraud check
+            ip = None
+            if fraud_check:
+                ip = self.ip_handler.get_good_ip()
 
-        # Init proxy
-        if proxy:
-            if ip is None:
-                proxy = PROXY % (
-                    "%s-session-%s" % (
-                        PROXY_USERNAME,
-                        uuid.uuid1().hex
-                    ),
-                    PROXY_PASSWORD
-                )
-            else:
-                proxy = PROXY % (
-                    "%s-ip-%s" % (
-                        PROXY_USERNAME,
-                        ip
-                    ),
-                    PROXY_PASSWORD
+            # Init proxy
+            if proxy:
+                if ip is None:
+                    proxy = super_proxy % (
+                        "%s-session-%s" % (
+                            proxy_username,
+                            uuid.uuid1().hex
+                        ),
+                        proxy_password
+                    )
+                else:
+                    proxy = super_proxy % (
+                        "%s-ip-%s" % (
+                            proxy_username,
+                            ip
+                        ),
+                        proxy_password
+                    )
+
+                proxy_options = {
+                    "proxy": {
+                        "http": proxy,
+                        "https": proxy
+                    }
+                }
+                webdriver_kwargs["seleniumwire_options"] = proxy_options
+                self.logger.info(
+                    "Selenium request with proxy: %s" % proxy_options
                 )
 
-            proxy_options = {
-                "proxy": {
+            # Load chrome driver
+            browser = Chrome(**webdriver_kwargs)
+
+            # Load target site
+            retry = 0
+            while retry < self.get_cookies_retry:
+                # Load different branch
+                if base_url:
+                    browser.get(base_url)
+                elif self.start_date and self.sitemap_url:
+                    browser.get(self.sitemap_url)
+                else:
+                    browser.get(self.base_url)
+
+                # Solve captcha if exist such requirements
+                if check_captcha:
+                    browser, success = self.solve_cookies_captcha(browser)
+                    if not success:
+                        browser.quit()
+                        break
+
+                # Wait
+                time.sleep(self.get_cookies_delay)
+
+                # Increase count
+                retry += 1
+
+            # Check if captcha and success
+            if check_captcha and not success:
+                continue
+
+            # Check extra
+            browser, success = self.get_cookies_extra(browser)
+            if not success:
+                browser.quit()
+                continue
+
+            # Load cookies
+            cookies = browser.get_cookies()
+
+            # Quit browser
+            browser.quit()
+
+            # Load ip
+            request_kwargs = {
+                "url": self.ip_url,
+                "headers": {
+                    "user-agent": self.default_useragent
+                }
+            }
+            if proxy:
+                request_kwargs["proxies"] = {
                     "http": proxy,
                     "https": proxy
                 }
+            data = requests.get(**request_kwargs).json()
+            ip = data.get("ip")
+
+            # Report cookies and ip
+            bypass_cookies = {
+                c.get("name"): c.get("value") for c in cookies
             }
-            webdriver_kwargs["seleniumwire_options"] = proxy_options
+
             self.logger.info(
-                "Selenium request with proxy: %s" % proxy_options
+                "Bypass cookies: %s and ip: %s" % (
+                    bypass_cookies,
+                    ip
+                )
             )
 
-        # Load chrome driver
-        browser = Chrome(**webdriver_kwargs)
-
-        # Load target site
-        retry = 0
-        while retry < self.get_cookies_retry:
-            # Load different branch
-            if self.start_date and self.sitemap_url:
-                browser.get(self.sitemap_url)
-            else:
-                browser.get(self.base_url)
-
-            # Wait
-            time.sleep(self.get_cookies_delay)
-
-            # Increase count
-            retry += 1
-
-        # Load cookies
-        cookies = browser.get_cookies()
-
-        # Load ip
-        browser.get(self.ip_url)
-        time.sleep(self.get_cookies_delay)
-
-        # Load selector
-        ip = None
-        selector = Selector(text=browser.page_source)
-        if proxy:
-            ip = json.loads(
-                selector.css(
-                    self.ip_css
-                ).extract_first()
-            ).get("ip")
-
-        # Quit browser
-        browser.quit()
-
-        # Report cookies and ip
-        bypass_cookies = {
-            c.get("name"): c.get("value") for c in cookies
-        }
-
-        self.logger.info(
-            "Bypass cookies: %s and ip: %s" % (
-                bypass_cookies,
-                ip
-            )
-        )
-
-        return bypass_cookies, ip
+            return bypass_cookies, ip
 
 
 class MarketPlaceSpider(SitemapSpider):

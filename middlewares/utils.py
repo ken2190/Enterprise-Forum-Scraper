@@ -12,9 +12,26 @@ class IpHandler(object):
     fraudulent_api = "https://scamalytics.com/ip/%s"
 
     def __init__(self, **kwargs):
+        from scraper.base_scrapper import (
+            VIP_PROXY_USERNAME,
+            VIP_PROXY_PASSWORD,
+            VIP_PROXY,
+            PROXY_USERNAME,
+            PROXY_PASSWORD,
+            PROXY
+        )
+        self.use_vip_proxy = kwargs.get("use_vip_proxy")
         self.logger = kwargs.get("logger")
         self.fraudulent_threshold = kwargs.get("fraudulent_threshold", 50)
         self.ip_batch_size = kwargs.get("ip_batch_size", 20)
+        if self.use_vip_proxy:
+            self.proxy_username = VIP_PROXY_USERNAME
+            self.proxy_password = VIP_PROXY_PASSWORD
+            self.proxy = VIP_PROXY
+        else:
+            self.proxy_username = PROXY_USERNAME
+            self.proxy_password = PROXY_PASSWORD
+            self.proxy = PROXY
 
     async def fetch(self, url, **kwargs):
 
@@ -71,26 +88,18 @@ class IpHandler(object):
 
     async def get_ip_score(self, session_id):
 
-        # Load proxy stats
-        from scraper.base_scrapper import (
-            PROXY_USERNAME,
-            PROXY_PASSWORD,
-            PROXY
-        )
-
         # Load proxy
         while True:
             try:
                 username = "%s-session-%s" % (
-                    PROXY_USERNAME,
+                    self.proxy_username,
                     session_id
                 )
-                password = PROXY_PASSWORD
                 response = await self.fetch(
                     self.ip_api,
-                    proxy=PROXY % (
+                    proxy=self.proxy % (
                         username,
-                        password
+                        self.proxy_password
                     )
                 )
                 break

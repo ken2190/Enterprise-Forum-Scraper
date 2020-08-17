@@ -4,6 +4,9 @@ import re
 from random import choice
 
 from scraper.base_scrapper import (
+    VIP_PROXY_USERNAME,
+    VIP_PROXY_PASSWORD,
+    VIP_PROXY,
     PROXY_USERNAME,
     PROXY_PASSWORD,
     PROXY
@@ -18,9 +21,19 @@ class LuminatyProxyMiddleware(object):
 
     def __init__(self, crawler):
         self.logger = crawler.spider.logger
-        self.username = PROXY_USERNAME
-        self.password = PROXY_PASSWORD
-        self.super_proxy_url = PROXY
+        self.use_vip_proxy = getattr(
+            crawler.spider,
+            "use_vip_proxy",
+            False
+        )
+        if not self.use_vip_proxy:
+            self.username = PROXY_USERNAME
+            self.password = PROXY_PASSWORD
+            self.super_proxy_url = PROXY
+        else:
+            self.username = VIP_PROXY_USERNAME
+            self.password = VIP_PROXY_PASSWORD
+            self.super_proxy_url = VIP_PROXY
 
     def process_request(self, request, spider):
 
@@ -165,15 +178,26 @@ class BypassCloudfareMiddleware(object):
         self.logger = crawler.spider.logger
 
         # Load spider settings
+        self.use_vip_proxy = getattr(crawler.spider, "use_vip_proxy", False) 
         self.allow_retry = getattr(crawler.spider, "cloudfare_allow_retry", 5)
         self.delay = getattr(crawler.spider, "cloudfare_delay", 5)
         self.solve_depth = getattr(crawler.spider, "cloudfare_solve_depth", 5)
         self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 50)
         self.ip_batch_size = getattr(crawler.spider, "ip_batch_size", 20)
+        
+        if not self.use_vip_proxy:
+            self.username = PROXY_USERNAME
+            self.password = PROXY_PASSWORD
+            self.super_proxy_url = PROXY
+        else:
+            self.username = VIP_PROXY_USERNAME
+            self.password = VIP_PROXY_PASSWORD
+            self.super_proxy_url = VIP_PROXY
 
         # Load ip handler
         from middlewares.utils import IpHandler
         self.ip_handler = IpHandler(
+            use_vip_proxy=self.use_vip_proxy,
             logger=self.logger,
             fraudulent_threshold=self.fraudulent_threshold,
             ip_batch_size=self.ip_batch_size
@@ -214,9 +238,11 @@ class BypassCloudfareMiddleware(object):
     def get_cftoken(self, url, proxy=None):
         session = cloudscraper.create_scraper(
             delay=self.delay,
-            recaptcha={
+            interpreter='nodejs',
+            captcha={
                 "provider": self.captcha_provider,
-                "api_key": self.captcha_token
+                "api_key": self.captcha_token,
+                "no_proxy": True
             }
         )
 
@@ -265,20 +291,13 @@ class BypassCloudfareMiddleware(object):
             ip = self.ip_handler.get_good_ip()
 
             # Rebuild proxy with good ip
-            root_proxy = proxy.replace(
-                "https://", ""
-            ).replace(
-                "http://", ""
-            )
             username = "%s-ip-%s" % (
-                PROXY_USERNAME,
+                self.username,
                 ip
             )
-            password = PROXY_PASSWORD
-            request_args["proxy"] = "%s:%s@%s" % (
+            request_args["proxy"] = self.super_proxy_url % (
                 username,
-                password,
-                root_proxy
+                self.password
             )
 
         retry = 0
@@ -290,18 +309,22 @@ class BypassCloudfareMiddleware(object):
                 )
                 break
             except Exception as err:
-                self.logger.info(err)
+                self.logger.info(
+                    "Error solving cloudfare token %s." % err
+                )
+                if "Detected a Cloudflare version 2 Captcha challenge" in str(err):
+                    return response
                 if not basic_auth:
                     raise RuntimeError(
                         "Protection loop, already try 3 time."
                     )
                 elif retry < self.allow_retry:
-                    proxy = PROXY % (
+                    proxy = self.super_proxy_url % (
                         "%s-ip-%s" % (
-                            PROXY_USERNAME,
+                            self.username,
                             self.ip_handler.get_good_ip()
                         ),
-                        PROXY_PASSWORD
+                        self.password
                     )
                     request_args["proxy"] = proxy
                     retry += 1
@@ -311,9 +334,16 @@ class BypassCloudfareMiddleware(object):
 
         # Replace cookies
         request.cookies.update(cookies.copy())
+        if request.headers.get("Cookie"):
+            del request.headers["Cookie"]
 
         # Replace user agent
-        request.headers.update(headers.copy())
+        request.headers.update(
+            {
+                key: value for key, value in headers.copy().items()
+                if key in ["User-Agent", "Referer"]
+            }
+        )
 
         # Dont filter this retry request
         request.dont_filter = True
