@@ -4,15 +4,16 @@ import re
 
 from scrapy import (
     Request,
-    FormRequest
+    FormRequest,
+    Selector
 )
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.4
-NO_OF_THREADS = 10
+REQUEST_DELAY = 0.5
+NO_OF_THREADS = 5
 USERNAME = "vrx9"
 PASSWORD = "Night#Hack001"
 
@@ -44,6 +45,7 @@ class HackForumsSpider(SitemapSpider):
 
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
+    hcaptcha_site_key_xpath = "//script[@data-sitekey]/@data-sitekey"
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -63,22 +65,21 @@ class HackForumsSpider(SitemapSpider):
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
     handle_httpstatus_list = [403, 503]
+    get_cookies_delay = 60
+    get_cookies_retry = 4
+    fraudulent_threshold = 10
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
 
     proxy_countries = ['uk']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.headers.update(
-            {
-                "Accept-Encoding": "gzip, deflate, br",
-                "Accept": "*/*",
-            }
-        )
 
     def parse_captcha(self, response):
         ip_ban_check = response.xpath(
             self.ip_check_xpath
         ).extract_first()
+
+        # Init cookies, ip
+        cookies, ip = None, None
 
         # Report bugs
         if "error code: 1005" in response.text:
@@ -89,31 +90,137 @@ class HackForumsSpider(SitemapSpider):
             self.logger.info(
                 "%s has been permanently banned. Rotating." % ip_ban_check
             )
+        else:
+            cookies, ip = self.get_cookies(
+                base_url=self.login_url,
+                proxy=True,
+                fraud_check=True,
+                check_captcha=True
+            )
 
-        yield from super().start_requests()
+        yield from self.start_requests(cookies=cookies, ip=ip)
 
-    def parse(self, response):
-
-        # Synchronize user agent for cloudfare middlewares
-        self.synchronize_headers(response)
-
-        if response.status == 403:
-            yield from self.parse_captcha(response)
-            return
-
-        yield Request(
-            url=self.login_url,
-            headers=self.headers,
-            callback=self.parse_login,
-            meta=self.synchronize_meta(response)
+    def start_requests(self, cookies=None, ip=None):
+        # Load cookies and ip
+        cookies, ip = self.get_cookies(
+            base_url=self.login_url,
+            proxy=True,
+            fraud_check=True,
+            check_captcha=True
         )
+        
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+        request_kwargs = {
+            "url": self.base_url,
+            "headers": self.headers,
+            "callback": self.parse_start,
+            "dont_filter": True,
+            "cookies": cookies,
+            "meta": meta
+        }
+
+        yield Request(**request_kwargs)
+
+    def get_cookies_extra(self, browser):
+        # Init success
+        success = self.check_bypass_success(browser)
+        if not success:
+            return browser, success
+
+        # Handle login
+        browser.execute_script(
+            "document.querySelector(\"[name=username]\").value = \"%s\"" % USERNAME
+        )
+        browser.execute_script(
+            "document.querySelector(\"[name=password]\").value = \"%s\"" % PASSWORD
+        )
+        browser.execute_script(
+            "document.querySelector(\"form>div>[name=submit]\").click()"
+        )
+
+        # Check if login success
+        if USERNAME.lower() not in  browser.page_source.lower():
+            success = False
+
+        return browser, success
+
+    def solve_cookies_captcha(self, browser, proxy=None):
+        # Init success
+        success = True
+
+        # Load selector
+        selector = Selector(text=browser.page_source)
+
+        # Check if ban ip
+        if "blocking your access based on IP address" in browser.page_source:
+            self.logger.info(
+                "Get cookies rotated into banned ip, resetting."
+            )
+            success = False
+            return browser, success
+
+        # Check if captcha exist
+        site_key = selector.xpath(self.hcaptcha_site_key_xpath).extract_first()
+        if not site_key:
+            self.logger.info(
+                "Get cookies do not find captcha, return cookies."
+            )
+            return browser, success
+
+        # Load captcha response
+        captcha_response = self.solve_hcaptcha(
+            selector, 
+            proxy=proxy,
+            site_url=browser.current_url
+        )
+
+        # Display captcha box
+        browser.execute_script(
+            "document.querySelector(\"[name=h-captcha-response]\").setAttribute(\"style\",\"display: block\")"
+        )
+        browser.execute_script(
+            "document.querySelector(\"[name=g-recaptcha-response]\").setAttribute(\"style\",\"display: block\")"
+        )
+
+        # Input captcha response
+        browser.execute_script(
+            "document.querySelector(\"[name=h-captcha-response]\").innerText = \"%s\"" % captcha_response
+        )
+        browser.execute_script(
+            "document.querySelector(\"[name=g-recaptcha-response]\").innerText = \"%s\"" % captcha_response
+        )
+
+        # Submit form
+        browser.execute_script(
+            "document.querySelector(\"#hcaptcha_submit\").click()"
+        )
+
+        return browser, success
+
+    def check_bypass_success(self, browser):
+        # Init success
+        success = True
+
+        # Check login button
+        try:
+            login_form = browser.find_element_by_css_selector(
+                "form[action=\"member.php\"]"
+            )
+        except Exception as err:
+            success = False
+
+        return success
 
     def parse_login(self, response):
 
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
 
-        if response.status == 403:
+        if response.status in [503, 403]:
             yield from self.parse_captcha(response)
             return
 
