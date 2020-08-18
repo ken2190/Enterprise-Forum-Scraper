@@ -129,6 +129,12 @@ IRAN2_FIELDS = {
     'id'
 }
 
+GEEKEDIN_FIELDS = {
+    'name',
+    'email',
+    'url'
+}
+
 FIELD_MAPS = {
     'pizap': PIZAP_FIELDS,
     'gyfcat': GYFCAT_FIELDS,
@@ -140,6 +146,7 @@ FIELD_MAPS = {
     'vedantu': VEDANTU_FIELDS,
     'iran1': IRAN1_FIELDS,
     'iran2': IRAN2_FIELDS,
+    'geekedin': GEEKEDIN_FIELDS,
 }
 
 
@@ -441,6 +448,33 @@ def process_vedantu(out_file, single_json):
     out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
 
 
+def process_geekedin(out_file, single_json):
+    filtered_json = dict()
+    urls = set()
+    json_response = json.loads(single_json)
+    for data in iterate_all(json_response):
+        key, value = data
+        if key == 'url':
+            urls.add(value)
+        elif key in GEEKEDIN_FIELDS:
+            filtered_json.update({key: value})
+    if urls:
+        filtered_json.update({'url': list(urls)})
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
+
+
+def iterate_all(iterable):
+    if isinstance(iterable, dict):
+        for key, value in iterable.items():
+            if not (isinstance(value, dict) or isinstance(value, list)):
+                yield key, value
+            for ret in iterate_all(value):
+                yield ret
+    elif isinstance(iterable, list):
+        for el in iterable:
+            for ret in iterate_all(el):
+                yield ret
+
 def process_file(args):
     input_file = args.input
     output_file = args.output
@@ -466,6 +500,8 @@ def process_file(args):
                         process_iran1(out_file, single_json)
                     elif args.type == 'iran2':
                         process_iran2(out_file, single_json)
+                    elif args.type == 'geekedin':
+                        process_geekedin(out_file, single_json)
                     else:
                         process_line(out_file, single_json, args.type)
                     print('Writing line number:', line_number)
