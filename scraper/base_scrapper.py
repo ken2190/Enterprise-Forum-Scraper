@@ -1219,6 +1219,11 @@ class SitemapSpider(BypassCloudfareSpider):
             response.xpath(self.post_date_xpath).extract()
             if post_date.strip() and self.parse_post_date(post_date)
         ]
+
+
+        if self.start_date and not post_dates:
+            return
+
         if self.start_date and max(post_dates) < self.start_date:
             self.logger.info(
                 "No more post to update."

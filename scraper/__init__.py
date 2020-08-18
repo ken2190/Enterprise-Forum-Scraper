@@ -169,6 +169,7 @@ from scraper.darkmarket_cm import DarkMarketCmScrapper
 from scraper.ifud import IfudScrapper
 from scraper.gerki import GerkiScrapper
 from scraper.proxybase import ProxyBaseScrapper
+from scraper.shadowcarders import ShadowCardersScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -340,4 +341,5 @@ SCRAPER_MAP = {
     'ifud': IfudScrapper,
     'gerki': GerkiScrapper,
     'proxybase': ProxyBaseScrapper,
+    'shadowcarders': ShadowCardersScrapper,
 }

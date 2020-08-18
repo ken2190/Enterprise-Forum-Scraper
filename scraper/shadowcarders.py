@@ -1,0 +1,291 @@
+import os
+import re
+import scrapy
+import uuid
+
+from datetime import datetime
+import dateparser
+
+from scrapy import (
+    Request,
+    FormRequest,
+    Selector
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
+
+# username = 'cyrax101'
+USER = 'donotreplytothismailever@gmail.com'
+PASS = 'nightlion123'
+REQUEST_DELAY = .6
+NO_OF_THREADS = 16
+
+
+class ShadowCardersSpider(SitemapSpider):
+
+    name = 'shadowcarders_spider'
+
+    # Url stuffs
+    base_url = "https://shadowcarders.com/"
+    login_url = "https://shadowcarders.com/login/login"
+
+    # Css stuffs
+    login_form_css = "//form[@id='login']"
+    forum_xpath = "//a[contains(@href, 'Forum-')]/@href"
+
+    name = 'shadowcarders_spider'
+
+    # Url stuffs
+    base_url = "https://shadowcarders.com"
+
+    # Xpath stuffs
+    forum_xpath = '//ol[@class="nodeList"]//h3[@class="nodeTitle"]/a/@href'
+
+    pagination_xpath = '//a[text()="Next >"]/@href'
+
+    thread_xpath = '//li[contains(@id, "thread-")]'
+    thread_first_page_xpath = '//h3[@class="title"]/a/@href'
+    thread_last_page_xpath = '//span[@class="itemPageNav"]/a[last()]/@href'
+    thread_date_xpath = '//dd[@class="muted"]//abbr/@data-datestring|'\
+                        '//dd[@class="muted"]/a/span/@title'
+    thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
+    thread_pagination_xpath = '//nav/a[contains(text()," Prev")]/@href'
+
+    post_date_xpath = '//span[contains(@class,"muted")]//abbr/@title|'\
+                      '//span[contains(@class,"muted")]//span[@class="DateTime"]/@title'
+
+    avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r".(\d+)/",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".(\d+).",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r"page-(\d+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    sitemap_datetime_format = '%d %b %Y at %H:%M %p'
+    post_datetime_format = '%d %b %Y at %H:%M %p'
+
+    # Regex stuffs
+    avatar_name_pattern = re.compile(
+        r".*/(\S+\.\w+)",
+        re.IGNORECASE
+    )
+
+    # Other settings
+    use_proxy = False
+    sitemap_datetime_format = "%b %d, %y"
+    handle_httpstatus_list = [403]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers = {
+            # "Referer": "https://ogusers.com",
+            # "Sec-fetch-mode": "navigate",
+            # "Sec-fetch-site": "same-origin",
+            # "Sec-fetch-user": "?1",
+        }
+
+    def get_avatar_file(self, url):
+
+        if "image/svg" in url:
+            return
+
+        return super().get_avatar_file(url)
+
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+
+        # print('------------Thread date ')
+        # print(thread_date)
+
+        if thread_date is None:
+            return datetime.today()
+
+        return dateparser.parse(thread_date)
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+
+        if post_date is None:
+            return datetime.today()
+
+        return dateparser.parse(post_date)
+
+    def start_requests(self):
+        yield FormRequest(
+            url=self.login_url,
+            formdata={
+                "login": USER,
+                "password": PASS,
+            },
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex
+            },
+            callback=self.parse_start,
+        )
+
+    def parse_start(self, response):
+
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum in all_forums:
+
+            if self.base_url not in forum:
+                forum = self.base_url + '/' + forum
+
+            yield Request(
+                url=forum,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
+            )
+
+    def parse_thread(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load topic_id
+        topic_id = response.meta.get("topic_id")
+
+        # Check current page to scrape from last page
+        current_page = response.xpath(self.thread_page_xpath).extract_first()
+        last_page = response.xpath(self.thread_last_page_xpath).extract_first()
+        if current_page == "1":
+
+            if not last_page:
+                return
+
+            if self.base_url not in last_page:
+                last_page = self.base_url + last_page
+
+            yield Request(
+                url=last_page,
+                headers=self.headers,
+                callback=super().parse_thread,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
+            )
+
+        # Parse main thread
+        yield from super().parse_thread(response)
+
+        # Parse avatar thread
+        yield from super().parse_avatars(response)
+
+        # Save user content
+        users = response.xpath("//div[@class=\"postbitdetail\"]/span/a")
+        for user in users:
+            user_url = user.xpath("@href").extract_first()
+            if self.base_url not in user_url:
+                user_url = self.base_url + user_url
+            user_name = user.xpath("span/text()").extract_first()
+            if not user_name:
+                user_name = user.xpath("text()").extract_first()
+            if not user_name:
+                user_name = user.xpath("font/text()").extract_first()
+            file_name = '{}/{}.html'.format(self.user_path, user_name)
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=user_url,
+                headers=self.headers,
+                callback=self.parse_user,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name,
+                        "user_name": user_name,
+                    }
+                )
+            )
+
+    def parse_user(self, response):
+        # Synchronize headers
+        self.synchronize_headers(response)
+
+        # Save user contents
+        file_name = response.meta.get("file_name")
+        user_name = response.meta.get("user_name")
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(
+                f"User {user_name} done..!"
+            )
+
+        user_history = response.xpath(
+            "//div[@class=\"usernamehistory\"]/a"
+        )
+
+        # Parse user history
+        if user_history:
+            history_url = user_history.xpath("@href").extract_first()
+
+            if self.base_url not in history_url:
+                history_url = self.base_url + history_url
+
+            yield Request(
+                url=history_url,
+                headers=self.headers,
+                callback=self.parse_user_history,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "user_name": user_name,
+                    }
+                )
+            )
+
+    def parse_user_history(self, response):
+        user_name = response.meta['user_name']
+        file_name = '{}/{}-history.html'.format(self.user_path, user_name)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(
+                f"History for user {user_name} done..!"
+            )
+
+
+class ShadowCardersScrapper(SiteMapScrapper):
+
+    spider_class = ShadowCardersSpider
+    site_name = 'shadowcarders.com'
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "DOWNLOAD_DELAY": REQUEST_DELAY,
+                "CONCURRENT_REQUESTS": NO_OF_THREADS,
+                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+            }
+        )
+        return settings
+
