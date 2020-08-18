@@ -1380,7 +1380,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Init options
         options = ChromeOptions()
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
 
