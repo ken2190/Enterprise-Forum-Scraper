@@ -16,14 +16,15 @@ class HackTheBoxSpider(SitemapSpider):
     base_url = 'https://forum.hackthebox.eu'
 
     # Xpaths
-    forum_xpath = '//a[@class="Title"]/@href'
+    forum_xpath = '//a[@class="Title"]/@href|//div[@class="Title"]/a/@href'
 
     thread_xpath = '//li[contains(@id, "Discussion_")]'
     thread_first_page_xpath = '//div[@class="Title"]/a/@href'
+    thread_last_page_xpath = '//span[contains(@class,"LastDiscussionTitle")]/a/@href'
     thread_date_xpath = '//time/@title'
 
-    thread_pagination_xpath = '//*[@id="PagerBefore"]/a[@rel="next"]/@href'
-    thread_page_xpath = '//*[@id="PagerBefore"]/a[@aria-current]/text()'
+    thread_pagination_xpath = '//div[contains(@id,"PagerAfter")]//a[contains(@rel,"next")]/@href'
+    thread_page_xpath = '//*[contains(@id,"PagerAfter")]/a[@aria-current]/text()'
 
     post_date_xpath = '//time/@title'
 
@@ -68,87 +69,12 @@ class HackTheBoxSpider(SitemapSpider):
     def get_forum_next_page(self, response):
         pass
 
-    def parse_thread(self, response):
+    def parse_thread(self, response):        
 
         # Load all post date
-        post_dates = [
-            self.parse_post_date(post_date) for post_date in
-            response.xpath(self.post_date_xpath).extract()
-            if post_date.strip() and self.parse_post_date(post_date)
-        ]
-        if self.start_date and max(post_dates) < self.start_date:
-            self.logger.info(
-                "No more post to update."
-            )
+        yield from super().parse_thread(response)
 
-            # Thread pagination
-            next_page = self.get_thread_next_page(response)
-            if next_page:
-
-                yield Request(
-                    url=next_page,
-                    headers=self.headers,
-                    callback=self.parse_thread,
-                    meta=self.synchronize_meta(
-                        response,
-                        default_meta={
-                            "topic_id": topic_id
-                        }
-                    )
-                )
-            return
-
-        # Synchronize headers user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Get topic id
-        topic_id = response.meta.get("topic_id")
-
-        # Save thread content
-        if not self.useronly:
-            current_page = self.get_thread_current_page(response)
-            with open(
-                file=os.path.join(
-                    self.output_path,
-                    "%s-%s.html" % (
-                        topic_id,
-                        current_page
-                    )
-                ),
-                mode="w+",
-                encoding="utf-8"
-            ) as file:
-                file.write(response.text)
-                self.logger.info(
-                    f'{topic_id}-{current_page} done..!'
-                )
-                self.topic_pages_saved += 1
-
-                # Update stats
-                self.crawler.stats.set_value(
-                    "topic pages saved",
-                    self.topic_pages_saved
-                )
-
-                # Kill task if kill count met
-                if self.kill and self.topic_pages_saved >= self.kill:
-                    raise CloseSpider(reason="Kill count met, shut down.")
-
-        # Thread pagination
-        next_page = self.get_thread_next_page(response)
-        if next_page:
-
-            yield Request(
-                url=next_page,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "topic_id": topic_id
-                    }
-                )
-            )
+        yield from super().parse_avatars(response)
 
 class HackTheBoxScrapper(SiteMapScrapper):
     spider_class = HackTheBoxSpider
