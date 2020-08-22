@@ -185,6 +185,8 @@ from templates.digitalgangster_template import DigitalGangsterParser
 from templates.stormfront_template import StormFrontParser
 from templates.dedicatet_template import DedicatetParser
 from templates.darkmarket_cm_template import DarkMarketCmParser
+from templates.ifud_template import IfudParser
+from templates.gerki_template import GerkiParser
 
 
 PARSER_MAP = {
@@ -373,5 +375,7 @@ PARSER_MAP = {
     'totalblackhat': TotalBlackHatParser,
     'itshqip': ItshqipParser,
     'dedicatet': DedicatetParser,
-    'darkmarket_cm': DarkMarketCmParser
+    'darkmarket_cm': DarkMarketCmParser,
+    'ifud': IfudParser,
+    'gerki': GerkiParser,
 }
