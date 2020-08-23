@@ -1,7 +1,4 @@
 jvm
-log
-filebeat
-apm
 kibana
 metricbeat
 metric
