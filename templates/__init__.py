@@ -188,6 +188,7 @@ from templates.darkmarket_cm_template import DarkMarketCmParser
 from templates.ifud_template import IfudParser
 from templates.gerki_template import GerkiParser
 from templates.proxybase_template import ProxyBaseParser
+from templates.shadowcarders_template import ShadowCardersParser
 
 
 PARSER_MAP = {
@@ -379,5 +380,6 @@ PARSER_MAP = {
     'darkmarket_cm': DarkMarketCmParser,
     'ifud': IfudParser,
     'gerki': GerkiParser,
-    'proxybase': ProxyBaseParser
+    'proxybase': ProxyBaseParser,
+    'shadowcarders': ShadowCardersParser
 }
