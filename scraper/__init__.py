@@ -171,6 +171,8 @@ from scraper.gerki import GerkiScrapper
 from scraper.proxybase import ProxyBaseScrapper
 from scraper.shadowcarders import ShadowCardersScrapper
 from scraper.provib import ProvibScrapper
+from scraper.offensive_community import OffensiveCommunityScrapper
+from scraper.digitalpoint import DigitalPointScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -344,4 +346,6 @@ SCRAPER_MAP = {
     'proxybase': ProxyBaseScrapper,
     'shadowcarders': ShadowCardersScrapper,
     'provib': ProvibScrapper,
+    'offensive_community': OffensiveCommunityScrapper,
+    'digitalpoint': DigitalPointScrapper,
 }
