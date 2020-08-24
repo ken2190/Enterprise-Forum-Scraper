@@ -345,7 +345,7 @@ SCRAPER_MAP = {
     'gerki': GerkiScrapper,
     'proxybase': ProxyBaseScrapper,
     'shadowcarders': ShadowCardersScrapper,
-    'provib': ProvibScrapper,
+    'probiv': ProvibScrapper,
     'offensive_community': OffensiveCommunityScrapper,
     'digitalpoint': DigitalPointScrapper,
 }

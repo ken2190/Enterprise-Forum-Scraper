@@ -189,6 +189,8 @@ from templates.ifud_template import IfudParser
 from templates.gerki_template import GerkiParser
 from templates.proxybase_template import ProxyBaseParser
 from templates.shadowcarders_template import ShadowCardersParser
+from templates.probiv_template import ProbivParser
+from templates.digitalpoint_template import DigitalPointParser
 
 
 PARSER_MAP = {
@@ -381,5 +383,7 @@ PARSER_MAP = {
     'ifud': IfudParser,
     'gerki': GerkiParser,
     'proxybase': ProxyBaseParser,
-    'shadowcarders': ShadowCardersParser
+    'shadowcarders': ShadowCardersParser,
+    'probiv': ProbivParser,
+    'digitalpoint': DigitalPointParser
 }
