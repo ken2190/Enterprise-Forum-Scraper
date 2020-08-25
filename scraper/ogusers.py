@@ -55,7 +55,7 @@ class OgUsersSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = "%m-%d-%Y"
     handle_httpstatus_list = [403]
 

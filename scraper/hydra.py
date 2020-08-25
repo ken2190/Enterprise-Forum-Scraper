@@ -53,7 +53,7 @@ class HydraSpider(MarketPlaceSpider):
             'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
         }
     }
-    use_proxy = False
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
 

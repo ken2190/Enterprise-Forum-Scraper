@@ -56,7 +56,7 @@ class MajesticGardenSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"
     post_datetime_format = "%B %d, %Y, %I:%M:%S %p »"
     download_delay = REQUEST_DELAY

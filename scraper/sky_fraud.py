@@ -43,7 +43,7 @@ class SkyFraudSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
 
     def parse_thread_date(self, thread_date):
         return datetime.strptime(

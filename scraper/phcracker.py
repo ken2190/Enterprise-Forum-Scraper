@@ -68,7 +68,7 @@ class PHCrackerSpider(SitemapSpider):
     download_thread = NO_OF_THREADS
     get_cookies_delay = 10
     get_cookies_retry = 2
-    use_proxy = False
+    use_proxy = True
 
     def parse_thread_date(self, thread_date):
         """

@@ -49,7 +49,7 @@ class CebulkaSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = '%Y-%m-%d %p'
     post_datetime_format = '%Y-%m-%d %p'
     download_delay = REQUEST_DELAY

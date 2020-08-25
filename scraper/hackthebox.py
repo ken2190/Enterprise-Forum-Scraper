@@ -69,7 +69,7 @@ class HackTheBoxSpider(SitemapSpider):
     def get_forum_next_page(self, response):
         pass
 
-    def parse_thread(self, response):        
+    def parse_thread(self, response):
 
         # Load all post date
         yield from super().parse_thread(response)

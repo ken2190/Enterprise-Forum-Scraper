@@ -57,7 +57,7 @@ class VerifiedSpider(SeleniumSpider):
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     handle_httpstatus_list = [504]
     sitemap_datetime_format = '%d.%m.%Y'
     post_datetime_format = '%d.%m.%Y, %H:%M'

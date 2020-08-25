@@ -60,7 +60,7 @@ class OmertaSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = "%m-%d-%Y"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 

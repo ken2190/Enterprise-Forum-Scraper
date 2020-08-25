@@ -83,7 +83,7 @@ class ShadowCardersSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = "%b %d, %y"
     handle_httpstatus_list = [403]
 

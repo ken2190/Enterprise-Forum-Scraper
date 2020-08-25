@@ -51,7 +51,7 @@ class SuperBaySpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     sitemap_datetime_format = '%b %d, %Y, %H:%M %p'
     post_datetime_format = '%b %d, %Y, %H:%M %p'
 

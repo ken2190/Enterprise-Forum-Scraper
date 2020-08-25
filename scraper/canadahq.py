@@ -59,7 +59,7 @@ class CanadaHQSpider(MarketPlaceSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     captcha_instruction = "Please ignore | and ^"

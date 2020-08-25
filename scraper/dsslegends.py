@@ -51,7 +51,7 @@ class DssLegendsSpider(SitemapSpider):
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     handle_httpstatus_list = [403]
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS

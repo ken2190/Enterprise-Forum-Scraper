@@ -53,7 +53,7 @@ class YouGameSpider(SitemapSpider):
     recaptcha_site_key_xpath = '//button[@class="g-recaptcha"]/@data-sitekey'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     handle_httpstatus_list = [503]
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
