@@ -4,6 +4,7 @@ requests[socks]
 sh
 scrapy
 selenium
+dateparser
 python-dateutil
 cloudscraper
 pandas
