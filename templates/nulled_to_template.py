@@ -28,6 +28,10 @@ class NulledToParser(BaseTemplate):
         self.post_text_xpath = 'div//section[@id="nulledPost"]'
         self.avatar_xpath = 'div//li[@class="avatar"]/img/@src'
         self.comment_block_xpath = 'div//a[@itemprop="replyToUrl"]/text()'
+        self.avatar_name_pattern = re.compile(
+            r".*/profile/photo-(\d+\.\w+)\?.*",
+            re.IGNORECASE
+        )
 
         # main function
         self.main()

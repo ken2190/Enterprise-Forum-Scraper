@@ -110,9 +110,6 @@ class ShadowCardersSpider(SitemapSpider):
                             using class sitemap_datetime_format
         """
 
-        # print('------------Thread date ')
-        # print(thread_date)
-
         if thread_date is None:
             return datetime.today()
 
