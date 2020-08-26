@@ -13,7 +13,7 @@ from scraper.base_scrapper import (
 )
 
 REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
+NO_OF_THREADS = 4
 # USERNAME = "vrx9"
 # PASSWORD = "Night#Hack001"
 USERNAME = "z234567890"
@@ -72,8 +72,8 @@ class HackForumsSpider(SitemapSpider):
     fraudulent_threshold = 10
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-
-    proxy_countries = ['uk']
+    use_vip_proxy = True
+    #proxy_countries = ['uk']
 
     def parse_captcha(self, response):
         ip_ban_check = response.xpath(
