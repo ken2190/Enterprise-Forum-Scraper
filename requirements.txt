@@ -1,12 +1,13 @@
 lxml
-requests
-requests[socks]
+requests[socks]==2.23.0
 sh
 scrapy
 selenium
 dateparser
 python-dateutil
+anticaptchaofficial
 cloudscraper
+js2py
 pandas
 polling
 selenium-wire
@@ -22,6 +23,7 @@ python-dotenv
 arrow
 schedule
 python3-anticaptcha
+requests==2.23.0
 python-anticaptcha
 anticaptchaofficial
 js2py
