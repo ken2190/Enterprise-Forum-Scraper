@@ -1,4 +1,5 @@
 import re
+import uuid
 
 from datetime import (
     datetime,
@@ -15,7 +16,7 @@ from scraper.base_scrapper import (
 
 
 REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
+NO_OF_THREADS = 2  # 5
 USER = "hackwithme123"
 PASS = "6VUZmjFzM2WtyjV"
 
@@ -113,6 +114,30 @@ class V3RMillionSpider(SitemapSpider):
                 self.post_datetime_format
             )
 
+    def start_requests(self):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex,
+                "ip": ip
+            },
+            cookies=cookies
+        )
+
     def parse(self, response):
 
         # Synchronize header user agent with cloudfare middleware
@@ -159,6 +184,9 @@ class V3RMillionSpider(SitemapSpider):
         # Save avatar content
         yield from super().parse_avatars(response)
 
+    def check_bypass_success(self, browser):
+        return bool(browser.find_elements_by_css_selector(self.login_form_css))
+
 
 class V3RMillionScrapper(SiteMapScrapper):
 
@@ -172,6 +200,8 @@ class V3RMillionScrapper(SiteMapScrapper):
                 'DOWNLOAD_DELAY': REQUEST_DELAY,
                 'CONCURRENT_REQUESTS': NO_OF_THREADS,
                 'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+                'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 408, 429],
+                'RETRY_TIMES': 3
             }
         )
         return settings
