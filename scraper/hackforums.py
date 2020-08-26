@@ -14,8 +14,10 @@ from scraper.base_scrapper import (
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
-USERNAME = "vrx9"
-PASSWORD = "Night#Hack001"
+# USERNAME = "vrx9"
+# PASSWORD = "Night#Hack001"
+USERNAME = "z234567890"
+PASSWORD = "KL5uyxBQ8cEz4mW"
 
 
 class HackForumsSpider(SitemapSpider):
@@ -91,22 +93,20 @@ class HackForumsSpider(SitemapSpider):
                 "%s has been permanently banned. Rotating." % ip_ban_check
             )
         else:
-            cookies, ip = self.get_cookies(
+            cookies, ip = self.get_cloudflare_cookies(
                 base_url=self.login_url,
                 proxy=True,
-                fraud_check=True,
-                check_captcha=True
+                fraud_check=True
             )
 
         yield from self.start_requests(cookies=cookies, ip=ip)
 
     def start_requests(self, cookies=None, ip=None):
         # Load cookies and ip
-        cookies, ip = self.get_cookies(
+        cookies, ip = self.get_cloudflare_cookies(
             base_url=self.login_url,
             proxy=True,
-            fraud_check=True,
-            check_captcha=True
+            fraud_check=True
         )
         
         # Init request kwargs and meta
@@ -126,11 +126,6 @@ class HackForumsSpider(SitemapSpider):
         yield Request(**request_kwargs)
 
     def get_cookies_extra(self, browser):
-        # Init success
-        success = self.check_bypass_success(browser)
-        if not success:
-            return browser, success
-
         # Handle login
         browser.execute_script(
             "document.querySelector(\"[name=username]\").value = \"%s\"" % USERNAME
@@ -143,10 +138,7 @@ class HackForumsSpider(SitemapSpider):
         )
 
         # Check if login success
-        if USERNAME.lower() not in  browser.page_source.lower():
-            success = False
-
-        return browser, success
+        return USERNAME.lower() in browser.page_source.lower()
 
     def solve_cookies_captcha(self, browser, proxy=None):
         # Init success
@@ -202,18 +194,13 @@ class HackForumsSpider(SitemapSpider):
         return browser, success
 
     def check_bypass_success(self, browser):
-        # Init success
-        success = True
+        if ("blocking your access based on IP address" in browser.page_source or
+                browser.find_elements_by_css_selector('.cf-error-details')):
+            raise RuntimeError("HackForums.net is blocking your access based on IP address.")
 
-        # Check login button
-        try:
-            login_form = browser.find_element_by_css_selector(
-                "form[action=\"member.php\"]"
-            )
-        except Exception as err:
-            success = False
-
-        return success
+        return bool(
+            browser.find_elements_by_css_selector('form[action="member.php"]')
+        )
 
     def parse_login(self, response):
 
