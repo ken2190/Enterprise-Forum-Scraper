@@ -15,9 +15,10 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-
-USER = 'Exabyte'
-PASS = 'OG-new!pass'
+# USER = 'Exabyte'
+# PASS = 'OG-new!pass'
+USER = 'sgqrpysbnt'
+PASS = 'Y8Kdh86Q2TancWz'
 REQUEST_DELAY = .6
 NO_OF_THREADS = 16
 
@@ -55,18 +56,20 @@ class OgUsersSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    # use_proxy = False
     sitemap_datetime_format = "%m-%d-%Y"
     handle_httpstatus_list = [403]
+    get_cookies_retry = 4
+    fraudulent_threshold = 10
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.headers = {
-            "Referer": "https://ogusers.com",
-            "Sec-fetch-mode": "navigate",
-            "Sec-fetch-site": "same-origin",
-            "Sec-fetch-user": "?1",
-        }
+        #self.headers = {
+            #"Referer": "https://ogusers.com",
+            #"Sec-fetch-mode": "navigate",
+            #"Sec-fetch-site": "same-origin",
+            #"Sec-fetch-user": "?1",
+        #}
 
     def get_avatar_file(self, url):
 
@@ -105,13 +108,25 @@ class OgUsersSpider(SitemapSpider):
         )
 
     def start_requests(self):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.login_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            },
-            callback=self.parse,
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse_start
         )
 
     def parse(self, response):
@@ -269,6 +284,31 @@ class OgUsersSpider(SitemapSpider):
             self.logger.info(
                 f"History for user {user_name} done..!"
             )
+
+    def check_bypass_success(self, browser):
+        return bool(
+            browser.current_url.startswith('https://ogusers.com/') and
+            browser.find_elements_by_xpath(
+                '//a[@class="guestnav" and text()="Login"]'
+            )
+        )
+
+    def get_cookies_extra(self, browser):
+        def find_element(name):
+            for element in browser.find_elements_by_name(name):
+                if element.is_displayed():
+                    return element
+
+        try:
+            find_element('username').send_keys(USER)
+            password_field = find_element('password')
+            password_field.send_keys(PASS)
+            password_field.submit()
+        except:
+            return False
+
+        # Check if login success
+        return USER.lower() in browser.page_source.lower()
 
 
 class OgUsersScrapper(SiteMapScrapper):
