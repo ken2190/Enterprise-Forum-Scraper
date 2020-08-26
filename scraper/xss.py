@@ -60,7 +60,6 @@ class XSSSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    use_vip_proxy = True
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 

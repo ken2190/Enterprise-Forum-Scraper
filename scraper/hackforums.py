@@ -72,8 +72,8 @@ class HackForumsSpider(SitemapSpider):
     fraudulent_threshold = 10
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-    use_vip_proxy = True
-    #proxy_countries = ['uk']
+    use_proxy = True
+    # proxy_countries = ['uk']
 
     def parse_captcha(self, response):
         ip_ban_check = response.xpath(
