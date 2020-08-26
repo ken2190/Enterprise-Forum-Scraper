@@ -26,6 +26,9 @@ from anticaptchaofficial.hcaptchaproxyless import *
 from anticaptchaofficial.hcaptchaproxyon import *
 from anticaptchaofficial.imagecaptcha import *
 
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 from seleniumwire.webdriver import (
     Chrome,
     ChromeOptions,
@@ -411,15 +414,15 @@ class BypassCloudfareSpider(scrapy.Spider):
                 downloader_middlewares.update(
                     {
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
-                        "middlewares.middlewares.BypassCloudfareMiddleware": 200
+                        # "middlewares.middlewares.BypassCloudfareMiddleware": 200
                     }
                 )
-            else:
-                downloader_middlewares.update(
-                    {
-                        "middlewares.middlewares.BypassCloudfareMiddleware": 200
-                    }
-                )
+            #else:
+                #downloader_middlewares.update(
+                    #{
+                        #"middlewares.middlewares.BypassCloudfareMiddleware": 200
+                    #}
+                #)
 
             # Default settings
             crawler.settings.set(
@@ -445,6 +448,221 @@ class BypassCloudfareSpider(scrapy.Spider):
         spider = cls(*args, **kwargs)
         spider._set_crawler(crawler)
         return spider
+
+    def get_cloudflare_cookies(self, base_url=None, proxy=False, fraud_check=False):
+        # Load proxy
+        if self.use_vip_proxy:
+            proxy_username = VIP_PROXY_USERNAME
+            proxy_password = VIP_PROXY_PASSWORD
+            super_proxy = VIP_PROXY
+        else:
+            proxy_username = PROXY_USERNAME
+            proxy_password = PROXY_PASSWORD
+            super_proxy = PROXY
+
+        # Init logger
+        selenium_logger = logging.getLogger("seleniumwire")
+        selenium_logger.setLevel(logging.ERROR)
+
+        # Init options
+        options = ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
+
+        # Init web driver arguments
+        webdriver_kwargs = {
+            "executable_path": "/usr/local/bin/chromedriver",
+            "options": options
+        }
+
+        def is_challenge_form_present(browser):
+            return bool(browser.find_elements_by_class_name('challenge-form'))
+
+        def is_hcaptcha_present(browser):
+            return bool(
+                browser.find_elements_by_id('cf-hcaptcha-container') and
+                browser.find_elements_by_name('g-recaptcha-response') and
+                browser.find_elements_by_name('h-captcha-response')
+            )
+
+        def is_i_am_human_button_present(browser):
+            return browser.find_elements_by_xpath(
+                '//div[@id="cf-norobot-container"]'
+                '/input[@type="button" and @value="I am human!"]'
+            )
+
+        def wait(browser, timeout, wait_func):
+            try:
+                return WebDriverWait(browser, timeout).until(wait_func)
+            except TimeoutException:
+                return False
+
+        # Loop create cookies
+        while True:
+            # Fraud check
+            ip = None
+            if fraud_check:
+                ip = self.ip_handler.get_good_ip()
+
+            # Init proxy
+            if proxy:
+                if ip is None:
+                    proxy = super_proxy % (
+                        "%s-session-%s" % (
+                            proxy_username,
+                            uuid.uuid1().hex
+                        ),
+                        proxy_password
+                    )
+                else:
+                    proxy = super_proxy % (
+                        "%s-ip-%s" % (
+                            proxy_username,
+                            ip
+                        ),
+                        proxy_password
+                    )
+
+                proxy_options = {
+                    "proxy": {
+                        "http": proxy,
+                        "https": proxy
+                    }
+                }
+                webdriver_kwargs["seleniumwire_options"] = proxy_options
+                self.logger.info(
+                    "Selenium request with proxy: %s" % proxy_options
+                )
+
+            # Load chrome driver
+            browser = Chrome(**webdriver_kwargs)
+
+            # Load target site
+            retry = 0
+            while retry < self.get_cookies_retry:
+                # Load different branch
+                if base_url:
+                    browser.get(base_url)
+                elif self.start_date and self.sitemap_url:
+                    browser.get(self.sitemap_url)
+                else:
+                    browser.get(self.base_url)
+
+                try:
+                    success = self.check_bypass_success(browser)
+                except RuntimeError:
+                    success = False
+
+                if success:
+                    break
+
+                if wait(browser, 5, is_challenge_form_present):
+                    # sitekey = wait(browser, 30, wait_for_hcaptcha)
+                    if wait(browser, 30,
+                            lambda b: is_hcaptcha_present(b) or is_i_am_human_button_present(b)):
+
+                        if is_i_am_human_button_present(browser):
+                            time.sleep(2)
+                            button = is_i_am_human_button_present(browser)[0]
+                            button.send_keys(Keys.SPACE)
+
+                        if wait(browser, 15, is_hcaptcha_present):
+                            success = self.solve_cf_captcha(browser)
+                            time.sleep(2)
+                            break
+                else:
+                    break
+
+                # Increase count
+                retry += 1
+
+            try:
+                success = self.check_bypass_success(browser)
+            except RuntimeError:
+                success = False
+
+            # Check extra
+            if not (success and self.get_cookies_extra(browser)):
+                browser.quit()
+                continue
+
+            # Load cookies
+            cookies = browser.get_cookies()
+
+            # Quit browser
+            browser.quit()
+
+            # Load ip
+            request_kwargs = {
+                "url": self.ip_url,
+                "headers": {
+                    "user-agent": self.default_useragent
+                }
+            }
+            if proxy:
+                request_kwargs["proxies"] = {
+                    "http": proxy,
+                    "https": proxy
+                }
+            data = requests.get(**request_kwargs).json()
+            ip = data.get("ip")
+
+            # Report cookies and ip
+            bypass_cookies = {
+                c.get("name"): c.get("value") for c in cookies
+            }
+
+            self.logger.info(
+                "Bypass cookies: %s and ip: %s" % (
+                    bypass_cookies,
+                    ip
+                )
+            )
+
+            return bypass_cookies, ip
+
+    def solve_cf_captcha(self, browser, proxy=None):
+        # Load selector
+        selector = Selector(text=browser.page_source)
+
+        site_key = next(iter(re.findall('sitekey=([0-9a-f\-]{36})', browser.page_source)), None)
+        if not site_key:
+            self.logger.info(
+                "Didn't find captcha!"
+            )
+            return False
+
+        # Load captcha response
+        captcha_response = self.solve_hcaptcha(
+            selector, 
+            proxy=proxy,
+            site_url=browser.current_url,
+            site_key=site_key
+        )
+
+        if not captcha_response:
+            return False
+
+        # Display captcha box
+        browser.execute_script(
+            "document.querySelector(\"[name=h-captcha-response]\").setAttribute(\"style\",\"display: block\")"
+        )
+        browser.execute_script(
+            "document.querySelector(\"[name=g-recaptcha-response]\").setAttribute(\"style\",\"display: block\")"
+        )
+
+        # Input captcha response
+        browser.execute_script(
+            "document.querySelector(\"[name=h-captcha-response]\").innerText = \"%s\"" % captcha_response
+        )
+        browser.execute_script(
+            "document.querySelector(\"[name=g-recaptcha-response]\").innerText = \"%s\"" % captcha_response
+        )
+
+        browser.find_element_by_class_name('challenge-form').submit()
+
+        return True
 
 
 class SitemapSpider(BypassCloudfareSpider):
@@ -781,7 +999,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Main method to solve all kind of captcha: recaptcha #
     
-    def solve_hcaptcha(self, response, proxy=None, site_url=None):
+    def solve_hcaptcha(self, response, proxy=None, site_url=None, site_key=None):
         """
         :param response: scrapy response => response that contains regular recaptcha
         :return: str => recaptcha solved token to submit login
@@ -815,7 +1033,10 @@ class SitemapSpider(BypassCloudfareSpider):
         # Init site url and key
         if site_url is None:
             site_url = response.url
-        site_key = response.xpath(self.hcaptcha_site_key_xpath).extract_first()
+
+        # get site-key if not provided
+        if not site_key:
+            site_key = response.xpath(self.hcaptcha_site_key_xpath).extract_first()
 
         # Init solver params
         solver.set_verbose(1)
@@ -1369,7 +1590,7 @@ class SitemapSpider(BypassCloudfareSpider):
         return browser, True
 
     def get_cookies_extra(self, browser):
-        return browser, True
+        return True
 
     def get_cookies(self, base_url=None, proxy=False, fraud_check=False, check_captcha=False):
 
@@ -1468,7 +1689,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 continue
 
             # Check extra
-            browser, success = self.get_cookies_extra(browser)
+            success = self.get_cookies_extra(browser)
             if not success:
                 browser.quit()
                 continue

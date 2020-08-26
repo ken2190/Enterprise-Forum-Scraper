@@ -191,6 +191,7 @@ from templates.proxybase_template import ProxyBaseParser
 from templates.shadowcarders_template import ShadowCardersParser
 from templates.probiv_template import ProbivParser
 from templates.digitalpoint_template import DigitalPointParser
+from templates.hackthebox_template import HackTheBoxParser
 
 
 PARSER_MAP = {
@@ -385,5 +386,6 @@ PARSER_MAP = {
     'proxybase': ProxyBaseParser,
     'shadowcarders': ShadowCardersParser,
     'probiv': ProbivParser,
-    'digitalpoint': DigitalPointParser
+    'digitalpoint': DigitalPointParser,
+    'hackthebox': HackTheBoxParser
 }

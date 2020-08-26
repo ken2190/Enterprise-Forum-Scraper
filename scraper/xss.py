@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 
 from datetime import (
     datetime,
@@ -13,8 +14,10 @@ from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-USER = "cyrax"
-PASS = "Night#Xss007"
+# USER = "cyrax"
+# PASS = "Night#Xss007"
+USER = "z234567890"
+PASS = "KL5uyxBQ8cEz4mW"
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
 
@@ -24,6 +27,7 @@ class XSSSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://xss.is"
+    login_url = "https://xss.is/login/login"
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -56,6 +60,7 @@ class XSSSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
+    use_vip_proxy = True
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -85,8 +90,21 @@ class XSSSpider(SitemapSpider):
     def parse(self, response):
 
         # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        
+        # self.synchronize_headers(response)
+
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.login_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
         # Login stuffs
         token = response.xpath(
             "//input[@name=\"_xfToken\"]/@value"
@@ -99,11 +117,13 @@ class XSSSpider(SitemapSpider):
             "_xfToken": token
         }
         yield FormRequest(
-            url="https://xss.is/login/login",
+            url=self.login_url,
             callback=self.parse_start,
             formdata=params,
             headers=self.headers,
-            meta=self.synchronize_meta(response),
+            # meta=self.synchronize_meta(response),
+            meta=meta,
+            cookies=cookies,
             dont_filter=True,
         )
 
@@ -133,6 +153,14 @@ class XSSSpider(SitemapSpider):
 
         # Parse generic avatar
         yield from super().parse_avatars(response)
+
+    def check_bypass_success(self, browser):
+        return bool(
+            browser.current_url.startswith('https://xss.is/login/login') and
+            browser.find_elements_by_css_selector(
+                'form[action="/login/login"]'
+            )
+        )
 
 
 class XSSScrapper(SiteMapScrapper):
