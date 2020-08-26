@@ -103,7 +103,7 @@ class NulledSpider(SitemapSpider):
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
-        for forum in all_forums[:1]:
+        for forum in all_forums:
 
             if self.base_url not in forum:
                 forum = self.base_url + '/' + forum
