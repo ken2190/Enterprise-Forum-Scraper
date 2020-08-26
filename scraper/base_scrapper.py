@@ -40,8 +40,12 @@ from base64 import (
 )
 
 # Vip Proxy
-VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
-VIP_PROXY_PASSWORD = "5d2ad17825b0"
+#VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
+#VIP_PROXY_PASSWORD = "5d2ad17825b0"
+#VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
+VIP_PROXY_PASSWORD = "q37j08ih0hci"
 VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
 # Residential proxy
