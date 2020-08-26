@@ -270,7 +270,7 @@ class SiteMapScrapper:
         self.firstrun = kwargs.get("firstrun")
         self.kill = kwargs.get("kill")
         self.ensure_avatar_path(kwargs.get("template"))
-        #self.set_users_path()
+        self.set_users_path()
 
         if self.kill:
             self.kill = int(self.kill)
