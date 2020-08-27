@@ -65,6 +65,25 @@ class BlackHackerSpider(SitemapSpider):
     post_datetime_format = '%d.%m.%Y, %H:%M'
     sitemap_datetime_format = '%d.%m.%Y'
 
+    def start_requests(self):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex,
+                "ip": ip
+            },
+            cookies=cookies,
+            callback=self.parse
+        )
+
     def parse_thread_date(self, thread_date):
         """
         :param thread_date: str => thread date as string
@@ -169,6 +188,14 @@ class BlackHackerSpider(SitemapSpider):
                     }
                 ),
             )
+
+    def check_bypass_success(self, browser):
+        return bool(
+            browser.current_url.startswith(self.base_url) and
+            browser.find_elements_by_xpath(
+                '//input[@id="navbar_username"]'
+            )
+        )
 
 
 class BlackHackerScrapper(SiteMapScrapper):

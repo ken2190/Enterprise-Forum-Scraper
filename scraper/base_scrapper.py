@@ -269,6 +269,11 @@ class SiteMapScrapper:
         self.start_date = kwargs.get("start_date")
         self.firstrun = kwargs.get("firstrun")
         self.kill = kwargs.get("kill")
+        self.get_users = kwargs.get("get_users")
+        self.no_proxy = kwargs.get("no_proxy")
+        self.proxy_countries = kwargs.get("proxy_countries")
+        self.use_vip = kwargs.get("use_vip")
+
         self.ensure_avatar_path(kwargs.get("template"))
         self.set_users_path()
 
@@ -300,7 +305,11 @@ class SiteMapScrapper:
             "start_date": getattr(self, "start_date", None),
             "user_path": getattr(self, "user_path", None),
             "firstrun": getattr(self, "firstrun", None),
-            "kill": getattr(self, "kill", None)
+            "kill": getattr(self, "kill", None),
+            "get_users": getattr(self, "get_users", None),
+            "no_proxy": getattr(self, "no_proxy", None),
+            "proxy_countries": getattr(self, "proxy_countries", None),
+            "use_vip": getattr(self, "use_vip", None)
         }
 
     def set_users_path(self):
@@ -731,7 +740,18 @@ class SitemapSpider(BypassCloudfareSpider):
         self.user_path = kwargs.get("user_path")
         self.start_date = kwargs.get("start_date")
         self.kill = kwargs.get("kill")
+        self.get_users = kwargs.get("get_users")
         self.topic_pages_saved = 0
+
+        if kwargs.get("no_proxy") is not None:
+            self.use_proxy = False
+
+        if kwargs.get("proxy_countries") is not None:
+            self.proxy_countries = kwargs["proxy_countries"]
+
+        if kwargs.get("use_vip") is not None:
+            # self.use_proxy = False
+            self.use_vip_proxy = True
 
         # Load fraud check settings
 
