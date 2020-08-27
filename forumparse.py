@@ -23,10 +23,10 @@ class Parser:
         parser_name = self.kwargs.get('template')
         if not parser_name:
             help_message = """
-            Usage: collector.py -parse [-t TEMPLATE] [-p PATH] [-o OUTPUT]\n
+            Usage: collector.py -parse [-t TEMPLATE] [-i INPUT_PATH] [-o OUTPUT]\n
             Arguments:
             -t | --template TEMPLATE:  Template forum to parse
-            -p | --path PATH:          Input folder path
+            -i | --input_path INPUT_PATH:          Input folder path
             -o | --output OUTPUT:      Output folder path
 
             Optional:
@@ -42,7 +42,7 @@ class Parser:
             self.print_list_template()
             return
 
-        folder_path = self.kwargs.get('path')
+        folder_path = self.kwargs.get('input_path')
         if not folder_path:
             print('Input Path missing')
             return

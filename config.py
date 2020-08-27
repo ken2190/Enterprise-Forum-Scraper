@@ -14,7 +14,7 @@ main_parser_arguments = [
 		"kwargs": {"help": argparse.SUPPRESS, "required": False}
 	},
 	{
-		"args": ("-p", '--path'),
+		"args": ("-i", '--input_path'),
 		"kwargs": {"help": argparse.SUPPRESS, "required": False}
 	},
 	{
