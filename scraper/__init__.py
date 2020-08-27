@@ -173,6 +173,7 @@ from scraper.shadowcarders import ShadowCardersScrapper
 from scraper.provib import ProvibScrapper
 from scraper.offensive_community import OffensiveCommunityScrapper
 from scraper.digitalpoint import DigitalPointScrapper
+from scraper.boveda import BovedaScrapper
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -348,4 +349,5 @@ SCRAPER_MAP = {
     'probiv': ProvibScrapper,
     'offensive_community': OffensiveCommunityScrapper,
     'digitalpoint': DigitalPointScrapper,
+    'boveda': BovedaScrapper,
 }
