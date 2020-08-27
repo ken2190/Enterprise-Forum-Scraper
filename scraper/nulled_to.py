@@ -19,7 +19,7 @@ from scraper.base_scrapper import (
 )
 
 REQUEST_DELAY = .6
-NO_OF_THREADS = 16
+NO_OF_THREADS = 7
 
 
 class NulledSpider(SitemapSpider):

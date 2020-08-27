@@ -69,7 +69,7 @@ class HackForumsSpider(SitemapSpider):
     handle_httpstatus_list = [403, 503]
     get_cookies_delay = 60
     get_cookies_retry = 4
-    fraudulent_threshold = 10
+    fraudulent_threshold = 50
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     use_proxy = True
