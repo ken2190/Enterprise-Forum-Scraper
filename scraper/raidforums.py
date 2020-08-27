@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import sqlite3
 import dateutil.parser as dparser
@@ -36,6 +37,7 @@ class RaidForumsSpider(SitemapSpider):
         r'.*/(\S+\.\w+)',
         re.IGNORECASE
     )
+
 
     # Xpath stuffs
     forum_sitemap_xpath = "//sitemap[loc[contains(text(),\"sitemap-threads.xml\")]]/loc/text()"
@@ -92,6 +94,9 @@ class RaidForumsSpider(SitemapSpider):
         # Parse sub forums
         yield from self.parse(response)
 
+        if '--getusers' not in sys.argv:
+            return
+
         # Parse users
         users = response.xpath('//span[@class="author smalltext"]/a')
         for user in users:
@@ -101,9 +106,11 @@ class RaidForumsSpider(SitemapSpider):
             user_id = self.username_pattern.findall(user_url)
             if not user_id:
                 continue
+
             file_name = '{}/{}.html'.format(self.user_path, user_id[0])
             if os.path.exists(file_name):
                 continue
+
             yield Request(
                 url=user_url,
                 headers=self.headers,
@@ -136,7 +143,8 @@ class RaidForumsSpider(SitemapSpider):
 
     def parse_user_history(self, response):
         user_id = response.meta['user_id']
-        file_name = '{}/{}-history.html'.format(self.user_path, user_id)
+
+        file_name = '{}/{}-history.html'.format(self.user_path, user_id)        
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             print(f"History for user {user_id} done..!")
@@ -148,6 +156,53 @@ class RaidForumsSpider(SitemapSpider):
 
         # Parse generic avatar
         yield from super().parse_avatars(response)
+
+    # def set_users_path(self):
+    #     self.user_path = os.path.join(
+    #         self.output_path,
+    #         'users'
+    #     )
+    #     if not os.path.exists(self.user_path):
+    #         os.makedirs(self.user_path)
+
+    def parse_avatars(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Save avatar content
+        all_avatars = response.xpath(self.avatar_xpath).extract()
+        for avatar_url in all_avatars:
+
+            temp_url = avatar_url
+            # Standardize avatar url
+            if not avatar_url.lower().startswith("http"):
+                temp_url = response.urljoin(avatar_url)
+
+            avatar_url = temp_url
+
+            if 'image/svg' in avatar_url:
+                continue
+
+            file_name = self.get_avatar_file(avatar_url)
+
+            if file_name is None:
+                continue
+
+            if os.path.exists(file_name):
+                continue
+
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name
+                    }
+                ),
+            )
 
 
 class RaidForumsScrapper(SiteMapScrapper):
