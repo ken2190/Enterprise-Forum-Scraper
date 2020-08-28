@@ -338,6 +338,10 @@ class SiteMapScrapper:
         # Load crawler
         crawler = process.create_crawler(self.spider_class)
 
+        if self.load_spider_kwargs()['no_proxy']:
+            crawler.spidercls.use_proxy = False
+            crawler.spidercls.use_vip_proxy = False
+
         # Trigger running
         process.crawl(
             crawler,
@@ -745,6 +749,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         if kwargs.get("no_proxy") is not None:
             self.use_proxy = False
+            self.use_vip_proxy = False
 
         if kwargs.get("proxy_countries") is not None:
             self.proxy_countries = kwargs["proxy_countries"]
