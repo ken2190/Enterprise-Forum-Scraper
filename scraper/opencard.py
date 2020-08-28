@@ -1,6 +1,4 @@
 import re
-import json
-import requests
 import uuid
 from urllib.parse import urlencode
 import dateparser
@@ -12,9 +10,6 @@ from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-from scrapy.http import HtmlResponse
-from anticaptchaofficial.recaptchav2proxyon import *
-from anticaptchaofficial.recaptchav2proxyless import *
 
 REQUEST_DELAY = 0.3
 NO_OF_THREADS = 5
@@ -66,16 +61,6 @@ class OpencardSpider(SitemapSpider):
     use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.strip()[:-5]
-        if not thread_date:
-            return
-        return dateparser.parse(thread_date)
-
-    def parse_post_date(self, post_date):
-        post_date = post_date.strip()[:-5]
-        return dateparser.parse(post_date)
 
     def start_requests(self):
         yield Request(
@@ -136,7 +121,7 @@ class OpencardSpider(SitemapSpider):
             headers=self.headers,
             dont_filter=True,
             meta=self.synchronize_meta(response)
-            )
+        )
 
     def parse_start(self, response):
         # Synchronize user agent for cloudfare middleware
@@ -163,6 +148,16 @@ class OpencardSpider(SitemapSpider):
 
         # Save avatars
         yield from super().parse_avatars(response)
+
+    def parse_thread_date(self, thread_date):
+        thread_date = thread_date.strip()[:-5]
+        if not thread_date:
+            return
+        return dateparser.parse(thread_date)
+
+    def parse_post_date(self, post_date):
+        post_date = post_date.strip()[:-5]
+        return dateparser.parse(post_date)
 
 
 class OpencardScrapper(SiteMapScrapper):

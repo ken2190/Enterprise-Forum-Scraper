@@ -2,8 +2,8 @@ import re
 import os
 import uuid
 
-import dateparser
 from datetime import datetime
+import dateparser
 
 from scrapy import (
     Request,
@@ -20,18 +20,18 @@ REQUEST_DELAY = 0.7
 NO_OF_THREADS = 2
 
 
-class ProxyBaseSpider(SitemapSpider):
+class DarkMoneySpider(SitemapSpider):
 
-    name = "proxybase_spider"
+    name = "darkmoney.at"
 
     # Url stuffs
-    base_url = "http://proxy-base.com/"
+    base_url = "https://darkmoney.at/"
 
     # Xpath stuffs
-    forum_xpath = '//td[2]//a[contains(@href,"http://proxy-base.com/f") and not(contains(@href,"html"))]/@href'
+    forum_xpath = '//tbody[contains(@id,"collapseobj_forum")]/tr/td[1]/div/a/@href'
     thread_xpath = '//tbody[contains(@id,"threadbits")]/tr'
-    thread_first_page_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]/@href'
-    thread_last_page_xpath = '//td[4]//a[img]/@href'
+    thread_first_page_xpath = '//td[contains(@id,"td_threadtitle")]//a[contains(@id, "thread_title")]/@href'
+    thread_last_page_xpath = '//td[contains(@id,"td_threadtitle")]//span[contains(@class,"smallfont")]/a[last()]/@href'
 
     thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
 
@@ -101,11 +101,11 @@ class ProxyBaseSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
-        for forum_url in all_forums:
+        for forum_url in all_forums[1:]:
 
             # Standardize url
             if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+                forum_url = self.base_url + forum_url[1:]
             yield Request(
                 url=forum_url,
                 headers=self.headers,
@@ -188,10 +188,10 @@ class ProxyBaseSpider(SitemapSpider):
             )
 
 
-class ProxyBaseScrapper(SiteMapScrapper):
+class DarkMoneyScrapper(SiteMapScrapper):
 
-    spider_class = ProxyBaseSpider
-    site_name = 'proxybase.com'
+    spider_class = DarkMoneySpider
+    site_name = 'darkmoney.at'
 
     def load_settings(self):
         settings = super().load_settings()
@@ -201,3 +201,4 @@ class ProxyBaseScrapper(SiteMapScrapper):
             }
         )
         return settings
+
