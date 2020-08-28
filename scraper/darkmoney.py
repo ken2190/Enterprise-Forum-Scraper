@@ -161,8 +161,6 @@ class DarkMoneySpider(SitemapSpider):
             if 'image/svg' in avatar_url:
                 continue
 
-            # user_url = avatar.xpath('@href').extract_first()
-            # print(user_url)
             match = self.avatar_name_pattern.findall(avatar_url)
             if not match:
                 continue

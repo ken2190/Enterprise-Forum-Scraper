@@ -193,6 +193,7 @@ from templates.probiv_template import ProbivParser
 from templates.digitalpoint_template import DigitalPointParser
 from templates.hackthebox_template import HackTheBoxParser
 from templates.boveda_template import BovedaParser
+from templates.darkmoney_template import DarkMoneyParser
 
 
 PARSER_MAP = {
@@ -390,5 +391,5 @@ PARSER_MAP = {
     'digitalpoint': DigitalPointParser,
     'hackthebox': HackTheBoxParser,
     'boveda': BovedaParser,
-
+    'darkmoney': DarkMoneyParser
 }

@@ -31,22 +31,6 @@ class IfudParser(BaseTemplate):
         # main function
         self.main()
 
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: (
-                int(self.thread_name_pattern.search(x).group(1)),
-                int(self.pagination_pattern.search(x).group(1))
-            )
-        )
-
-        return sorted_files
 
     def get_date(self, tag):
         date = tag.xpath(self.date_xpath)

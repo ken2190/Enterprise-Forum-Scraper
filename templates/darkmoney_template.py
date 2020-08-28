@@ -5,11 +5,11 @@ import re
 from .base_template import BaseTemplate
 
 
-class ProxyBaseParser(BaseTemplate):
+class DarkMoneyParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-        self.parser_name = "http://proxy-base.com"
+        self.parser_name = "darkmoney.at"
         self.thread_name_pattern = re.compile(
             r'(\d+)-\d+\.html$'
         )
