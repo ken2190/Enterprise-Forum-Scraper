@@ -192,6 +192,7 @@ from templates.shadowcarders_template import ShadowCardersParser
 from templates.probiv_template import ProbivParser
 from templates.digitalpoint_template import DigitalPointParser
 from templates.hackthebox_template import HackTheBoxParser
+from templates.boveda_template import BovedaParser
 
 
 PARSER_MAP = {
@@ -387,5 +388,7 @@ PARSER_MAP = {
     'shadowcarders': ShadowCardersParser,
     'probiv': ProbivParser,
     'digitalpoint': DigitalPointParser,
-    'hackthebox': HackTheBoxParser
+    'hackthebox': HackTheBoxParser,
+    'boveda': BovedaParser,
+
 }
