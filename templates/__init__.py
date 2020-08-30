@@ -194,6 +194,7 @@ from templates.digitalpoint_template import DigitalPointParser
 from templates.hackthebox_template import HackTheBoxParser
 from templates.boveda_template import BovedaParser
 from templates.darkmoney_template import DarkMoneyParser
+from templates.xaker_template import XakerParser
 
 
 PARSER_MAP = {
@@ -348,7 +349,7 @@ PARSER_MAP = {
     'darktime': DarktimeParser,
     'italiandeepweb': ItalianDeepWebParser,
     'dnmavengers': DNMAvengersParser,
-    'oxsec': ox00secParser,
+    '0x00sec': ox00secParser,
     'vbiran': VbiranParser,
     'uinsell': UinsellParser,
     'darkway': DarkwayParser,
@@ -391,5 +392,6 @@ PARSER_MAP = {
     'digitalpoint': DigitalPointParser,
     'hackthebox': HackTheBoxParser,
     'boveda': BovedaParser,
-    'darkmoney': DarkMoneyParser
+    'darkmoney': DarkMoneyParser,
+    'xaker': XakerParser
 }
