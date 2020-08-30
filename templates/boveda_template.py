@@ -5,11 +5,11 @@ import utils
 from .base_template import BaseTemplate
 
 
-class IfudParser(BaseTemplate):
+class BovedaParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.parser_name = "http://ifud.ws"
+        self.parser_name = "boveda.cc"
         self.thread_name_pattern = re.compile(
             r'(\d+)-\d+\.html$'
         )
@@ -24,13 +24,28 @@ class IfudParser(BaseTemplate):
         self.author_xpath = './/div[@class="message-userDetails"]/h4/a/descendant::text()'
         self.title_xpath = '//h1[@class="p-title-value"]/text()'
         self.comment_block_xpath = 'div//ul[@class="message-attribution-opposite message-attribution-opposite--list"]/li/a/text()'
-        self.avatar_xpath = 'div//div[@class="message-avatar-wrapper"]/a[img/@src]/@href'
-        self.avatar_ext = 'jpg'
+        self.avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
         self.mode = 'r'
 
         # main function
         self.main()
 
+    def get_filtered_files(self, files):
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: (
+                int(self.thread_name_pattern.search(x).group(1)),
+                int(self.pagination_pattern.search(x).group(1))
+            )
+        )
+
+        return sorted_files
 
     def get_date(self, tag):
         date = tag.xpath(self.date_xpath)
@@ -87,6 +102,7 @@ class IfudParser(BaseTemplate):
     def get_comment_id(self, tag):
         comment_id = ""
         comment_block = tag.xpath(self.comment_block_xpath)
+
         if comment_block:
             comment_id = comment_block[-1].strip().split('#')[-1]
 
