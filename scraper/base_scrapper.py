@@ -1,14 +1,15 @@
+import logging
 import os
 import re
+import socket
 import time
-import scrapy
 import uuid
-import requests
-import polling
-import json
-import logging
+
 import dateparser
 import dateutil.parser as dparser
+import polling
+import requests
+import scrapy
 
 from random import choice
 from glob import glob
@@ -337,6 +338,10 @@ class SiteMapScrapper:
 
         # Load crawler
         crawler = process.create_crawler(self.spider_class)
+
+        if self.load_spider_kwargs()['no_proxy']:
+            crawler.spidercls.use_proxy = False
+            crawler.spidercls.use_vip_proxy = False
 
         # Trigger running
         process.crawl(
@@ -745,6 +750,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         if kwargs.get("no_proxy") is not None:
             self.use_proxy = False
+            self.use_vip_proxy = False
 
         if kwargs.get("proxy_countries") is not None:
             self.proxy_countries = kwargs["proxy_countries"]
@@ -1073,21 +1079,28 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Main method to solve all kind of captcha: recaptcha #
     
-    def solve_recaptcha(self, response):
+    def solve_recaptcha(self, response, proxyless=False):
         """
         :param response: scrapy response => response that contains regular recaptcha
         :return: str => recaptcha solved token to submit login
         """
-        solver = recaptchaV2Proxyless()
+
         # Load proxy
         proxy = self.load_proxies(response)
-        if proxy:
-            user_pwd, host_port = proxy.split('@')
+        if proxy and not proxyless:
             solver = recaptchaV2Proxyon()
-            solver.set_proxy_address(host_port.split(":")[0])
-            solver.set_proxy_port(host_port.split(":")[1])
+
+            user_pwd, host_port = proxy.split('@')
+            hostname, port = host_port.split(":")
+            host = socket.gethostbyname(hostname)
+
+            solver.set_proxy_address(host)
+            solver.set_proxy_port(port)
             solver.set_proxy_login(user_pwd.split(":")[0])
             solver.set_proxy_password(user_pwd.split(":")[1])
+            solver.set_user_agent(response.request.headers['user-agent'].decode('utf-8'))
+        else:
+            solver = recaptchaV2Proxyless()
 
         # Init site url and key
         site_url = response.url

@@ -122,7 +122,7 @@ class OpencardSpider(SitemapSpider):
             'login': USER,
             'password': PASS,
             'remember': '1',
-            'g-recaptcha-response': self.solve_recaptcha(response),
+            'g-recaptcha-response': self.solve_recaptcha(response, proxyless=True),
             '_xfRedirect': 'https://opencard.us/index.php',
             '_xfToken': token
         }
