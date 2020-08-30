@@ -18,8 +18,8 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.8
-NO_OF_THREADS = 2
+REQUEST_DELAY = 0.6
+NO_OF_THREADS = 6
 
 
 class IfudSpider(SitemapSpider):
