@@ -174,6 +174,8 @@ from scraper.provib import ProvibScrapper
 from scraper.offensive_community import OffensiveCommunityScrapper
 from scraper.digitalpoint import DigitalPointScrapper
 from scraper.boveda import BovedaScrapper
+from scraper.darkmoney import DarkMoneyScrapper
+
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -350,4 +352,5 @@ SCRAPER_MAP = {
     'offensive_community': OffensiveCommunityScrapper,
     'digitalpoint': DigitalPointScrapper,
     'boveda': BovedaScrapper,
+    'darkmoney': DarkMoneyScrapper,
 }
