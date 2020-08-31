@@ -92,7 +92,7 @@ class BlackHatWorldSpider(SitemapSpider):
         yield from super().parse_thread(response)
 
         # Parse generic avatar
-        # yield from super().parse_avatars(response)
+        yield from super().parse_avatars(response)
 
 
 class BlackHatWorldScrapper(SiteMapScrapper):
