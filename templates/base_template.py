@@ -33,6 +33,20 @@ class BaseTemplate:
         self.avatar_xpath = ''
         self.avatar_ext = ''
 
+    # def get_filtered_files(self, files):
+    #     filtered_files = list(
+    #         filter(
+    #             lambda x: self.thread_name_pattern.search(x) is not None,
+    #             files
+    #         )
+    #     )
+
+    #     sorted_files = sorted(
+    #         filtered_files,
+    #         key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+
+    #     return sorted_files
+
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
@@ -40,10 +54,10 @@ class BaseTemplate:
                 files
             )
         )
-
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
+            key=lambda x: (self.thread_name_pattern.search(x).group(1),
+                           self.pagination_pattern.search(x).group(1)))
 
         return sorted_files
 
@@ -132,6 +146,7 @@ class BaseTemplate:
             if not header:
                 return
 
+
             title = self.get_title(header[0])
             date = self.get_date(header[0])
             author = self.get_author(header[0])
@@ -170,12 +185,17 @@ class BaseTemplate:
         comments = list()
         comment_blocks = html_response.xpath(self.comments_xpath)
 
+        if not self.comment_block_xpath:
+            comment_blocks = comment_blocks[1:]\
+                if pagination == 1 else comment_blocks
+
         for comment_block in comment_blocks:
             try:
-                comment_id = self.get_comment_id(comment_block)
 
-                if not comment_id or comment_id == "1":
-                    continue
+                comment_id = self.get_comment_id(comment_block)
+                if self.comment_block_xpath:
+                    if not comment_id or comment_id == "1":
+                        continue
 
                 user = self.get_author(comment_block)
                 comment_text = self.get_post_text(comment_block)
@@ -209,17 +229,23 @@ class BaseTemplate:
 
     def get_comment_id(self, tag):
         comment_id = ""
-        comment_block = tag.xpath(self.comment_block_xpath)
+        if self.comment_block_xpath:
+            comment_block = tag.xpath(self.comment_block_xpath)
+        else:
+            return str(self.index)
 
         if comment_block:
-            comment_id = comment_block[0].strip().split('#')[-1]
+            comment_id = ''.join(comment_block).strip().split('#')[-1]
 
         return comment_id.replace(',', '').replace('.', '')
 
+
     def get_author(self, tag):
         author = tag.xpath(self.author_xpath)
-
-        return author[0]
+        if author:
+            return author[0]
+        else:
+            return ''
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(self.post_text_xpath)

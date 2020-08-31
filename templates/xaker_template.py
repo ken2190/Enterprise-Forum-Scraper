@@ -24,7 +24,8 @@ class XakerParser(BaseTemplate):
         self.comments_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.date_xpath = './/span[@class="DateTime"]/@title'
-        self.author_xpath = './/div[@class="userText"]/a[contains(@class,"username")]/text()'
+        self.author_xpath = './/div[@class="userText"]/a[contains(@class,"username")]/text()|'\
+                            './/div[@class="userText"]/a[contains(@class,"username")]/span/text()'
         self.post_text_xpath = './/div[contains(@class,"messageContent")]//article/blockquote/descendant::text()[not(ancestor::div[contains(@class,"bbCodeQuote")])]'
         self.avatar_xpath = './/div[contains(@class,"avatarHolder")]//img/@src'
         self.title_xpath = '//h1/text()'
@@ -32,54 +33,3 @@ class XakerParser(BaseTemplate):
 
         # main function
         self.main()
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: (self.thread_name_pattern.search(x).group(1),
-                           self.pagination_pattern.search(x).group(1)))
-
-        return sorted_files
-
-
-    def extract_comments(self, html_response, pagination):
-        comments = list()
-        comment_blocks = html_response.xpath(self.comments_xpath)
-
-        comment_blocks = comment_blocks[1:]\
-            if pagination == 1 else comment_blocks
-
-        for comment_block in comment_blocks:
-            user = self.get_author(comment_block)
-            comment_text = self.get_post_text(comment_block)
-            comment_date = self.get_date(comment_block)
-            pid = self.thread_id
-            avatar = self.get_avatar(comment_block)
-
-            source = {
-                'forum': self.parser_name,
-                'pid': pid,
-                'message': comment_text.strip(),
-                'cid': str(self.index),
-                'author': user,
-            }
-            if comment_date:
-                source.update({
-                    'date': comment_date
-                })
-            if avatar:
-                source.update({
-                    'img': avatar
-                })
-            comments.append({
-                '_source': source,
-            })
-            self.index += 1
-
-        return comments

@@ -876,7 +876,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 self.post_datetime_format
             )
         except:
-            return dparser.parse(thread_date)
+            return dparser.parse(thread_date).replace(tzinfo=None)
 
     def parse_post_date(self, post_date):
         """
@@ -890,7 +890,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 self.post_datetime_format
             )
         except:
-            return dparser.parse(post_date)
+            return dparser.parse(post_date).replace(tzinfo=None)
 
     def parse_thread_url(self, thread_url):
         """
@@ -1401,8 +1401,11 @@ class SitemapSpider(BypassCloudfareSpider):
 
             # Parse topic id
             topic_id = self.get_topic_id(thread_url)
+
             if not topic_id:
                 continue
+
+
 
             # Check file exist
             if self.check_existing_file_date(

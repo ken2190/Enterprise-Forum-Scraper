@@ -1,11 +1,4 @@
-import os
 import re
-import time
-import uuid
-import json
-from lxml.html import fromstring
-from urllib.parse import urlencode
-from datetime import datetime, timedelta
 
 from scrapy import (
     Request,
