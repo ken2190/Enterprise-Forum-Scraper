@@ -1,5 +1,5 @@
 import re
-import uuid
+import uuid1
 from urllib.parse import urlencode
 import dateparser
 from scrapy import (
@@ -51,7 +51,7 @@ class XakerSpider(SitemapSpider):
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
 
     # Regex stuffs
-    topic_pattern = re.compile(
+    topic_pattern = re.compile(]
         r"threads/(\d+).*",
         re.IGNORECASE
     )
@@ -135,8 +135,6 @@ class XakerSpider(SitemapSpider):
 
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
-
-        self.logger.debug("inside parse_start")
 
         # If captcha detected
         if response.status in [503, 403]:
