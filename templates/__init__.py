@@ -195,6 +195,7 @@ from templates.hackthebox_template import HackTheBoxParser
 from templates.boveda_template import BovedaParser
 from templates.darkmoney_template import DarkMoneyParser
 from templates.xaker_template import XakerParser
+from templates.offensivecommunity_template import OffensiveCommunityParser
 
 
 PARSER_MAP = {
@@ -393,5 +394,6 @@ PARSER_MAP = {
     'hackthebox': HackTheBoxParser,
     'boveda': BovedaParser,
     'darkmoney': DarkMoneyParser,
-    'xaker': XakerParser
+    'xaker': XakerParser,
+    'offensive_community': OffensiveCommunityParser,
 }
