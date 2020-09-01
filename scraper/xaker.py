@@ -1,5 +1,5 @@
 import re
-import uuid1
+import uuid
 from urllib.parse import urlencode
 import dateparser
 from scrapy import (
@@ -51,7 +51,7 @@ class XakerSpider(SitemapSpider):
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
 
     # Regex stuffs
-    topic_pattern = re.compile(]
+    topic_pattern = re.compile(
         r"threads/(\d+).*",
         re.IGNORECASE
     )
