@@ -49,7 +49,7 @@ class HackTheBoxParser(BaseTemplate):
         comments = list()
         comment_blocks = html_response.xpath(self.comments_xpath)
 
-        comment_blocks = comment_blocks\
+        comment_blocks = comment_blocks[1:]\
             if pagination == 1 else comment_blocks
 
         for comment_block in comment_blocks:

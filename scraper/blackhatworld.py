@@ -1,13 +1,7 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from datetime import datetime
+import uuid
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
-
+from scrapy import Request
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
 REQUEST_DELAY = 1
@@ -16,159 +10,89 @@ NO_OF_THREADS = 4
 
 class BlackHatWorldSpider(SitemapSpider):
     name = 'blackhatworld_spider'
-    sitemap_url = 'https://www.blackhatworld.com/sitemap.xml'
 
-    # Xpath stuffs
-    forum_sitemap_xpath = "//loc/text()"
-    thread_url_xpath = "//loc/text()"
-    thread_sitemap_xpath = "//url"
-    thread_lastmod_xpath = "//lastmod/text()"
-    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
+    base_url = "https://www.blackhatworld.com/"
+    start_url = 'https://www.blackhatworld.com/forums/'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = "https://www.blackhatworld.com/"
-        self.start_url = '{}/forums/'.format(self.base_url)
-        self.topic_pattern = re.compile(r'.*\.(\d+)/$')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)$')
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.username_pattern = re.compile(r'members/(.*)\.\d+')
-        self.start_url = 'https://www.blackhatworld.com/forums/'
-        self.headers = {
-            "user-agent": USER_AGENT,
-        }
-        self.set_users_path()
+    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
+                  '//a[contains(@class,"subNodeLink--forum")]/@href'
+    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+    thread_first_page_xpath = '//div[@class="structItem-title"]'\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = '//time[contains(@class, "structItem-latestDate")]'\
+                        '/@datetime'
+    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+                              '/@href'
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+                        '/a/text()'
+    post_date_xpath = '//div/a/time[@datetime]/@datetime'
 
-    def set_users_path(self, ):
-        self.user_path = os.path.join(self.output_path, 'users')
-        if not os.path.exists(self.user_path):
-            os.makedirs(self.user_path)
+    avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
-    def parse_thread_date(self, thread_date):
-        return datetime.strptime(
-            thread_date.split('+')[0],
-            self.sitemap_datetime_format
-        )
+    # Other settings
+    use_proxy = True
+    handle_httpstatus_list = [403]
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r".*\.(\d+)/",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r".*/(\w+\.\w+)",
+        re.IGNORECASE
+    )
+    pagination_pattern = re.compile(
+        r"page-(\d+)",
+        re.IGNORECASE
+    )
+
+    username_pattern = re.compile(
+        r'members/(.*)\.\d+',
+        re.IGNORECASE
+    )
+
+    def start_requests(self):
+        yield Request(self.start_url, self.parse)
 
     def parse(self, response):
-        # print(response.text)
-        forums = response.xpath(
-            '//ol[@class="nodeList"]//h3[@class="nodeTitle"]/a')
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
+
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+
             yield Request(
-                url=url,
+                url=forum_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "cookiejar": uuid.uuid1().hex
+                    }
+                )
             )
-
-    def parse_forum(self, response):
-        print('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//li[contains(@id, "thread-")]//h3[@class="title"]/a')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
-
-        users = response.xpath('//span[@class="avatarContainer"]/a')
-        for user in users:
-            user_url = user.xpath('@href').extract_first()
-            if self.base_url not in user_url:
-                user_url = self.base_url + user_url
-            user_id = self.username_pattern.findall(user_url)
-            if not user_id:
-                continue
-            file_name = '{}/{}.html'.format(self.user_path, user_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=user_url,
-                # headers=self.headers,
-                callback=self.parse_user,
-                meta={
-                    'file_name': file_name,
-                    'user_id': user_id[0]
-                }
-            )
-
-        next_page = response.xpath('//a[text()="Next >"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
-
-    def parse_user(self, response):
-        file_name = response.meta['file_name']
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f"User {response.meta['user_id']} done..!")
-
-        avatar_url = response.xpath(
-            '//img[@itemprop="photo"]/@src').extract_first()
-        name_match = self.avatar_name_pattern.findall(avatar_url)
-        if not name_match:
-            return
-        name = name_match[0]
-        file_name = '{}/{}'.format(self.avatar_path, name)
-        if os.path.exists(file_name):
-            return
-        yield Request(
-            url=avatar_url,
-            # headers=self.headers,
-            callback=self.parse_avatar,
-            meta={
-                'file_name': file_name,
-                'user_id': response.meta['user_id']
-            }
-        )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            print(f"Avatar for user {response.meta['user_id']} done..!")
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            print(f'{topic_id}-1 done..!')
 
-        next_page = response.xpath('//a[text()="Next >"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
 class BlackHatWorldScrapper(SiteMapScrapper):

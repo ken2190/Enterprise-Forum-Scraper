@@ -1,4 +1,3 @@
-import argparse
 import os
 from glob import glob
 from templates import PARSER_MAP
@@ -20,9 +19,7 @@ class Parser:
             self.print_list_template()
             return
 
-        parser_name = self.kwargs.get('template')
-        if not parser_name:
-            help_message = """
+        help_message = """
             Usage: collector.py -parse [-t TEMPLATE] [-i INPUT_PATH] [-o OUTPUT]\n
             Arguments:
             -t | --template TEMPLATE:  Template forum to parse
@@ -33,6 +30,9 @@ class Parser:
             -l | --list:               List available parsers (tempalte namess)
 
             """
+
+        parser_name = self.kwargs.get('template')
+        if not parser_name:
             print(help_message)
             return
 
@@ -45,13 +45,14 @@ class Parser:
         folder_path = self.kwargs.get('input_path')
         if not folder_path:
             print('Input Path missing')
+            print(help_message)
             return
 
         self.kwargs['folder_path'] = folder_path
 
         # -----------filter files which user want to parse --------------
         files = []
-        for filee in glob(folder_path+'/*'):
+        for filee in glob(folder_path + '/*'):
             if os.path.isfile(filee):
                 files.append(filee)
 

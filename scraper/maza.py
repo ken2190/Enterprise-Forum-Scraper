@@ -22,9 +22,9 @@ from lxml.html import fromstring
 
 REQUEST_DELAY = 1.5
 
-CODE = 'shithead'
-USER = "Sandman"
-PASS = 'Night#MF_0010'
+CODE = 'skydiving'
+USER = "moonbash"
+PASS = '4KqPg@y.Ndn9bmeDeVRt_D*'
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; rv:75.0) Gecko/20100101 Firefox/75.0"
 

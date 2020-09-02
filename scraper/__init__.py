@@ -174,6 +174,9 @@ from scraper.provib import ProvibScrapper
 from scraper.offensive_community import OffensiveCommunityScrapper
 from scraper.digitalpoint import DigitalPointScrapper
 from scraper.boveda import BovedaScrapper
+from scraper.darkmoney import DarkMoneyScrapper
+from scraper.xaker import XakerScrapper
+
 
 SCRAPER_MAP = {
     'antichat': AntichatScrapper,
@@ -252,7 +255,7 @@ SCRAPER_MAP = {
     'thebot': TheBotScrapper,
     'italiandeepweb': ItalianDeepWebScrapper,
     'dnmavengers': DNMAvengersScrapper,
-    'oxsec': Ox00SecScrapper,
+    '0x00sec': Ox00SecScrapper,
     'rosanegra': RosaNegraScrapper,
     'envoy': EnvoyScrapper,
     'bitshacking': BitsHackingScrapper,
@@ -350,4 +353,6 @@ SCRAPER_MAP = {
     'offensive_community': OffensiveCommunityScrapper,
     'digitalpoint': DigitalPointScrapper,
     'boveda': BovedaScrapper,
+    'darkmoney': DarkMoneyScrapper,
+    'xaker': XakerScrapper,
 }

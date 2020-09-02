@@ -1,57 +1,68 @@
 import re
 import uuid
-from scrapy.http import Request
+from urllib.parse import urlencode
 import dateparser
-from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
-
-REQUEST_DELAY = 0.5
+REQUEST_DELAY = 0.3
 NO_OF_THREADS = 5
 
+USER = "Cyrax011"
+PASS = "4hr63yh38a61SDW0"
 
-class BruteSpider(SitemapSpider):
-    name = 'brute_spider'
-    base_url = 'https://brute.su'
 
-    # Xpaths
-    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
-                  '//a[contains(@class,"subNodeLink--forum")]/@href'
-    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
-    thread_first_page_xpath = '//div[@class="structItem-title"]'\
+class XakerSpider(SitemapSpider):
+    name = 'xaker_spider'
+
+    # Url stuffs
+    base_url = "http://xaker.name/"
+
+    # Xpath stuffs
+    forum_xpath = '//ol[@class="nodeList"]//h3/a/@href'
+    thread_xpath = '//ol[@class="discussionListItems"]/li'
+    thread_first_page_xpath = '//h3[@class="title"]'\
                               '/a[contains(@href,"threads/")]/@href'
-    thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
+    thread_last_page_xpath = '//span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
-    thread_date_xpath = '//time[contains(@class, "structItem-latestDate")]'\
-                        '/@datetime'
-    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
-    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
-                              '/@href'
-    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
-                        '/a/text()'
-    post_date_xpath = '//div[@class="message-attribution-main"]'\
-                      '//time[@datetime]/@datetime'
 
-    avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
+    thread_date_xpath = '//dl[@class="lastPostInfo"]//a[@class'\
+                        '="dateTime"]/abbr/@data-datestring|//'\
+                        'dl[@class="lastPostInfo"]//a[@class="dateTime"]/span/@title'
+
+    pagination_xpath = '//nav/a[last()]/@href'
+    thread_pagination_xpath = '//nav/a[@class="text"]/@href'
+    thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
+                        '/text()'
+    post_date_xpath = '//div[@class="messageDetails"]'\
+                      '//span[@class="DateTime"]/text()|'\
+                      '//div[@class="messageDetails"]'\
+                      '//abbr[@class="DateTime"]/@data-datestring'
+
+    avatar_xpath = '//div[contains(@class,"avatarHolder")]//img/@src'
+
+    #captcha stuffs
+    ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"/threads/(\d+)",
+        r"threads/(\d+).*",
         re.IGNORECASE
     )
-
     avatar_name_pattern = re.compile(
-        r".*/(\S+\.\w+)",
+        r".*/(\d+\.\w+)",
         re.IGNORECASE
     )
-
     pagination_pattern = re.compile(
         r".*/page-(\d+)",
         re.IGNORECASE
     )
-
-    #captcha stuffs
-    ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
-    check_solved_xpath = '//h3[@class="node-title"]'
 
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@data-xf-init="re-captcha"]/@data-sitekey'
@@ -60,8 +71,7 @@ class BruteSpider(SitemapSpider):
     use_proxy = True
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
-    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+
 
     def start_requests(self, cookies=None, ip=None):
         # Load cookies and ip
@@ -70,6 +80,7 @@ class BruteSpider(SitemapSpider):
             proxy=True,
             fraud_check=True
         )
+
 
         # Init request kwargs and meta
         meta = {
@@ -111,12 +122,13 @@ class BruteSpider(SitemapSpider):
 
         yield from self.start_requests(cookies=cookies, ip=ip)
 
+
     def check_bypass_success(self, browser):
         if ("blocking your access based on IP address" in browser.page_source or
                 browser.find_elements_by_css_selector('.cf-error-details')):
             raise RuntimeError("HackForums.net is blocking your access based on IP address.")
 
-        element = browser.find_elements_by_xpath(self.check_solved_xpath)
+        element = browser.find_elements_by_xpath('//ol[@class="nodeList"]//h3/a')
         return bool(element)
 
     def parse_start(self, response):
@@ -128,6 +140,7 @@ class BruteSpider(SitemapSpider):
         if response.status in [503, 403]:
             yield from self.parse_captcha(response)
             return
+            
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
@@ -144,9 +157,10 @@ class BruteSpider(SitemapSpider):
                 meta=self.synchronize_meta(response)
             )
 
+
     def parse_thread(self, response):
 
-        # Parse generic thread
+        # Save generic thread
         yield from super().parse_thread(response)
 
         # Save avatars
@@ -163,16 +177,11 @@ class BruteSpider(SitemapSpider):
         return dateparser.parse(post_date)
 
 
-class BruteScrapper(SiteMapScrapper):
+class XakerScrapper(SiteMapScrapper):
 
-    spider_class = BruteSpider
-    site_name = 'brute.su'
+    spider_class = XakerSpider
+    site_name = 'xaker.name'
 
     def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                "RETRY_HTTP_CODES": [406, 429, 500, 503],
-            }
-        )
-        return settings
+        spider_settings = super().load_settings()
+        return spider_settings
