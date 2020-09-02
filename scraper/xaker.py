@@ -166,16 +166,6 @@ class XakerSpider(SitemapSpider):
         # Save avatars
         yield from super().parse_avatars(response)
 
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.strip()[:-5]
-        if not thread_date:
-            return
-        return dateparser.parse(thread_date)
-
-    def parse_post_date(self, post_date):
-        post_date = post_date.strip()[:-5]
-        return dateparser.parse(post_date)
-
 
 class XakerScrapper(SiteMapScrapper):
 
