@@ -139,6 +139,14 @@ class MazaSpider(SeleniumSpider):
 
         self.browser.get(self.base_url)
         time.sleep(self.delay)
+
+        if self.browser.find_elements_by_xpath(
+            '//i[text()="Вы забанены или используете старый сертификат."]'
+        ):
+            self.logger.error('User/cert is banned!')
+            self.browser.quit()
+            return
+
         userbox = self.browser.find_element_by_name('vb_login_username')
         passbox = self.browser.find_element_by_name('vb_login_password')
         checkbox = self.browser.find_element_by_name('cookieuser')
