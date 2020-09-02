@@ -1,14 +1,12 @@
-import os
 import re
-import scrapy
 import uuid
 
-from scrapy.http import Request, FormRequest
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
 
+from scrapy import Request
 
 REQUEST_DELAY = 0.3
 NO_OF_THREADS = 3
@@ -39,6 +37,9 @@ class CrackCommunitySpider(SitemapSpider):
     post_date_xpath = "//a[@class=\"datePermalink\"]/*/@title"
     avatar_xpath = "//div[@class=\"avatarHolder\"]/a/img/@src"
 
+    # captcha stuffs
+    ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
+
     # Regex pattern
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -65,13 +66,26 @@ class CrackCommunitySpider(SitemapSpider):
             }
         )
 
-    def start_requests(self):
+    def start_requests(self, cookies=None, ip=None):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            }
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse
         )
 
     def parse(self, response):
@@ -95,6 +109,14 @@ class CrackCommunitySpider(SitemapSpider):
                 meta=self.synchronize_meta(response),
                 callback=self.parse_forum
             )
+
+    def check_bypass_success(self, browser):
+        if ("blocking your access based on IP address" in browser.page_source or
+                browser.find_elements_by_css_selector('.cf-error-details')):
+            raise RuntimeError("HackForums.net is blocking your access based on IP address.")
+
+        element = browser.find_elements_by_xpath('//*[@class=\"nodeTitle\"]')
+        return bool(element)
 
     def parse_thread(self, response):
 
