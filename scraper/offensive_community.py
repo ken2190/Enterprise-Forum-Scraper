@@ -28,7 +28,7 @@ class OffensiveCommunitySpider(SitemapSpider):
 
     thread_date_xpath = '//span[contains(@class,"lastpost")]/span/@title'
 
-    thread_pagination_xpath = '//a[@class="pagination_next"]/@href'
+    thread_pagination_xpath = '//a[@class="pagination_previous"]/@href'
 
     thread_page_xpath = '//span[@class="pagination_current"]/text()'
     post_date_xpath = '//td[@class="tcat"]//span/@title|//td[@class="tcat"]/div/text()'
@@ -64,8 +64,6 @@ class OffensiveCommunitySpider(SitemapSpider):
 
         all_forums = response.xpath(self.forum_xpath).extract()
         for forum_url in all_forums:
-            if not 'fid=12' in forum_url:
-                pass
 
             full_url = self.base_url + forum_url
             yield Request(
@@ -74,9 +72,6 @@ class OffensiveCommunitySpider(SitemapSpider):
                 callback=self.parse_forum
             )
 
-    def get_forum_next_page(self, response):
-        pass
-
     def parse_thread(self, response):
 
         # Load all post date
@@ -84,16 +79,7 @@ class OffensiveCommunitySpider(SitemapSpider):
 
         yield from super().parse_avatars(response)
 
-
     def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-
-        # print('------------Thread date ')
-        # print(thread_date)
 
         if thread_date is None:
             return datetime.today()
@@ -102,11 +88,6 @@ class OffensiveCommunitySpider(SitemapSpider):
         return dateparser.parse(thread_date)
 
     def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
 
         if post_date is None:
             return datetime.today()
@@ -115,3 +96,8 @@ class OffensiveCommunitySpider(SitemapSpider):
 
 class OffensiveCommunityScrapper(SiteMapScrapper):
     spider_class = OffensiveCommunitySpider
+    site_name = 'offensivecommunity.net'
+
+    def load_settings(self):
+        spider_settings = super().load_settings()
+        return spider_settings
