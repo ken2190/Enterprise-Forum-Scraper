@@ -2,7 +2,7 @@ import os
 import re
 import logging
 import time
-import dateparser
+# import dateparser
 
 from selenium.webdriver.firefox.options import Options
 from scrapy import Request
@@ -15,7 +15,7 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-from scrapy.exceptions import CloseSpider
+# from scrapy.exceptions import CloseSpider
 
 from lxml.html import fromstring
 
