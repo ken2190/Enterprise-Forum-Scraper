@@ -8,68 +8,16 @@ class CardingSiteParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "cardingsite.cc"
-        self.thread_name_pattern = re.compile(
-            r'(\d+).*html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'.*-(\d+)\.html$'
-        )
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.files = self.get_filtered_files(kwargs.get('files'))
-        self.comments_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
-        self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
-        self.date_xpath = './/div[contains(@class,"messageMeta")]//span[contains(@class,"DateTime")]/text()'
-        self.author_xpath = './/div[contains(@class,"messageUserBlock")]//a[contains(@class,"username")]//text()'
-        self.post_text_xpath = './/div[contains(@class,"messageContent")]//article/blockquote/descendant::text()[not(ancestor::div[contains(@class,"bbCodeQuote")])]'
-        self.title_xpath = '//div[contains(@class,"titleBar")]/h1//text()'
-        self.comment_block_xpath = './/div[@class="publicControls"]/a//text()'
+        self.avatar_name_pattern = re.compile(r".*/(\S+\.\w+)")
+        self.comments_xpath = '//article[contains(@class,"message--post")]'
+        self.header_xpath = '//article[contains(@class,"message--post")]'
+        self.date_xpath = './/div[contains(@class,"message-attribution-main")]//time/@title'
+        self.author_xpath = './/h4[contains(@class,"message-name")]//span/text()'
+        self.post_text_xpath = './/div[contains(@class,"message-content")]//article/descendant::text()[not(ancestor::div[contains(@class,"bbCodeQuote")])]'
+        self.title_xpath = '//div[contains(@class,"p-title")]/h1/text()'
+        self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite--list")]/li[2]/a/text()'
+        self.avatar_xpath = './/article//a[contains(@class, "avatar")]/img/@src'
 
         # main function
         self.main()
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: (self.thread_name_pattern.search(x).group(1),
-                           self.pagination_pattern.search(x).group(1)))
-
-        return sorted_files
-
-    def get_avatar(self, tag):
-        avatar_block = tag.xpath(
-            './/div[contains(@class,"avatarHolder")]//img/@src'
-        )
-        if not avatar_block:
-            return ""
-
-        name_match = self.avatar_name_pattern.findall(avatar_block[0])
-        if not name_match:
-            return ""
-
-        if name_match[0].startswith('svg'):
-            return ''
-
-        return name_match[0]
-
-    def get_title(self, tag):
-        title = tag.xpath(self.title_xpath)[0]
-        title = title.strip().split(']')[-1] if title else None
-
-        return title
-
-    def get_comment_id(self, tag):
-        comment_id = ""
-        comment_block = tag.xpath(self.comment_block_xpath)
-
-        if comment_block:
-            comment_id = comment_block[-1].strip().split('#')[-1]
-
-        return comment_id.replace(',', '').replace('.', '')
