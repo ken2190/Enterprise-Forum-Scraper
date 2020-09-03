@@ -39,6 +39,7 @@ class BaseTemplate:
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
         )
+        self.files = self.get_filtered_files(kwargs.get('files'))
 
     # can be used for marketplace since it doesn't have pagination
 

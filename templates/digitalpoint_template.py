@@ -10,7 +10,7 @@ class DigitalPointParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         self.parser_name = "forums.digitalpoint.com"
         self.thread_name_pattern = re.compile(
-            r'(.*)-\d+\.html$'
+            r'(\d+).*html$'
         )
         self.pagination_pattern = re.compile(
             r'.*-(\d+)\.html$'

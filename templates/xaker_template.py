@@ -1,7 +1,4 @@
 import re
-import dateparser
-
-
 from .base_template import BaseTemplate
 
 
@@ -13,7 +10,6 @@ class XakerParser(BaseTemplate):
             r".*/(\d+\.\w+)",
             re.IGNORECASE
         )
-        self.files = self.get_filtered_files(kwargs.get('files'))
         self.mode = 'r'
         self.comments_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
