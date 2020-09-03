@@ -66,6 +66,7 @@ class XakerSpider(SitemapSpider):
 
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@data-xf-init="re-captcha"]/@data-sitekey'
+    bypass_success_xpath = '//ol[@class="nodeList"]//h3/a'
 
     # Other settings
     use_proxy = True
@@ -122,14 +123,6 @@ class XakerSpider(SitemapSpider):
 
         yield from self.start_requests(cookies=cookies, ip=ip)
 
-
-    def check_bypass_success(self, browser):
-        if ("blocking your access based on IP address" in browser.page_source or
-                browser.find_elements_by_css_selector('.cf-error-details')):
-            raise RuntimeError("HackForums.net is blocking your access based on IP address.")
-
-        element = browser.find_elements_by_xpath('//ol[@class="nodeList"]//h3/a')
-        return bool(element)
 
     def parse_start(self, response):
 

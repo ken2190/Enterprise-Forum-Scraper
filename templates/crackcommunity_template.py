@@ -1,7 +1,5 @@
 # -- coding: utf-8 --
 import re
-# import locale
-
 from .base_template import BaseTemplate
 
 
