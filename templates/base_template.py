@@ -244,7 +244,8 @@ class BaseTemplate:
             return str(self.index)
 
         if comment_block:
-            comment_id = ''.join(comment_block).strip().split('#')[-1]
+            comment_id = re.compile(r'(\d+)').findall(comment_block)[0]
+            # comment_id = ''.join(comment_block).strip().split('#')[-1]
 
         return comment_id.replace(',', '').replace('.', '')
 
