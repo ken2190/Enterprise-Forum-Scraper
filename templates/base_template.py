@@ -255,7 +255,8 @@ class BaseTemplate:
     def get_author(self, tag):
         author = tag.xpath(self.author_xpath)
         if author:
-            return author[0]
+            author = ''.join(author).strip()
+            return author
         else:
             return ''
 
