@@ -22,6 +22,9 @@ PASS = 'nightlion123'
 REQUEST_DELAY = .6
 NO_OF_THREADS = 16
 
+USER_AGENT = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+              '(KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36')
+
 
 class ShadowCardersSpider(SitemapSpider):
 
@@ -90,10 +93,7 @@ class ShadowCardersSpider(SitemapSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers = {
-            # "Referer": "https://ogusers.com",
-            # "Sec-fetch-mode": "navigate",
-            # "Sec-fetch-site": "same-origin",
-            # "Sec-fetch-user": "?1",
+            "User-Agent": USER_AGENT
         }
 
     def get_avatar_file(self, url):
@@ -128,16 +128,35 @@ class ShadowCardersSpider(SitemapSpider):
         return dateparser.parse(post_date)
 
     def start_requests(self):
-        yield FormRequest(
-            url=self.login_url,
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex,
+                "ip": ip
+            },
+            cookies=cookies,
+            callback=self.parse
+        )
+
+    def parse(self, response):
+        yield FormRequest.from_response(
+            response=response,
+            formid="login",
             formdata={
                 "login": USER,
                 "password": PASS,
             },
             headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            },
+            dont_filter=True,
+            meta=self.synchronize_meta(response),
             callback=self.parse_start,
         )
 
@@ -269,6 +288,9 @@ class ShadowCardersSpider(SitemapSpider):
                 f"History for user {user_name} done..!"
             )
 
+    def check_bypass_success(self, browser):
+        return bool(browser.find_elements_by_xpath('//form[@id="login"]'))
+
 
 class ShadowCardersScrapper(SiteMapScrapper):
 
@@ -282,6 +304,7 @@ class ShadowCardersScrapper(SiteMapScrapper):
                 "DOWNLOAD_DELAY": REQUEST_DELAY,
                 "CONCURRENT_REQUESTS": NO_OF_THREADS,
                 "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+                "USER_AGENT": USER_AGENT
             }
         )
         return settings
