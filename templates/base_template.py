@@ -4,6 +4,7 @@ import traceback
 
 import dateutil.parser as dparser
 import utils
+import re
 
 
 class BrokenPage(Exception):
@@ -32,6 +33,14 @@ class BaseTemplate:
         self.title_xpath = ''
         self.avatar_xpath = ''
         self.avatar_ext = ''
+        self.pagination_pattern = re.compile(
+            r'\d+-(\d+)\.html$'
+        )
+        self.thread_name_pattern = re.compile(
+            r'(\d+).*html$'
+        )
+
+    # can be used for marketplace since it doesn't have pagination
 
     # def get_filtered_files(self, files):
     #     filtered_files = list(
@@ -56,8 +65,8 @@ class BaseTemplate:
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: (self.thread_name_pattern.search(x).group(1),
-                           self.pagination_pattern.search(x).group(1)))
+            key=lambda x: (int(self.thread_name_pattern.search(x).group(1)),
+                           int(self.pagination_pattern.search(x).group(1))))
 
         return sorted_files
 
