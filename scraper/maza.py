@@ -2,7 +2,7 @@ import os
 import re
 import logging
 import time
-import dateparser
+# import dateparser
 
 from selenium.webdriver.firefox.options import Options
 from scrapy import Request
@@ -15,7 +15,7 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-from scrapy.exceptions import CloseSpider
+# from scrapy.exceptions import CloseSpider
 
 from lxml.html import fromstring
 
@@ -69,7 +69,7 @@ class MazaSpider(SeleniumSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     handle_httpstatus_list = [400, 502]
     skip_forums = [204, 194, 208, 221, 153, 171, 168, 203, 191, 192, 169, 211, 102, 28, 155, 162, 150, 224, 155, 84, 187, 90, 188, 196, 197, 47, 83, 189, 149, 121, 184, 112, 122, 186, 205, 114, 40, 76, 185, 219, 201, 206, 120, 217, 128, 111, 127, 170, 119, 181, 216, 82, 113, 118, 180, 182, 169, 198, 199, 110, 179, 65, 43, 44, 73, 178, 215, 100, 177, 202, 176, 214, 72, 42, 70, 146, 49, 78, 175, 173, 117, 174, 109, 213, 46, 159, 195, 210, 48, 190, 154, 64, 207, 218, 38, 223, 160, 193]
 
@@ -98,16 +98,18 @@ class MazaSpider(SeleniumSpider):
         firefox_options.headless = True
 
         # Init firefox profile
-        profile_path = os.path.dirname(os.path.abspath(__file__)).replace(
-            '/scraper', '/firefox_profile')
+        profile_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            'firefox_profile'
+        )
         firefox_profile = FirefoxProfile(profile_path)
 
         # Set proxy
         firefox_profile.set_preference("network.proxy.type", 1)
         firefox_profile.set_preference("network.proxy.http", proxy_host)
-        firefox_profile.set_preference("network.proxy.http_port", PROXY_PORT)
+        firefox_profile.set_preference("network.proxy.http_port", int(PROXY_PORT))
         firefox_profile.set_preference("network.proxy.ssl", proxy_host)
-        firefox_profile.set_preference("network.proxy.ssl_port", PROXY_PORT)
+        firefox_profile.set_preference("network.proxy.ssl_port", int(PROXY_PORT))
 
         # Init web driver arguments
         webdriver_kwargs = {
@@ -137,6 +139,14 @@ class MazaSpider(SeleniumSpider):
 
         self.browser.get(self.base_url)
         time.sleep(self.delay)
+
+        if self.browser.find_elements_by_xpath(
+            '//i[text()="Вы забанены или используете старый сертификат."]'
+        ):
+            self.logger.error('User/cert is banned!')
+            self.browser.quit()
+            return
+
         userbox = self.browser.find_element_by_name('vb_login_username')
         passbox = self.browser.find_element_by_name('vb_login_password')
         checkbox = self.browser.find_element_by_name('cookieuser')

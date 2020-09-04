@@ -21,26 +21,28 @@ IMPORT_DIR=/data/processing/import
 
 if [ ! -d $OUTPUT_DIR ]
 then
-    echo "ERROR: Scraper output directory does not exist $OUTPUT_DIR"
+    echo "ERROR STAGE 0: Scraper output directory does not exist $OUTPUT_DIR"
     exit 2
 fi
 
 if [ ! -d $PARSE_DIR ]
 then
-    echo "ERROR: Parsing output directory does not exist $PARSE_DIR"
+    echo "ERROR STAGE 0: Parsing output directory does not exist $PARSE_DIR"
     exit 2
 fi
 
 if [ ! -d $COMBO_DIR ]
 then
+    mkdir -p $COMBO_DIR
     echo "ERROR: JSON combo directory does not exist $COMBO_DIR"
-    exit 2
+    #exit 2
 fi
 
 if [ ! -d $ARCHIVE_DIR ]
 then
+    mkdir -p $ARCHIVE_DIR
     echo "ERROR: Archive directory does not exist $ARCHIVE_DIR"
-    exit 2
+    #exit 2
 fi
 
 if [ ! -d $IMPORT_DIR ]

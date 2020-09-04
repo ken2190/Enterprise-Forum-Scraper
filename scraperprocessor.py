@@ -88,7 +88,7 @@ def process_scraper(scraper):
         kwargs = {
             'template': template,
             'output': parse_output_dir,
-            'path': scraper_output_dir
+            'input_path': scraper_output_dir
         }
         Parser(kwargs).start()
 

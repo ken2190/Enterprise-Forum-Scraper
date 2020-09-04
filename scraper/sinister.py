@@ -54,28 +54,6 @@ class SinisterSpider(SitemapSpider):
     sitemap_datetime_format = "%m-%d-%Y"
     use_proxy = True
 
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        return datetime.strptime(
-            thread_date.strip()[:10],
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-        return datetime.strptime(
-            post_date.strip()[:10],
-            self.post_datetime_format
-        )
-
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
@@ -155,10 +133,7 @@ class SinisterScrapper(SiteMapScrapper):
                 "DOWNLOAD_DELAY": REQUEST_DELAY,
                 "CONCURRENT_REQUESTS": NO_OF_THREADS,
                 "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+                'RETRY_HTTP_CODES': [403, 406, 429, 500, 503]
             }
         )
         return settings
-
-
-if __name__ == '__main__':
-    pass
