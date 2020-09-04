@@ -25,10 +25,13 @@ class VigilanteParser(BaseTemplate):
         self.header_xpath = '//div[@id="posts"]/div[@class="post "]'
         self.date_xpath = '..//span[@class="post_date"]/text()'
         self.title_xpath = '//td[@class="thead"]/div/strong/text()'
-        self.post_text_xpath = './/div[@class="post_body scaleimages"]/descendant::text()[not(ancestor::blockquote)]'
+        self.post_text_xpath = './/div[@class="post_body scaleimages"]'\
+                               '/descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = './/div[@class="author_avatar"]/a/img/@src'
-        self.comment_block_xpath = '..//div[@class="post_head"]/div/strong/a/text()'
-        self.author_xpath = './/div[@class="author_information"]//strong[1]//text()'
+        self.comment_block_xpath = '..//div[@class="post_head"]/div/'\
+                                   'strong/a/text()'
+        self.author_xpath = './/div[@class="author_information"]'\
+                            '//strong[1]//text()'
 
         # main function
         self.main()
@@ -70,26 +73,20 @@ class VigilanteParser(BaseTemplate):
         return comments
 
     def get_date(self, tag, index=1):
-        date_block = tag.xpath(self.date_xpath)[index-1]
+        date_block = tag.xpath(self.date_xpath)[index - 1]
         date = date_block.strip() if date_block else ""
         try:
             pattern = "%m-%d-%Y, %I:%M %p"
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
-        except:
+        except Exception:
             try:
                 date = dparser.parse(date).timestamp()
                 return str(date)
-            except:
+            except Exception:
                 pass
 
             return ""
-
-    # def get_title(self, tag):
-    #     title = tag.xpath(self.title_xpath)
-    #     title = title[-1].strip() if title else None
-
-    #     return title
 
     def get_comment_id(self, tag, index=1):
         comment_id = ""
