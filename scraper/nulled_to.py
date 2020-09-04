@@ -72,22 +72,6 @@ class NulledSpider(SitemapSpider):
             }
         )
 
-    def parse_thread_date(self, thread_date):
-        if thread_date is None:
-            return datetime.today()
-        try:
-            date = dateparser.parse(thread_date)
-            return date
-        except Exception:
-            traceback.printexec()
-            return datetime.today()
-
-    def parse_post_date(self, post_date):
-        return datetime.strptime(
-            post_date.strip()[:-6],
-            self.post_datetime_format
-        )
-
     def start_requests(self):
         # Proceed for banlist
         yield Request(
@@ -121,7 +105,7 @@ class NulledSpider(SitemapSpider):
         yield from self.parse_avatars(response)
 
         # Parse generic thread response
-        # yield from super().parse_thread(response)
+        yield from super().parse_thread(response)
 
 
     def parse_avatars(self, response):
@@ -131,7 +115,7 @@ class NulledSpider(SitemapSpider):
 
         # Save avatar content
         all_avatars = response.xpath(self.avatar_xpath).extract()
-        for avatar_url in all_avatars:            
+        for avatar_url in all_avatars:
 
             temp_url = avatar_url
             # Standardize avatar url

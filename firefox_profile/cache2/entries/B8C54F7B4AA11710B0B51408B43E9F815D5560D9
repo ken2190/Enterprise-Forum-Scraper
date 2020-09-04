@@ -1,0 +1,1831 @@
+var dns_subdomain = generage_dns_subdomain();
+var loadingHTML = '<div class="col23-l"><span class="txt"><img width="16px" height="16px" src="/img/loading.gif" class="loading"></span></div>';
+var notAvailableHTML = '<div class="col23-l"><span class="txt">N/A</span></div>';
+
+var dic = 	{
+		'en' : {
+			'disabled' : 'disabled',
+			'enabled' : 'enabled',
+			'loc_ip' : 'Local IPs',
+			'pub_ip' : 'Public IPs',
+			'sending' : 'Sending...',
+			'send_success' : 'Message has been sent successfully!',
+			'send_error' : 'An error occured during message sending. Try again later.',
+			'bl_found' : 'IP found in blacklists',
+			'bl_clean' : 'CLEAN',
+			'bl_result' : 'Result',
+			'bl_name' : 'Name',
+			'bl_desc' : 'Description',
+			'bl_checking' : 'Checking',
+			'bl_error' : 'Error<br>Contact support',
+			
+			'settings_saved' : 'Saved!',
+			
+			'no_localstorage' : 'localStorage is disabled in your browser.<br>Please enable it or install latest version of your browser.<br><br>localStorage is available in Internet Explorer 8+, Firefox 3.5+, Chrome 4+, Opera 10.50+, Safari 4+.',
+			
+			
+			
+			'http_proxy_headers' : 'detected proxy http headers', 
+			'no_http_proxy_headers' : 'no proxy http headers detected', 
+			'ports_closed' : 'no open ports detected', 
+			'ports_open' : 'open ports detected: ', 
+			'hostname_like_proxy' : 'detected a proxy-like hostname: ', 
+			'hostname_no_proxy' : 'no proxy signs in hostname', 
+			'ip_is_tor' : 'IP belongs to TOR', 
+			'ip_is_not_tor' : 'IP doesn\'t belong to TOR', 
+			
+			'check_ping_error_direct_ping' : 'Client side ping error. Try to refresh page.',
+			'check_ping_error_reverse_ping' : 'Your host does not respond to ping. We cannot detect proxy in your connection.',
+			'check_ping_no_tunnel' : 'No proxies detected in your connection.',
+			'check_ping_tunnel_detected' : 'Proxies are detected in your connection.',
+			
+			
+			'navlies_detected' : 'Inconsistency found.',
+			'navlies_not_detected' : 'No inconsistencies found.',
+			
+			
+			
+			'tip_navlies_language_lied' : 'Inconsistency of your browser languages found. navigator.languages and navigator.language have different languages.',
+			'tip_navlies_language_ok' : 'No inconsistencies of your browser languages found.',
+			'tip_navlies_resolution_lied' : 'Inconsistency of your screen resolution found. screen.width < screen.availWidth or screen.height < screen.availHeight.',
+			'tip_navlies_resolution_ok' : 'No inconsistencies of your screen resolution found.',
+			'tip_navlies_os_lied' : 'Inconsistency of your browser properties (operation system) found. Operation system in useragent does not correspond with navigator.oscpu; or operation system in useragent does not correspond with navigator.platform; or navigator.plugins property is undefined (this is only possible for IE in Windows) and operation system of useragent is not Windows; or there are properties of mobile browsers: "ontouchstart" in window, navigator.maxTouchPoints, navigator.msMaxTouchPoints, but useragent browser type is not mobile.',
+			'tip_navlies_os_ok' : 'No inconsistencies of your browser properties (operation system) found.',
+			'tip_navlies_browser_lied' : 'Inconsistency of your browser properties (browser type) found. Browser type in useragent does not correspond with navigator.productSub; or browser type in useragent does not correspond with function eval length; or exception handling corresponds to Firefox browser but useragent browser is not Firefox.',
+			'tip_navlies_browser_ok' : 'No inconsistencies of your browser properties (browser type) found.',
+			
+			
+			
+			'tip_webrtc_disabled' : 'WebRTC technology is disabled. This is the best for your security.',
+			'tip_webrtc' : 'WebRTC technology lets detect your real IP bypassing vpn, proxy or socks connections. We highly recommend you to disable WebRTC. At this moment you can safely do that in Firefox browser only. You can learn more about the technology and how to disable it <a target="_blank" href="/article/why-does-webrtc-detect-my-real-ip-address">here</a>.',
+			'tip_java_disabled' : 'Java is disabled. This is the best for your security.',
+			'tip_java_enabled' : 'Java (do no confuse with Java Script) is necessary to work with very limited amount of sites. At the same time Java can be a threat for your security. If you are not sure whether you need Java or not we recommend to disable it. You can learn <a target="_blank" href="/article/how-to-disable-java">here</a> how to do it.',
+			'tip_http_header' : 'Several IP addresses in one HTTP header mean that you are probably using a transparent proxy. In this case we recommend you to change transparent proxy for <a target="_blank" href="/proxy-socks">socks</a> or <a target="_blank" href="/vpn">vpn</a>.',
+			'tip_dns' : 'If there is a DNS server in the list which country is different from your main IP country, it probably means that you have DNS leak. If there is IP belonging to your real location country, it probably means that you have DNS leak. What DNS leak is and how to fix it you can learn <a target="_blank" href="/article/why-do-i-see-dns-servers-of-my-isp-when-vpn-connection-is-established-dns-leaks">here</a>.',
+			
+			
+			'tip_proxy_headers' : 'There are headers of a proxy in the HTTP request. This is an indirect sign that you are using a proxy. We recommend you to to change the proxy for another one which doesn\'t add these headers.',
+			'tip_no_proxy_headers' : 'There are no headers of a proxy in the HTTP request.',
+			'tip_hostname' : 'There are suspicious proxy-like words in the hostname resolved by your IP. This is an indirect sign that you are using a proxy. We recommend you to to change the proxy for another one which doesn\'t have such words in its hostname.',
+			'tip_no_hostname' : 'There are no suspicious proxy-like words in the hostname resolved by your IP.',
+			'tip_is_tor' : 'Your IP belongs to anonymous TOR network. This is an indirect sign that you are using a proxy or your computer is a TOR network node. We recommend you to use additional anonymization methods: <a target="_blank" href="/vpn">vpn</a> or <a target="_blank" href="/proxy-socks">proxy/socks</a>.',
+			'tip_no_is_tor' : 'Your IP doesn\'t belong to anonymous TOR network.',
+			
+			
+			'tip_http_proxy_ports' : 'Your IP has open ports of a http proxy. This is an indirect sign that you are using a proxy. We recommend you to to change the proxy for another one which doesn\'t have open ports.',
+			'tip_no_http_proxy_ports' : 'Your IP doesn\'t have open ports of a proxy.',
+			'tip_web_proxy_ports' : 'Your IP has open ports of a web proxy. This is an indirect sign that you are using a proxy. We recommend you to to change the proxy for another one which doesn\'t have open ports.',
+			'tip_no_web_proxy_ports' : 'Your IP doesn\'t have open ports of a proxy.',
+			'tip_vpn_ports' : 'Your IP has open ports of a VPN. This is an indirect sign that you are using a VPN. We recommend you to to change the VPN for another one which doesn\'t have open ports. You can find VPN servers in <a target="_blank" href="/vpn">our list</a>.',
+			'tip_no_vpn_ports' : 'Your IP doesn\'t have open ports of a VPN.',
+			'tip_ssh_ports' : 'Your IP has open SSH ports. This is an indirect sign that you are using a proxy OR your computer network uses <a href="https://en.wikipedia.org/wiki/Network_address_translation" target="_blank">NAT</a> which is absolutely normal and should not arouse suspicion.',
+			'tip_no_ssh_ports' : 'Your IP doesn\'t have open SSH ports.',
+			'tip_rdp_ports' : 'Your IP has open RDP ports. This is an indirect sign that you are using a proxy RDP. We recommend you to to change the proxy for another one which doesn\'t have open ports.',
+			'tip_no_rdp_ports' : 'Your IP doesn\'t have open RDP ports.',
+			'tip_vnc_ports' : 'Your IP has open VNC ports. This is an indirect sign that you are using a proxy VNC. We recommend you to to change the proxy for another one which doesn\'t have open ports.',
+			'tip_no_vnc_ports' : 'Your IP doesn\'t have open VNC ports.',
+			'tip_tv_ports' : 'Your IP has open TeamViewer ports. This is an indirect sign that you are using a proxy TeamViewer. We recommend you to to change the proxy for another one which doesn\'t have open ports.',
+			'tip_no_tv_ports' : 'Your IP doesn\'t have open TeamViewer ports.',
+			'tip_apc_ports' : 'Your IP has open Anyplace Control ports. This is an indirect sign that you are using a proxy Anyplace Control. We recommend you to to change the proxy for another one which doesn\'t have open ports.',
+			'tip_no_apc_ports' : 'Your IP doesn\'t have open Anyplace Control ports.',
+			
+			
+			'tip_check_ping_no_tunnel' : 'We could not detect proxy servers in your connection.',
+			'tip_check_ping_tunnel_detected' : 'Proxy servers were detected in your connection. We recommend you to change your <a target="_blank" href="/vpn">vpn</a> or <a target="_blank" href="/proxy-socks">proxy/socks</a> to one that does not respond to ping or chose the proxy near your real geolocation.',
+			
+			'tip_useragent_match' : 'Useragent in HTTP request and in Javascript are the same.',
+			'tip_useragent_no_match' : 'Useragent in HTTP request and in Javascript are not the same. This is an indirect sign that you are using a proxy which changes HTTP headers. We recommend you to check the useragent in your browser settings or to change your proxy for another one which doesn\'t change request headers.',
+			'tip_timezone_match' : 'Timezone and time on your computer and in your IP location are the same.',
+			'tip_timezone_no_match' : 'Timezone and time on your computer and in your IP location are not the same. This is an indirect sign that you are using a proxy. We recommend you to set your system time according to your IP geolocation (this IP is specified in HTTP section in IP field).',
+			
+			'tip_pof_os_match' : 'Operation System from Passive OS Figerprint and Operation System from your browser useragent are the same.',
+			'tip_pof_os_no_match' : 'Operation System from Passive OS Figerprint and Operation System from your browser useragent are not the same. This is an indirect sign that you are using a proxy which Operation System is different from yours. We recommend you to change useragent in your browser settings, so its OS signature will match Fingerprint OS signature, or change you proxy for another one that has the same OS as yours, or use <a target="_blank" href="/vpn">vpn</a> (vpn transits the initial request, vpn does not form the request itself, but proxy commonly does).',
+			
+			'tip_pof_conn_type_no_tunnel' : 'Vpn or other tunnels are not detected in your connection.',
+			'tip_pof_conn_type_is_tunnel' : 'Vpn or other tunnels are detected in your connection. We recommend you to use proxy in addition to vpn or use <a target="_blank" href="/vpn">vpn</a> which does not leave OpenVPN fingerprints.',
+			
+			'tip_bl_clean' : 'Your IP was not found in blacklists.',
+			'tip_bl_found' : 'Your IP was found in blacklists. We can recommend you to change your IP or make a request to the blacklist making site in order to remove your IP from the blacklist. We recommend you to use additional anonymization methods: <a target="_blank" href="/vpn">vpn</a> or <a target="_blank" href="/proxy-socks">proxy/socks</a>.',
+			
+			
+			
+			'help_tracking_cookie' : 'This is an example of how sites may track you visits. With this demonstration you can try to evade tracking by removing certain data set by the sites in your browser. Your visits data is saved in browser cookie. Your operation system time is shown for each visit. In order to clear visit history you should clear cookie or use browser private mode.',
+			'help_tracking_localstorage' : 'This is an example of how sites may track you visits. With this demonstration you can try to evade tracking by removing certain data set by the sites in your browser. Your visits data is saved in browser localStorage. Your operation system time is shown for each visit. In order to clear visit history you should clear browser saved data (cookie removal only will not help) or use browser private mode.',
+			
+			
+			'help_navlies_language' : 'Checks inconsistency of your browser languages (navigator.languages and navigator.language have different languages).',
+			'help_navlies_resolution' : 'Checks inconsistency of your screen resolution (screen.width < screen.availWidth or screen.height < screen.availHeight).',
+			'help_navlies_os' : 'Checks inconsistency of your browser properties (operation system) (operation system in useragent does not correspond with navigator.oscpu; or operation system in useragent does not correspond with navigator.platform; or navigator.plugins property is undefined (this is only possible for IE in Windows) and operation system of useragent is not Windows; or there are properties of mobile browsers: "ontouchstart" in window, navigator.maxTouchPoints, navigator.msMaxTouchPoints, but useragent browser type is not mobile).',
+			'help_navlies_browser' : 'Checks inconsistency of your browser properties (browser type) (browser type in useragent does not correspond with navigator.productSub; or browser type in useragent does not correspond with function eval length; or exception handling corresponds to Firefox browser but useragent browser is not Firefox).',
+			
+			
+			'help_main_ip' : 'Your main IP address you make requests to our site from.',
+			'help_http_headers' : 'HTTP request headers. Some of them contain information about your IP.',
+			'help_js_enabled' : 'Is Java Script enabled?',
+			'help_dns' : 'IP of DNS servers your browser makes requests to our site with.',
+			'help_webrtc' : 'WebRTC technology. To learn more click <a target="_blank" href="/article/why-does-webrtc-detect-my-real-ip-address">here</a>.',
+			'help_flash_enabled' : 'Is Flash enabled?',
+			'help_flash_ip' : 'The IP address Flash makes requests to our site from.',
+			'help_flash_dns' : 'IP DNS servers Flash makes requests to our site with.',
+			'help_java_enabled' : 'Is Java enabled?',
+			'help_java_ip_tcp' : 'The IP address Java makes requests to our site from.',
+			'help_java_dns_resolve' : 'IP DNS servers Java makes requests to our site with.',
+			'help_java_dns_system' : 'Get system DNS servers with Java.',
+			
+			
+			'help_proxy_headers' : 'We check if there are VIA and PROXY_CONNECTION headers in HTTP request.',
+			'help_hostname' : 'We check if there is a suspicious hostname with proxy-like words in it.',
+			'help_is_tor' : 'We check if your IP belongs to an anonymous TOR network.',
+			'help_check_ping' : 'We compare ping from your computer to our server and ping from our server to the host of your external IP. If the difference is too much then there is probably a tunnel and you are using a proxy.',
+			'help_useragent' : 'We check if the useragents in HTTP request and in Javascript are the same.',
+			'help_timezone' : 'We check if the timezones and time on your computer and in your IP location are the same.',
+			
+			'help_http_proxy_ports' : 'We check if there are open ports which http proxies usually have.',
+			'help_web_proxy_ports' : 'We check if there are open ports which web proxies usually have.',
+			'help_vpn_ports' : 'We check if there are open ports which VPN usually has.',
+			'help_ssh_ports' : 'We check if there are open ports which SSH usually has.',
+			'help_rdp_ports' : 'We check if there are open ports which RDP usually has. This check is not always valid depending on your computer, network, firewall and antivirus settings. Refresh this page several times to get more trusted results. If all RDP, VNC, TV and APC ports are signed as open, the results are probably not valid.',
+			'help_vnc_ports' : 'We check if there are open ports which VNC usually has. This check is not always valid depending on your computer, network, firewall and antivirus settings. Refresh this page several times to get more trusted results. If all RDP, VNC, TV and APC ports are signed as open, the results are probably not valid.',
+			'help_tv_ports' : 'We check if there are open ports which <a href="https://community.teamviewer.com/t5/Knowledge-Base/Which-ports-are-used-by-TeamViewer/ta-p/4139" target="_blank">TeamViewer master server or router</a> usually has. This check is not always valid depending on your computer, network, firewall and antivirus settings. Refresh this page several times to get more trusted results. If all RDP, VNC, TV and APC ports are signed as open, the results are probably not valid.',
+			'help_apc_ports' : 'We check if there are open ports which Anyplace Control usually has. This check is not always valid depending on your computer, network, firewall and antivirus settings. Refresh this page several times to get more trusted results. If all RDP, VNC, TV and APC ports are signed as open, the results are probably not valid.',
+			
+			'help_pof_os' : 'Using passive connection fingerprinting technology we detect your OS.',
+			'help_pof_browser' : 'Using passive connection fingerprinting technology we detect your browser.',
+			'help_pof_os_match' : 'Using passive connection fingerprinting technology we compare the OS in your browser useragent and the OS making outgoing packets during your connection.',
+			'help_pof_mtu' : 'Using passive connection fingerprinting technology we detect your <a href="https://en.wikipedia.org/wiki/Maximum_transmission_unit" target="_blank">MTU</a>. It allows to detect your connection type.',
+			'help_pof_conn_type' : 'Using passive connection fingerprinting technology we detect your connection type (home internet, protected tunnels, vpn, anonymity means etc).',
+			'help_pof_lang' : 'Using passive connection fingerprinting technology we detect the language used.',
+			
+			'help_lang_httpheaders' : 'Language detection with HTTP request headers.',
+			'help_lang_js' : 'Language detection with Java Script.',
+			'help_lang_flash' : 'Language detection with Flash.',
+			'help_lang_java' : 'Language detection with Java.'
+		},
+		'ru' : {
+			'disabled' : 'отключено',
+			'enabled' : 'включено',
+			'loc_ip' : 'Локальные IP',
+			'pub_ip' : 'Публичные IP',
+			'sending' : 'Отправка...',
+			'send_success' : 'Сообщение успешно отправлено!',
+			'send_error' : 'При отправке сообщения произошла ошибка. Попробуйте позже.',
+			'bl_found' : 'IP найден в списках',
+			'bl_clean' : 'ЧИСТО',
+			'bl_result' : 'Результат',
+			'bl_name' : 'Название',
+			'bl_desc' : 'Описание',
+			'bl_checking' : 'Проверяем',
+			'bl_error' : 'Ошибка<br>Обратитесь в поддержку',
+			
+			'settings_saved' : 'Сохранено!',
+			
+			'no_localstorage' : 'localStorage отключен в вашем браузере.<br>Включите его, либо установите последнюю версию вашего браузера.<br><br>localStorage доступен в Internet Explorer 8+, Firefox 3.5+, Chrome 4+, Opera 10.50+, Safari 4+.',
+			
+			
+			
+			'http_proxy_headers' : 'обнаружены http заголовки, свойственные для прокси', 
+			'no_http_proxy_headers' : 'http заголовков прокси не обнаружено', 
+			'ports_closed' : 'открытых портов не обнаружено', 
+			'ports_open' : 'обнаружены открытые порты: ', 
+			'hostname_like_proxy' : 'имя хоста похоже на прокси: ', 
+			'hostname_no_proxy' : 'в имени хоста признаков прокси не замечено', 
+			'ip_is_tor' : 'IP принадлежит сети TOR', 
+			'ip_is_not_tor' : 'IP не принадлежит сети TOR', 
+			
+			'check_ping_error_direct_ping' : 'Ошибка ping со стороны клиента. Попробуйте обновить страницу.',
+			'check_ping_error_reverse_ping' : 'Ваш хост не отвечает на команду ping. Мы не можем определить наличие прокси в вашем соединении.',
+			'check_ping_no_tunnel' : 'В вашем соединении не обнаружено прокси.',
+			'check_ping_tunnel_detected' : 'В вашем соединении обнаружены прокси.',
+			
+			'navlies_detected' : 'Обнаружено несоответствие.',
+			'navlies_not_detected' : 'Несоответствий не обнаружено.',
+			
+			
+			'tip_navlies_language_lied' : 'Обнаружено несоответствие в свойствах языка вашего браузера. В navigator.languages и navigator.language указаны разные языки.',
+			'tip_navlies_language_ok' : 'Несоответствий в свойствах языка вашего браузера не обнаружено.',
+			'tip_navlies_resolution_lied' : 'Обнаружено несоответствие в разрешении экрана. screen.width < screen.availWidth или screen.height < screen.availHeight.',
+			'tip_navlies_resolution_ok' : 'Несоответствий в разрешении экрана не обнаружено.',
+			'tip_navlies_os_lied' : 'Обнаружено несоответствие в свойствах вашего браузера относительно операционной системы. Операционная система в юзерагенте не соответствует navigator.oscpu; либо операционная система в юзерагенте не соответствует navigator.platform; либо свойство navigator.plugins не определено (это возможно только для IE под Windows) и операционная система в юзерагенте это не Windows; либо есть свойства мобильных браузеров: "ontouchstart" in window, navigator.maxTouchPoints, navigator.msMaxTouchPoints, но в юзерагенте браузер не мобильный.',
+			'tip_navlies_os_ok' : 'Несоответствий в свойствах вашего браузера относительно операционной системы не обнаружено.',
+			'tip_navlies_browser_lied' : 'Обнаружено несоответствие в свойствах вашего браузера относительно типа браузера. Тип браузера в юзерагенте не соответствует navigator.productSub; либо тип браузера в юзерагенте не соответствует длине функции eval; либо обработка исключений соответствует браузеру Firefox, но в юзерагенте указан другой браузер.',
+			'tip_navlies_browser_ok' : 'Несоответствий в свойствах вашего браузера относительно типа браузера не обнаружено.',
+
+			
+			'tip_webrtc_disabled' : 'Технология WebRTC отключена. Это оптимально для вашей безопасности.',
+			'tip_webrtc' : 'Технология WebRTC позволяет определять ваш реальный IP в обход vpn, proxy и socks соединений. Настоятельно рекомендуем вам отключить WebRTC. На данный момент это возможно надежно сделать только в Firefox. Подробнее о технологии и о способее ее отключения <a target="_blank" href="/article/pochemu-webrtc-opredelyaet-moy-nastoyashhiy-ip-adres">по ссылке</a>.',
+			'tip_java_disabled' : 'Java отключена. Это оптимально для вашей безопасности.',
+			'tip_java_enabled' : 'Java (не путайте с Java Script) необходима для работы с очень небольшим количеством сайтов. В то же время, Java может представлять угрозу вашей безопасности. Если вы точно не знаете, нужна ли вам эта технология, рекомендуем отключить ее. Как это сделать, описано <a target="_blank" href="/article/kak-otklyuchit-java">по ссылке</a>.',
+			'tip_http_header' : 'Несколько IP в одном из заголовков HTTP-запроса говорят о возможном наличии прозрачного (transparent) proxy в цепочке подключения. Рекомендуем вам сменить прозрачный proxy на <a target="_blank" href="/ru/proxy-socks">proxy/socks</a> или <a target="_blank" href="/ru/vpn">vpn</a>.',
+			'tip_dns' : 'Наличие в списке DNS сервера, в стране, отличной от страны вашего основного IP, говорит о возможных утечках DNS. Если в списке DNS серверов есть IP страны вашего реального местоположения, то это скорее всего является утечкой. Что это такое и как исправить, вы можете прочесть <a target="_blank" href="/article/pochemu-pri-rabotayushhem-vpn-sajty-opredelyayut-dns-servera-moego-provajdera-dns-utechki">по ссылке</a>.',
+			
+			
+			'tip_proxy_headers' : 'В HTTP запросе обнаружены заголовки от прокси. Это является косвенным признаком того, что вы используете прокси. Рекомендуем сменить прокси на тот, у которого не будет обнаружено таких заголовков.',
+			'tip_no_proxy_headers' : 'В HTTP запросе не обнаружены заголовки от proxy.',
+			'tip_hostname' : 'В имени хоста, полученного по вашему IP, содержатся слова, свойственные для прокси. Это является косвенным признаком того, что вы используете прокси. Рекомендуем сменить прокси на тот, у которого не будет обнаружено таких слов в имени хоста.',
+			'tip_no_hostname' : 'В имени хоста, полученного по вашему IP, не обнаружено подозрительных слов.',
+			'tip_is_tor' : 'Ваш IP принадлежит анонимной сети TOR. Это является косвенным признаком того, что вы используете прокси, либо сами являетесь узлом сети TOR. Рекомендуем использовать дополнительные средства анонимизации: например, <a target="_blank" href="/ru/vpn">vpn</a> или <a target="_blank" href="/ru/proxy-socks">прокси</a>.',
+			'tip_no_is_tor' : 'Ваш IP не принадлежит анонимной сети TOR.',
+			'tip_check_ping_no_tunnel' : 'Нам не удалось обнаружить наличие прокси в вашем соединении.',
+			'tip_check_ping_tunnel_detected' : 'В вашем соединении обнаружено наличие прокси. Рекомендуем сменить <a target="_blank" href="/ru/vpn">vpn</a> или <a target="_blank" href="/ru/proxy-socks">прокси</a> на тот, который не будет отвечать на ping, либо выбрать прокси максимально близко к своему географическому местоположению.',
+
+			
+			'tip_http_proxy_ports' : 'У вашего IP открыты порты, свойственные для http прокси. Это является косвенным признаком того, что вы используете прокси. Рекомендуем сменить прокси на тот, у которого не будет обнаружено открытых портов.',
+			'tip_no_http_proxy_ports' : 'У вашего IP не обнаружено открытых портов, свойственных для прокси.',
+			'tip_web_proxy_ports' : 'У вашего IP открыты порты, свойственные для web прокси. Это является косвенным признаком того, что вы используете прокси. Рекомендуем сменить прокси на тот, у которого не будет обнаружено открытых портов.',
+			'tip_no_web_proxy_ports' : 'У вашего IP не обнаружено открытых портов, свойственных для прокси.',
+			'tip_vpn_ports' : 'У вашего IP открыты порты, свойственные для VPN сервера. Это является косвенным признаком того, что вы используете VPN. Рекомендуем сменить VPN на тот, у которого не будет обнаружено открытых портов. VPN сервисы вы можете найти в нашем <a target="_blank" href="/ru/vpn">списке</a>.',
+			'tip_no_vpn_ports' : 'У вашего IP не обнаружено открытых портов, свойственных для VPN.',
+			'tip_ssh_ports' : 'У вашего IP открыты SSH порты. Это является косвенным признаком того, что вы используете прокси ИЛИ ваш компьютер находится в сети, которая использует <a href="https://ru.wikipedia.org/wiki/NAT" target="_blank">NAT</a>, такое бывает достаточно часто и не должно вызывать подозрений.',
+			'tip_no_ssh_ports' : 'У вашего IP не обнаружено открытых SSH портов.',
+			'tip_rdp_ports' : 'У вашего IP открыты RDP порты. Это является косвенным признаком того, что вы используете прокси RDP. Рекомендуем сменить прокси на тот, у которого не будет обнаружено открытых портов.',
+			'tip_no_rdp_ports' : 'У вашего IP не обнаружено открытых RDP портов.',
+			'tip_vnc_ports' : 'У вашего IP открыты VNC порты. Это является косвенным признаком того, что вы используете прокси VNC. Рекомендуем сменить прокси на тот, у которого не будет обнаружено открытых портов.',
+			'tip_no_vnc_ports' : 'У вашего IP не обнаружено открытых VNC портов.',
+			'tip_tv_ports' : 'У вашего IP открыты TeamViewer порты. Это является косвенным признаком того, что вы используете прокси TeamViewer. Рекомендуем сменить прокси на тот, у которого не будет обнаружено открытых портов.',
+			'tip_no_tv_ports' : 'У вашего IP не обнаружено открытых TeamViewer портов.',
+			'tip_apc_ports' : 'У вашего IP открыты Anyplace Control порты. Это является косвенным признаком того, что вы используете прокси Anyplace Control. Рекомендуем сменить прокси на тот, у которого не будет обнаружено открытых портов.',
+			'tip_no_apc_ports' : 'У вашего IP не обнаружено открытых Anyplace Control портов.',
+			
+			
+			'tip_useragent_match' : 'Useragent в HTTP запросе и в Javascript совпадают.',
+			'tip_useragent_no_match' : 'Useragent в HTTP запросе и в Javascript не совпадают. Это является косвенным признаком того, что вы используете прокси, который изменяет заголовки HTTP запросов. Рекомендуем проверить корректность названия useragent в настройках вашего браузера, либо сменить прокси на тот, который не изменяет заголовки.',
+			'tip_timezone_match' : 'Часовые пояса и время на вашем компьютере и в локации, которой принадлежит ваш IP, совпадают.',
+			'tip_timezone_no_match' : 'Часовые пояса и время на вашем компьютере и в локации, которой принадлежит ваш IP, не совпадают. Это является косвенным признаком того, что вы используете прокси. Рекомендуем настроить время в соответствии с локацией вашего IP (который указан в разделе HTTP в поле IP).',
+			
+			'tip_pof_os_match' : 'Операционная система, полученная с помощью технологии анализа вашего соединения, и операционная система, полученная из useragent\'а вашего браузера совпадают.',
+			'tip_pof_os_no_match' : 'Операционная система, полученная с помощью технологии анализа вашего соединения, и операционная система, полученная из useragent\'а вашего браузера не совпадают. Это является косвенным признаком того, что вы используете прокси, операционная система которого отличается от вашей. Рекомендуем поменять useragent в настройках вашего браузера, чтобы он соответствовал операционной системе используемого вами прокси, либо сменить прокси на тот, операционная система которого совпадает с вашей, либо используйте <a target="_blank" href="/ru/vpn">vpn</a> (vpn, в отличии от прокси, передает изначальный запрос, сформированный на вашей системе, а не формирует его заново от своего имени).',
+			
+			'tip_pof_conn_type_no_tunnel' : 'В вашем соединении не обнаружено vpn и других видов туннелей.',
+			'tip_pof_conn_type_is_tunnel' : 'В вашем соединении обнаружен vpn или другой вид туннеля. Рекомендуем использовать прокси поверх впн, либо выбрать <a target="_blank" href="/ru/vpn">vpn</a>, который не оставляет OpenVPN отпечатков в соединении.',
+			
+			
+			'tip_bl_clean' : 'Ваш IP не найден в черных списках.',
+			'tip_bl_found' : 'Ваш IP найден в черных списках. Рекомендуем сменить IP, либо обратиться к сайту-составителю черного списка с просьбой исключить IP из списка. Рекомендуем использовать дополнительные средства анонимизации: например, <a target="_blank" href="/ru/vpn">vpn</a> или <a target="_blank" href="/ru/proxy-socks">прокси</a>.',
+			
+			
+			
+			'help_tracking_cookie' : 'Эта функция является демонстрацией того, как сайты могут отслеживать ваши посещения. С ее помощью вы можете тренироваться в очистке меток, установленных в вашем браузере сайтами. Данные о ваших визитах сохраняются в cookie. Время указано то, которое было на вашем компьютере в момент визита. Для удаления истории визитов необходимо очистить cookie, либо воспользоваться приватным режимом браузера.',
+			'help_tracking_localstorage' : 'Эта функция является демонстрацией того, как сайты могут отслеживать ваши посещения. С ее помощью вы можете тренироваться в очистке меток, установленных в вашем браузере сайтами. Данные о ваших визитах сохраняются в localStorage. Время указано то, которое было на вашем компьютере в момент визита. Для удаления истории визитов необходимо очистить сохраненные данные браузера (очистка только cookie не поможет), либо воспользоваться приватным режимом браузера.',
+			
+			
+			'help_navlies_language' : 'Проверяется несоответствие в свойствах языка вашего браузера (navigator.languages и navigator.language указаны разные языки).',
+			'help_navlies_resolution' : 'Проверяется несоответствие в разрешении экрана (screen.width < screen.availWidth или screen.height < screen.availHeight).',
+			'help_navlies_os' : 'Проверяется несоответствие в свойствах вашего браузера относительно операционной системы (операционная система в юзерагенте не соответствует navigator.oscpu; либо операционная система в юзерагенте не соответствует navigator.platform; либо свойство navigator.plugins не определено (это возможно только для IE под Windows) и операционная система в юзерагенте это не Windows; либо есть свойства мобильных браузеров: "ontouchstart" in window, navigator.maxTouchPoints, navigator.msMaxTouchPoints, но в юзерагенте браузер не мобильный).',
+			'help_navlies_browser' : 'Проверяется несоответствие в свойствах вашего браузера относительно типа браузера (тип браузера в юзерагенте не соответствует navigator.productSub; либо тип браузера в юзерагенте не соответствует длине функции eval; либо обработка исключений соответствует браузеру Firefox, но в юзерагенте указан другой браузер).',
+			
+			'help_main_ip' : 'Ваш основной IP адрес, с которого делается запрос к сайту.',
+			'help_http_headers' : 'Заголовки HTTP запроса. В некоторых из них содержится информация о вашем IP.',
+			'help_js_enabled' : 'Включен ли Java Script.',
+			'help_dns' : 'IP DNS серверов, с которых средствами браузера делаются DNS запросы к нашему сайту.',
+			'help_webrtc' : 'Технология WebRTC. Подробнее <a target="_blank" href="/article/pochemu-webrtc-opredelyaet-moy-nastoyashhiy-ip-adres">по ссылке</a>.',
+			'help_flash_enabled' : 'Включен ли Flash.',
+			'help_flash_ip' : 'Получение IP адреса, с которого Flash делает запросы к сайту.',
+			'help_flash_dns' : 'IP DNS серверов, с которых через Flash делаются DNS запросы к нашему сайту.',
+			'help_java_enabled' : 'Включена ли Java.',
+			'help_java_ip_tcp' : 'Получение IP адреса, с которого Java делает запросы к сайту.',
+			'help_java_dns_resolve' : 'IP DNS серверов, с которых через Java делаются DNS запросы к нашему сайту.',
+			'help_java_dns_system' : 'Получение системного DNS сервера с помощью Java.',
+			
+			'help_proxy_headers' : 'Проверяется наличие в HTTP запросе заголовков VIA и PROXY_CONNECTION.',
+			'help_http_proxy_ports' : 'Проверяется наличие открытых портов, свойственных для http proxy.',
+			'help_web_proxy_ports' : 'Проверяется наличие открытых портов, свойственных для web proxy.',
+			'help_vpn_ports' : 'Проверяется наличие открытых портов, свойственных для VPN.',
+			'help_ssh_ports' : 'Проверяется наличие открытых портов, свойственных для SSH.',
+			'help_rdp_ports' : 'Проверяется наличие открытых портов, свойственных для RDP. Результаты этой проверки не всегда верны. На них могут влиять настройки вашего компьютера, сети, антивируса и фаерволла. Обновите эту страницу несколько раз, чтобы получить более корректные результаты проверки. Если все порты RDP, VNC, TV и APC отмечены как открытые, то скорее всего результаты проверки неверны.',
+			'help_vnc_ports' : 'Проверяется наличие открытых портов, свойственных для VNC. Результаты этой проверки не всегда верны. На них могут влиять настройки вашего компьютера, сети, антивируса и фаерволла. Обновите эту страницу несколько раз, чтобы получить более корректные результаты проверки. Если все порты RDP, VNC, TV и APC отмечены как открытые, то скорее всего результаты проверки неверны.',
+			'help_tv_ports' : 'Проверяется наличие открытых портов, свойственных для <a href="https://community.teamviewer.com/t5/Knowledge-Base/Which-ports-are-used-by-TeamViewer/ta-p/4139" target="_blank">TeamViewer мастер серверов и роутеров</a>. Результаты этой проверки не всегда верны. На них могут влиять настройки вашего компьютера, сети, антивируса и фаерволла. Обновите эту страницу несколько раз, чтобы получить более корректные результаты проверки. Если все порты RDP, VNC, TV и APC отмечены как открытые, то скорее всего результаты проверки неверны.',
+			'help_apc_ports' : 'Проверяется наличие открытых портов, свойственных для Anyplace Control. Результаты этой проверки не всегда верны. На них могут влиять настройки вашего компьютера, сети, антивируса и фаерволла. Обновите эту страницу несколько раз, чтобы получить более корректные результаты проверки. Если все порты RDP, VNC, TV и APC отмечены как открытые, то скорее всего результаты проверки неверны.',
+			'help_hostname' : 'Проверяется наличие подозрительных в имени хоста (hostname) слов, свойственных для proxy.',
+			'help_is_tor' : 'Принадлежит ли IP анонимной сети TOR.',
+			'help_check_ping' : 'Проверяется разница между временем на ping от вашего компьютера до нашего сервера и от нашего сервера до хоста, которому принадлежит ваш IP адрес. Если разница слишком большая, значит вы используете прокси.',
+			'help_useragent' : 'Проверяется совпадение useragent\'ов в HTTP запросе и в Javascript.',
+			'help_timezone' : 'Проверяется совпадение часовых поясов и времени на вашем компьютере и в локации, которой принадлежит ваш IP.',
+			
+			'help_pof_os' : 'С помощью технологии анализа вашего соединения определяется ваша операционная система.',
+			'help_pof_browser' : 'С помощью технологии анализа вашего соединения определяется ваш браузер.',
+			'help_pof_os_match' : 'С помощью технологии анализа вашего соединения определяется соответствие операционной системы, которая формирует исходящие запросы, и операционной системы, которая указана в useragent вашего браузера.',
+			'help_pof_mtu' : 'С помощью технологии анализа вашего соединения определяется ваш <a href="https://ru.wikipedia.org/wiki/Maximum_transmission_unit" target="_blank">MTU</a>. На его основе определяется тип вашего соединения.',
+			'help_pof_conn_type' : 'С помощью технологии анализа вашего соединения определяется его тип (домашний интернет, защищенные туннели, vpn, средства анонимизации итд).',
+			'help_pof_lang' : 'С помощью технологии анализа вашего соединения определяется используемый язык.',
+			
+			
+			'help_lang_httpheaders' : 'Определение вашего языка с помощью заголовков HTTP запроса.',
+			'help_lang_js' : 'Определение вашего языка с помощью Java Script.',
+			'help_lang_flash' : 'Определение вашего языка с помощью Flash.',
+			'help_lang_java' : 'Определение вашего языка с помощью Java.'
+		}
+};
+
+dic = dic[lang];
+
+
+$(document).ready(function() {
+
+	$('.box-text .text blockquote').wrap('<div class="box-blockquote">');
+    $('.box-text .text table').wrap('<div class="box-table">');
+
+    /*----menu animation---*/
+    var menu_pad_obj = $('.header-nav');
+    var menu_obj = $('#menu-top');
+
+    $('.menu-btn').click(function(){
+        if ( $(menu_pad_obj).hasClass('active') ) {
+            $(menu_pad_obj).removeClass('active');
+            $(menu_obj).slideUp(300);
+        } else {
+            $(menu_pad_obj).addClass('active');
+            $(menu_obj).slideDown(300);
+        };
+        return false;
+    });
+
+    var change_css_flag = 0;
+    function window_w (){
+        if ( $(window).width()>=728 ) {
+            if ( change_css_flag > 2 ) { change_css_flag = 1};
+        } else {
+            $(menu_pad_obj).removeClass('active');
+            $(menu_obj).hide(0);
+            if ( change_css_flag < 3 ) { change_css_flag = 3};
+        };
+        if ( change_css_flag == 1 ) {
+            change_css_flag = 2;
+            $(menu_obj).show(0);
+        }
+        if ( change_css_flag == 3 ) {
+            change_css_flag = 4;
+            $(menu_pad_obj).removeClass('active');
+            $(menu_obj).hide(0);
+        }
+    };
+	
+	//////////////////////////////////////////
+	
+	//$.ajaxSetup({ cache: false });
+	
+	var hasStorage = (function() {
+	  try {
+		var a = 'test';
+		localStorage.setItem(a, a);
+		localStorage.removeItem(a);
+		return true;
+	  } catch (exception) {
+		return false;
+	  }
+	}());
+	
+	$('button#checkbl').on('click', function() {
+		bl_check();
+		return false;
+	});
+	
+	$('button#checkproxy').on('click', function() {
+		proxy_check();
+		return false;
+	});
+	
+	$('body').on('click', 'a.tip_anchor', 	show_tip_help);
+	$('body').on('click', 'a.help', 		show_tip_help);
+	$('form#contacts').on('submit', validateContactsForm);
+	
+	
+	if(is_index) { // main page
+	
+		// JS block
+		//$('#useragent_js').text(navigator.userAgent);
+		$('#js_enabled').removeClass('disabled').addClass('col-blue').html('<span class="txt">'+dic['enabled']+'</span>');
+		$('#js_title').removeClass('disabled');
+		$('.js_details').show();
+		
+		$('#lang_js').removeClass('disabled').find('span.txt').text(get_lang_js());
+		
+		navliesStart();
+		
+		visitHistoryStart();
+		
+		// HTTP DNS block
+		
+		get_dns();
+		var dns_request_count = 1;
+		var dnsInterval = setInterval(function() {
+			if(dns_request_count > 4) {
+				clearInterval(dnsInterval);
+				return;
+			}
+			get_dns();
+			dns_request_count++;
+		}, 2500);
+		
+		
+		
+		// WEBRTC block
+		
+		setTimeout(function() { // firefox tends to hang on webrtc, so we just wait 15ms for screen to draw
+			try {
+				get_webrtc();
+			}
+			catch(e) {
+				$('#webrtc').html('<div class="col23-l"><span class="txt">'+dic['disabled']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_webrtc_disabled" href="#"><div class="bx"></div></a></div>');
+			}
+		}, 15);
+		
+		/*
+		if(hasStorage) {
+			if(localStorage['auto_bl'] === 'true') {
+				bl_check(true);
+			}
+			
+			if(localStorage['auto_checkproxy'] === 'true') {
+				proxy_check(true);
+			}
+			
+			if(localStorage['auto_hide_lang'] === 'true') {
+				$('#lang_table').hide();
+			}
+		}
+		*/
+		
+		bl_check(true);
+		
+		setTimeout(function() {
+			proxy_check(true);
+		}, 500);
+		
+		setTimeout(function() {
+			port_check(true);
+		}, 1000);
+		
+		setTimeout(function() {
+			pof_check(true);
+		}, 1500);
+
+	}
+	
+	
+	if($('form#settings').length) {
+	
+		if(hasStorage) {
+		
+			$('form#settings').on('submit', saveSettings);
+			
+			if(localStorage['auto_bl'] === 'true') {
+				$('input#auto_bl').prop('checked', true);
+			}
+			
+			if(localStorage['auto_checkproxy'] === 'true') {
+				$('input#auto_checkproxy').prop('checked', true);
+			}
+			
+			if(localStorage['auto_hide_lang'] === 'true') {
+				$('input#auto_hide_lang').prop('checked', true);
+			}
+			
+		}
+		else {
+			$('#settings_div').css('color', 'red').css('font-weight', 'bold').html(dic['no_localstorage']);
+		}
+		
+	}
+	
+	$('#bookmarkme').click(function() {
+		if(lang == 'ru') {
+			alert('Для добавления в закладки нажмите ' + (navigator.userAgent.toLowerCase().indexOf('mac') != - 1 ? 'Command/Cmd' : 'CTRL') + ' + D.');
+		}
+		else {
+			alert('Press ' + (navigator.userAgent.toLowerCase().indexOf('mac') != - 1 ? 'Command/Cmd' : 'CTRL') + ' + D to bookmark this site.');
+		}
+		return false;
+	});
+
+});
+
+function show_tip_help(e) {
+	e.preventDefault();
+	var id = $(this).attr('id') || '';
+	
+	if(typeof(dic[id]) !== "undefined") {
+		$('#info').html(dic[id]).show();
+	}
+	else {
+		$('#info').html('Error.').show();
+	}
+	
+	$('html, body').animate({
+		scrollTop: $("#info").offset().top
+	}, 500);
+
+	return false;
+}
+
+
+function get_dns() {
+	//$.getJSON(document.location.protocol + "//" + dns_subdomain + ".dns.whatleaks.com/", function(data) {
+	$.getJSON("//" + dns_subdomain + ".dns.whatleaks.com/", function(data) {
+		var dnsHTML = [];
+		var dnsWarn = false;
+		
+		$.each(data, function(key, val) {
+			dnsHTML.push('<span class="txt"><span class="flag"><img src="/img/flags/'+val.fl+'.png" alt=""/></span> '+val.ip+' <span class="country">'+val.cn+(val.ci!=null?', '+val.ci:'')+'</span></span>');
+			
+			if(val.fl != $.trim($('#country_hide').text())) {
+				dnsWarn = true;
+			}
+		});
+		if(dnsHTML.length) {
+			$('#dns_list').removeClass('disabled').html('<div class="col23-l">'+dnsHTML.join('<br>')+'</div><div class="'+(dnsWarn?'icon-r':'')+' s1">'+(dnsWarn?'<a class="tip_anchor" id="tip_dns" href="#"><div class="bx"></div></a>':'<div class="bx"></div>')+'</div>');
+		}
+	});
+}
+
+function generage_dns_subdomain() {
+	var randomStr="";
+	var chars="abcdefghijklmnopqrstuvwxyz0123456789";
+	for(var a=0;a<32;a++) {
+		randomStr += chars.charAt(Math.floor(Math.random()*chars.length));
+	}
+	return randomStr;
+}
+
+
+function get_webrtc() {
+	//get the IP addresses associated with an account
+	function getIPs(callback){
+		var ip_dups = {};
+
+		//compatibility for firefox and chrome
+		var RTCPeerConnection = window.RTCPeerConnection
+			|| window.mozRTCPeerConnection
+			|| window.webkitRTCPeerConnection
+			|| window.msRTCPeerConnection;
+
+
+		//bypass naive webrtc blocking using an iframe
+		if(!RTCPeerConnection){
+			
+			// SINGLE IFRAME
+			$('body').append('<iframe id="iframe" sandbox="allow-same-origin" style="display: none"></iframe>');
+			var win = document.getElementById('iframe').contentWindow;
+			RTCPeerConnection = win.RTCPeerConnection
+				|| win.mozRTCPeerConnection
+				|| win.webkitRTCPeerConnection
+				|| win.msRTCPeerConnection;
+
+		}
+
+		//minimal requirements for data connection
+		var mediaConstraints = {
+			optional: [{RtpDataChannels: true}]
+		};
+
+		var servers = {iceServers: [{urls: "stun:stun.l.google.com:19302?transport=udp"}]};
+
+		//construct a new RTCPeerConnection
+		//var pc = new RTCPeerConnection(servers, mediaConstraints);
+		try {
+			var pc = new RTCPeerConnection(servers, mediaConstraints);
+		} catch (e) {
+			return;
+		}
+
+		function handleCandidate(candidate){
+			//match just the IP address
+			var ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+				if(ip_regex.exec(candidate) && ip_regex.exec(candidate).length > 1) {
+				var ip_addr = ip_regex.exec(candidate)[1];
+
+				//remove duplicates
+				if(ip_dups[ip_addr] === undefined)
+					callback(ip_addr);
+
+				ip_dups[ip_addr] = true;
+			}
+		}
+
+		//listen for candidate events
+		//pc.onicecandidate = function(ice){
+		
+			//console.log('ice.candidate.candidate='+ice.candidate.candidate);
+
+			//skip non-candidate events
+			//ice.candidate && handleCandidate(ice.candidate.candidate);
+		//};
+
+		//create a bogus data channel
+		//pc.createDataChannel("");
+		try {
+			pc.createDataChannel("bl");
+		} catch (k) {}
+
+		try {
+			pc.createOffer().then(function(result) {
+				pc.setLocalDescription(result);
+			});
+		}
+		catch(e) {
+			//create an offer sdp
+			pc.createOffer(function(result){
+				//trigger the stun server request
+				pc.setLocalDescription(result, function(){}, function(){});
+			}, function(){});
+		}
+
+		//wait for a while to let everything done
+		setTimeout(function(){
+			//read candidate info from local description
+			pc.localDescription.sdp.split('\n').forEach(function(line){
+				if(line.indexOf('a=candidate:') === 0) {
+					//console.log('line='+line);
+					handleCandidate(line);
+				}
+			});
+		}, 1000);
+	}
+
+
+	//insert IP addresses into the page
+	getIPs(function(ip){
+		//console.log(ip);
+		if(!$('#webrtc_loc').length) {
+			$('#webrtc').removeClass('disabled').html(
+				'<div id="webrtc_loc" class="col2-l"><span class="txt">'+dic['loc_ip']+':</span></div>' +
+				'<div id="webrtc_pub" class="col3-l"><span class="txt">'+dic['pub_ip']+':</span></div>' +
+				'<div class="icon-r s4"><a class="tip_anchor" id="tip_webrtc" href="#"><div class="bx"></div></a></div>'
+			);
+		}
+		//local IPs
+		if (ip.match(/^(192\.168\.|169\.254\.|10\.|127\.|172\.(1[6-9]|2\d|3[01])\.)/)) {
+			$('#webrtc_loc').append('<br/><span class="txt">'+ip+'</span>');
+		}
+		//assume the rest are public IPs
+		else {
+			$.getJSON("/ip2loc/?i="+ip, function(data) {
+				//console.log(data);
+				$('#webrtc_pub').append('<br/><span class="txt" '+(data.ip!=$('#main_ip_span').text()?' style="color:red !important;font-weight:bold !important;"':'')+'><span class="flag"><img src="/img/flags/'+data.fl+'.png" alt=""/></span> '+data.ip+' <br/> <span class="country" '+(data.ip!=$('#main_ip_span').text()?' style="color:red !important;font-weight:bold !important;"':'')+'>'+data.cn+(data.ci!=null?', '+data.ci:'')+'</span></span>');
+			});
+		}
+	});
+}
+
+
+
+
+
+
+
+function validateContactsForm() {
+	var error = false;
+	$('div#email_div').removeClass('error').find('span.error').hide();
+	$('div#title_div').removeClass('error').find('span.error').hide();
+	$('div#text_div').removeClass('error').find('span.error').hide();
+	
+	if($('input#email').val().length < 1) {
+		$('div#email_div').addClass('error').find('span.error').show();
+		error = true;
+	}
+	if($('input#title').val().length < 1) {
+		$('div#title_div').addClass('error').find('span.error').show();
+		error = true;
+	}
+	if($('textarea#text').val().length < 1) {
+		$('div#text_div').addClass('error').find('span.error').show();
+		error = true;
+	}
+	
+	
+	if(error) {
+		// error stuff
+	}
+	else {
+		$('form#contacts input[type=submit]').replaceWith('<img width="16px" height="16px" src="/img/loading.gif" class="loading"> '+dic['sending']+'');
+		$('form#contacts').append('<input type="hidden" name="a" value="1">');
+		$.post(	"/sendFeedback", 
+				$('form#contacts').serialize(),
+				function(data) {
+					if(data == 'ok') {
+						$('div.contacts-form').html('<p style="color:green;">'+dic['send_success']+'</p>');
+					}
+					else {
+						$('div.contacts-form').html('<p style="color:red;">'+dic['send_error']+'</p>');
+					}
+				}
+		).fail(function() {
+			$('div.contacts-form').html('<p style="color:red;">'+dic['send_error']+'</p>');
+		});
+	}
+	
+	return false;
+}
+
+
+
+
+
+// proxy
+
+function proxy_check(noscroll) {
+	//$('#proxy_check_a').remove();
+
+	$('#proxy_check').show();
+	init_proxy_check_waiting();
+	
+	if(!noscroll) {
+		$('html, body').animate({
+			scrollTop: $("#proxy_check").offset().top
+		}, 500);
+	}
+	
+	if($.trim($('#proxy_headers').text()) == '1') {
+		$('#proxy_headers').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['http_proxy_headers']+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_proxy_headers" href="#"><div class="bx"></div></a></div>');
+	}
+	else {
+		$('#proxy_headers').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['no_http_proxy_headers']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_proxy_headers" href="#"><div class="bx"></div></a></div>');
+	}
+	
+	
+	$.getJSON("/check_host/", function(data) {
+		if(data.is_proxy) {
+			$('#hostname').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['hostname_like_proxy']+data.host+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_hostname" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#hostname').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['hostname_no_proxy']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_hostname" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	
+	$.getJSON("/check_tor/", function(data) {		
+		if(data.is_tor) {
+			$('#is_tor').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ip_is_tor']+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_is_tor" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#is_tor').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ip_is_not_tor']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_is_tor" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	
+	function directPing() {
+		var start = false, diff = false;
+		var pingBlankUrl = '/check_ping/blank?'+Math.random();
+		
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("GET", pingBlankUrl, true);
+		xmlhttp.timeout = 2000;
+		start = +(new Date());
+		xmlhttp.onload = function() {
+			if (xmlhttp.status >= 200 && xmlhttp.status < 400) {
+				diff = +(new Date()) - start;
+				//console.log(diff);
+				if (diff > 0 && (diff < pingMinimal || pingMinimal == 0)) {
+					pingMinimal = diff;
+				}
+				pingAttempts--;
+				if(pingAttempts > 0) {
+					directPing();
+				}
+				else {
+				
+				
+					$.getJSON("/check_ping/?direct="+pingMinimal, function(data) {
+						//console.log('rev='+data.reverse);
+						//console.log('diff='+Math.abs(pingMinimal-data.reverse));
+						if(data.result == -2) {
+							$('#check_ping').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['check_ping_error_direct_ping']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_check_ping_no_tunnel" href="#"><div class="bx"></div></a></div>');
+						}
+						else if(data.result == -1) {
+							$('#check_ping').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['check_ping_error_reverse_ping']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_check_ping_no_tunnel" href="#"><div class="bx"></div></a></div>');
+						}
+						else if(data.result == 0) {
+							$('#check_ping').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['check_ping_no_tunnel']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_check_ping_no_tunnel" href="#"><div class="bx"></div></a></div>');
+						}
+						else if(data.result == 1) {
+							$('#check_ping').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['check_ping_tunnel_detected']+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_check_ping_tunnel_detected" href="#"><div class="bx"></div></a></div>');
+						}
+					});
+					
+				}
+			}
+		};
+		xmlhttp.send();
+	}
+		
+	var pingAttempts = 4;
+	var pingMinimal = 0;
+	directPing();
+	
+	
+	
+	
+	
+	
+	$('#useragent_js').html(navigator.userAgent);
+	if($('#useragent_http').html() == $('#useragent_js').html()) {
+		$('#useragent_tip_div').replaceWith('<div class="icon-r s3"><a class="tip_anchor" id="tip_useragent_match" href="#"><div class="bx"></div></a></div>');
+	}
+	else {
+		$('#useragent_tip_div').replaceWith('<div class="icon-r s1"><a class="tip_anchor" id="tip_useragent_no_match" href="#"><div class="bx"></div></a></div>');
+	}
+	
+	
+	$.getJSON("/geoip_timezone/", function(data) {
+		if(!data.tz || !data.time || !data.time.dt || !data.time.ts || !data.time.of) {
+			// N/A
+		}
+		else {
+			var date = new Date();
+			var date_string = date.toString();
+			
+			var system_ts = Math.round(date.getTime()/1000) + ((date.getTimezoneOffset()*60)*(-1));
+			var ts_diff   = Math.abs( system_ts - data.time.ts );
+			var matched = true;
+			var tip = '<div class="icon-r s3"><a class="tip_anchor" id="tip_timezone_match" href="#"><div class="bx"></div></a></div>';
+			var local_zone = data.time.of;
+			local_zone = local_zone.replace(':', '');
+			
+			//console.log(ts_diff);
+			if(ts_diff > 5*60) {
+				matched = false;
+			}
+			
+			try {
+				var zonez = /(GMT|UTC)([+-]\d\d\d\d)/g.exec(date_string);
+				if (zonez != null) {
+					//console.log(local_zone);
+					//console.log(zonez[2]);
+					if (local_zone != zonez[2]) {
+						matched = false;
+					}
+				}
+			}
+			catch(e){}
+			
+			if(!matched) {
+				tip = '<div class="icon-r s1"><a class="tip_anchor" id="tip_timezone_no_match" href="#"><div class="bx"></div></a></div>';
+			}
+			
+			$('#timezone').html(
+				'<div class="col23-l">' +
+					'<span class="txt">' +
+						'<table style="border:none; margin: 0px;">' +
+							'<tr style="border-top: 1px solid #d6d6d6;"><td>IP (local) timezone:&nbsp;</td><td id=time_tz>'+data.tz+'</td></tr>' +
+							'<tr><td>IP (local) time:&nbsp;</td><td id=time_local>'+data.time.dt+' GMT'+local_zone+'</td></tr>' +
+							'<tr><td>Browser (system) time:&nbsp;</td><td id=time_system>'+date_string+'</td></tr>' +
+						'</table>' +
+					'</span>' +
+				'</div>' +
+				tip
+			)
+		}
+	});
+}
+
+
+function init_proxy_check_waiting() {
+	//$('#proxy_headers').html(loadingHTML);
+	$('#hostname').html(loadingHTML);
+	$('#is_tor').html(loadingHTML);
+	$('#check_ping').html(loadingHTML);
+	//$('#useragent').html(loadingHTML);
+	$('#timezone').html(loadingHTML);
+
+	
+	setTimeout(function() {
+		stop_proxy_check_waiting();
+	}, 20000);
+}
+
+function stop_proxy_check_waiting() {
+	//if($('#proxy_headers').find('img.loading').length) {
+	//	$('#proxy_headers').html(notAvailableHTML);
+	//}
+	
+	if($('#hostname').find('img.loading').length) {
+		$('#hostname').html(notAvailableHTML);
+	}
+	
+	if($('#is_tor').find('img.loading').length) {
+		$('#is_tor').html(notAvailableHTML);
+	}
+	
+	if($('#check_ping').find('img.loading').length) {
+		$('#check_ping').html(notAvailableHTML);
+	}
+	
+	//if($('#useragent').find('img.loading').length) {
+	//	$('#useragent').html(notAvailableHTML);
+	//}
+	
+	if($('#timezone').find('img.loading').length) {
+		$('#timezone').html(notAvailableHTML);
+	}
+	
+	
+}
+
+// port
+
+function port_check(noscroll) {
+	
+
+	$('#port_check').show();
+	init_port_check_waiting();
+	
+	if(!noscroll) {
+		$('html, body').animate({
+			scrollTop: $("#port_check").offset().top
+		}, 500);
+	}
+	
+	
+	$.getJSON("/check_ports/?http", function(data) {
+		if(data && data.length) {
+			$('#http_proxy_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+data.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_http_proxy_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#http_proxy_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_http_proxy_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	
+	$.getJSON("/check_ports/?web", function(data) {
+		if(data && data.length) {
+			$('#web_proxy_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+data.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_web_proxy_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#web_proxy_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_web_proxy_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	
+	$.getJSON("/check_ports/?vpn", function(data) {
+		if(data && ((data.tcp && data.tcp.length) || (data.udp && data.udp.length))) {
+			var output = [];
+			if(data.tcp && data.tcp.length) {
+				output.push(data.tcp.join(', '));
+			}
+			if(data.udp && data.udp.length) {
+				output.push(data.udp.join(', '));
+			}
+			$('#vpn_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+output.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_vpn_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#vpn_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_vpn_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	
+	
+	$.getJSON("/check_ports/?ssh", function(data) {
+		if(data && data.length) {
+			$('#ssh_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+data.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_ssh_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#ssh_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_ssh_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	
+	/*
+	$.getJSON("/check_ports/?rdp", function(data) {
+		if(data && data.length) {
+			$('#rdp_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+data.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_rdp_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#rdp_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_rdp_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+
+	
+	$.getJSON("/check_ports/?vnc", function(data) {
+		if(data && data.length) {
+			$('#vnc_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+data.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_vnc_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#vnc_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_vnc_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	$.getJSON("/check_ports/?tv", function(data) {
+		if(data && data.length) {
+			$('#tv_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+data.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_tv_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#tv_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_tv_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	
+	$.getJSON("/check_ports/?apc", function(data) {
+		if(data && data.length) {
+			$('#apc_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+data.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_apc_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			$('#apc_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_apc_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	});
+	*/
+	
+	
+	
+	
+	
+	if(!navigator.userAgent.match(/windows/i)) {
+		localPortCheckNotPossible();
+		return;
+	}
+	
+	if (typeof WebSocket === 'undefined') {
+		localPortCheckNotPossible();
+		return;
+	}
+
+
+	var scanPorts = {
+		'REF' : [63333], // first
+		//'TEST' : [80], 
+		'RDP' : [3389], 
+		'APC' : [5279], 
+		'TV' : [5938, 5939],
+		'VNC' : [5900, 5901, 5902, 5903]
+	};
+
+
+	var WEBSOCK;
+	var portCheckStartTime;
+	var portNumber = 0;
+	var currentPortIndex = 0;
+	var portCheckTimeout = 1500;
+	var resultsOfCheck = {};
+	var openPorts = [];
+	var currentPortsGroup = scanPorts['REF'];
+
+	var refPortInterval = 0;
+
+
+
+
+	function doNextPortCheck() {
+		if (!portRotator()) {
+			return;
+		}
+		portCheckStartTime = (new Date).getTime();
+		try {
+			WEBSOCK = new WebSocket('wss://' + '127.0.0.1' + ":" + portNumber);
+			setTimeout(portCheckResult, 5);
+		} catch (err1) {
+			localPortCheckNotPossible();
+			return;
+		}
+	}
+
+	function portCheckResult() {
+		var portCheckingPeriod = (new Date).getTime() - portCheckStartTime;
+		if (WEBSOCK.readyState === 0) {
+			//console.log(portCheckingPeriod);
+			if (portCheckingPeriod > portCheckTimeout) {
+				addPortToCheckResults(portNumber, portCheckTimeout);
+				WEBSOCK.close();
+				setTimeout(doNextPortCheck, 1);
+				portCheckStartTime = (new Date).getTime();
+			} else {
+				setTimeout(portCheckResult, 5);
+			}
+		} else {
+			addPortToCheckResults(portNumber, portCheckingPeriod);
+			WEBSOCK.close();
+			setTimeout(doNextPortCheck, 1);
+		}
+	}
+
+	function portRotator() {
+		if(currentPortsGroup == scanPorts['REF'] && currentPortIndex >= currentPortsGroup.length) {
+			//processOpenPorts(openPorts, 'REF');
+			currentPortsGroup = scanPorts['RDP'];
+			currentPortIndex = 0;
+			openPorts = [];
+		}
+		/*
+		if(currentPortsGroup == scanPorts['REF'] && currentPortIndex >= currentPortsGroup.length) {
+			//processOpenPorts(openPorts, 'REF');
+			currentPortsGroup = scanPorts['TEST'];
+			currentPortIndex = 0;
+			openPorts = [];
+		}
+		else if(currentPortsGroup == scanPorts['TEST'] && currentPortIndex >= currentPortsGroup.length) {
+			processOpenPorts(openPorts, 'TEST');
+			currentPortsGroup = scanPorts['RDP'];
+			currentPortIndex = 0;
+			openPorts = [];
+		}
+		*/
+		else if(currentPortsGroup == scanPorts['RDP'] && currentPortIndex >= currentPortsGroup.length) {
+			processOpenPorts(openPorts, 'RDP');
+			currentPortsGroup = scanPorts['APC'];
+			currentPortIndex = 0;
+			openPorts = [];
+		}
+		else if(currentPortsGroup == scanPorts['APC'] && currentPortIndex >= currentPortsGroup.length) {
+			processOpenPorts(openPorts, 'APC');
+			currentPortsGroup = scanPorts['TV'];
+			currentPortIndex = 0;
+			openPorts = [];
+		}
+		else if(currentPortsGroup == scanPorts['TV'] && currentPortIndex >= currentPortsGroup.length) {
+			processOpenPorts(openPorts, 'TV');
+			currentPortsGroup = scanPorts['VNC'];
+			currentPortIndex = 0;
+			openPorts = [];
+		}
+		else if(currentPortsGroup == scanPorts['VNC'] && currentPortIndex >= currentPortsGroup.length) {
+			processOpenPorts(openPorts, 'VNC');
+			return false;
+		}
+		
+		
+		
+		//if (currentPortIndex >= currentPortsGroup.length) {
+		//	//checkFinished();
+		//	return false;
+		//}
+		portNumber = currentPortsGroup[currentPortIndex++];
+		return true;
+	}
+
+	
+
+	function processOpenPorts(ports, type) {
+		type = type.toLowerCase();
+		//console.log(type+'='+ports.join(','));
+		if(ports.length == 0) {
+			// ok
+			$('#'+type+'_ports').html('<div class="col23-l"><span class="txt" style="color:green;">'+dic['ports_closed']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_no_'+type+'_ports" href="#"><div class="bx"></div></a></div>');
+		}
+		else {
+			// not ok
+			$('#'+type+'_ports').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+dic['ports_open']+ports.join(', ')+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_'+type+'_ports" href="#"><div class="bx"></div></a></div>');
+		}
+	}
+
+
+	function addPortToCheckResults(port, interval) {
+	
+		if(interval > portCheckTimeout) {
+			interval = portCheckTimeout; // !
+		}
+		
+		
+	
+		if(port == scanPorts['REF'][0]) {
+			console.log('refPortInterval='+interval);
+			refPortInterval = interval;
+		}
+		else {
+			console.log(port+'='+interval);
+			if (interval < refPortInterval / 2) {
+				openPorts.push(port);
+			}
+		}
+	}
+
+
+	function localPortCheckNotPossible() {
+		stop_port_LOCAL_check_waiting();
+	}
+	
+	
+	doNextPortCheck();
+	
+}
+
+
+
+function init_port_check_waiting() {
+	$('#http_proxy_ports').html(loadingHTML);
+	$('#web_proxy_ports').html(loadingHTML);
+	$('#vpn_ports').html(loadingHTML);
+	$('#ssh_ports').html(loadingHTML);
+	$('#rdp_ports').html(loadingHTML);
+	$('#vnc_ports').html(loadingHTML);
+	$('#tv_ports').html(loadingHTML);
+	$('#apc_ports').html(loadingHTML);
+	
+	
+	setTimeout(function() {
+		stop_port_check_waiting();
+	}, 20000);
+}
+
+function stop_port_check_waiting() {
+	
+	if($('#http_proxy_ports').find('img.loading').length) {
+		$('#http_proxy_ports').html(notAvailableHTML);
+	}
+	
+	if($('#web_proxy_ports').find('img.loading').length) {
+		$('#web_proxy_ports').html(notAvailableHTML);
+	}
+	
+	if($('#vpn_ports').find('img.loading').length) {
+		$('#vpn_ports').html(notAvailableHTML);
+	}
+	
+	if($('#ssh_ports').find('img.loading').length) {
+		$('#ssh_ports').html(notAvailableHTML);
+	}
+	
+	if($('#rdp_ports').find('img.loading').length) {
+		$('#rdp_ports').html(notAvailableHTML);
+	}
+	
+	if($('#vnc_ports').find('img.loading').length) {
+		$('#vnc_ports').html(notAvailableHTML);
+	}
+	
+	if($('#tv_ports').find('img.loading').length) {
+		$('#tv_ports').html(notAvailableHTML);
+	}
+	
+	if($('#apc_ports').find('img.loading').length) {
+		$('#apc_ports').html(notAvailableHTML);
+	}
+	
+	
+}
+
+function stop_port_LOCAL_check_waiting() {
+	
+	if($('#rdp_ports').find('img.loading').length) {
+		$('#rdp_ports').html(notAvailableHTML);
+	}
+	
+	if($('#vnc_ports').find('img.loading').length) {
+		$('#vnc_ports').html(notAvailableHTML);
+	}
+	
+	if($('#tv_ports').find('img.loading').length) {
+		$('#tv_ports').html(notAvailableHTML);
+	}
+	
+	if($('#apc_ports').find('img.loading').length) {
+		$('#apc_ports').html(notAvailableHTML);
+	}
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// pof
+
+function pof_check(noscroll) {
+	//$('#pof_check_a').remove();
+
+	$('#pof_check').show();
+	init_pof_check_waiting();
+	
+	if(!noscroll) {
+		$('html, body').animate({
+			scrollTop: $("#pof_check").offset().top
+		}, 500);
+	}
+	
+	
+	
+	
+
+	$.ajax({
+		method: 'POST',
+		url: window.location.protocol+"//"+window.location.hostname+":61099"+"/check_pof/?"+(+(new Date())),
+		//headers: {
+		//	'Pragma':'no-cache',
+		//	'Cache-Control':'no-cache'
+		//},
+		//beforeSend: function(request) {
+		//	request.setRequestHeader("Pragma", 'no-cache');
+		//	request.setRequestHeader("Cache-Control", 'no-cache');
+		//},
+		dataType: "json",
+		success: function(data) {	
+			if(!data.error) {
+				$('#pof_os').html(data.os_name);
+				$('#ua_os').html(data.ua_os);
+				
+				//if(data.os_name == data.ua_os || data.os_name == '?' || data.ua_os == 'N/A') {
+				if(data.os_name != data.ua_os && data.os_name != '?' && data.ua_os != 'N/A') {
+					$('#pof_os_tip_div').replaceWith('<div class="icon-r s1"><a class="tip_anchor" id="tip_pof_os_no_match" href="#"><div class="bx"></div></a></div>');
+				}
+				else {
+					$('#pof_os_tip_div').replaceWith('<div class="icon-r s3"><a class="tip_anchor" id="tip_pof_os_match" href="#"><div class="bx"></div></a></div>');
+				}
+
+				//$('#pof_os').html('<div class="col23-l"><span class="txt">'+data.os_name+' '+data.os_version+'</span></div><div class="s1"><div class="bx"></div></div>');
+				//$('#pof_browser').html('<div class="col23-l"><span class="txt">'+data.browser_name+' '+data.browser_version+'</span></div><div class="s1"><div class="bx"></div></div>');
+				//$('#pof_os_match').html('<div class="col23-l"><span class="txt">'+data.browser_legit+'</span></div><div class="s1"><div class="bx"></div></div>');
+				$('#pof_mtu').html('<div class="col23-l"><span class="txt">'+data.mtu+'</span></div><div class="s1"><div class="bx"></div></div>');
+				
+				if(data.conn_type.match(/vpn|ipsec|ipip/i)) {
+					$('#pof_conn_type').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+data.conn_type+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_pof_conn_type_is_tunnel" href="#"><div class="bx"></div></a></div>');
+				}
+				else {
+					$('#pof_conn_type').html('<div class="col23-l"><span class="txt" style="color:green;">'+data.conn_type+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_pof_conn_type_no_tunnel" href="#"><div class="bx"></div></a></div>');
+				}
+				
+				$('#pof_lang').html('<div class="col23-l"><span class="txt">'+data.lang+'</span></div><div class="s1"><div class="bx"></div></div>');
+			}
+			
+		}
+	});
+	
+	
+	/*
+	$.getJSON(window.location.protocol+"//"+window.location.hostname+":61099"+"/check_pof/?"+(+(new Date())), function(data) {	
+		if(!data.error) {
+			$('#pof_os').html(data.os_name);
+			$('#ua_os').html(data.ua_os);
+			
+			//if(data.os_name == data.ua_os || data.os_name == '?' || data.ua_os == 'N/A') {
+			if(data.os_name != data.ua_os && data.os_name != '?' && data.ua_os != 'N/A') {
+				$('#pof_os_tip_div').replaceWith('<div class="icon-r s1"><a class="tip_anchor" id="tip_pof_os_no_match" href="#"><div class="bx"></div></a></div>');
+			}
+			else {
+				$('#pof_os_tip_div').replaceWith('<div class="icon-r s3"><a class="tip_anchor" id="tip_pof_os_match" href="#"><div class="bx"></div></a></div>');
+			}
+
+			//$('#pof_os').html('<div class="col23-l"><span class="txt">'+data.os_name+' '+data.os_version+'</span></div><div class="s1"><div class="bx"></div></div>');
+			//$('#pof_browser').html('<div class="col23-l"><span class="txt">'+data.browser_name+' '+data.browser_version+'</span></div><div class="s1"><div class="bx"></div></div>');
+			//$('#pof_os_match').html('<div class="col23-l"><span class="txt">'+data.browser_legit+'</span></div><div class="s1"><div class="bx"></div></div>');
+			$('#pof_mtu').html('<div class="col23-l"><span class="txt">'+data.mtu+'</span></div><div class="s1"><div class="bx"></div></div>');
+			
+			if(data.conn_type.match(/vpn|ipsec|ipip/i)) {
+				$('#pof_conn_type').html('<div class="col23-l"><span class="txt" style="font-weight:bold; color:red;">'+data.conn_type+'</span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_pof_conn_type_is_tunnel" href="#"><div class="bx"></div></a></div>');
+			}
+			else {
+				$('#pof_conn_type').html('<div class="col23-l"><span class="txt" style="color:green;">'+data.conn_type+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_pof_conn_type_no_tunnel" href="#"><div class="bx"></div></a></div>');
+			}
+			
+			$('#pof_lang').html('<div class="col23-l"><span class="txt">'+data.lang+'</span></div><div class="s1"><div class="bx"></div></div>');
+		}
+		
+	});
+    */
+
+	
+
+}
+
+
+function init_pof_check_waiting() {
+	$('#pof_os').html(loadingHTML);
+	$('#ua_os').html(loadingHTML);
+	//$('#pof_browser').html(loadingHTML);
+	//$('#pof_os_match').html(loadingHTML);
+	$('#pof_mtu').html(loadingHTML);
+	$('#pof_conn_type').html(loadingHTML);
+	$('#pof_lang').html(loadingHTML);
+
+
+	
+	setTimeout(function() {
+		stop_pof_check_waiting();
+	}, 5000);
+}
+
+function stop_pof_check_waiting() {
+
+	if($('#pof_os').find('img.loading').length) {
+		$('#pof_os').html(notAvailableHTML);
+	}
+	
+	if($('#ua_os').find('img.loading').length) {
+		$('#ua_os').html(notAvailableHTML);
+	}
+	
+	//if($('#pof_browser').find('img.loading').length) {
+	//	$('#pof_browser').html(notAvailableHTML);
+	//}
+	
+	//if($('#pof_os_match').find('img.loading').length) {
+	//	$('#pof_os_match').html(notAvailableHTML);
+	//}
+	
+	if($('#pof_mtu').find('img.loading').length) {
+		$('#pof_mtu').html(notAvailableHTML);
+	}
+	
+	if($('#pof_conn_type').find('img.loading').length) {
+		$('#pof_conn_type').html(notAvailableHTML);
+	}
+
+	if($('#pof_lang').find('img.loading').length) {
+		$('#pof_lang').html(notAvailableHTML);
+	}
+	
+}
+
+
+
+
+
+
+// lang detect
+
+function get_lang_js() {
+    var result = [];
+    var nav_lang = ["language", "browserLanguage", "userLanguage", "systemLanguage"];
+	
+	for(i = 0; i < nav_lang.length; i++) {
+		if (typeof(window.navigator[nav_lang[i]]) !== "undefined") {
+			result.push(nav_lang[i]+'='+window.navigator[nav_lang[i]]);
+		}
+    }
+	
+	if (typeof(window.navigator.languages) !== "undefined") {
+		result.push('languages=['+window.navigator.languages.join(', ')+']');
+	}
+
+    return result.join('; ');
+}
+
+
+
+
+
+// bl check
+
+function bl_check(noscroll) {
+	//$('#blacklist_a').remove();
+
+	$('#blacklist').show();
+	init_blacklist_waiting();
+	
+	if(!noscroll) {
+		$('html, body').animate({
+			scrollTop: $("#blacklist").offset().top
+		}, 500);
+	}
+	
+	$.getJSON("/checkbl/", function(data) {
+		//console.log(data);
+		var blHTML = [];
+		$.each(data, function(key, val) {
+			blHTML.push('<tr><td><div class="col1-l"><span style="color:red;">'+val.name+'</span><span>:</span></div><div class="line"><div class="col23-l"><span class="txt" style="color:grey;font-size:80%;">'+val.desc+'</span></div><div class="s1"><div class="bx"></div></div></div></td></tr>');
+		});
+		//console.log(blHTML);
+		if(blHTML.length) {
+			$('#blacklist_status').html(
+				'<tr><td><div class="col1-l"><span>'+dic['bl_result']+'</span><span>:</span></div><div class="line"><div class="col23-l"><span class="txt" style="color:red; font-weight:bold;">'+dic['bl_found']+' ('+blHTML.length+')</span></div><div class="icon-r s4"><a class="tip_anchor" id="tip_bl_found" href="#"><div class="bx"></div></a></div></div></td></tr>'+
+				'<tr><td><div class="col1-l"><span>'+dic['bl_name']+'</span><span></span></div><div class="line"><div class="col23-l"><span class="txt">'+dic['bl_desc']+'</span></div><div class="s1"><div class="bx"></div></div></div></td></tr>'+
+				blHTML.join('')
+			);
+		}
+		else {
+			$('#blacklist_status').html('<tr><td><div class="col1-l"><span>'+dic['bl_result']+'</span><span>:</span></div><div class="line"><div class="col23-l"><span class="txt" style="color:green; font-weight:bold;">'+dic['bl_clean']+'</span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_bl_clean" href="#"><div class="bx"></div></a></div></div></td></tr>');
+		}
+	});
+}
+
+function init_blacklist_waiting() {
+	$('#blacklist_status').html('<tr><td><div class="col1-l"><span>'+dic['bl_checking']+'</span><span>:</span></div><div class="line"><div class="col23-l"><span class="txt"><img width="16px" height="16px" src="/img/loading.gif" class="loading"></span></div><div class="s1"><div class="bx"></div></div></div></td></tr>');
+	
+	setTimeout(function() {
+		stop_blacklist_waiting();
+	}, 15000);
+}
+
+function stop_blacklist_waiting() {
+	if($('#blacklist_status').find('img.loading').length) {
+		$('#blacklist_status').html('<tr><td><div class="col1-l"><span>'+dic['bl_error']+'</span><span>:</span></div><div class="line">'+notAvailableHTML+'<div class="s1"><div class="bx"></div></div></div></td></tr>');
+	}
+}
+
+
+
+// settings
+
+function saveSettings() {
+	// user side only
+	
+	localStorage['auto_bl'] = $('input#auto_bl').prop('checked');
+	localStorage['auto_checkproxy'] = $('input#auto_checkproxy').prop('checked');
+	localStorage['auto_hide_lang'] = $('input#auto_hide_lang').prop('checked');
+	
+	//console.log($('input#auto_bl').prop('checked'));
+	//console.log($('input#auto_checkproxy').prop('checked'));
+	//console.log($('input#auto_hide_lang').prop('checked'));
+	
+	$('#submit_status').show().html(dic['settings_saved']);
+	
+	setTimeout(function() {
+		$("#submit_status").fadeOut(1000);
+	}, 1000);
+	
+	return false;
+}
+
+
+// navlies
+
+function getHasLiedLanguages() {
+    //We check if navigator.language is equal to the first language of navigator.languages
+    if (typeof navigator.languages !== "undefined") {
+        try {
+            var firstLanguages = navigator.languages[0].substr(0, 2);
+            if (firstLanguages !== navigator.language.substr(0, 2)) {
+                return true;
+            }
+        } catch (err) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+
+function getHasLiedResolution() {
+    if (screen.width < screen.availWidth) {
+        return true;
+    }
+    if (screen.height < screen.availHeight) {
+        return true;
+    }
+    return false;
+}
+
+
+
+
+function getHasLiedOs() {
+    var userAgent = navigator.userAgent.toLowerCase();
+    var oscpu = navigator.oscpu;
+    var platform = navigator.platform.toLowerCase();
+    var os;
+    //We extract the OS from the user agent (respect the order of the if else if statement)
+    if (userAgent.indexOf("windows phone") >= 0) {
+        os = "Windows Phone";
+    } else if (userAgent.indexOf("win") >= 0) {
+        os = "Windows";
+    } else if (userAgent.indexOf("android") >= 0) {
+        os = "Android";
+    } else if (userAgent.indexOf("linux") >= 0) {
+        os = "Linux";
+    } else if (userAgent.indexOf("iphone") >= 0 || userAgent.indexOf("ipad") >= 0) {
+        os = "iOS";
+    } else if (userAgent.indexOf("mac") >= 0) {
+        os = "Mac";
+    } else {
+        os = "Other";
+    }
+    // We detect if the person uses a mobile device
+    var mobileDevice;
+    if (
+        ("ontouchstart" in window) ||
+        (navigator.maxTouchPoints > 0) ||
+        (navigator.msMaxTouchPoints > 0)
+    ) {
+
+        // win 8 and win 8.1 have issues with touch support detection
+        if (navigator.userAgent.indexOf('Windows NT 6.2') /*win8*/ === -1 && navigator.userAgent.indexOf('Windows NT 6.3') /*win8.1*/ === -1) {
+            mobileDevice = true;
+        } else {
+            mobileDevice = false;
+        }
+    } else {
+        mobileDevice = false;
+    }
+
+    if (mobileDevice && os !== "Windows Phone" && os !== "Android" && os !== "iOS" && os !== "Other") {
+        return true;
+    }
+
+    // We compare oscpu with the OS extracted from the UA
+    if (typeof oscpu !== "undefined") {
+        oscpu = oscpu.toLowerCase();
+        if (oscpu.indexOf("win") >= 0 && os !== "Windows" && os !== "Windows Phone") {
+            return true;
+        } else if (oscpu.indexOf("linux") >= 0 && os !== "Linux" && os !== "Android") {
+            return true;
+        } else if (oscpu.indexOf("mac") >= 0 && os !== "Mac" && os !== "iOS") {
+            return true;
+        } else if (oscpu.indexOf("win") === 0 && oscpu.indexOf("linux") === 0 && oscpu.indexOf("mac") >= 0 && os !== "other") {
+            return true;
+        }
+    }
+
+    //We compare platform with the OS extracted from the UA
+    if (platform.indexOf("win") >= 0 && os !== "Windows" && os !== "Windows Phone") {
+        return true;
+    } else if ((platform.indexOf("linux") >= 0 || platform.indexOf("android") >= 0 || platform.indexOf("pike") >= 0) && os !== "Linux" && os !== "Android") {
+        return true;
+    } else if ((platform.indexOf("mac") >= 0 || platform.indexOf("ipad") >= 0 || platform.indexOf("ipod") >= 0 || platform.indexOf("iphone") >= 0) && os !== "Mac" && os !== "iOS") {
+        return true;
+    } else if (platform.indexOf("win") === 0 && platform.indexOf("linux") === 0 && platform.indexOf("mac") >= 0 && os !== "other") {
+        return true;
+    }
+
+    if (typeof navigator.plugins === "undefined" && os !== "Windows" && os !== "Windows Phone") {
+        //We are are in the case where the person uses ie, therefore we can infer that it's windows
+        return true;
+    }
+
+    return false;
+}
+
+
+
+
+function getHasLiedBrowser() {
+    var userAgent = navigator.userAgent.toLowerCase();
+    var productSub = navigator.productSub;
+
+    //we extract the browser from the user agent (respect the order of the tests)
+    var browser;
+    if (userAgent.indexOf("firefox") >= 0) {
+        browser = "Firefox";
+    } else if (userAgent.indexOf("opera") >= 0 || userAgent.indexOf("opr") >= 0) {
+        browser = "Opera";
+    } else if (userAgent.indexOf("chrome") >= 0) {
+        browser = "Chrome";
+    } else if (userAgent.indexOf("safari") >= 0) {
+        browser = "Safari";
+    } else if (userAgent.indexOf("trident") >= 0) {
+        browser = "Internet Explorer";
+    } else {
+        browser = "Other";
+    }
+
+    if ((browser === "Chrome" || browser === "Safari" || browser === "Opera") && productSub !== "20030107") {
+        return true;
+    }
+
+    var tempRes = eval.toString().length;
+    if (tempRes === 37 && browser !== "Safari" && browser !== "Firefox" && browser !== "Other") {
+        return true;
+    } else if (tempRes === 39 && browser !== "Internet Explorer" && browser !== "Other") {
+        return true;
+    } else if (tempRes === 33 && browser !== "Chrome" && browser !== "Opera" && browser !== "Other") {
+        return true;
+    }
+
+    //We create an error to see how it is handled
+    var errFirefox;
+    try {
+        throw "a";
+    } catch (err) {
+        try {
+            err.toSource();
+            errFirefox = true;
+        } catch (errOfErr) {
+            errFirefox = false;
+        }
+    }
+    if (errFirefox && browser !== "Firefox" && browser !== "Other") {
+        return true;
+    }
+    return false;
+}
+
+
+function navliesStart() {
+
+
+	if(getHasLiedLanguages()) {
+		$('div#navlies_language').html('<div class="col23-l"><span class="txt"><span style="color:red;">'+dic['navlies_detected']+'</span></span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_navlies_language_lied" href="#"><div class="bx"></div></a></div>');
+	}
+	else {
+		$('div#navlies_language').html('<div class="col23-l"><span class="txt"><span style="color:green;">'+dic['navlies_not_detected']+'</span></span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_navlies_language_ok" href="#"><div class="bx"></div></a></div>');
+	}
+	
+	if(getHasLiedResolution()) {
+		$('div#navlies_resolution').html('<div class="col23-l"><span class="txt"><span style="color:red;">'+dic['navlies_detected']+'</span></span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_navlies_resolution_lied" href="#"><div class="bx"></div></a></div>');
+	}
+	else {
+		$('div#navlies_resolution').html('<div class="col23-l"><span class="txt"><span style="color:green;">'+dic['navlies_not_detected']+'</span></span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_navlies_resolution_ok" href="#"><div class="bx"></div></a></div>');
+	}
+	
+	if(getHasLiedOs()) {
+		$('div#navlies_os').html('<div class="col23-l"><span class="txt"><span style="color:red;">'+dic['navlies_detected']+'</span></span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_navlies_os_lied" href="#"><div class="bx"></div></a></div>');
+	}
+	else {
+		$('div#navlies_os').html('<div class="col23-l"><span class="txt"><span style="color:green;">'+dic['navlies_not_detected']+'</span></span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_navlies_os_ok" href="#"><div class="bx"></div></a></div>');
+	}
+	
+	if(getHasLiedBrowser()) {
+		$('div#navlies_browser').html('<div class="col23-l"><span class="txt"><span style="color:red;">'+dic['navlies_detected']+'</span></span></div><div class="icon-r s1"><a class="tip_anchor" id="tip_navlies_browser_lied" href="#"><div class="bx"></div></a></div>');
+	}
+	else {
+		$('div#navlies_browser').html('<div class="col23-l"><span class="txt"><span style="color:green;">'+dic['navlies_not_detected']+'</span></span></div><div class="icon-r s3"><a class="tip_anchor" id="tip_navlies_browser_ok" href="#"><div class="bx"></div></a></div>');
+	}
+
+	
+}
+
+
+
+
+function addDateLeadingZero(s) {
+	return s.toString().length > 1 ? s : '0'+s;
+}
+
+function historyRecordAdd(history) {
+	var country = $('input#tracking_country').val();
+	var country_full = $('input#tracking_country_full').val();
+	var ip = $('input#tracking_ip').val();
+	var d = new Date();
+	var time = ''+addDateLeadingZero(d.getDate())+'.'+addDateLeadingZero(d.getMonth()+1)+'.'+d.getFullYear()+' '+addDateLeadingZero(d.getHours())+':'+addDateLeadingZero(d.getMinutes())+':'+addDateLeadingZero(d.getSeconds())+'';
+	
+	var historyArr = JSON.parse(history);
+	
+	historyArr.unshift(
+		{
+			't' : time, 
+			'c' : country, 
+			'cf' : country_full, 
+			'ip' : ip
+		}
+	);
+	
+	// last 10 visits
+	historyArr = historyArr.slice(0, 10);
+	
+	return JSON.stringify(historyArr);
+}
+
+function addRowsToLastVisitTable(table, history) {
+	
+	var historyArr = JSON.parse(history);
+	
+	for(var i = 0; i < historyArr.length; i++) {
+		$('table#'+table).append('<tr><td>'+historyArr[i].t+'</td><td><span class="flag"><img src="/img/flags/'+historyArr[i].c+'.png" alt=""/></span> <span id="main_ip_span">'+historyArr[i].ip+'</span> <span>'+historyArr[i].cf+'</span></td></tr>');
+	}
+	
+}
+
+function visitHistoryStart() {
+
+	var historyName = 'visitHistory2';
+
+	// cookie
+	var historyCookie = (getCookie(historyName) || '[]');
+	historyCookie = historyRecordAdd(historyCookie);
+	//console.log('historyCookie='+historyCookie);
+	setCookie(historyName, historyCookie, 365);
+	
+	addRowsToLastVisitTable('lastVisitCookieTable', historyCookie);
+	
+	// localStorage
+	if(window.localStorage) {
+		var historyLocalStorage = (localStorage.getItem(historyName) || '[]');
+		historyLocalStorage = historyRecordAdd(historyLocalStorage);
+		//console.log('historyLocalStorage='+historyLocalStorage);
+		localStorage.setItem(historyName, historyLocalStorage);
+		addRowsToLastVisitTable('lastVisitLocalStorageTable', historyLocalStorage);
+	}
+}
+
+
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}Gؽv�      _N$�_N$�B�>_Tl�   $    :https://whatleaks.com/js/site.js?36 necko:classified 1 strongly-framed 1 security-info FnhllAKWRHGAlo+ESXykKAAAAAAAAAAAwAAAAAAAAEaphjojH6pBabDSgSnsfLHeAAAAAgAAAAAAAAAAAAAAAAAAAAEANQFmCjImkVxP+7sgiYWmMt8FvcOXmlQiTNWFiWlrbpbqgwAAAAAAAAVnMIIFYzCCBEugAwIBAgISA9NQaVqSP215Qozd1NZwpbgxMA0GCSqGSIb3DQEBCwUAMEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQDExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0yMDA3MTYxMjQ1MDJaFw0yMDEwMTQxMjQ1MDJaMBgxFjAUBgNVBAMTDXdoYXRsZWFrcy5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC6e7dIwzBl2N0YXQyAjeP871HncVVwx7t2A7zOn1b/JVqE/hvdV+t3l+VmHidbpmN+M/i7WmZnpmMpc8atKi55BngHtucJUXnZ7i4vhFRocMmgaEcJMMeTMha3DPlcK/CIzuAgVNLj1GQYTR7/+/xmyOzSfaJaq9wNLLJdfaiUh2VO0wrRrLGmJ6d9OFHuN37/iQGYZ6WchM5tZLF/mRct+j81mptN7RSil9h66dCePGuE4xauiet7LnQHwvmSpO63gUSwIpETraIbH3TKUMfWBtykoVS4+25PL+FWGY/Xi8YD0d6m8QcaZEZ28BsHWcVmlQxEjmCQ94lWjA7yUaunAgMBAAGjggJzMIICbzAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFJsiuN3k0pmO5W/4IepBTEtOAuvOMB8GA1UdIwQYMBaAFKhKamMEfd265tE5t6ZFZe/zqOyhMG8GCCsGAQUFBwEBBGMwYTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AuaW50LXgzLmxldHNlbmNyeXB0Lm9yZzAvBggrBgEFBQcwAoYjaHR0cDovL2NlcnQuaW50LXgzLmxldHNlbmNyeXB0Lm9yZy8wKQYDVR0RBCIwIIIPKi53aGF0bGVha3MuY29tgg13aGF0bGVha3MuY29tMEwGA1UdIARFMEMwCAYGZ4EMAQIBMDcGCysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMubGV0c2VuY3J5cHQub3JnMIIBBAYKKwYBBAHWeQIEAgSB9QSB8gDwAHYAsh4FzIuizYogTodm+Su5iiUgZ2va+nDnsklTLe+LkF4AAAFzV98M3wAABAMARzBFAiBNw7WR+mnTUQZhxeFVI5+VXOKqrRMZ9vR+RE4nhZ3UvAIhAI6B0605K2s1A10zo4UeBXQteDwHHtGSrEl1/eOVZ02sAHYAb1N2rDHwMRnYmQCkURX/dxUcEdkCwQApBo2yCJo32RMAAAFzV98NBQAABAMARzBFAiB6gGm4BYWbaM+hMMiE0gBkQSjtthFjRLX6M+WMN2ouCwIhAIDssELTkHVuSGcn6HFWh/ePP7SiI98sQKCpWzTikP1yMA0GCSqGSIb3DQEBCwUAA4IBAQAvqPW/P/dqHCDUHysOXHGgXWVYYn/Y558Pa05a0K7gWqksgleU8k9VKNhkPtLwHjnFnINdhGHNqLino4R9X279Y30FxU898kHZHOFpyUq5Y9R2rA+7REebVdkUztKxyGaXnGQljB/bgbJQAkXsSrogUVdEFaDibSmHcPfm0KgPLR+myOdgO+J5XhNq9IM4wu5IB0vlY9jHKN3JOXfP2oIaymu1+EFwrojudd3F0U7aeR8RlyUketEdkdjeIwwfSBCADCxt0FnfAA1Jz+SslCEaED5nm4Vgtl2CaybqQpSGV9dJfgkR92cukSBm/Uc4a65x4Dd0DC4rMr2FgktAf1pkwDAAAwAAAAABAQAAAAAAAARub25lAAAAEFJTQS1QS0NTMS1TSEE1MTIAA2YKMiaRXE/7uyCJhaYy3wW9w5eaVCJM1YWJaWtuluqDAAAAAAAABWcwggVjMIIES6ADAgECAhID01BpWpI/bXlCjN3U1nCluDEwDQYJKoZIhvcNAQELBQAwSjELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUxldCdzIEVuY3J5cHQxIzAhBgNVBAMTGkxldCdzIEVuY3J5cHQgQXV0aG9yaXR5IFgzMB4XDTIwMDcxNjEyNDUwMloXDTIwMTAxNDEyNDUwMlowGDEWMBQGA1UEAxMNd2hhdGxlYWtzLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALp7t0jDMGXY3RhdDICN4/zvUedxVXDHu3YDvM6fVv8lWoT+G91X63eX5WYeJ1umY34z+LtaZmemYylzxq0qLnkGeAe25wlRednuLi+EVGhwyaBoRwkwx5MyFrcM+Vwr8IjO4CBU0uPUZBhNHv/7/GbI7NJ9olqr3A0ssl19qJSHZU7TCtGssaYnp304Ue43fv+JAZhnpZyEzm1ksX+ZFy36PzWam03tFKKX2Hrp0J48a4TjFq6J63sudAfC+ZKk7reBRLAikROtohsfdMpQx9YG3KShVLj7bk8v4VYZj9eLxgPR3qbxBxpkRnbwGwdZxWaVDESOYJD3iVaMDvJRq6cCAwEAAaOCAnMwggJvMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUmyK43eTSmY7lb/gh6kFMS04C684wHwYDVR0jBBgwFoAUqEpqYwR93brm0Tm3pkVl7/Oo7KEwbwYIKwYBBQUHAQEEYzBhMC4GCCsGAQUFBzABhiJodHRwOi8vb2NzcC5pbnQteDMubGV0c2VuY3J5cHQub3JnMC8GCCsGAQUFBzAChiNodHRwOi8vY2VydC5pbnQteDMubGV0c2VuY3J5cHQub3JnLzApBgNVHREEIjAggg8qLndoYXRsZWFrcy5jb22CDXdoYXRsZWFrcy5jb20wTAYDVR0gBEUwQzAIBgZngQwBAgEwNwYLKwYBBAGC3xMBAQEwKDAmBggrBgEFBQcCARYaaHR0cDovL2Nwcy5sZXRzZW5jcnlwdC5vcmcwggEEBgorBgEEAdZ5AgQCBIH1BIHyAPAAdgCyHgXMi6LNiiBOh2b5K7mKJSBna9r6cOeySVMt74uQXgAAAXNX3wzfAAAEAwBHMEUCIE3DtZH6adNRBmHF4VUjn5Vc4qqtExn29H5ETieFndS8AiEAjoHTrTkrazUDXTOjhR4FdC14PAce0ZKsSXX945VnTawAdgBvU3asMfAxGdiZAKRRFf93FRwR2QLBACkGjbIImjfZEwAAAXNX3w0FAAAEAwBHMEUCIHqAabgFhZtoz6EwyITSAGRBKO22EWNEtfoz5Yw3ai4LAiEAgOywQtOQdW5IZyfocVaH948/tKIj3yxAoKlbNOKQ/XIwDQYJKoZIhvcNAQELBQADggEBAC+o9b8/92ocINQfKw5ccaBdZVhif9jnnw9rTlrQruBaqSyCV5TyT1Uo2GQ+0vAeOcWcg12EYc2ouKejhH1fbv1jfQXFTz3yQdkc4WnJSrlj1HasD7tER5tV2RTO0rHIZpecZCWMH9uBslACRexKuiBRV0QVoOJtKYdw9+bQqA8tH6bI52A74nleE2r0gzjC7kgHS+Vj2Mco3ck5d8/aghrKa7X4QXCuiO513cXRTtp5HxGXJSR60R2R2N4jDB9IEIAMLG3QWd8ADUnP5KyUIRoQPmebhWC2XYJrJupClIZX10l+CRH3Zy6RIGb9RzhrrnHgN3QMLisyvYWCS0B/WmRmCjImkVxP+7sgiYWmMt8FvcOXmlQiTNWFiWlrbpbqgwAAAAAAAASWMIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMTDkRTVCBSb290IENBIFgzMB4XDTE2MDMxNzE2NDA0NloXDTIxMDMxNzE2NDA0NlowSjELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUxldCdzIEVuY3J5cHQxIzAhBgNVBAMTGkxldCdzIEVuY3J5cHQgQXV0aG9yaXR5IFgzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnNMM8FrlLke3cl03g7NoYzDq1zUmGSXhvb418XCSL7e4S0EFq6meNQhY7LEqxGiHC6PjdeTm86dicbp5gWAf15Gan/PQeGdxyGkOlZHP/uaZ6WA8SMx+yk13EiSdRxta67nsHjcAHJyse6cF6s5K671B5TaYucv9bTyWaN8jKkKQDIZ0Z8h/pZq4UmEUEz9l6YKHy9v6Dlb2honzhT+Xhq+w3Brvaw2VFn3EK6BlspkENnWAa6xK8xuQSXgvopZPKiAlKQTGdMDQMc2PMTiVFrqoM7hD8bEfwzB/onkxEz0tNvjj/PIzark5McWvxI0NHWQWM6r6hCm21AvA2H3DkwIDAQABo4IBfTCCAXkwEgYDVR0TAQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMCAYYwfwYIKwYBBQUHAQEEczBxMDIGCCsGAQUFBzABhiZodHRwOi8vaXNyZy50cnVzdGlkLm9jc3AuaWRlbnRydXN0LmNvbTA7BggrBgEFBQcwAoYvaHR0cDovL2FwcHMuaWRlbnRydXN0LmNvbS9yb290cy9kc3Ryb290Y2F4My5wN2MwHwYDVR0jBBgwFoAUxKexpHsscfrb4UuQdf/EFWCFiRAwVAYDVR0gBE0wSzAIBgZngQwBAgEwPwYLKwYBBAGC3xMBAQEwMDAuBggrBgEFBQcCARYiaHR0cDovL2Nwcy5yb290LXgxLmxldHNlbmNyeXB0Lm9yZzA8BgNVHR8ENTAzMDGgL6AthitodHRwOi8vY3JsLmlkZW50cnVzdC5jb20vRFNUUk9PVENBWDNDUkwuY3JsMB0GA1UdDgQWBBSoSmpjBH3duubRObemRWXv86jsoTANBgkqhkiG9w0BAQsFAAOCAQEA3TPXEfNjWDjdGBX7CVW+dla5cEilaUcne8IkCJLxWh9KEik3JHRRHGJouM2VcGfl96S8TihRzZvoroed6ti6WqEBmtzw3Wodatg+VyOeph4EYpr/1wXKtx8/wApIvJSwtmVi4MFU5aMqrSDE6ea73Mj2tcMyo5jMd6jmeWUHK8so/joWUoHOUgwuX4Po1QYz+3dszkDqMp4fklxBwXRsW10KXzPMTZ+sOPAveyxindmjkW8lGy+QsRlGPfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6KOqkqm57TH2H3eDJAkSnh6/DNFu0QmYKMiaRXE/7uyCJhaYy3wW9w5eaVCJM1YWJaWtuluqDAAAAAAAAA04wggNKMIICMqADAgECAhBEr7CA1qMnuokwOYYu+EBrMA0GCSqGSIb3DQEBBQUAMD8xJDAiBgNVBAoTG0RpZ2l0YWwgU2lnbmF0dXJlIFRydXN0IENvLjEXMBUGA1UEAxMORFNUIFJvb3QgQ0EgWDMwHhcNMDAwOTMwMjExMjE5WhcNMjEwOTMwMTQwMTE1WjA/MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMTDkRTVCBSb290IENBIFgzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA36/pl1AIg1e0zGJl9pCC7MfTLGswylvs2cN9x0DBGBSL4Ogzdkkq4z8hSZOsTg6vPkjLZe780yEPZdIq2TKPjOX3d7ASe7WVwImjqbrtcy56DAYyg6J+ihQwzRGg4So4uXkKMf1QvYBl37dRY4PI4ohh6kthgexSa7mi4ksaKJ9Io54M2gmOPhcuHt0g31vGKoqrLr1wrcULGiWQdHLFe2qrNNYwif/laBN7VAvI1q7sWpySHj1ks4zG37/JQXDsFnLVJuw4VTlD0Pz9GFxA8Zfr1ZqbjR262iW5xtjfwRUCOqvabvE+LvVcCJw81oNp5BCbGSq2KVfj5T2bn/ACXQIDAQABo0IwQDAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUxKexpHsscfrb4UuQdf/EFWCFiRAwDQYJKoZIhvcNAQEFBQADggEBAKMaLJsXAFypHu4oZjc6v4PHP0vDCaCVIF3j2VlE0j4NPr2KS6B0H84Qgpx0Gh1+mBrdyxNLsyBE5JHpzPx9pdtq5f7m/eBO3bcAOrVwSa/y5esC8dECixnLlDpeSMQYHlgZXx4CWvAM8bGtqdxZhotu6ZH1hsr6uWYzqllbzuKnFnNHyyvMmbA3SM/jVkv1zw8McjKHxvBEu1NybUP1JkiaUme3WKv+Z3ZxeNsNolYUEzkkMYWiqAJaMEfh3VAHvAIJkADrZGNgmxa8iMkS5tJ9kYv5PTKNZbTpfLFXdurFtig5vxVlHMj2d5ZqCo13C9iRCwSOB9sptgrunYI1NRAAAAABAAAACGh0dHAvMS4xAQE= request-method GET response-head HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 01 Sep 2020 10:39:41 GMT
+Content-Type: application/javascript; charset=utf-8
+Content-Length: 98613
+Last-Modified: Wed, 15 Jul 2020 19:28:33 GMT
+ETag: "759e4-18135-5aa7fedef3a40"
+Accept-Ranges: bytes
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+ original-response-headers Server: nginx
+Date: Tue, 01 Sep 2020 10:39:41 GMT
+Content-Type: application/javascript; charset=utf-8
+Content-Length: 98613
+Connection: keep-alive
+Last-Modified: Wed, 15 Jul 2020 19:28:33 GMT
+ETag: "759e4-18135-5aa7fedef3a40"
+Accept-Ranges: bytes
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+ ctid 2 uncompressed-len 0 net-response-time-onstart 3912 net-response-time-onstop 4305  �5

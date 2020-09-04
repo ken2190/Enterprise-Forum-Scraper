@@ -1,17 +1,9 @@
-import os
 import re
-import time
 import uuid
-import json
-from urllib.parse import urlencode
-from lxml.html import fromstring
 
-from datetime import datetime, timedelta
 
 from scrapy import (
-    Request,
-    FormRequest,
-    Selector
+    Request
 )
 from scraper.base_scrapper import (
     SitemapSpider,
@@ -31,6 +23,7 @@ class XaknetSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://xaknet.org"
+    forum_url = 'http://xaknet.org/forum'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href|'\
@@ -58,6 +51,10 @@ class XaknetSpider(SitemapSpider):
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
+    # captcha stuffs
+    recaptcha_site_key_xpath = '//div[@data-xf-init="re-captcha"]/@data-sitekey'
+    bypass_success_xpath = '//h3[@class="node-title"]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/(\d+)/",
@@ -68,80 +65,27 @@ class XaknetSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-
-        return datetime.strptime(
-            thread_date.strip()[:-5],
-            self.sitemap_datetime_format
+    def start_requests(self, cookies=None, ip=None):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.forum_url,
+            proxy=True,
+            fraud_check=True
         )
 
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-        return datetime.strptime(
-            post_date.strip()[:-5],
-            self.post_datetime_format
-        )
-
-    def parse(self, response):
-        # Synchronize user agent for cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Load token
-        match = re.findall(r'csrf: \'(.*?)\'', response.text)
-
-        # Load param
-        params = {
-            '_xfRequestUri': '/forum',
-            '_xfWithData': '1',
-            '_xfToken': match[0],
-            '_xfResponseType': 'json'
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
         }
-        token_url = 'https://xaknet.org/forum/login/?' + urlencode(params)
+
         yield Request(
-            url=token_url,
+            url=self.forum_url,
             headers=self.headers,
-            callback=self.proceed_for_login,
-            meta=self.synchronize_meta(response)
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse_start
         )
-
-    def proceed_for_login(self, response):
-        # Synchronize user agent for cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Load json data
-        json_response = json.loads(response.text)
-        html_response = fromstring(json_response['html']['content'])
-
-        # Exact token
-        token = html_response.xpath(
-            '//input[@name="_xfToken"]/@value')[0]
-
-        # Load params
-        params = {
-            'login': USER,
-            'password': PASS,
-            "remember": '1',
-            '_xfRedirect': 'https://xaknet.org/forum/',
-            '_xfToken': token
-        }
-        login_url = 'https://xaknet.org/forum/login/login'
-        yield FormRequest(
-            url=login_url,
-            callback=self.parse_start,
-            formdata=params,
-            headers=self.headers,
-            dont_filter=True,
-            meta=self.synchronize_meta(response)
-            )
 
     def parse_start(self, response):
         # Synchronize cloudfare user agent
@@ -152,8 +96,7 @@ class XaknetSpider(SitemapSpider):
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-            # if 'forums/2/' not in forum_url:
-            #     continue
+
             yield Request(
                 url=forum_url,
                 headers=self.headers,

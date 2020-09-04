@@ -20,13 +20,13 @@ from scraper.base_scrapper import (
 from lxml.html import fromstring
 
 
-REQUEST_DELAY = 1.5
+REQUEST_DELAY = 3
 
 CODE = 'skydiving'
 USER = "moonbash"
 PASS = '4KqPg@y.Ndn9bmeDeVRt_D*'
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; rv:75.0) Gecko/20100101 Firefox/75.0"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0"
 
 PROXY_HOST = "127.0.0.1"
 PROXY_PORT = "8118"
@@ -147,18 +147,36 @@ class MazaSpider(SeleniumSpider):
             self.browser.quit()
             return
 
+        # check for login form
+        if self.browser.find_elements_by_name('vb_login_username'):
+            self.log_in()
+
+        # parse secret word
+        if self.browser.find_elements_by_xpath('//td[contains(text(), "букву волшебного слова")]'):
+            self.parse_code()
+
+        # scrape forum
+        self.parse_start()
+
+    def log_in(self):
         userbox = self.browser.find_element_by_name('vb_login_username')
         passbox = self.browser.find_element_by_name('vb_login_password')
         checkbox = self.browser.find_element_by_name('cookieuser')
         userbox.send_keys(USER)
         passbox.send_keys(PASS)
         checkbox.click()
-        submit = self.browser.find_element_by_xpath('//input[@type="submit"]')
-        submit.click()
+        passbox.submit()
         time.sleep(10)
-        self.parse_code()
+        self.browser.get(self.base_url)
+        time.sleep(self.delay)
 
-    def parse_code(self,):
+        if not self.is_logged_in():
+            self.logger.error('Failed to log in')
+
+    def is_logged_in(self):
+        return self.browser.find_elements_by_xpath('//a[text()="Log Out"]')
+
+    def parse_code(self):
         response = fromstring(self.browser.page_source)
         code_block = response.xpath(
             '//td[contains(text(), "букву волшебного слова")]/text()')
@@ -180,7 +198,6 @@ class MazaSpider(SeleniumSpider):
         submit.click()
         time.sleep(10)
         self.logger.info('2nd phase login successful')
-        self.parse_start()
 
 
 class MazaScrapper(SiteMapScrapper):

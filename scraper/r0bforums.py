@@ -1,8 +1,4 @@
-import time
-import os
 import re
-import uuid
-import scrapy
 from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper

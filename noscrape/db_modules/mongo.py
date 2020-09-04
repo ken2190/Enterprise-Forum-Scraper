@@ -1,5 +1,6 @@
 import urllib.parse
 import ssl as SSL
+from datetime import datetime
 
 from pymongo import MongoClient
 from bson.code import Code
@@ -76,6 +77,7 @@ class MongoScrape(NoScrapePlugin):
         parent.set('host', self.clean(str(self.target)))
         parent.set('port', self.clean(str(self.port)))
         parent.set('dbType', self.clean(str("mongo")))
+        parent.set('date', self.clean(str(datetime.now().date())))
         parent.set('username', self.clean(str(self.username)))
         parent.set('password', self.clean(str(self.password)))
         parent.set('authDB', self.clean(str(self.auth_db)))
@@ -96,6 +98,7 @@ class MongoScrape(NoScrapePlugin):
         data = {
             'ip': self.clean(str(self.target)),
             'port': self.clean(str(self.port)),
+            'date': str(datetime.now().date()),
             'dbType': self.clean(str("mongo")),
             'indexes': results.get("indexes"),
             "database": {
@@ -119,6 +122,7 @@ class MongoScrape(NoScrapePlugin):
         data = {
             'ip': self.clean(str(self.target)),
             'port': self.clean(str(self.port)),
+            'date': str(datetime.now().date()),
             'dbType': self.clean(str("mongo")),
             'indexes': None,
             'stats': {
