@@ -1,19 +1,19 @@
 Generated File. Do not edit.
 
 [HEADER]
-Version:0.19t:$
-Arch:x86_64-gcc3:$
+Version|0.19t|$
+Arch|x86_64-msvc|$
 
 [PLUGINS]
 
 [INVALID]
-/Library/Internet Plug-Ins/JavaAppletPlugin.plugin:$
-1570273080000:$
-/Library/Internet Plug-Ins/AdobePDFViewer.plugin:$
-1583977885000:$
-/Library/Internet Plug-Ins/AdobePDFViewerNPAPI.plugin:$
-1583977897000:$
-/Library/Internet Plug-Ins/AdobeAAMDetect.plugin:$
-1585173046990:$
-/Users/vinny/Library/Application Support/Eltima Software/Folx3/Folx3Plugin.plugin:$
-1577866388789:$
+C:\Program Files\VideoLAN\VLC\npvlc.dll|$
+1591286984000|$
+D:\SOFT\OFFICE\root\Office16\NPSPWRAP.DLL|$
+1570006785859|$
+C:\Program Files\Java\jre1.8.0_231\bin\plugin2\npjp2.dll|$
+1572675182185|$
+C:\Program Files\Java\jre1.8.0_231\bin\dtplugin\npdeployJava1.dll|$
+1572675180898|$
+C:\Users\SCAT\AppData\Roaming\Zoom\bin\npzoomplugin.dll|$
+1575984808638|$
