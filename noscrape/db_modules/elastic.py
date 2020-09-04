@@ -9,211 +9,212 @@ import json
 import subprocess as sp
 
 class Elastic:
-	def __init__(self, ip=None, port=None, limit=None, exclude_indexes=[]):
-		# self.scrape_type = scrape_type
-		self.limit = limit or 10000
-		# self.keywords = keywords
-		self.exclude_indexes = exclude_indexes
-		self.logger = BaseLogger(__name__, None)
-		self.ip = ip
-		self.port = int(port)
-		self.db_type = 'es'
-		self.timeout = 5
+    def __init__(self, ip=None, port=None, limit=None, exclude_indexes=[]):
+        # self.scrape_type = scrape_type
+        self.limit = limit or 10000
+        # self.keywords = keywords
+        self.exclude_indexes = exclude_indexes
+        self.logger = BaseLogger(__name__, None)
+        self.ip = ip
+        self.port = int(port)
+        self.db_type = 'es'
+        self.timeout = 5
 
-	def connect(self):
-		try:
-			return Elasticsearch(hosts=[{"host": self.ip, "port": self.port}])
-		except Exception as e:
-			return False
+    def connect(self):
+        try:
+            return Elasticsearch(hosts=[{"host": self.ip, "port": self.port}])
+        except Exception as e:
+            return False
 
-	def test_connection(self):
-		''' Simply tries to connect out to the port on TCP '''
-		try:
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.settimeout(self.timeout)
-			s.connect((self.ip, self.port))
-			s.close()
-			return True
-		except Exception as e:
-			self.logger.error("Error connecting to " + str(self.ip) + ":" + str(self.port) + " - " + str(e))
-			return False
+    def test_connection(self):
+        ''' Simply tries to connect out to the port on TCP '''
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(self.timeout)
+            s.connect((self.ip, self.port))
+            s.close()
+            return True
+        except Exception as e:
+            self.logger.error("Error connecting to " + str(self.ip) + ":" + str(self.port) + " - " + str(e))
+            return False
 
-	def get_index_count(self, indexes, index_name):
-		for index in indexes:
-			name = index['index']
-			if name == index_name:
-				index_record_count = index['docs.count']
-				return index_record_count
-		return 0
-
-
-	def get_index_size(self, indexes, index_name):
-		for index in indexes:			
-			if index['index'] == index_name:				
-				return index['store.size']				
-		return 0
-
-	# get index names
-	def get_index_names(self, indexes):
-		return [index["index"] for index in indexes]
-
-	def valid_index(self, index):
-		for keyword in self.exclude_indexes:
-			if keyword.lower() in index.lower():
-				self.logger.info("Ignore index %s because contain keyword %s in exclude file." % (index, keyword))
-				return False
-		return True
-
-	def dump(self):
-		dumped = []
-
-		max_elasticdump_limit = 10000
-		if self.limit > max_elasticdump_limit:
-			self.limit = max_elasticdump_limit
-
-		elastic_db = self.get_db()
-		if elastic_db:
-			indexes = elastic_db.indices.get("*")
-			for index in indexes:
-				if self.valid_index(index):
-					print("Dumping to file for ip {}:{} and the index {}".format(self.ip, self.port, index))
-					records = elastic_db.search(index=index)
-					records = records["hits"]["hits"]
-					for hit in records:
-						dumped.append(hit)
+    def get_index_count(self, indexes, index_name):
+        for index in indexes:
+            name = index['index']
+            if name == index_name:
+                index_record_count = index['docs.count']
+                return index_record_count
+        return 0
 
 
-					# elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}". \
-					# 	format(self.target, self.port, index, self.target, index, self.limit)
-					# try:
-					# 	sp.check_output(elastic_dump_command, shell=True)
-					# except Exception as e:
-					# 	print(e)
+    def get_index_size(self, indexes, index_name):
+        for index in indexes:           
+            if index['index'] == index_name:                
+                return index['store.size']              
+        return 0
 
-			return "dump"
+    # get index names
+    def get_index_names(self, indexes):
+        return [index["index"] for index in indexes]
 
-	def get_db(self):
-		connection_verified = self.test_connection()
-		if connection_verified:
-			return self.connect()
-		return False
+    def valid_index(self, index):
+        for keyword in self.exclude_indexes:
+            if keyword.lower() in index.lower():
+                self.logger.info("Ignore index %s because contain keyword %s in exclude file." % (index, keyword))
+                return False
+        return True
 
-	# once known as index headers, get the nodeattrs
-	def get_nodeattrs(self, elastic_db):
-		try:
-			return elastic_db.cat.nodeattrs(format='json')
-		except RequestError as re:
-			self.logger.error("Request Error fetching nodeattrs {}:{}".format(self.ip, self.port))
-			return []
+    def dump(self):
+        dumped = []
 
-	def get_index_tables(self, index, elastic_db):
-		pass
+        max_elasticdump_limit = 10000
+        if self.limit > max_elasticdump_limit:
+            self.limit = max_elasticdump_limit
 
-	def init_index_json(self):
-		return {
-			"name": '',
-			"fields": [],
-		}
-	def fetch_metadata(self):
-		try:
-			# self.logger.info("----Requesting for cross-section of each index for {}:{}".format(self.ip, self.port))
-			elastic_db = self.get_db()
-			if elastic_db:
-				indexes = elastic_db.cat.indices(v=True, format='json')
-				obj = {
-					"_source": {
-						"indexes": []
-					}
-				}					
-
-				obj["_source"]["ip"] = self.ip
-				obj["_source"]["port"] = self.port
-				obj["_source"]["date"] = str(datetime.now())
-
-				for index in indexes:
-					index_name = index["index"]
-					
-					if self.valid_index(index_name):
-						index_data = self.init_index_json()
-						
-						index_data["name"] = index_name
-						index_data["count"] = self.get_index_count(indexes, index_name)
-						index_data["size"] = self.get_index_size(indexes, index_name)						
-						mappings = elastic_db.indices.get(index_name)						
-
-						properties = {}
-
-						try:
-							properties = mappings[index_name]["mappings"]["doc"]["properties"]
-							# print("------first format-------")
-						except:
-							try:
-								properties = mappings[index_name]["mappings"]["properties"]
-								# print("------second format-------")
-							except:
-								try:
-									properties = mappings[index_name]["mappings"]["index_type"]["properties"]
-									# print("-------third format-------")
-								except:
-									try:
-										current_mappings = mappings[index_name]["mappings"]
-										all_mapping_keys = list(current_mappings.keys())
-										first_key = all_mapping_keys[0]
-										properties = current_mappings[first_key]["properties"]
-										# print("---------fourth format---------")
-									except:
-										print("No mappings found for index", index_name)
-										print(json.dumps(mappings, indent=4))
-
-						index_data["fields"] = list(properties.keys())
-						obj["_source"]["indexes"].append(index_data)
-
-					else:
-						continue
+        elastic_db = self.get_db()
+        if elastic_db:
+            indexes = elastic_db.indices.get("*")
+            for index in indexes:
+                if self.valid_index(index):
+                    print("Dumping to file for ip {}:{} and the index {}".format(self.ip, self.port, index))
+                    records = elastic_db.search(index=index)
+                    records = records["hits"]["hits"]
+                    for hit in records:
+                        dumped.append(hit)
 
 
-				try:
-					elastic_db.close()
-				except Exception:
-					pass
+                    # elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}". \
+                    #   format(self.target, self.port, index, self.target, index, self.limit)
+                    # try:
+                    #   sp.check_output(elastic_dump_command, shell=True)
+                    # except Exception as e:
+                    #   print(e)
 
-				return obj
+            return "dump"
+
+    def get_db(self):
+        connection_verified = self.test_connection()
+        if connection_verified:
+            return self.connect()
+        return False
+
+    # once known as index headers, get the nodeattrs
+    def get_nodeattrs(self, elastic_db):
+        try:
+            return elastic_db.cat.nodeattrs(format='json')
+        except RequestError as re:
+            self.logger.error("Request Error fetching nodeattrs {}:{}".format(self.ip, self.port))
+            return []
+
+    def get_index_tables(self, index, elastic_db):
+        pass
+
+    def init_index_json(self):
+        return {
+            "name": '',
+            "fields": [],
+        }
+    def fetch_metadata(self):
+        try:
+            # self.logger.info("----Requesting for cross-section of each index for {}:{}".format(self.ip, self.port))
+            elastic_db = self.get_db()
+            if elastic_db:
+                indexes = elastic_db.cat.indices(v=True, format='json')
+                obj = {
+                    "_source": {
+                        "indexes": []
+                    }
+                }                   
+
+                obj["_source"]["ip"] = self.ip
+                obj["_source"]["port"] = self.port
+                obj["_source"]["date"] = str(datetime.now().date())
+                obj["_source"]["dbType"] = 'es'
+
+                for index in indexes:
+                    index_name = index["index"]
+                    
+                    if self.valid_index(index_name):
+                        index_data = self.init_index_json()
+                        
+                        index_data["name"] = index_name
+                        index_data["count"] = self.get_index_count(indexes, index_name)
+                        index_data["size"] = self.get_index_size(indexes, index_name)                       
+                        mappings = elastic_db.indices.get(index_name)                       
+
+                        properties = {}
+
+                        try:
+                            properties = mappings[index_name]["mappings"]["doc"]["properties"]
+                            # print("------first format-------")
+                        except:
+                            try:
+                                properties = mappings[index_name]["mappings"]["properties"]
+                                # print("------second format-------")
+                            except:
+                                try:
+                                    properties = mappings[index_name]["mappings"]["index_type"]["properties"]
+                                    # print("-------third format-------")
+                                except:
+                                    try:
+                                        current_mappings = mappings[index_name]["mappings"]
+                                        all_mapping_keys = list(current_mappings.keys())
+                                        first_key = all_mapping_keys[0]
+                                        properties = current_mappings[first_key]["properties"]
+                                        # print("---------fourth format---------")
+                                    except:
+                                        print("No mappings found for index", index_name)
+                                        print(json.dumps(mappings, indent=4))
+
+                        index_data["fields"] = list(properties.keys())
+                        obj["_source"]["indexes"].append(index_data)
+
+                    else:
+                        continue
 
 
-		except Exception as e:
-			self.logger.error("Unknown Exception: {}".format(str(e)))
-			return False
+                try:
+                    elastic_db.close()
+                except Exception:
+                    pass
 
-	'''
-	{
-	“_source”: {
-		“index”: {
-			“name”: “indexname”,
-			“fields”: [
-				“x”,
-				“x2”,
-				“x3"
-			],
-			“properties”: [{
-				“count”: “818198018”,
-				“attr”: “attrname”
-			}]
-		}
-		{
-			“index”: {
-				“name”: “indexname”,
-				“tables”: [
-					“x”,
-					“x2”,
-					“x3"
-				],
-				“properties”: [{
-					“count”: “818198018”
-				}],
-			},
-			“ip”: “only one IP”,
-			“port”: “9200”,
-			“date”: “date of scrape”
-		}
-	}
-	'''
+                return obj
+
+
+        except Exception as e:
+            self.logger.error("Unknown Exception: {}".format(str(e)))
+            return False
+
+    '''
+    {
+    “_source”: {
+        “index”: {
+            “name”: “indexname”,
+            “fields”: [
+                “x”,
+                “x2”,
+                “x3"
+            ],
+            “properties”: [{
+                “count”: “818198018”,
+                “attr”: “attrname”
+            }]
+        }
+        {
+            “index”: {
+                “name”: “indexname”,
+                “tables”: [
+                    “x”,
+                    “x2”,
+                    “x3"
+                ],
+                “properties”: [{
+                    “count”: “818198018”
+                }],
+            },
+            “ip”: “only one IP”,
+            “port”: “9200”,
+            “date”: “date of scrape”
+        }
+    }
+    '''
