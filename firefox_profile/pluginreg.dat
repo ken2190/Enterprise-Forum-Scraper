@@ -1,0 +1,19 @@
+Generated File. Do not edit.
+
+[HEADER]
+Version:0.19t:$
+Arch:x86_64-gcc3:$
+
+[PLUGINS]
+
+[INVALID]
+/Library/Internet Plug-Ins/JavaAppletPlugin.plugin:$
+1570273080000:$
+/Library/Internet Plug-Ins/AdobePDFViewer.plugin:$
+1583977885000:$
+/Library/Internet Plug-Ins/AdobePDFViewerNPAPI.plugin:$
+1583977897000:$
+/Library/Internet Plug-Ins/AdobeAAMDetect.plugin:$
+1585173046990:$
+/Users/vinny/Library/Application Support/Eltima Software/Folx3/Folx3Plugin.plugin:$
+1577866388789:$
