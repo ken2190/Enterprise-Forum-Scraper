@@ -17,8 +17,9 @@ from scraper.base_scrapper import (
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
 
-USERNAME = "blastedone"
+USERNAME = "thecreator"
 PASSWORD = "Chq#Blast888"
+KEY = "aiJZHkxlNhTiQA8orj8y"
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
 
