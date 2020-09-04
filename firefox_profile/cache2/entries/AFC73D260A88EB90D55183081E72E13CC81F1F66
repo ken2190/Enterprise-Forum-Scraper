@@ -1,0 +1,869 @@
+@media only screen and (max-width: 768px) {
+
+.postbit_title{
+ display:none !important;
+}
+
+.postbit_title + span {
+ float:none !Important;
+ display:block;
+ text-align:right;
+}
+
+
+.post_body iframe {
+ max-width:80% !Important;
+ max-height:70% !Important;
+}
+
+
+body {
+ font-size:16px;
+}
+
+.smalltext, .breadcrumb li a, .tcat, .tfoot, .trow_sep{
+  font-size:13px;
+}
+
+.header>*, .container, .top>div {
+    width: 98%;
+}
+.nav_menu>li:first-child {
+    display: block;
+}
+.nav_menu>li:first-child>a {
+    text-align: right;
+}
+.nav_menu>li:not(:first-child) {
+    display: none!important;
+}
+.breadcrumb li:not(:first-child):not(:last-child) {
+    display: none;
+}
+.footer {
+    text-align: center;
+}
+.footer .float_right {
+    float: none;
+    display: block;
+    margin-top: 6px;
+}
+.index_page .forums .tborder td.tcat:last-child, .index_page .forums .tborder td[class*="trow"]:nth-child(2) .smalltext, .index_page .forums .tborder td[class*="trow"]:nth-child(5), .forumdisplay_subforums .tborder td.tcat:last-child, .forumdisplay_subforums .tborder td[class*="trow"]:nth-child(2) .smalltext, .forumdisplay_subforums .tborder td[class*="trow"]:nth-child(5) {
+    display: none;
+}
+.index_page .forums .tborder td.tcat:nth-child(2), .index_page .forums .tborder td[class*="trow"]:nth-child(4), .forumdisplay_subforums .tborder td.tcat:nth-child(2), .forumdisplay_subforums .tborder td[class*="trow"]:nth-child(4) {
+    width: 55px;
+    text-align: right;
+}
+
+
+.forumdisplay_threadlist td[class*="trow"]:not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(5)):not(:nth-child(8)), .forumdisplay_threadlist .tcat:not(:nth-child(1)):not(:nth-child(6)) {
+    display: none;
+}
+.forumdisplay_threadlist .tfoot > *:not(.float_left) {
+    display: none;
+}
+.thread_legend {
+    display: none;
+}
+.pagination > *:not(.pagination_current):not(.pagination_next):not(.pagination_previous):not(.go_page)  {
+    
+ display: none;
+    
+}
+
+.forumdisplay_main .float_right[style] {
+ float:none;
+ text-align:left !important;
+}
+
+.forumdisplay_main .float_right[style] .smalltext {
+ display:block;
+}
+
+.post:not(.classic) table .post_author_info {
+ display:none;
+}
+
+.post:not(.classic) table .post_author_info .author_avatar img:not([src*="clear.png"]):not([src*="pixel.png"]),
+.post.classic .author_avatar img:not([src*="clear.png"]):not([src*="pixel.png"])  {
+ max-width:70px;
+ max-height:50px;
+ height:auto;
+ width:auto;
+}
+
+.post_controls [class*="float_"], .postbit_buttons  {
+ float:none !Important;
+ display:inline;
+ margin:0 auto;
+}
+
+.post_controls .postbit_buttons > a {
+ display:inline-block;
+ margin:2px;
+}
+
+.post_controls + br {
+ display:none;
+}
+
+.showthread_header_author {
+ text-align:left;
+} 
+
+.showthread_header_message {
+ padding-left:0px;
+ float:right;
+}
+
+.post.classic .post_author {
+ float:none;
+ width:auto;
+ text-align:left;
+}
+
+.post_userstars, .post_groupimage, .author_statistics {
+ display:none;
+}
+
+.post.classic .post_content {
+ margin-left: 0px;
+ padding: 6px;
+}
+
+.post.classic .post_author {
+ display:flex;
+ align-items:center;
+}
+
+.post.classic .author_avatar {
+ padding-right:7px;
+}
+
+
+#quick_reply_form td[class*="trow"] {
+    display: block;
+    width: auto;
+}
+#quick_reply_form td[class*="trow"] label+br {
+    display: none;
+}
+#quick_reply_form td[class*="trow"] {
+    vertical-align: middle;
+}
+
+
+
+
+.addprivateevent .tborder  *[class*="trow"],
+.addevent .tborder  *[class*="trow"],
+.editevent .tborder  *[class*="trow"],
+.edit_announcement td[valign="top"][width="180"] + td .tborder *[class*="trow"],
+.new_announcement td[valign="top"][width="180"] + td .tborder *[class*="trow"],
+ body[class*="newreply"] .tborder *[class*="trow"],
+ body[class*="newthread"] .tborder *[class*="trow"],
+ body[class*="editpost"] .tborder *[class*="trow"],
+ body[class*="private.php send"] .tborder *[class*="trow"] {
+  border-width:1px 2px;
+  display:block;
+  width:auto;
+ }
+
+.smilieinsert {
+ width:auto !important;
+}
+ 
+body.newpoll td[class*="trow"], body.editpoll td[class*="trow"] {
+ display:block;
+ width:auto;
+ border-width:1px 2px;
+}
+
+td[width="180"][valign="top"], td[width="180"][valign="top"] + td {
+ padding:0px;
+ display:block;
+ margin:3px 0px;
+ width:auto;
+}
+
+.standard_thread_table .tcat[width] {
+    width: auto;
+}
+.standard_thread_table .tcat:nth-child(3), .standard_thread_table .tcat:nth-child(3), .standard_thread_table .tcat:nth-child(4) {
+    display: none;
+}
+.standard_thread_table *[class*="trow"]:nth-child(5), .standard_thread_table *[class*="trow"]:nth-child(6) {
+    display: none;
+}
+
+body.private_page fieldset .smalltext {
+  font-size:0px;
+ }
+ 
+body.private_page fieldset a {
+  font-size:11px;
+  display:block;
+  padding:2px;
+ }
+ 
+ 
+body[class="private_page"] td[valign="top"][width="180"] + td .thead input {
+   display:none;
+}
+ 
+body[class="private_page"] td[valign="top"][width="180"] + td .tborder .tcat:nth-child(3),body[class="private_page"] td[valign="top"][width="180"] + td .tborder [class*="trow"]:nth-child(5) {
+    display:none;
+}
+   
+body[class="private_page"] td[valign="top"][width="180"] + td .tborder .tcat:nth-child(2),
+body[class="private_page"] td[valign="top"][width="180"] + td .tborder [class*="trow"]:nth-child(4) {
+	 text-align:right;
+}
+
+body.private_advanced_search td[valign="top"][width="180"] + td .tborder td[class*="trow"] {
+  display:block;
+ width:auto;
+ border-width:1px 2px;
+}
+
+.private_tracking td[width="180"][valign="top"]+td .tborder td.tcat:nth-child(3), 
+.private_tracking td[width="180"][valign="top"]+td .tborder td[class*="trow"]:nth-child(4) {
+    display: none;
+}
+
+body.attachments td[valign="top"][width="180"] + td .tborder:last-child td[class*="trow"],
+body.usercp_usergroups .tborder td:not(:only-child) {
+ display:block;
+ width:auto;
+  border-width:1px 2px;
+ text-align:left;
+}
+
+body.usercp_usergroups .tborder td.tcat:not(:first-child) {
+ display:none;
+}
+ 
+body.usercp_drafts td[valign="top"][width="180"] + td .tborder:first-child td:nth-child(2),
+body.usercp_attachments td[valign="top"][width="180"] + td .tborder:first-child td.tcat:nth-child(2),
+body.usercp_attachments td[valign="top"][width="180"] + td .tborder:first-child td[class*="trow"]:nth-child(3) {
+ display:none;
+}
+ 
+body.usercp_attachments td[valign="top"][width="180"] + td .tborder:first-child [width="40%"] {
+ width:70%;
+} 
+
+body.usercp_forumsubscriptions .tborder [class*="trow"]:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)),
+body.usercp_forumsubscriptions .tborder td.tcat:not(:nth-child(1)):not(:nth-child(2)) {
+ display:none;
+}
+
+
+
+body.search_page .tborder td{
+ display:block;
+ width:auto;
+ border-width:1px 2px;
+ 
+}
+
+
+.search_results_threads .tborder .tcat:nth-child(3), 
+.search_results_threads .tborder td[class*="trow"]:nth-child(5) {
+ text-align:right;
+}
+
+.search_results_threads .tborder .tcat:nth-child(2),
+.search_results_threads .tborder .tcat:nth-child(4),
+.search_results_threads .tborder .tcat:nth-child(5) {
+ display:none;
+}
+
+.search_results_threads .tborder td[class*="trow"]:nth-child(4),
+.search_results_threads .tborder td[class*="trow"]:nth-child(6),
+.search_results_threads .tborder td[class*="trow"]:nth-child(7) {
+ display:none;
+}
+
+
+
+.search_results_posts .tborder .tcat:nth-child(2),
+.search_results_posts .tborder .tcat:nth-child(3),
+.search_results_posts .tborder .tcat:nth-child(5),
+.search_results_posts .tborder .tcat:nth-child(6){
+ display:none;
+}
+
+.search_results_posts .tborder td[class*="trow"]:nth-child(4),
+.search_results_posts .tborder td[class*="trow"]:nth-child(5),
+.search_results_posts .tborder td[class*="trow"]:nth-child(7),
+.search_results_posts .tborder td[class*="trow"]:nth-child(8) {
+ display:none;
+}
+
+
+.search_results_posts .tborder td table[width] {
+ display:none;
+}
+
+
+
+body[class="memberlist_page"] .tborder:first-of-type .thead .float_right,
+body[class="memberlist_page"] .tborder:first-of-type td:nth-child(3),
+body[class="memberlist_page"] .tborder:first-of-type td:nth-child(4),
+body[class="memberlist_page"] .tborder:first-of-type td:nth-child(6) {
+ display:none;
+}
+
+body[class*="memberlist_search"] [class*="trow"],
+body[class="memberlist_page"]  form[action="memberlist.php"] .tborder td {
+ display:block !important;
+ width:auto;
+ border-width:1px 2px;
+}
+
+
+
+body.register_page   td[width*="50%"] {
+ display:block;
+ width:auto;
+  border-width:1px 2px;
+}
+
+
+
+body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(2) td:nth-child(2), body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(2) td:nth-child(4) , body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(2) td:nth-child(5){
+ display:none;
+}
+
+body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(2) td {
+ text-align:left;
+}
+
+body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(2) td:first-child {
+ width:65%;
+}
+
+body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(2) td:nth-child(3) {
+ text-align:right;
+}
+
+body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(3) td:nth-child(3), body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(3) td:nth-child(4) {
+ display:none;
+}
+
+body[class="modcp_page"]  td[valign="top"][width="180"] + td .tborder:nth-of-type(3) td:nth-child(2) {
+ text-align:right;
+}
+
+body.modcp_allreports td[valign="top"][width="180"] + td .tborder td.tcat:not(:first-child ){
+ display:none;
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td:not(.thead):not(.tcat) {
+ display:block;
+ text-align:left;
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td:before {
+ display:block;
+ position:relative;
+ padding-bottom:3px;
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td[class*="trow"] {
+ width:auto;
+ display:block;
+ border-width:0px 1px;
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(1):before {
+ content:"Reported Content";
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(2):before {
+ content:"Report reason";
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(3):before {
+ content:"Reporter";
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(4):before {
+ content:"# of Reports";
+}
+
+body.modcp_allreports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(5):before {
+ content:"Reported";
+}
+
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td:nth-child(3) {
+ display:none;
+} 
+
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td[class*="trow"] {
+ border-width:0px;
+}
+
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder .tcat:nth-child(2), body.modcp_reports  td[valign="top"][width="180"] + td .tborder .tcat:nth-child(4) {
+ display:none;
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder .tcat:nth-child(5) {
+ text-align:right;
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder tr, body.modcp_reports  td[valign="top"][width="180"] + td .tborder td.thead{
+ display:block;
+ position:relative;
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td[class*="trow"] {
+ display:block;
+ text-align:left;
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(5) {
+ position:absolute;
+ z-index:3;
+ top:0px;
+ right:0px;
+}
+
+body.modcp_reports td[valign="top"][width="180"] + td .tborder td:before {
+ display:block;
+ position:relative;
+ padding-bottom:3px;
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(1):before {
+ content:"Reported Content";
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(2):before {
+ content:"Reported Reason";
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(3):before {
+ content:"# of reports";
+}
+
+body.modcp_reports  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(4):before {
+ content:"Last Reported";
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td {
+ text-align:left;
+}
+
+
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder td:before {
+ display:block;
+ position:relative;
+ padding-bottom:3px;
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) .tcat:not(:first-child) {
+ display:none;
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td[class*="trow"] {
+ display:block;
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td[class*="trow"]:nth-child(1):before {
+ content:"Username";
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td[class*="trow"]:nth-child(2):before {
+ content:"Date";
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td[class*="trow"]:nth-child(3):before {
+ content:"Action";
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td[class*="trow"]:nth-child(4):before {
+ content:"Information";
+}
+
+body.modcp_modlogs  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td[class*="trow"]:nth-child(5):before {
+ content:"IP";
+}
+
+
+body.modcp_finduser  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td:nth-child(2),
+body.modcp_finduser  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td:nth-child(3),
+body.modcp_finduser  td[valign="top"][width="180"] + td .tborder:nth-of-type(1) td:nth-child(4) {
+ display:none;
+}
+
+
+
+
+body.modcp_banning  td[valign="top"][width="180"] + td .tborder td:before {
+ display:block;
+ position:relative;
+ padding-bottom:3px;
+}
+
+body.modcp_banning  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(1):before {
+ content:"Username";
+}
+
+body.modcp_banning  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(2):before {
+ content:"Reason";
+}
+
+body.modcp_banning  td[valign="top"][width="180"] + td .tborder: td[class*="trow"]:nth-child(3):before {
+ content:"Length";
+}
+
+body.modcp_banning  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(4):before {
+ content:"Banned By";
+}
+
+body.modcp_banning  td[valign="top"][width="180"] + td .tborder td.tcat:not(:first-child) {
+ display:none;
+}
+
+body.modcp_banning  td[valign="top"][width="180"] + td .tborder td[class*="trow"] {
+ display:block;
+}
+
+
+body.modcp_editprofile   td[valign="top"][width="180"] + td .tborder td  {
+ display:block;
+ width:auto;
+}
+
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td.tcat:not(:first-child) {
+ display:none;
+}
+
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td[class*="trow"] {
+ display:block;
+ text-align:left;
+}
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td:before {
+ display:block;
+ position:relative;
+ padding-bottom:3px;
+}
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(1):before {
+ content:"Warned User";
+}
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(2):before {
+ content:"Warning";
+}
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder: td[class*="trow"]:nth-child(3):before {
+ content:"Date Issued";
+}
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(4):before {
+ content:"Expires";
+}
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(5):before {
+ content:"Issued by";
+}
+
+body.modcp_warninglogs  td[valign="top"][width="180"] + td .tborder td[class*="trow"]:nth-child(6):before {
+ content:"Details";
+}
+
+
+
+body.moderation_threadnotes  form .tborder:not(:first-child) td.tcat:not(:first-child){
+  display:none;
+}
+
+body.moderation_threadnotes  form .tborder:not(:first-child) td:not(.tcat) {
+ display:block;
+ width:auto;
+ border-width:1px 2px;
+ text-align:left;
+}
+
+body.moderation_threadnotes  form .tborder:not(:first-child) td:not(.tcat):before {
+  display:block;
+  text-align:left;
+}
+
+body.moderation_threadnotes  form .tborder:nth-child(2) td[class*="trow"]:nth-child(2):before{
+ content:"Date";
+}
+
+body.moderation_threadnotes  form .tborder:nth-child(2) td[class*="trow"]:nth-child(3):before{
+ content:"Action";
+}
+
+body.moderation_threadnotes  form .tborder:nth-child(2) td[class*="trow"]:nth-child(4):before{
+ content:"Information";
+}
+
+body.moderation_threadnotes .tcat {
+ text-align:left;
+}
+
+
+body.moderation_delayedmoderation  .content  .tborder.delayed_mod_queue td.tcat:not(:first-child) {
+ display:none;
+}
+
+body.moderation_delayedmoderation  .content .tborder.delayed_mod_queue td.tcat {
+ text-align:left;
+}
+
+body.moderation_delayedmoderation  .content .tborder.delayed_mod_queue td[class*="trow"]{
+ display:block;
+ width:auto;
+ text-align:left;
+}
+
+body.moderation_delayedmoderation  .content.tborder.delayed_mod_queue td[class*="trow"]:before{
+  display:block;
+  text-align:left;
+  position:relative;
+}
+
+body.moderation_delayedmoderation  .content.tborder.delayed_mod_queue td[class*="trow"]:nth-child(2):before {
+ content:"Days to perform action";
+}
+
+
+body.moderation_delayedmoderation  .content .tborder.delayed_mod_queue td[class*="trow"]:nth-child(3):before {
+ content:"Action";
+}
+
+body.moderation_delayedmoderation  .content .tborder.delayed_mod_queue td[class*="trow"]:nth-child(4):before {
+ content:"Information";
+}
+
+body.moderation_delayedmoderation  .content .tborder.delayed_mod_queue td[class*="trow"]:nth-child(5):before {
+ content:"Actions";
+}
+
+
+
+body.moderation_delayedmoderation  td[class*="trow"],
+body.moderation_merge  td[class*="trow"],
+body.moderation_split  td[class*="trow"],
+body.moderation_move  td[class*="trow"] {
+ display:block;
+ width:auto;
+}
+
+
+
+body.showteam_page  .tborder td:not(.thead):not(:first-child):not(:nth-child(2)){
+ display:none;
+}
+
+body.showteam_page .tborder td:nth-child(2) {
+ width:55%;
+ text-align:right;
+}
+
+
+
+body.online_page  .tborder td:last-child {
+ text-align:right;
+}
+
+body.online_page  .tborder td:nth-child(2) {
+ display:none;
+}
+
+body.online_page  .tborder td:first-child {
+ text-align:left;
+}
+
+
+.main_block, .main_block + td {
+ border-width:1px 2px;
+ display:block;
+ width:auto !important;
+}
+
+.main_block + td [style] {
+ width:auto !important;
+}
+
+
+
+.profile_header {
+    height: 180px;
+}
+.profile_sidebar {
+    width: auto;
+    float: none;
+    top: 0px;
+    margin-top: 10px;
+}
+.profile_sidebar:before {
+    display: block;
+}
+.profile_sidebar:before, .profile_sidebar:after {
+    display: none;
+}
+.profile_container {
+    margin: 5px auto;
+}
+.profile_stats, .awards_block {
+    display: none;
+}
+.profile_avatar {
+}
+.profile_avatar img {
+    max-width: 100px;
+    max-height: 100px;
+    height: auto;
+    width: auto;
+}
+.profile_sidebar .smalltext[style] {
+    display: none;
+}
+.profile_sidebar>:not(.profile_avatar) {
+}
+.profile_tabs {
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin: 0px 50px;
+    border-right-style: solid;
+    border-right-width: 2px;
+    border-radius: 2px 2px 0px 0px;
+}
+.profile_tabs>a span {
+    display: none;
+}
+.profile_tabs>a>i {
+    display: inline-block;
+    width: 30px;
+    font-size: 150%;
+    text-align: center;
+}
+.profile_container td {
+    display: block;
+    width: auto !important;
+}
+.profile_container {
+    margin-top: 10px;
+}
+
+.profile_username {
+    max-width: 99%;
+    word-break: none;
+}
+
+
+.modal {
+    margin-top: 0px!Important;
+    width:88%;
+  
+}
+.sidebar {
+    width: auto;
+    float: none;
+    display: none;
+}
+.forums {
+    margin: 5px 0px!Important;
+}
+.shadetabs a {
+    font-size: 0px;
+    display: inline-block;
+    margin: 4px;
+    padding: 6px 0px;
+    width: 40px;
+}
+.shadetabs a:before {
+    font-family: "Material Icons";
+    font-size: 16px;
+    font-style: normal;
+}
+.shadetabs a[rel="tabmenu_4"]:before {
+    content: "\E0BF";
+}
+.shadetabs a[rel="tabmenu_6"]:before {
+    content: "\E850";
+}
+.shadetabs a[rel="tabmenu_69"]:before {
+    content: "\E86F";
+}
+.shadetabs a[rel="tabmenu_7"]:before {
+    content: "\E8DC";
+}
+.shadetabs a[rel="tabmenu_45"]:before {
+    content: "\E84F";
+}
+.shadetabs a[rel="tabmenu_86"]:before {
+    content: "\E7EF";
+}
+
+
+#nav_menu.popup_menu i {
+ width:18px;
+ text-align:center;
+ margin-right:6px;
+}
+
+
+.newest_posts ~ td {
+ display:none;
+}
+
+.newest_posts table table td:not(:nth-child(1)):not(:nth-child(4)) {
+ display:none;
+}
+
+
+.newest_posts table table td:nth-child(4) {
+ text-align:right;
+}
+
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {  
+.forumbit_threads {
+ display:none;
+}
+
+}
+
+
+
+
+}
+
+
+		
+		
+		√ñù0ÿ      _N#÷_N#⁄BÄ_W^U   8    :https://sinister.ly/cache/themes/theme26/responsive.css necko:classified 1 strongly-framed 1 security-info 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 request-method GET response-head HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 01 Sep 2020 10:35:05 GMT
+Content-Type: text/css
+Content-Length: 21482
+Last-Modified: Wed, 08 Apr 2020 09:07:02 GMT
+ETag: "5e8d9436-53ea"
+Accept-Ranges: bytes
+ original-response-headers Server: nginx
+Date: Tue, 01 Sep 2020 10:35:05 GMT
+Content-Type: text/css
+Content-Length: 21482
+Last-Modified: Wed, 08 Apr 2020 09:07:02 GMT
+Connection: keep-alive
+ETag: "5e8d9436-53ea"
+Accept-Ranges: bytes
+ ctid 5 uncompressed-len 0 net-response-time-onstart 3413 net-response-time-onstop 3413   SÍ

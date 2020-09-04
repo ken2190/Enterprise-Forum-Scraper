@@ -1,0 +1,801 @@
+var MyBB = {
+	init: function()
+	{
+		$(function()
+		{
+			MyBB.pageLoaded();
+		});
+
+		return true;
+	},
+
+	pageLoaded: function()
+	{
+		expandables.init();
+
+		/* Create the Check All feature */
+		$('[name="allbox"]').each(function(key, value) {
+			var allbox = this;
+			var checked = $(this).is(':checked');
+			var checkboxes = $(this).closest('form').find(':checkbox').not('[name="allbox"]');
+
+			checkboxes.on('change', function() {
+				if(checked && !$(this).prop('checked'))
+				{
+					checked = false;
+					$(allbox).trigger('change', ['item']);
+				}
+			});
+
+			$(this).on('change', function(event, origin) {
+				checked = $(this).is(':checked');
+
+				if(typeof(origin) == "undefined")
+				{
+					checkboxes.each(function() {
+						if(checked != $(this).is(':checked'))
+						{
+							$(this).prop('checked', checked).trigger('change');
+						}
+					});
+				}
+			});
+		});
+
+		// Initialise "initial focus" field if we have one
+		var initialfocus = $(".initial_focus");
+		if(initialfocus.length)
+		{
+			initialfocus.trigger('focus');
+		}
+
+		if(typeof(use_xmlhttprequest) != "undefined" && use_xmlhttprequest == 1)
+		{
+			mark_read_imgs = $(".ajax_mark_read");
+			mark_read_imgs.each(function()
+			{
+				var element = $(this);
+				if(element.hasClass('forum_off') || element.hasClass('forum_offclose') || element.hasClass('forum_offlink') || element.hasClass('subforum_minioff') || element.hasClass('subforum_minioffclose') || element.hasClass('subforum_miniofflink') || (element.attr("title") && element.attr("title") == lang.no_new_posts)) return;
+
+				element.on('click', function()
+				{
+					MyBB.markForumRead(this);
+				});
+
+				element.css("cursor", "pointer");
+				if(element.attr("title"))
+				{
+					element.attr("title", element.attr("title") + " - ");
+				}
+				element.attr("title", element.attr("title") + lang.click_mark_read);
+			});
+		}
+
+		if(typeof $.modal !== "undefined")
+		{
+			$(document).on($.modal.OPEN, function(event, modal) {
+				$("body").css("overflow", "hidden");
+				if(initialfocus.length > 0)
+				{
+					initialfocus.trigger('focus');
+				}
+			});
+
+			$(document).on($.modal.CLOSE, function(event, modal) {
+				$("body").css("overflow", "auto");
+			});
+		}
+
+		$("a.referralLink").on('click', MyBB.showReferrals);
+
+		if($('.author_avatar').length)
+		{
+			$(".author_avatar img").on('error', function () {
+				$(this).unbind("error").closest('.author_avatar').remove();
+			});
+		}
+	},
+
+	popupWindow: function(url, options, root)
+	{
+		if(!options) options = { fadeDuration: 250, zIndex: (typeof modal_zindex !== 'undefined' ? modal_zindex : 9999) }
+		if(root != true)
+			url = rootpath + url;
+
+		$.get(url, function(html)
+		{
+			$(html).appendTo('body').modal(options);
+		});
+	},
+
+	prompt: function(message, options)
+	{
+		var defaults = { fadeDuration: 250, zIndex: (typeof modal_zindex !== 'undefined' ? modal_zindex : 9999) };
+		var buttonsText = '';
+
+		for (var i in options.buttons)
+		{
+			buttonsText += templates.modal_button.replace('__title__', options.buttons[i].title);
+		}
+
+		var html = templates.modal.replace('__buttons__', buttonsText).replace('__message__', message);
+		var modal = $(html);
+		modal.modal($.extend(defaults, options));
+		var buttons = modal.find('.modal_buttons > .button');
+		buttons.on('click', function(e)
+		{
+			e.preventDefault();
+			var index = $(this).index();
+			if (options.submit(e, options.buttons[index].value) == false)
+				return;
+
+			$.modal.close();
+		});
+
+		if (buttons[0])
+		{
+			modal.on($.modal.OPEN, function()
+			{
+				$(buttons[0]).trigger('focus');
+			});
+		}
+
+		return modal;
+	},
+
+	deleteEvent: function(eid)
+	{
+		MyBB.prompt(deleteevent_confirm, {
+			buttons:[
+					{title: yes_confirm, value: true},
+					{title: no_confirm, value: false}
+			],
+			submit: function(e,v,m,f){
+				if(v == true)
+				{
+					var form = $("<form />",
+							   {
+									method: "post",
+									action: "calendar.php",
+									style: "display: none;"
+							   });
+
+					form.append(
+						$("<input />",
+						{
+							name: "action",
+							type: "hidden",
+							value: "do_deleteevent"
+						})
+					);
+
+					if(my_post_key)
+					{
+						form.append(
+							$("<input />",
+							{
+								name: "my_post_key",
+								type: "hidden",
+								value: my_post_key
+							})
+						);
+					}
+
+					form.append(
+						$("<input />",
+						{
+							name: "eid",
+							type: "hidden",
+							value: eid
+						})
+					);
+
+					form.append(
+						$("<input />",
+						{
+							name: "delete",
+							type: "hidden",
+							value: 1
+						})
+					);
+
+					$("body").append(form);
+					form.trigger('submit');
+				}
+			}
+		});
+	},
+
+	reputation: function(uid, pid)
+	{
+		if(!pid)
+		{
+			var pid = 0;
+		}
+
+		MyBB.popupWindow("/reputation.php?action=add&uid="+uid+"&pid="+pid+"&modal=1");
+	},
+
+	viewNotes: function(uid)
+	{
+		MyBB.popupWindow("/member.php?action=viewnotes&uid="+uid+"&modal=1");
+	},
+
+	getIP: function(pid)
+	{
+		MyBB.popupWindow("/moderation.php?action=getip&pid="+pid+"&modal=1");
+	},
+
+	getPMIP: function(pmid)
+	{
+		MyBB.popupWindow("/moderation.php?action=getpmip&pmid="+pmid+"&modal=1");
+	},
+
+	deleteReputation: function(uid, rid)
+	{
+		MyBB.prompt(delete_reputation_confirm, {
+			buttons:[
+					{title: yes_confirm, value: true},
+					{title: no_confirm, value: false}
+			],
+			submit: function(e,v,m,f){
+				if(v == true)
+				{
+					var form = $("<form />",
+					{
+						method: "post",
+						action: "reputation.php?action=delete",
+						style: "display: none;"
+					});
+
+					form.append(
+						$("<input />",
+						{
+							name: "rid",
+							type: "hidden",
+							value: rid
+						})
+					);
+
+					if(my_post_key)
+					{
+						form.append(
+							$("<input />",
+							{
+								name: "my_post_key",
+								type: "hidden",
+								value: my_post_key
+							})
+						);
+					}
+
+					form.append(
+						$("<input />",
+						{
+							name: "uid",
+							type: "hidden",
+							value: uid
+						})
+					);
+
+					$("body").append(form);
+					form.trigger('submit');
+				}
+			}
+		});
+
+		return false;
+	},
+
+	whoPosted: function(tid, sortby)
+	{
+		var sort = "", url, body;
+
+		if(typeof sortby === "undefined")
+		{
+			sortby = "";
+		}
+
+		if(sortby == "username")
+		{
+			sort = "&sort=" + sortby;
+		}
+		url = "/misc.php?action=whoposted&tid="+tid+sort+"&modal=1";
+
+		// if the modal is already open just replace the contents
+		if($.modal.isActive())
+		{
+			// don't waste a query if we are already sorted correctly
+			if(sortby == MyBB.whoPostedSort)
+			{
+				return;
+			}
+
+			MyBB.whoPostedSort = sortby;
+
+			$.get(rootpath + url, function(html)
+			{
+				// just replace the inner div
+				body = $(html).children("div");
+				$("div.modal").children("div").replaceWith(body);
+			});
+			return;
+		}
+		MyBB.whoPostedSort = "";
+		MyBB.popupWindow(url);
+	},
+
+	markForumRead: function(event)
+	{
+		var element = $(event);
+		if(!element.length)
+		{
+			return false;
+		}
+		var fid = element.attr("id").replace("mark_read_", "");
+		if(!fid)
+		{
+			return false;
+		}
+
+		$.ajax(
+		{
+			url: 'misc.php?action=markread&fid=' + fid + '&ajax=1&my_post_key=' + my_post_key,
+			async: true,
+        	success: function (request)
+        	{
+		  		MyBB.forumMarkedRead(fid, request);
+          	}
+		});
+	},
+
+	forumMarkedRead: function(fid, request)
+	{
+		if(request == 1)
+		{
+			var markreadfid = $("#mark_read_"+fid);
+			if(markreadfid.hasClass('subforum_minion'))
+			{
+				markreadfid.removeClass('subforum_minion').addClass('subforum_minioff');
+			}
+			else
+			{
+				markreadfid.removeClass('forum_on').addClass('forum_off');
+			}
+			markreadfid.css("cursor", "default").attr("title", lang.no_new_posts);
+		}
+	},
+
+	unHTMLchars: function(text)
+	{
+		text = text.replace(/&lt;/g, "<");
+		text = text.replace(/&gt;/g, ">");
+		text = text.replace(/&nbsp;/g, " ");
+		text = text.replace(/&quot;/g, "\"");
+		text = text.replace(/&amp;/g, "&");
+		return text;
+	},
+
+	HTMLchars: function(text)
+	{
+		text = text.replace(new RegExp("&(?!#[0-9]+;)", "g"), "&amp;");
+		text = text.replace(/</g, "&lt;");
+		text = text.replace(/>/g, "&gt;");
+		text = text.replace(/"/g, "&quot;");
+		return text;
+	},
+
+	changeLanguage: function()
+	{
+		form = $("#lang_select");
+		if(!form.length)
+		{
+			return false;
+		}
+		form.trigger('submit');
+	},
+
+	changeTheme: function()
+	{
+		form = $("#theme_select");
+		if(!form.length)
+		{
+			return false;
+		}
+		form.trigger('submit');
+	},
+
+	detectDSTChange: function(timezone_with_dst)
+	{
+		var date = new Date();
+		var local_offset = date.getTimezoneOffset() / 60;
+		if(Math.abs(parseInt(timezone_with_dst) + local_offset) == 1)
+		{
+			$.ajax(
+			{
+				url: 'misc.php?action=dstswitch&ajax=1',
+				async: true,
+				method: 'post',
+	          	error: function (request)
+	          	{
+	          		if(use_xmlhttprequest != 1)
+	                {
+						var form = $("<form />",
+						           {
+						           		method: "post",
+						           		action: "misc.php",
+						           		style: "display: none;"
+						           });
+
+						form.append(
+						    $("<input />",
+							{
+								name: "action",
+								type: "hidden",
+								value: "dstswitch"
+							})
+						);
+
+						$("body").append(form);
+						form.trigger('submit');
+	                }
+	            }
+			});
+		}
+	},
+
+	dismissPMNotice: function(bburl)
+	{
+		var pm_notice = $("#pm_notice");
+		if(!pm_notice.length)
+		{
+			return false;
+		}
+
+		if(use_xmlhttprequest != 1)
+		{
+			return true;
+		}
+
+		$.ajax(
+		{
+			type: 'post',
+			url: bburl + 'private.php?action=dismiss_notice',
+			data: { ajax: 1, my_post_key: my_post_key },
+			async: true
+		});
+		pm_notice.remove();
+		return false;
+	},
+
+	submitReputation: function(uid, pid, del)
+	{
+		// Get form, serialize it and send it
+		var datastring = $(".reputation_"+uid+"_"+pid).serialize();
+
+		if(del == 1)
+			datastring = datastring + '&delete=1';
+
+		$.ajax({
+			type: "POST",
+			url: "reputation.php?modal=1",
+			data: datastring,
+			dataType: "html",
+			success: function(data) {
+				// Replace modal HTML (we have to access by class because the modals are appended to the end of the body, and when we get by class we get the last element of that class - which is what we want)
+				$(".modal_"+uid+"_"+pid).fadeOut('slow', function() {
+					$(".modal_"+uid+"_"+pid).html(data);
+					$(".modal_"+uid+"_"+pid).fadeIn('slow');
+					$(".modal").fadeIn('slow');
+				});
+			},
+			error: function(){
+				  alert(lang.unknown_error);
+			}
+		});
+
+		return false;
+	},
+
+	deleteAnnouncement: function(data)
+	{
+		MyBB.prompt(announcement_quickdelete_confirm, {
+			buttons:[
+					{title: yes_confirm, value: true},
+					{title: no_confirm, value: false}
+			],
+			submit: function(e,v,m,f){
+				if(v == true)
+				{
+					window.location=data.href.replace('action=delete_announcement','action=do_delete_announcement');
+				}
+			}
+		});
+
+		return false;
+	},
+
+	showReferrals: function(e)
+	{
+		var idPieces, uid;
+
+		e.preventDefault();
+		
+		if(typeof this.id == "undefined")
+		{
+			return false;
+		}
+
+		idPieces = this.id.split("_");
+		uid = parseInt(idPieces[idPieces.length - 1], 10);
+
+		if(uid <= 0)
+		{
+			return false;
+		}
+
+		MyBB.popupWindow("/xmlhttp.php?action=get_referrals&uid="+uid);
+	},
+
+	// Fixes https://github.com/mybb/mybb/issues/1232
+	select2: function()
+	{
+		if(typeof $.fn.select2 !== "undefined")
+		{
+			$.extend($.fn.select2.defaults, {
+				formatMatches: function (matches) {
+					if(matches == 1)
+					{
+						return lang.select2_match;
+					}
+					else
+					{
+						return lang.select2_matches.replace('{1}',matches);
+					}
+				},
+				formatNoMatches: function () {
+					return lang.select2_nomatches;
+				},
+				formatInputTooShort: function (input, min) {
+					var n = min - input.length;
+					if( n == 1)
+					{
+						return lang.select2_inputtooshort_single;
+					}
+					else
+					{
+						return lang.select2_inputtooshort_plural.replace('{1}', n);
+					}
+				},
+				formatInputTooLong: function (input, max) {
+					var n = input.length - max;
+					if( n == 1)
+					{
+						return lang.select2_inputtoolong_single;
+					}
+					else
+					{
+						return lang.select2_inputtoolong_plural.replace('{1}', n);
+					}
+				},
+				formatSelectionTooBig: function (limit) {
+					if( limit == 1)
+					{
+						return lang.select2_selectiontoobig_single;
+					}
+					else
+					{
+						return lang.select2_selectiontoobig_plural.replace('{1}', limit);
+					}
+				},
+				formatLoadMore: function (pageNumber) {
+					return lang.select2_loadmore;
+				},
+				formatSearching: function () {
+					return lang.select2_searching;
+				}
+			});
+		}
+	}
+};
+
+var Cookie = {
+	get: function(name)
+	{
+		name = cookiePrefix + name;
+		return Cookies.get(name);
+	},
+
+	set: function(name, value, expires)
+	{
+		name = cookiePrefix + name;
+		if(!expires)
+		{
+			expires = 315360000; // 10*365*24*60*60 => 10 years
+		}
+
+		expire = new Date();
+		expire.setTime(expire.getTime()+(expires*1000));
+
+		options = {
+			expires: expire,
+			path: cookiePath,
+			domain: cookieDomain,
+			secure: cookieSecureFlag == true,
+		};
+
+		return Cookies.set(name, value, options);
+	},
+
+	unset: function(name)
+	{
+		name = cookiePrefix + name;
+
+		options = {
+			path: cookiePath,
+			domain: cookieDomain
+		};
+		return Cookies.remove(name, options);
+	}
+};
+
+var expandables = {
+
+	init: function()
+	{
+		var expanders = $(".expcolimage .expander");
+		if(expanders.length)
+		{
+			expanders.each(function()
+			{
+        		var expander = $(this);
+				if(expander.attr("id") == false)
+				{
+					return;
+				}
+
+				expander.on('click', function()
+				{
+					controls = expander.attr("id").replace("_img", "");
+					expandables.expandCollapse(this, controls);
+				});
+
+				if(MyBB.browser == "ie")
+				{
+					expander.css("cursor", "hand");
+				}
+				else
+				{
+					expander.css("cursor", "pointer");
+				}
+			});
+		}
+	},
+
+	expandCollapse: function(e, controls)
+	{
+		element = $(e);
+
+		if(!element || controls == false)
+		{
+			return false;
+		}
+		var expandedItem = $("#"+controls+"_e");
+		var collapsedItem = $("#"+controls+"_c");
+
+		if(expandedItem.length && collapsedItem.length)
+		{
+			// Expanding
+			if(expandedItem.is(":hidden"))
+			{
+				expandedItem.toggle("fast");
+				collapsedItem.toggle("fast");
+				this.saveCollapsed(controls);
+			}
+			// Collapsing
+			else
+			{
+				expandedItem.toggle("fast");
+				collapsedItem.toggle("fast");
+				this.saveCollapsed(controls, 1);
+			}
+		}
+		else if(expandedItem.length && !collapsedItem.length)
+		{
+			// Expanding
+			if(expandedItem.is(":hidden"))
+			{
+				expandedItem.toggle("fast");
+				element.attr("src", element.attr("src").replace(/collapse_collapsed\.(gif|jpg|jpeg|bmp|png)$/i, "collapse.$1"))
+									.attr("alt", "[-]")
+									.attr("title", "[-]");
+				element.parent().parent('td').removeClass('tcat_collapse_collapsed');
+				element.parent().parent('.thead').removeClass('thead_collapsed');
+				this.saveCollapsed(controls);
+			}
+			// Collapsing
+			else
+			{
+				expandedItem.toggle("fast");
+				element.attr("src", element.attr("src").replace(/collapse\.(gif|jpg|jpeg|bmp|png)$/i, "collapse_collapsed.$1"))
+									.attr("alt", "[+]")
+									.attr("title", "[+]");
+				element.parent().parent('td').addClass('tcat_collapse_collapsed');
+				element.parent().parent('.thead').addClass('thead_collapsed');
+				this.saveCollapsed(controls, 1);
+			}
+		}
+		return true;
+	},
+
+	saveCollapsed: function(id, add)
+	{
+		var saved = [];
+		var newCollapsed = [];
+		var collapsed = Cookie.get('collapsed');
+
+		if(collapsed)
+		{
+			saved = collapsed.split("|");
+
+			$.each(saved, function(intIndex, objValue)
+			{
+				if(objValue != id && objValue != "")
+				{
+					newCollapsed[newCollapsed.length] = objValue;
+				}
+			});
+		}
+
+		if(add == 1)
+		{
+			newCollapsed[newCollapsed.length] = id;
+		}
+		Cookie.set('collapsed', newCollapsed.join("|"));
+	}
+};
+
+/* Lang this! */
+var lang = {
+
+};
+
+/* add keepelement to jquery-modal plugin */
+(function($) {
+	if(typeof $.modal != 'undefined')
+	{
+		$.modal.defaults.keepelement = false;
+
+		$.modal.prototype.oldCloseFunction = $.modal.prototype.close;
+		$.modal.prototype.close = function()
+		{
+			this.oldCloseFunction();
+
+			// Deletes the element (multi-modal feature: e.g. when you click on multiple report buttons, you will want to see different content for each)
+			if(!this.options.keepelement)
+			{
+				this.$elm.remove();
+			}
+		};
+	}
+})(jQuery);
+
+
+MyBB.init();
+éB‚s…      _N#÷_N#ŸBÄ_Q   1    :https://sinister.ly/jscripts/general.js?ver=1817 necko:classified 1 strongly-framed 1 security-info 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 request-method GET response-head HTTP/1.1 200 OK
+Server: nginx
+Date: Tue, 01 Sep 2020 10:35:05 GMT
+Content-Type: application/javascript
+Content-Length: 16206
+Last-Modified: Mon, 10 Aug 2020 17:10:59 GMT
+ETag: "5f317fa3-3f4e"
+Accept-Ranges: bytes
+ original-response-headers Server: nginx
+Date: Tue, 01 Sep 2020 10:35:05 GMT
+Content-Type: application/javascript
+Content-Length: 16206
+Last-Modified: Mon, 10 Aug 2020 17:10:59 GMT
+Connection: keep-alive
+ETag: "5f317fa3-3f4e"
+Accept-Ranges: bytes
+ ctid 2 uncompressed-len 0 net-response-time-onstart 2793 net-response-time-onstop 2793   ?N
