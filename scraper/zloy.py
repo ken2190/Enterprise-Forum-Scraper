@@ -42,7 +42,7 @@ class ZloySpider(SitemapSpider):
     post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]'\
                       '/a[contains(@name,"post")]'\
                       '/following-sibling::text()[1]'
-    avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
+    avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]//img/@src'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -54,6 +54,10 @@ class ZloySpider(SitemapSpider):
         re.IGNORECASE
     )
 
+    # Recaptcha stuffs
+    recaptcha_site_key_xpath = '//div[@data-xf-init="re-captcha"]/@data-sitekey'
+    bypass_success_xpath = '//a[contains(@href, "forumdisplay.php?")]'
+
     # Other settings
     use_proxy = True
     download_delay = REQUEST_DELAY
@@ -63,52 +67,26 @@ class ZloySpider(SitemapSpider):
     cloudfare_delay = 5
     handle_httpstatus_list = [503]
 
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        thread_date = thread_date.strip()
-        if "днес" in thread_date.lower():
-            return datetime.today()
-        elif "вчера" in thread_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                thread_date,
-                self.sitemap_datetime_format
-            )
+    def start_requests(self, cookies=None, ip=None):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
 
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        post_date = post_date.split(',')[0].strip()
-        if not post_date:
-            return
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
 
-        if "днес" in post_date.lower():
-            return datetime.today()
-        elif "вчера" in post_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                post_date,
-                self.post_datetime_format
-            )
-
-    def start_requests(self):
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            }
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse
         )
 
     def parse(self, response):
@@ -158,47 +136,6 @@ class ZloySpider(SitemapSpider):
 
         # Save avatars
         yield from self.parse_avatars(response)
-
-    def parse_avatars(self, response):
-
-        # Synchronize headers user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Save avatar content
-        for avatar in response.xpath(self.avatar_xpath):
-            avatar_url = avatar.xpath('img/@src').extract_first()
-
-            # Standardize avatar url
-            if not avatar_url.lower().startswith("http"):
-                avatar_url = self.base_url + avatar_url
-
-            if 'image/svg' in avatar_url:
-                continue
-
-            user_url = avatar.xpath('@href').extract_first()
-            match = self.avatar_name_pattern.findall(user_url)
-            if not match:
-                continue
-
-            file_name = os.path.join(
-                self.avatar_path,
-                f'{match[0]}.jpg'
-            )
-
-            if os.path.exists(file_name):
-                continue
-
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_name": file_name
-                    }
-                ),
-            )
 
 
 class ZloyScrapper(SiteMapScrapper):

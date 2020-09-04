@@ -43,6 +43,7 @@ from base64 import (
     b64encode
 )
 
+
 # Vip Proxy
 #VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
 #VIP_PROXY_PASSWORD = "5d2ad17825b0"
@@ -938,10 +939,15 @@ class SitemapSpider(BypassCloudfareSpider):
 
         if getattr(self, "avatar_name_pattern", None):
             try:
-                return os.path.join(
+                file_name = os.path.join(
                     self.avatar_path,
                     self.avatar_name_pattern.findall(url)[0]
                 )
+                extensions = ['jpg', 'jpeg', 'png', 'gif']
+                for ext in extensions:
+                    if ext in file_name:
+                        return file_name
+                return f'{file_name}.jpg'
             except Exception as err:
                 return
 
