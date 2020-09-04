@@ -28,11 +28,12 @@ class VigilanteParser(BaseTemplate):
         self.post_text_xpath = './/div[@class="post_body scaleimages"]/descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = './/div[@class="author_avatar"]/a/img/@src'
         self.comment_block_xpath = '..//div[@class="post_head"]/div/strong/a/text()'
+        self.author_xpath = './/div[@class="author_information"]//strong[1]//text()'
 
         # main function
         self.main()
 
-    def extract_comments(self, html_response):
+    def extract_comments(self, html_response, pagination):
         comments = list()
         comment_blocks = html_response.xpath(self.comments_xpath)
 
@@ -84,27 +85,11 @@ class VigilanteParser(BaseTemplate):
 
             return ""
 
-    def get_author(self, tag):
-        author = tag.xpath(
-            './/div[@class="author_information"]//strong//text()'
-        )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="author_information"]/strong//em/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'div//div[@class="author_information"]/strong//b/span/text()'
-            )
+    # def get_title(self, tag):
+    #     title = tag.xpath(self.title_xpath)
+    #     title = title[-1].strip() if title else None
 
-        author = author[0].strip() if author else None
-        return author
-
-    def get_title(self, tag):
-        title = tag.xpath(self.title_xpath)
-        title = title[-1].strip() if title else None
-
-        return title
+    #     return title
 
     def get_comment_id(self, tag, index=1):
         comment_id = ""
