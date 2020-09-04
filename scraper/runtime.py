@@ -39,7 +39,7 @@ class RunTimeSpider(SitemapSpider):
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
-        r".*/(\S+\.\w+)",
+        r".*avatar_(\d+\.\w+)",
         re.IGNORECASE
     )
     topic_pattern = re.compile(
@@ -53,35 +53,6 @@ class RunTimeSpider(SitemapSpider):
     post_datetime_format = '%m-%d-%Y, %I:%M %p'
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.strip()
-        if thread_date.startswith(','):
-            return
-        if 'hour' in thread_date.lower():
-            return datetime.today()
-        elif 'yesterday' in thread_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                thread_date,
-                self.sitemap_datetime_format
-            )
-
-    def parse_post_date(self, post_date):
-        # Standardize thread_date
-        post_date = post_date.strip()
-        if post_date.startswith(','):
-            return
-        if 'hour' in post_date.lower():
-            return datetime.today()
-        elif 'yesterday' in post_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                post_date,
-                self.post_datetime_format
-            )
 
     def parse(self, response):
         # Synchronize cloudfare user agent
