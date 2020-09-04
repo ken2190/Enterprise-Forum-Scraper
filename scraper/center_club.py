@@ -1,10 +1,5 @@
-import os
 import re
-import time
 import uuid
-import json
-
-from datetime import datetime, timedelta
 
 from scrapy import (
     Request,
@@ -29,6 +24,7 @@ class CenterClubSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://center-club.us"
+    index_url = "https://center-club.us/index.php"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
@@ -53,6 +49,7 @@ class CenterClubSpider(SitemapSpider):
 
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//button[@class="g-recaptcha"]/@data-sitekey'
+    bypass_success_xpath = '//h3[@class="node-title"]'
 
     # Other settings
     use_proxy = True
@@ -72,56 +69,26 @@ class CenterClubSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    def parse(self, response):
-        token = response.xpath(
-            '//input[@name="_xfToken"]/@value').extract_first()
-        params = {
-            'login': USER,
-            'password': PASS,
-            "remember": '1',
-            '_xfRedirect': '',
-            '_xfToken': token
+    def start_requests(self, cookies=None, ip=None):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.index_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
         }
-        yield FormRequest(
-            url="https://center-club.us/index.php?login/login",
-            callback=self.parse_redirect,
-            formdata=params,
-            headers=self.headers,
-            dont_filter=True,
-            )
 
-    def parse_redirect(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
         yield Request(
-            url="https://center-club.us/index.php",
-            meta=self.synchronize_meta(response),
-            dont_filter=True,
+            url=self.base_url,
             headers=self.headers,
-            callback=self.parse_start,
-        )
-
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-
-        return datetime.strptime(
-            thread_date.strip()[:-5],
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-        return datetime.strptime(
-            post_date.strip()[:-5],
-            self.post_datetime_format
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse_start
         )
 
     def parse_start(self, response):

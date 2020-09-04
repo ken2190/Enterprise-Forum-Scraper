@@ -463,6 +463,14 @@ class BypassCloudfareSpider(scrapy.Spider):
         spider._set_crawler(crawler)
         return spider
 
+    def check_bypass_success(self, browser):
+        if ("blocking your access based on IP address" in browser.page_source or
+                browser.find_elements_by_css_selector('.cf-error-details')):
+            raise RuntimeError(f"{self.base_url} is blocking your access based on IP address.")
+
+        element = browser.find_elements_by_xpath(self.bypass_success_xpath)
+        return bool(element)
+
     def get_cloudflare_cookies(self, base_url=None, proxy=False, fraud_check=False):
         # Load proxy
         if self.use_vip_proxy:

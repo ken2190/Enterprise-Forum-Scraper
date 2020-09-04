@@ -72,48 +72,6 @@ class V3RMillionSpider(SitemapSpider):
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        thread_date = thread_date.strip()
-
-        if "minute" in thread_date.lower():
-            return datetime.today()
-        elif "hour" in thread_date.lower():
-            return datetime.today()
-        elif "yesterday" in thread_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                thread_date,
-                self.sitemap_datetime_format
-            )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        post_date = post_date.strip()
-
-        if "minute" in post_date.lower():
-            return datetime.today()
-        elif "hour" in post_date.lower():
-            return datetime.today()
-        elif "yesterday" in post_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                post_date,
-                self.post_datetime_format
-            )
-
     def start_requests(self):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
@@ -205,7 +163,3 @@ class V3RMillionScrapper(SiteMapScrapper):
             }
         )
         return settings
-
-
-if __name__ == "__main__":
-    pass

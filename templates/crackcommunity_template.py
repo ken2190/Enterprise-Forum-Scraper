@@ -1,7 +1,5 @@
 # -- coding: utf-8 --
 import re
-# import locale
-
 from .base_template import BaseTemplate
 
 
@@ -11,14 +9,7 @@ class CrackCommunityParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "crackcommunity.com"
-        self.thread_name_pattern = re.compile(
-            r'(.*)-\d+\.html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'.*-(\d+)\.html$'
-        )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.date_xpath = './/div[contains(@class,"messageMeta")]//span[contains(@class,"DateTime")]/text()'

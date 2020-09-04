@@ -4,6 +4,7 @@ import traceback
 
 import dateutil.parser as dparser
 import utils
+import re
 
 
 class BrokenPage(Exception):
@@ -32,6 +33,15 @@ class BaseTemplate:
         self.title_xpath = ''
         self.avatar_xpath = ''
         self.avatar_ext = ''
+        self.pagination_pattern = re.compile(
+            r'\d+-(\d+)\.html$'
+        )
+        self.thread_name_pattern = re.compile(
+            r'(\d+).*html$'
+        )
+        self.files = self.get_filtered_files(kwargs.get('files'))
+
+    # can be used for marketplace since it doesn't have pagination
 
     # def get_filtered_files(self, files):
     #     filtered_files = list(
@@ -56,8 +66,8 @@ class BaseTemplate:
         )
         sorted_files = sorted(
             filtered_files,
-            key=lambda x: (self.thread_name_pattern.search(x).group(1),
-                           self.pagination_pattern.search(x).group(1)))
+            key=lambda x: (int(self.thread_name_pattern.search(x).group(1)),
+                           int(self.pagination_pattern.search(x).group(1))))
 
         return sorted_files
 
@@ -231,11 +241,13 @@ class BaseTemplate:
         comment_id = ""
         if self.comment_block_xpath:
             comment_block = tag.xpath(self.comment_block_xpath)
+            comment_block = ''.join(comment_block)
         else:
             return str(self.index)
 
         if comment_block:
-            comment_id = ''.join(comment_block).strip().split('#')[-1]
+            comment_id = re.compile(r'(\d+)').findall(comment_block)[0]
+            # comment_id = ''.join(comment_block).strip().split('#')[-1]
 
         return comment_id.replace(',', '').replace('.', '')
 
@@ -243,7 +255,8 @@ class BaseTemplate:
     def get_author(self, tag):
         author = tag.xpath(self.author_xpath)
         if author:
-            return author[0]
+            author = ''.join(author).strip()
+            return author
         else:
             return ''
 

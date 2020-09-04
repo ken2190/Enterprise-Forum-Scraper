@@ -1,19 +1,20 @@
 import re
 import uuid
 
-from scrapy import (
-    Request,
-    FormRequest
-)
+from scrapy import Request
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
+
+USER_AGENT = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+              '(KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36')
 
 
 class CardingSiteSpider(SitemapSpider):
@@ -23,28 +24,16 @@ class CardingSiteSpider(SitemapSpider):
     base_url = "https://cardingsite.cc/"
 
     # Xpath stuffs
-    forum_xpath = '//div[@class="nodeText"]'\
-                  '/h3[@class="nodeTitle"]/a/@href|'\
-                  '//ol[@class="subForumList"]'\
-                  '//h4[@class="nodeTitle"]/a/@href'
-
-    pagination_xpath = '//a[@class="text" and text()="Next >"]/@href'
-
-    thread_xpath = '//li[contains(@class,"discussionListItem ")]'
-    thread_first_page_xpath = '//h3[@class="title"]/a[last()]/@href'
-    thread_last_page_xpath = '//span[@class="itemPageNav"]/a[last()]/@href'
-    thread_date_xpath = '//dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
-                        '/@title|//dl[@class="lastPostInfo"]'\
-                        '//abbr[@class="DateTime"]/@data-datestring'
-    thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
-    thread_pagination_xpath = '//nav/a[contains(text()," Prev")]/@href'
-
-    post_date_xpath = '//div[@class="privateControls"]'\
-                      '//span[@class="DateTime"]/text()|'\
-                      '//div[@class="privateControls"]'\
-                      '//abbr[@class="DateTime"]/@data-datestring'
-
-    avatar_xpath = '//div[@class="avatarHolder"]/a/img/@src'
+    forum_xpath = '//div[@id="nodeList"]//h3[@class="node-title"]/a/@href'
+    pagination_xpath = '//a[contains(@class, "pageNav-jump--next") and text()="Next"]/@href'
+    thread_xpath = '//div[@class="structItem-wrapper"]'
+    thread_first_page_xpath = '//div[@class="structItem-title"]/a[last()]/@href'
+    thread_last_page_xpath = '//span[@class="structItem-pageJump"]/a[last()]/@href'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]/@title'
+    thread_page_xpath = '//nav//li[contains(@class,"pageNav-page--current")]/a/text()'
+    thread_pagination_xpath = '//nav//a[contains(text(),"Prev")]/@href'
+    post_date_xpath = '//article//time/@title'
+    avatar_xpath = '//article//a[contains(@class, "avatar")]/img/@src'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -60,14 +49,37 @@ class CardingSiteSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers = {
+            "User-Agent": USER_AGENT
+        }
 
     def parse_thread_date(self, thread_date):
         thread_date = thread_date.split(' at')[0].strip()
         return datetime.strptime(
             thread_date.strip(),
             self.sitemap_datetime_format
+        )
+
+    def start_requests(self):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={
+                "cookiejar": uuid.uuid1().hex,
+                "ip": ip
+            },
+            cookies=cookies,
+            callback=self.parse
         )
 
     def parse(self, response):
@@ -78,10 +90,7 @@ class CardingSiteSpider(SitemapSpider):
         all_forums = response.xpath(self.forum_xpath).extract()
         for forum_url in all_forums:
 
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
-            yield Request(
+            yield response.follow(
                 url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
@@ -96,8 +105,23 @@ class CardingSiteSpider(SitemapSpider):
         # Parse generic avatar
         yield from super().parse_avatars(response)
 
+    def check_bypass_success(self, browser):
+        return bool(browser.find_elements_by_xpath('//a[@href="/login/"]'))
+
 
 class CardingSiteScraper(SiteMapScrapper):
 
     spider_class = CardingSiteSpider
     site_name = 'cardingsite.cc'
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "DOWNLOAD_DELAY": REQUEST_DELAY,
+                "CONCURRENT_REQUESTS": NO_OF_THREADS,
+                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+                "USER_AGENT": USER_AGENT
+            }
+        )
+        return settings

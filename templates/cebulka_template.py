@@ -12,7 +12,7 @@ class CebulkaParser(BaseTemplate):
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "http://cebulka7uxchnbpvmqapg5pfos4ngaxglsktzvha7a5rigndghvadeyd.onion"
         self.thread_name_pattern = re.compile(
-            r'(.*)-\d+\.html$'
+            r'(\d+).*html$'
         )
         self.pagination_pattern = re.compile(
             r'.*-(\d+)\.html$'
