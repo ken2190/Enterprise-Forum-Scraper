@@ -160,7 +160,6 @@ class BaseScrapper:
 
             return
         except:
-            # traceback.print_exc()
             return
 
     def process_user_profile(
@@ -1401,23 +1400,22 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
                 continue
 
-            temp_url = thread_url
-            # Standardize thread url
-            if self.base_url not in thread_url:
-                temp_url = response.urljoin(thread_url)
+            # Standardize thread url only if it is not complete url
+            if 'http' not in thread_url and 'https' not in thread_url:
+                temp_url = thread_url
+                if self.base_url not in thread_url:
+                    temp_url = response.urljoin(thread_url)
 
-            if self.base_url not in temp_url:
-                temp_url = self.base_url + thread_url
+                if self.base_url not in temp_url:
+                    temp_url = self.base_url + thread_url
 
-            thread_url = temp_url
+                thread_url = temp_url
 
             # Parse topic id
             topic_id = self.get_topic_id(thread_url)
 
             if not topic_id:
                 continue
-
-
 
             # Check file exist
             if self.check_existing_file_date(
@@ -1472,15 +1470,16 @@ class SitemapSpider(BypassCloudfareSpider):
         if not next_page:
             return
         next_page = next_page.strip()
-        temp_url = next_page
 
-        if self.base_url not in next_page:
-            temp_url = response.urljoin(next_page)
+        if 'http' not in next_page and 'https' not in next_page:
+            temp_url = next_page
+            if self.base_url not in next_page:
+                temp_url = response.urljoin(next_page)
 
-        if self.base_url not in temp_url:
-            temp_url = self.base_url + next_page
+            if self.base_url not in temp_url:
+                temp_url = self.base_url + next_page
 
-        next_page = temp_url
+            next_page = temp_url
 
         return next_page
 
@@ -1492,7 +1491,6 @@ class SitemapSpider(BypassCloudfareSpider):
             response.xpath(self.post_date_xpath).extract()
             if post_date.strip() and self.parse_post_date(post_date)
         ]
-
 
         if self.start_date and not post_dates:
             return
@@ -1541,7 +1539,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Thread pagination
         next_page = self.get_thread_next_page(response)
-        if next_page:
+        if next_page:            
 
             yield Request(
                 url=next_page,
@@ -1567,15 +1565,17 @@ class SitemapSpider(BypassCloudfareSpider):
             return
 
         next_page = next_page.strip()
-        temp_url = next_page
+        # process url if its not complete
+        if 'http' not in next_page and 'https' not in next_page:
+            temp_url = next_page
 
-        if self.base_url not in next_page:
-            temp_url = response.urljoin(next_page)
+            if self.base_url not in next_page:
+                temp_url = response.urljoin(next_page)
 
-        if self.base_url not in temp_url:
-            temp_url = self.base_url + next_page
+            if self.base_url not in temp_url:
+                temp_url = self.base_url + next_page
 
-        next_page = temp_url
+            next_page = temp_url
 
         return next_page
 
@@ -1587,16 +1587,16 @@ class SitemapSpider(BypassCloudfareSpider):
         # Save avatar content
         all_avatars = response.xpath(self.avatar_xpath).extract()
         for avatar_url in all_avatars:
+            # Standardize avatar url only if its not complete url
+            if 'http' not in avatar_url and 'https' not in avatar_url:
+                temp_url = avatar_url
+                if not avatar_url.lower().startswith("http"):
+                    temp_url = response.urljoin(avatar_url)
 
-            temp_url = avatar_url
-            # Standardize avatar url
-            if not avatar_url.lower().startswith("http"):
-                temp_url = response.urljoin(avatar_url)
+                if self.base_url not in temp_url:
+                    temp_url = self.base_url + avatar_url
 
-            if self.base_url not in temp_url:
-                temp_url = self.base_url + avatar_url
-
-            avatar_url = temp_url
+                avatar_url = temp_url
 
             if 'image/svg' in avatar_url:
                 continue
@@ -2125,15 +2125,17 @@ class SeleniumSpider(SitemapSpider):
         if not next_page:
             return
         next_page = next_page[0].strip()
-        temp_url = next_page
 
-        if self.base_url not in next_page:
-            temp_url = response.urljoin(next_page)
+        if 'http' not in next_page and 'https' not in next_page:
+            temp_url = next_page
 
-        if self.base_url not in temp_url:
-            temp_url = self.base_url + next_page
+            if self.base_url not in next_page:
+                temp_url = response.urljoin(next_page)
 
-        next_page = temp_url
+            if self.base_url not in temp_url:
+                temp_url = self.base_url + next_page
+
+            next_page = temp_url
 
         return next_page
 

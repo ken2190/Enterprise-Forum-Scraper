@@ -1,10 +1,5 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from datetime import datetime, timedelta
+from scrapy.http import Request
 import locale
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
@@ -12,7 +7,8 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 REQUEST_DELAY = 0.2
 NO_OF_THREADS = 10
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0)'\
+             ' Gecko/20100101 Firefox/68.0'
 
 PROXY = 'http://127.0.0.1:8118'
 
@@ -36,7 +32,7 @@ class Galaxy3Spider(SitemapSpider):
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"thread/(\d+)",
+        r"onion/(\w+)/.*",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
@@ -45,7 +41,7 @@ class Galaxy3Spider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -59,46 +55,34 @@ class Galaxy3Spider(SitemapSpider):
     def start_requests(self):
         yield Request(
             url=self.start_url,
-            callback=self.parse_forum,
+            callback=self.parse,
             headers=self.headers,
             meta={
                 'proxy': PROXY
-            }
+            },
+            dont_filter=True
         )
 
-    def synchronize_meta(self, response, default_meta={}):
-        meta = {
-            key: response.meta.get(key) for key in ["cookiejar", "ip"]
-            if response.meta.get(key)
-        }
+    def parse(self, response):
+        topic_id = self.get_topic_id(response.url)
+        response.meta.update({'topic_id': topic_id})
+        yield from self.parse_thread(response)
 
-        meta.update(default_meta)
-        meta.update({'proxy': PROXY})
-
-        return meta
-
-    def parse_thread_date(self, thread_date):
+    def get_topic_id(self, url=None):
         """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
+        :param url: str => thread url
+        :return: str => extracted topic id from thread url
         """
+        topic_id = self.topic_pattern.findall(url)[0]
 
-        return datetime.strptime(
-            thread_date.strip()[:-6],
-            self.sitemap_datetime_format
+        topic_id = str(
+            int.from_bytes(
+                url.encode('utf-8'),
+                byteorder='big'
+            ) % (10 ** 7)
         )
 
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-        return datetime.strptime(
-            post_date.strip()[:-6],
-            self.post_datetime_format
-        )
+        return topic_id
 
     def parse_thread(self, response):
 

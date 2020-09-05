@@ -261,6 +261,8 @@ class BaseTemplate:
 
     def get_post_text(self, tag):
         post_text_block = tag.xpath(self.post_text_xpath)
+        if not post_text_block:
+            return ''
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
         ])
