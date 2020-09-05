@@ -1,10 +1,5 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from datetime import datetime
+from scrapy.http import Request
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
@@ -13,7 +8,7 @@ NO_OF_THREADS = 10
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
 
-PROXY = 'http://127.0.0.1:8118'
+PROXY = 'http://localhost:8118'
 
 
 class RutorSpider(SitemapSpider):
@@ -40,7 +35,7 @@ class RutorSpider(SitemapSpider):
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
     post_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
@@ -64,38 +59,15 @@ class RutorSpider(SitemapSpider):
             "user-agent": USER_AGENT
         })
 
-    def parse_thread_date(self, thread_date):
-
-        return datetime.strptime(
-            thread_date.strip()[:-6],
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        return datetime.strptime(
-            post_date.strip()[:-6],
-            self.post_datetime_format
-        )
-
     def start_requests(self):
         yield Request(
             url=self.base_url,
             headers=self.headers,
             meta={
                 'proxy': PROXY
-            }
+            },
+            dont_filter=True
         )
-
-    def synchronize_meta(self, response, default_meta={}):
-        meta = {
-            key: response.meta.get(key) for key in ["cookiejar", "ip"]
-            if response.meta.get(key)
-        }
-
-        meta.update(default_meta)
-        meta.update({'proxy': PROXY})
-
-        return meta
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -107,8 +79,7 @@ class RutorSpider(SitemapSpider):
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-            # if 'soft-dlja-vzloma.61' not in forum_url:
-            #     continue
+
             yield Request(
                 url=forum_url,
                 headers=self.headers,

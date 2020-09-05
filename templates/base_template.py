@@ -41,7 +41,7 @@ class BaseTemplate:
         )
         self.files = self.get_filtered_files(kwargs.get('files'))
 
-    # can be used for marketplace since it doesn't have pagination
+    # can be overridden for marketplace since it doesn't have pagination
 
     # def get_filtered_files(self, files):
     #     filtered_files = list(
@@ -155,7 +155,6 @@ class BaseTemplate:
             header = html_response.xpath(self.header_xpath)
             if not header:
                 return
-
 
             title = self.get_title(header[0])
             date = self.get_date(header[0])

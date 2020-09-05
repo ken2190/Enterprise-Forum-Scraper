@@ -7,7 +7,6 @@ import uuid
 
 import dateparser
 import dateutil.parser as dparser
-import polling
 import requests
 import scrapy
 
@@ -39,8 +38,7 @@ from scrapy import (
     Selector
 )
 from base64 import (
-    b64decode,
-    b64encode
+    b64decode
 )
 
 
