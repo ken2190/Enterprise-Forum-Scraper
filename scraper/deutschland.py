@@ -1,10 +1,5 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from datetime import datetime, timedelta
+from scrapy.http import Request
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
@@ -42,7 +37,7 @@ class DeutschLandSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d-%m-%Y'
@@ -54,50 +49,9 @@ class DeutschLandSpider(SitemapSpider):
             headers=self.headers,
             meta={
                 'proxy': PROXY
-            }
+            },
+            dont_filter=True
         )
-
-    def synchronize_meta(self, response, default_meta={}):
-        meta = {
-            key: response.meta.get(key) for key in ["cookiejar", "ip"]
-            if response.meta.get(key)
-        }
-
-        meta.update(default_meta)
-        meta.update({'proxy': PROXY})
-
-        return meta
-
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.split(',')[0].strip()
-        if not thread_date:
-            return
-
-        if any(v in thread_date.lower() for v in ['heute', 'stunde', 'minuten']):
-            return datetime.today()
-        elif 'gestern' in thread_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                thread_date,
-                self.sitemap_datetime_format
-            )
-
-    def parse_post_date(self, post_date):
-        # Standardize thread_date
-        post_date = post_date.split(',')[0].strip()
-        if not post_date:
-            return
-
-        if any(v in post_date.lower() for v in ['heute', 'stunde', 'minuten']):
-            return datetime.today()
-        elif 'gestern' in post_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                post_date,
-                self.post_datetime_format
-            )
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -110,6 +64,7 @@ class DeutschLandSpider(SitemapSpider):
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response),
+                dont_filter=True
             )
 
     def parse_thread(self, response):
