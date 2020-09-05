@@ -125,7 +125,8 @@ class CanadaHQSpider(MarketPlaceSpider):
             },
             headers=self.headers,
             meta=self.synchronize_meta(response),
-            callback=self.parse_start
+            callback=self.parse_start,
+            dont_filter=True
         )
 
     def parse_start(self, response):
@@ -138,6 +139,13 @@ class CanadaHQSpider(MarketPlaceSpider):
         if is_invalid_captcha:
             self.logger.info(
                 "Invalid captcha."
+            )
+
+            yield Request(
+                url=self.login_url,
+                headers=self.headers,
+                dont_filter=True,
+                callback=self.parse_login,
             )
             return
 
