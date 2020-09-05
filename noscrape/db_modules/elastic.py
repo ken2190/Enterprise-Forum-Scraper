@@ -129,7 +129,7 @@ class Elastic:
                 obj["_source"]["ip"] = self.ip
                 obj["_source"]["port"] = self.port
                 obj["_source"]["date"] = str(datetime.now().date())
-                obj["_source"]["dbType"] = 'es'
+                obj["_source"]["type"] = 'es'
 
                 for index in indexes:
                     index_name = index["index"]

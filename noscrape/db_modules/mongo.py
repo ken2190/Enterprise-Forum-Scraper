@@ -76,7 +76,7 @@ class MongoScrape(NoScrapePlugin):
         parent = ET.Element('Target')
         parent.set('host', self.clean(str(self.target)))
         parent.set('port', self.clean(str(self.port)))
-        parent.set('dbType', self.clean(str("mongo")))
+        parent.set('type', self.clean(str("mongo")))
         parent.set('date', self.clean(str(datetime.now().date())))
         parent.set('username', self.clean(str(self.username)))
         parent.set('password', self.clean(str(self.password)))
@@ -99,7 +99,7 @@ class MongoScrape(NoScrapePlugin):
             'ip': self.clean(str(self.target)),
             'port': self.clean(str(self.port)),
             'date': str(datetime.now().date()),
-            'dbType': self.clean(str("mongo")),
+            'type': self.clean(str("mongo")),
             'indexes': results.get("indexes"),
             "database": {
                 key: value for key, value in results.items()
@@ -123,7 +123,7 @@ class MongoScrape(NoScrapePlugin):
             'ip': self.clean(str(self.target)),
             'port': self.clean(str(self.port)),
             'date': str(datetime.now().date()),
-            'dbType': self.clean(str("mongo")),
+            'type': self.clean(str("mongo")),
             'indexes': None,
             'stats': {
                 "error": "unauthorized"
