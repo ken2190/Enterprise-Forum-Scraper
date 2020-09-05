@@ -41,22 +41,6 @@ class BaseTemplate:
         )
         self.files = self.get_filtered_files(kwargs.get('files'))
 
-    # can be overridden for marketplace since it doesn't have pagination
-
-    # def get_filtered_files(self, files):
-    #     filtered_files = list(
-    #         filter(
-    #             lambda x: self.thread_name_pattern.search(x) is not None,
-    #             files
-    #         )
-    #     )
-
-    #     sorted_files = sorted(
-    #         filtered_files,
-    #         key=lambda x: int(self.thread_name_pattern.search(x).group(1)))
-
-    #     return sorted_files
-
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
@@ -298,3 +282,93 @@ class BaseTemplate:
             return ""
 
         return f"{name_match[0]}.{self.avatar_ext}" if self.avatar_ext else name_match[0]
+
+
+class MarketPlaceTemplate(BaseTemplate):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.thread_name_pattern = re.compile(
+            r'(\w+)\.html$'
+        )
+
+    def main(self):
+        comments = []
+        output_file = None
+        for index, template in enumerate(self.files):
+            try:
+                html_response = utils.get_html_response(template)
+                pid = template.split('/')[-1].rsplit('.', 1)[0]
+                pid = str(
+                    int.from_bytes(
+                        pid.encode('utf-8'),
+                        byteorder='big'
+                    ) % (10 ** 7)
+                )
+                self.process_page(pid, html_response)
+            except BrokenPage as ex:
+                utils.handle_error(
+                    pid,
+                    self.error_folder,
+                    ex
+                )
+            except Exception:
+                traceback.print_exc()
+                continue
+
+    def process_page(self, pid, html_response):
+        data = {
+            'forum': self.parser_name,
+            'pid': pid
+        }
+
+        additional_data = self.extract_page_info(html_response)
+        if not additional_data:
+            return
+
+        data.update(additional_data)
+        final_data = {
+            '_source': data
+        }
+
+        output_file = '{}/{}.json'.format(
+            str(self.output_folder),
+            pid
+        )
+
+        with open(output_file, 'w', encoding='utf-8') as file_pointer:
+            utils.write_json(file_pointer, final_data)
+            print('\nJson written in {}'.format(output_file))
+            print('----------------------------------------\n')
+
+
+    def get_filtered_files(self, files):
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: self.thread_name_pattern.search(x).group(1))
+
+        return sorted_files
+
+
+    def extract_page_info(self, html_response):
+        data = dict()
+
+        subject = self.get_title(html_response)
+        author = self.get_author(html_response)
+        post_text = self.get_post_text(html_response)
+        avatar = self.get_avatar(html_response)
+
+        data = {
+            'subject': subject,
+            'author': author,
+            'message': post_text,
+            'img': avatar
+        }
+
+        return data
