@@ -274,7 +274,8 @@ class SiteMapScrapper:
         self.use_vip = kwargs.get("use_vip")
 
         self.ensure_avatar_path(kwargs.get("template"))
-        self.set_users_path()
+        if self.get_users or self.useronly:
+            self.set_users_path()
 
         if self.kill:
             self.kill = int(self.kill)
@@ -467,6 +468,8 @@ class BypassCloudfareSpider(scrapy.Spider):
             raise RuntimeError(f"{self.base_url} is blocking your access based on IP address.")
 
         element = browser.find_elements_by_xpath(self.bypass_success_xpath)
+        if not bool(element):
+            self.logger.info("Incorrect captcha.")
         return bool(element)
 
     def get_cloudflare_cookies(self, base_url=None, proxy=False, fraud_check=False):
@@ -486,7 +489,7 @@ class BypassCloudfareSpider(scrapy.Spider):
 
         # Init options
         options = ChromeOptions()
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
 
