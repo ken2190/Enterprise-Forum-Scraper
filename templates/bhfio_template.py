@@ -27,3 +27,7 @@ class BHFIOParser(BaseTemplate):
 
         # main function
         self.main()
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        return date_block[0]
