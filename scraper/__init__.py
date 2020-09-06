@@ -78,7 +78,7 @@ from scraper.italian_deep_web import ItalianDeepWebScrapper
 from scraper.dnm_avengers import DNMAvengersScrapper
 from scraper.oxsec import Ox00SecScrapper
 from scraper.rosa_negra import RosaNegraScrapper
-from scraper.envoy import EnvoyScrapper
+from scraper.envoy_new import EnvoyScrapper
 from scraper.bitshacking import BitsHackingScrapper
 from scraper.safeskyhacks import SafeSkyHacksScrapper
 from scraper.skynetzone import SkyNetZoneScrapper
