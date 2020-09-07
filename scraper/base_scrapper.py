@@ -859,6 +859,7 @@ class SitemapSpider(BypassCloudfareSpider):
             self.thread_date_xpath
         ).extract_first()
 
+
         # Process stats
         try:
             thread_url = (self.parse_thread_url(thread_last_page_url)
@@ -1405,7 +1406,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
             if self.start_date and thread_lastmod is None:
                 self.logger.info(
-                    "Thread %s has no last update in update scraping, so ignored." % thread_url
+                    "Date not found in thread %s " % thread_url
                 )
                 continue
 
@@ -1560,7 +1561,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Thread pagination
         next_page = self.get_thread_next_page(response)
-        if next_page:            
+        if next_page:
 
             yield Request(
                 url=next_page,
@@ -1609,12 +1610,18 @@ class SitemapSpider(BypassCloudfareSpider):
         all_avatars = response.xpath(self.avatar_xpath).extract()
         for avatar_url in all_avatars:
             # Standardize avatar url only if its not complete url
+            slash = False
             if 'http' not in avatar_url and 'https' not in avatar_url:
                 temp_url = avatar_url
+
+                if avatar_url.startswith('//'):
+                    slash = True
+                    temp_url = avatar_url[2:]
+
                 if not avatar_url.lower().startswith("http"):
                     temp_url = response.urljoin(avatar_url)
 
-                if self.base_url not in temp_url:
+                if self.base_url not in temp_url and not slash:
                     temp_url = self.base_url + avatar_url
 
                 avatar_url = temp_url

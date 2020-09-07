@@ -277,6 +277,9 @@ class BaseTemplate:
         if not avatar_block:
             return ""
 
+        if 'image/svg' in avatar_block[0]:
+            return ""
+
         name_match = self.avatar_name_pattern.findall(avatar_block[0])
         if not name_match:
             return ""

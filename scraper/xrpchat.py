@@ -1,11 +1,9 @@
-import os
 import re
 
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-from scrapy import Request
 
 
 class XrpChatSpider(SitemapSpider):
@@ -23,7 +21,7 @@ class XrpChatSpider(SitemapSpider):
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
-        r'.*/(\S+\.\w+)',
+        r'(\w+.\w+)$',
         re.IGNORECASE
     )
     pagination_pattern = re.compile(
@@ -55,6 +53,10 @@ class XrpChatSpider(SitemapSpider):
     thread_pagination_xpath = '//li[contains(@class,"ipsPagination_prev")]/a/@href'
     thread_page_xpath = '//li[contains(@class,"Pagination_active")]//a/text()'
     post_date_xpath = '//div[contains(@class,"ipsType_reset")]//time/@title'
+
+    def parse_thread(self, response):
+        yield from super().parse_thread(response)
+        yield from super().parse_avatars(response)
 
 
 class XrpChatScrapper(SiteMapScrapper):
