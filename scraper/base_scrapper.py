@@ -1369,6 +1369,23 @@ class SitemapSpider(BypassCloudfareSpider):
 
         yield Request(**request_arguments)
 
+    def parse(self, response):
+        all_forums = response.xpath(self.forum_xpath).extract()
+
+        for forum_url in all_forums:
+
+            # Standardize url
+            if 'http' not in forum_url and 'https' not in forum_url:
+                if self.base_url not in forum_url:
+                    forum_url = self.base_url + forum_url
+
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
+            )
+
     def parse_forum(self, response, thread_meta={}):
 
         # Synchronize header user agent with cloudfare middleware
@@ -1496,6 +1513,7 @@ class SitemapSpider(BypassCloudfareSpider):
         ]
 
         if self.start_date and not post_dates:
+            print('No dates found in thread')
             return
 
         if self.start_date and max(post_dates) < self.start_date:
