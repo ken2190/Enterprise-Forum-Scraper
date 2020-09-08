@@ -1544,20 +1544,20 @@ class SitemapSpider(BypassCloudfareSpider):
                 encoding="utf-8"
             ) as file:
                 file.write(response.text)
-                self.logger.info(
-                    f'{topic_id}-{current_page} done..!'
-                )
-                self.topic_pages_saved += 1
+            self.logger.info(
+                f'{topic_id}-{current_page} done..!'
+            )
+            self.topic_pages_saved += 1
 
-                # Update stats
-                self.crawler.stats.set_value(
-                    "topic pages saved",
-                    self.topic_pages_saved
-                )
+            # Update stats
+            self.crawler.stats.set_value(
+                "topic pages saved",
+                self.topic_pages_saved
+            )
 
-                # Kill task if kill count met
-                if self.kill and self.topic_pages_saved >= self.kill:
-                    raise CloseSpider(reason="Kill count met, shut down.")
+            # Kill task if kill count met
+            if self.kill and self.topic_pages_saved >= self.kill:
+                raise CloseSpider(reason="Kill count met, shut down.")
 
         # Thread pagination
         next_page = self.get_thread_next_page(response)
