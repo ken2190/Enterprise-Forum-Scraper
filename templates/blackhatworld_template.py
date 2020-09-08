@@ -11,14 +11,7 @@ class BlackHatWorldParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser_name = "blackhatworld.com"
-        self.thread_name_pattern = re.compile(
-            r'(\d+)-\d+\.html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'\d+-(\d+)\.html$'
-        )
         self.avatar_name_pattern = re.compile(r".*/(\w+\.\w+)")
-        self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//article[contains(@class,"message--post")]'
         self.header_xpath = '//article[contains(@class,"message--post")]'
         self.date_xpath = 'div//div[@class="message-attribution-main"]/a/time/@data-time'
