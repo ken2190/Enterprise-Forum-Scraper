@@ -8,14 +8,7 @@ from .base_template import BaseTemplate
 class ProxyBaseParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "http://proxy-base.com"
-        self.thread_name_pattern = re.compile(
-            r'(\d+)-\d+\.html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'\d+-(\d+)\.html$'
-        )
         self.avatar_name_pattern = re.compile(r".dateline=(\d+).")
 
         self.files = self.get_filtered_files(kwargs.get('files'))
@@ -27,34 +20,10 @@ class ProxyBaseParser(BaseTemplate):
         self.date_xpath = 'table//td[1][@class="thead"]/a/following-sibling::text()'
 
         self.date_pattern = "%m/%d/%Y at %H:%M"
-        self.title_xpath = 'table//tr[@valign="top"]/td[@class="alt1" and @id]/div[@class="smallfont"]/strong//text()'        
+        self.title_xpath = 'table//tr[@valign="top"]/td[@class="alt1" and @id]/div[@class="smallfont"]/strong//text()'
+        self.author_xpath = 'table//a[@class="bigusername"]//text()'
         self.avatar_xpath = './/td[1]//a[contains(@rel, "nofollow") and img]/img/@src'
         self.avatar_ext = 'jpg'
         self.mode = 'r+'
 
         self.main()
-
-    def get_author(self, tag):
-        author = tag.xpath(
-            'table//a[@class="bigusername"]//text()'
-        )
-        if not author:
-            author = tag.xpath(
-                'table//div[contains(@id, "postmenu_")]/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'table//a[@class="bigusername"]/span/b/text()'
-            )
-        if not author:
-            author = tag.xpath(
-                'table//a[@class="bigusername"]/font/strike/text()'
-            )
-
-        author = author[0].strip() if author else None
-
-        return author
-
-
-
-

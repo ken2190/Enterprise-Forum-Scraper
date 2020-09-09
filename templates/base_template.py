@@ -93,7 +93,7 @@ class BaseTemplate:
                 )
 
                 if (
-                    ((pagination and pagination == 1) or (final)) or
+                    (pagination and pagination == 1) or
                     (self.thread_id not in self.distinct_files) and not output_file
                 ):
                     self.distinct_files.add(self.thread_id)
