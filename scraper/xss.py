@@ -14,8 +14,8 @@ from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-# USER = "cyrax"
-# PASS = "Night#Xss007"
+# USER = "thecreator"
+# PASS = "Night#Xss01"
 USER = "z234567890"
 PASS = "KL5uyxBQ8cEz4mW"
 REQUEST_DELAY = 0.5
