@@ -10,8 +10,6 @@ class ProxyBaseParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         self.parser_name = "http://proxy-base.com"
         self.avatar_name_pattern = re.compile(r".dateline=(\d+).")
-
-        self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
         self.header_xpath = '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
         self.comment_block_xpath = 'table//td[2][@class="thead"]/a/strong//text()'
@@ -24,6 +22,6 @@ class ProxyBaseParser(BaseTemplate):
         self.author_xpath = 'table//a[@class="bigusername"]//text()'
         self.avatar_xpath = './/td[1]//a[contains(@rel, "nofollow") and img]/img/@src'
         self.avatar_ext = 'jpg'
-        self.mode = 'r+'
+        self.mode = 'r'
 
         self.main()
