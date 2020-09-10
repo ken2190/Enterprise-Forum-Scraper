@@ -2,12 +2,15 @@ import uuid
 import re
 
 from scrapy.http import Request
-from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
+
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
+             'AppleWebKit/537.36 (KHTML, like Gecko) '\
+             'Chrome/81.0.4044.138 Safari/537.36'
 
 
 class ChfSpider(SitemapSpider):
@@ -56,40 +59,27 @@ class ChfSpider(SitemapSpider):
     get_cookies_delay = 6
 
     def start_requests(self):
-        """
-        :return: => request start urls if no sitemap url or no start date
-                 => request sitemap url if sitemap url and start date
-        """
+
+        cookies, ip = self.get_cookies(
+            base_url=self.base_url,
+            proxy=self.use_proxy,
+            fraud_check=True,
+            check_captcha=True
+        )
+
+        self.logger.info(f'COOKIES: {cookies}')
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
 
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            }
-        )
-
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-
-        return datetime.strptime(
-            thread_date.strip()[:-5],
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-        return datetime.strptime(
-            post_date.strip()[:-5],
-            self.post_datetime_format
+            meta=meta,
+            cookies=cookies
         )
 
     def parse(self, response):
@@ -107,6 +97,7 @@ class ChfSpider(SitemapSpider):
             )
 
     def parse_thread(self, response):
+        self.synchronize_headers(response)
 
         # Parse generic thread
         yield from super().parse_thread(response)
@@ -125,6 +116,7 @@ class ChfScrapper(SiteMapScrapper):
         settings.update(
             {
                 "RETRY_HTTP_CODES": [403, 406, 429, 500, 503],
+                'COOKIES_ENABLED': True
             }
         )
         return settings
