@@ -6,10 +6,7 @@ class XakerParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser_name = "xaker.name"
-        self.avatar_name_pattern = re.compile(
-            r".*/(\d+\.\w+)",
-            re.IGNORECASE
-        )
+        self.avatar_name_pattern = re.compile(r".*/(\d+\.\w+)")
         self.mode = 'r'
         self.comments_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'

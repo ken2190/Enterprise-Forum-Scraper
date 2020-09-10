@@ -37,7 +37,7 @@ class CrackingSoulSpider(SitemapSpider):
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
     # Regex stuffs
-    avatar_name_pattern = re.compile(r".*(\d+\.\w+)")
+    avatar_name_pattern = re.compile(r".avatar_(\d+\.\w+)")
 
     # Other settings
     use_proxy = True

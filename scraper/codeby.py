@@ -74,29 +74,6 @@ class CodebySpider(SitemapSpider):
             }
         )
 
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-
-        return datetime.strptime(
-            thread_date.strip()[:-5],
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-        return datetime.strptime(
-            post_date.strip()[:-5],
-            self.post_datetime_format
-        )
-
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
