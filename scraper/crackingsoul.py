@@ -1,21 +1,5 @@
-import os
 import re
-import time
-import uuid
-import json
-
-from datetime import datetime
-from scrapy.utils.gz import gunzip
-
-from seleniumwire.webdriver import (
-    Chrome,
-    ChromeOptions
-)
-from scrapy import (
-    Request,
-    FormRequest,
-    Selector
-)
+from scrapy import Request
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -41,9 +25,9 @@ class CrackingSoulSpider(SitemapSpider):
                              '/div/div/span[contains(@class,"smalltext")]'\
                              '/a[last()]/@href'
     thread_date_xpath = '//td[contains(@class,"forumdisplay")]'\
-                        '/div/span[@class="lastpost smalltext"]/text()[1]|'\
+                        '/div/span[@class="lastpost smalltext1"]/text()|'\
                         '//td[contains(@class,"forumdisplay")]'\
-                        '/div/span[@class="lastpost smalltext"]/span/@title'
+                        '/div/span[@class="lastpost smalltext1"]/span/@title'
     thread_pagination_xpath = '//div[@class="pagination"]'\
                               '//a[@class="pagination_previous"]/@href'
     thread_page_xpath = '//span[@class="pagination_current"]/text()'
@@ -53,10 +37,7 @@ class CrackingSoulSpider(SitemapSpider):
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
     # Regex stuffs
-    avatar_name_pattern = re.compile(
-        r".*/(\S+\.\w+)",
-        re.IGNORECASE
-    )
+    avatar_name_pattern = re.compile(r".*(\d+\.\w+)")
 
     # Other settings
     use_proxy = True
@@ -64,26 +45,6 @@ class CrackingSoulSpider(SitemapSpider):
     download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y'
-
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.split(',')[0].strip()
-        if not thread_date:
-            return
-
-        return datetime.strptime(
-            thread_date,
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        # Standardize thread_date
-        post_date = post_date.split(',')[0].strip()
-        if not post_date:
-            return
-        return datetime.strptime(
-            post_date,
-            self.post_datetime_format
-        )
 
     def parse(self, response):
         # Synchronize cloudfare user agent
