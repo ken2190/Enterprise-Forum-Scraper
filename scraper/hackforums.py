@@ -12,12 +12,14 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 4
+REQUEST_DELAY = 2
+NO_OF_THREADS = 2
 # USERNAME = "vrx9"
 # PASSWORD = "Night#Hack001"
-USERNAME = "z234567890"
-PASSWORD = "KL5uyxBQ8cEz4mW"
+# USERNAME = "z234567890"
+# PASSWORD = "KL5uyxBQ8cEz4mW"
+USERNAME = "xbyte"
+PASSWORD = "Night#Byte001"
 
 
 class HackForumsSpider(SitemapSpider):
