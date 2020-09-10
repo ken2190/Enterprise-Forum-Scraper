@@ -471,6 +471,8 @@ class BypassCloudfareSpider(scrapy.Spider):
         element = browser.find_elements_by_xpath(self.bypass_success_xpath)
         if not bool(element):
             self.logger.info("Incorrect captcha.")
+            return False
+        self.logger.info("Captcha solved correctly .")
         return bool(element)
 
     def get_cloudflare_cookies(self, base_url=None, proxy=False, fraud_check=False):

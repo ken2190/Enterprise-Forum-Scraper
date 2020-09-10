@@ -16,8 +16,8 @@ from scraper.base_scrapper import (
 )
 # USER = "thecreator"
 # PASS = "Night#Xss01"
-USER = "z234567890"
-PASS = "KL5uyxBQ8cEz4mW"
+USER = "thecreator101@protonmail.com"
+PASS = "Night#Xss01"
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
 
@@ -42,7 +42,7 @@ class XSSSpider(SitemapSpider):
         r".*page-(\d+)$",
         re.IGNORECASE
     )
-    
+
     # Xpath stuffs
     forum_xpath = "//h3[@class=\"node-title\"]/a/@href"
     thread_xpath = "//div[contains(@class,\"structItem--thread\")]"
@@ -58,33 +58,13 @@ class XSSSpider(SitemapSpider):
     post_date_xpath = "//div[@class=\"message-attribution-main\"]/a/time/@datetime"
     avatar_xpath = "//div[contains(@class,\"message-avatar\")]/div/a/img/@src"
 
+    #captcha success
+    bypass_success_xpath = '//div[contains(@class,"xb")]'
+
     # Other settings
     use_proxy = True
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
-
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        return datetime.strptime(
-            thread_date.strip()[:-5],
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-
-        return datetime.strptime(
-            post_date.strip()[:-5],
-            self.post_datetime_format
-        )
 
     def parse(self, response):
 
@@ -152,14 +132,6 @@ class XSSSpider(SitemapSpider):
 
         # Parse generic avatar
         yield from super().parse_avatars(response)
-
-    def check_bypass_success(self, browser):
-        return bool(
-            browser.current_url.startswith('https://xss.is/login/login') and
-            browser.find_elements_by_css_selector(
-                'form[action="/login/login"]'
-            )
-        )
 
 
 class XSSScrapper(SiteMapScrapper):
