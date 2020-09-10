@@ -1376,7 +1376,7 @@ class SitemapSpider(BypassCloudfareSpider):
         for forum_url in all_forums:
 
             # Standardize url
-            if 'http' not in forum_url and 'https' not in forum_url:
+            if 'http://' not in forum_url and 'https://' not in forum_url:
                 if self.base_url not in forum_url:
                     forum_url = self.base_url + forum_url
 
@@ -1422,7 +1422,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 continue
 
             # Standardize thread url only if it is not complete url
-            if 'http' not in thread_url and 'https' not in thread_url:
+            if 'http://' not in thread_url and 'https://' not in thread_url:
                 temp_url = thread_url
                 if self.base_url not in thread_url:
                     temp_url = response.urljoin(thread_url)
@@ -1492,7 +1492,7 @@ class SitemapSpider(BypassCloudfareSpider):
             return
         next_page = next_page.strip()
 
-        if 'http' not in next_page and 'https' not in next_page:
+        if 'http://' not in next_page and 'https://' not in next_page:
             temp_url = next_page
             if self.base_url not in next_page:
                 temp_url = response.urljoin(next_page)
@@ -1588,7 +1588,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         next_page = next_page.strip()
         # process url if its not complete
-        if 'http' not in next_page and 'https' not in next_page:
+        if 'http://' not in next_page and 'https://' not in next_page:
             temp_url = next_page
 
             if self.base_url not in next_page:
@@ -1611,7 +1611,7 @@ class SitemapSpider(BypassCloudfareSpider):
         for avatar_url in all_avatars:
             # Standardize avatar url only if its not complete url
             slash = False
-            if 'http' not in avatar_url and 'https' not in avatar_url:
+            if 'http://' not in avatar_url and 'https://' not in avatar_url:
                 temp_url = avatar_url
 
                 if avatar_url.startswith('//'):
@@ -2154,7 +2154,7 @@ class SeleniumSpider(SitemapSpider):
             return
         next_page = next_page[0].strip()
 
-        if 'http' not in next_page and 'https' not in next_page:
+        if 'http://' not in next_page and 'https://' not in next_page:
             temp_url = next_page
 
             if self.base_url not in next_page:
