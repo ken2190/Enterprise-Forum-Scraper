@@ -594,7 +594,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                             button.send_keys(Keys.SPACE)
 
                         if wait(browser, 15, is_hcaptcha_present):
-                            success = self.solve_cf_captcha(browser)
+                            success = self.solve_cf_captcha(browser, proxy=proxy)
                             time.sleep(2)
                             break
                 else:
@@ -648,7 +648,7 @@ class BypassCloudfareSpider(scrapy.Spider):
 
             return bypass_cookies, ip
 
-    def solve_cf_captcha(self, browser, proxy=None):
+    def solve_cf_captcha(self, browser, proxy=None, try_count=5):
         # Load selector
         selector = Selector(text=browser.page_source)
 
@@ -659,15 +659,20 @@ class BypassCloudfareSpider(scrapy.Spider):
             )
             return False
 
-        # Load captcha response
-        captcha_response = self.solve_hcaptcha(
-            selector, 
-            proxy=proxy,
-            site_url=browser.current_url,
-            site_key=site_key
-        )
+        for _ in range(try_count):
+            # Load captcha response
+            captcha_response = self.solve_hcaptcha(
+                selector,
+                proxy=proxy,
+                site_url=browser.current_url,
+                site_key=site_key,
+                user_agent=browser.execute_script('return navigator.userAgent;'),
+                cookies={c['name']: c['value'] for c in browser.get_cookies()}
+            )
 
-        if not captcha_response:
+            if captcha_response:
+                break
+        else:
             return False
 
         # Display captcha box
@@ -1043,7 +1048,8 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Main method to solve all kind of captcha: recaptcha #
     
-    def solve_hcaptcha(self, response, proxy=None, site_url=None, site_key=None):
+    def solve_hcaptcha(self, response, proxy=None, site_url=None, site_key=None, user_agent=None,
+                       cookies=None):
         """
         :param response: scrapy response => response that contains regular recaptcha
         :return: str => recaptcha solved token to submit login
@@ -1069,10 +1075,26 @@ class SitemapSpider(BypassCloudfareSpider):
 
             # Load solver with proxy
             solver = hCaptchaProxyon()
-            solver.set_proxy_address(host_port.split(":")[0])
-            solver.set_proxy_port(int(host_port.split(":")[1]))
+
+            address, port = host_port.split(":")
+            valid_ip_address_regex = (
+                r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|"
+                r"[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+            )
+            if re.match(valid_ip_address_regex, address) is None:
+                from socket import gethostbyname
+                address = gethostbyname(address)
+
+            solver.set_proxy_address(address)
+            solver.set_proxy_port(int(port))
             solver.set_proxy_login(user_pwd.split(":")[0])
             solver.set_proxy_password(user_pwd.split(":")[1])
+            solver.set_user_agent(user_agent)
+            solver.set_proxy_type('http')
+
+            if cookies:
+                cookies = '; '.join(['='.join(c) for c in cookies.items()])
+                solver.set_cookies(cookies)
 
         # Init site url and key
         if site_url is None:
