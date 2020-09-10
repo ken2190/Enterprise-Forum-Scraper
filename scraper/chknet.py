@@ -1,7 +1,3 @@
-import time
-import requests
-import os
-import json
 import re
 import scrapy
 from math import ceil
