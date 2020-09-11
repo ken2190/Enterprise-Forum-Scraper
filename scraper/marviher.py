@@ -1,17 +1,14 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
 from scrapy.http import Request, FormRequest
-from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
 REQUEST_DELAY = 0.2
 NO_OF_THREADS = 10
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6)'\
+             ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'\
+             '76.0.3809.132 Safari/537.36'
 
 USER = 'blackbay'
 PASS = 'Night#Marv'
