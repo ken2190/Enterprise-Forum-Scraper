@@ -32,9 +32,8 @@ class XakerSpider(SitemapSpider):
     thread_last_page_xpath = '//span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
 
-    thread_date_xpath = '//dl[@class="lastPostInfo"]//a[@class'\
-                        '="dateTime"]/abbr/@data-datestring|//'\
-                        'dl[@class="lastPostInfo"]//a[@class="dateTime"]/span/@title'
+    thread_date_xpath = '//abbr[contains(@class,"DateTime")]/@title|//'\
+                        'dl[@class="lastPostInfo"]//span[@class="DateTime"]/@title'
 
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
@@ -133,7 +132,6 @@ class XakerSpider(SitemapSpider):
         if response.status in [503, 403]:
             yield from self.parse_captcha(response)
             return
-            
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()

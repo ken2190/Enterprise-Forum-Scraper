@@ -868,7 +868,6 @@ class SitemapSpider(BypassCloudfareSpider):
             self.thread_date_xpath
         ).extract_first()
 
-
         # Process stats
         try:
             thread_url = (self.parse_thread_url(thread_last_page_url)
@@ -890,12 +889,12 @@ class SitemapSpider(BypassCloudfareSpider):
                             using class sitemap_datetime_format
         """
         try:
+            return dateparser.parse(thread_date).replace(tzinfo=None)
+        except:
             return datetime.strptime(
                 thread_date.strip(),
                 self.post_datetime_format
             )
-        except:
-            return dparser.parse(thread_date).replace(tzinfo=None)
 
     def parse_post_date(self, post_date):
         """
@@ -904,12 +903,12 @@ class SitemapSpider(BypassCloudfareSpider):
                             using class post_datetime_format
         """
         try:
+            return dparser.parse(post_date).replace(tzinfo=None)
+        except:
             return datetime.strptime(
                 post_date.strip(),
                 self.post_datetime_format
             )
-        except:
-            return dparser.parse(post_date).replace(tzinfo=None)
 
     def parse_thread_url(self, thread_url):
         """
