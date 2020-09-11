@@ -1,10 +1,5 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from datetime import datetime, timedelta
+from scrapy.http import Request
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
@@ -14,7 +9,10 @@ NO_OF_THREADS = 5
 
 class PrtShipSpider(SitemapSpider):
     name = 'prship_spider'
-    base_url = 'https://prtship.com'
+    # base_url = 'https://prtship.com'
+
+    # domain name changed to prtship.cc
+    base_url = 'https://prtship.cc'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href|'\
@@ -52,33 +50,9 @@ class PrtShipSpider(SitemapSpider):
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-
-        return datetime.strptime(
-            thread_date.strip()[:-5],
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-        return datetime.strptime(
-            post_date.strip()[:-5],
-            self.post_datetime_format
-        )
-
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-        # print(response.text)
         all_forums = response.xpath(self.forum_xpath).extract()
         for forum_url in all_forums:
 
