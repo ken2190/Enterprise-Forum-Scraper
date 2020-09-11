@@ -1,4 +1,3 @@
-# -- coding: utf-8 --
 import re
 import utils
 
@@ -10,47 +9,25 @@ class GerkiParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser_name = "https://gerki.pw"
-        self.thread_name_pattern = re.compile(
-            r'(\d+)-\d+\.html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'\d+-(\d+)\.html$'
-        )
         self.avatar_name_pattern = re.compile(r".*/(\S+\.\w+)")
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//div[@class="message-inner"]'
         self.header_xpath = '//div[@class="message-inner"]'
-        self.date_xpath = 'div//div[@class="message-attribution-main"]/a/time/@data-time'
-        self.author_xpath = './/div[contains(@class,"message-userDetails")]//span[contains(@class,"username")]/descendant::text()'
+        self.date_xpath = 'div//div[@class="message-attribution-main"]'\
+                          '/a/time/@data-time'
+        self.author_xpath = './/div[contains(@class,"message-userDetails")]//'\
+                            'span[contains(@class,"username")]/descendant::'\
+                            'text()'
         self.title_xpath = '//h1[@class="p-title-value"]/text()'
-        self.comment_block_xpath = 'div//ul[@class="message-attribution-opposite message-attribution-opposite--list"]/li/a/text()'
-        self.avatar_xpath = 'div//div[@class="message-avatar-wrapper"]/a[img/@src]/@href'
-        self.avatar_ext = 'jpg'
+        self.comment_block_xpath = 'div//ul[@class="message-attribution-opp'\
+                                   'osite message-attribution-opposite--list'\
+                                   '"]/li/a/text()'
+        self.avatar_xpath = 'div//div[@class="message-avatar-wrapper"]//img'\
+                            '/@src'
         self.mode = 'r'
 
         # main function
         self.main()
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: (
-                int(self.thread_name_pattern.search(x).group(1)),
-                int(self.pagination_pattern.search(x).group(1))
-            )
-        )
-
-        return sorted_files
-
-    def get_date(self, tag):
-        date = tag.xpath(self.date_xpath)
-        return date[0] if date else ''
 
     def get_author(self, tag):
         author_block = tag.xpath(self.author_xpath)
@@ -100,10 +77,3 @@ class GerkiParser(BaseTemplate):
                 )
         return post_text.strip()
 
-    def get_comment_id(self, tag):
-        comment_id = ""
-        comment_block = tag.xpath(self.comment_block_xpath)
-        if comment_block:
-            comment_id = comment_block[-1].strip().split('#')[-1]
-
-        return comment_id.replace(',', '').replace('.', '')
