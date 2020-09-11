@@ -1,12 +1,5 @@
 import re
-import uuid
-
-from datetime import datetime
-import dateparser
-from scrapy import (
-    Request,
-    FormRequest
-)
+from scrapy import Request
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -61,18 +54,6 @@ class ItshqipSpider(SitemapSpider):
     post_datetime_format = '%b %d, %Y'
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.strip()
-        if not thread_date:
-            return
-        return dateparser.parse(thread_date)
-
-    def parse_post_date(self, post_date):
-        post_date = post_date.strip()
-        if not post_date:
-            return
-        return dateparser.parse(post_date)
 
     def parse(self, response):
 

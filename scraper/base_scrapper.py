@@ -903,7 +903,7 @@ class SitemapSpider(BypassCloudfareSpider):
                             using class post_datetime_format
         """
         try:
-            return dparser.parse(post_date).replace(tzinfo=None)
+            return dateparser.parse(post_date).replace(tzinfo=None)
         except:
             return datetime.strptime(
                 post_date.strip(),
@@ -2020,7 +2020,7 @@ class SeleniumSpider(SitemapSpider):
 
             if self.start_date and thread_lastmod is None:
                 self.logger.info(
-                    "Thread %s has no last update in update scraping, "
+                    "Last update date not found in Thread %s, "
                     "so ignored." % thread_url
                 )
                 continue
