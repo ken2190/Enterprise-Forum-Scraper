@@ -1,0 +1,2332 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Every confirmed game for the rest of 2016 +</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=65682&amp;page=1&amp;perpage=10&amp;fid=57&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=65682&amp;page=1&amp;perpage=10&amp;fid=57&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=65682&page=1&perpage=10&fid=57" />
+        
+<meta name="description" content="APRIL Spoiler: Battlefleet Gothic: Armada (PC) – April 21 Star Fox Zero (Wii U) – April 22 Star Fox Guard (Wii U) – April 22 Dungeons 2 (PS4) – April 22 Alienation (PS4) – April 26 Hitman – Episode 2" />
+<link rel="canonical" href="https://sinister.ly/Thread-Every-confirmed-game-for-the-rest-of-2016" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DEvery-confirmed-game-for-the-rest-of-2016"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Gaming"><span>Gaming</span></a></li>
+
+<li><a href="Forum-Cross-Platform?page=8"><span>Cross-Platform</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>Every confirmed game for the rest of 2016 +</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(102);"><br />
+<center>
+<span title="sh3elltools.io"><a href="https://sh3elltools.io/"><img src="https://i.imgur.com/8Vz9XR8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+ <span class="pagination_current">1</span>
+
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?page=2" class="pagination_page">2</a>
+
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?page=2" class="pagination_next">Next &raquo;</a>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=65682" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>Every confirmed game for the rest of 2016 +</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=65682">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=65682&amp;pid=569429#pid569429" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=65682&amp;pid=569429#pid569429" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=65682">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=65682">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=65682&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid569429" id="pid569429"></a>
+<div class="post classic tborder tfixed " style="" id="post_569429">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Customer"><img src="https://sinister.ly/uploads/avatars/avatar_3292.jpg?dateline=1566233226" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Customer"><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">not a serial killer</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/otaku.png" alt="Otaku" title="Otaku" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">4,235</span></div>
+	<div>Threads: <span class="float_right">126</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=3292"><strong class="reputation_positive">36</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">39 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=3292">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Member of the Month.png" alt="Member of the Month" title="Member of the Month" /><img src="uploads/awards/Night Owl.png" alt="Night Owl" title="Night Owl" /><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Ninja.png" alt="Ninja" title="Ninja" /><img src="uploads/awards/Loved.png" alt="Loved" title="Loved" /><img src="uploads/awards/Staff.png" alt="Staff" title="Staff" /><img src="uploads/awards/Super Elite.png" alt="Super Elite" title="Super Elite" /><img src="uploads/awards/Legendary.png" alt="Legendary" title="Legendary" /><img src="uploads/awards/Power Poster.png" alt="Power Poster" title="Power Poster" /><img src="uploads/awards/Award Whore.png" alt="Award Whore" title="Award Whore" /><img src="uploads/awards/YouTube.png" alt="YouTube" title="YouTube" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Stoner.png" alt="Stoner" title="Stoner" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Ageless.png" alt="Ageless" title="Ageless" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Hoarder.png" alt="Hoarder" title="Hoarder" /><img src="uploads/awards/Over 9000.png" alt="Over 9000" title="Over 9000" /><img src="uploads/awards/Birthday.png" alt="Birthday" title="Birthday" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 12:25 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569429#pid569429" class="thead posturl" title="Every confirmed game for the rest of 2016 +">#1</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569429">
+	<span style="font-size: xx-large;" class="mycode_size"><span style="color: #9400D3;" class="mycode_color">[</span> <span style="color: #FFFFFF;" class="mycode_color">This thread will tell you every game that is confirmed <span style="font-style: italic;" class="mycode_i">(so far)</span> fore the rest of 2016</span> <span style="color: #9400D3;" class="mycode_color">]</span></span><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size"><span style="color: #9400D3;" class="mycode_color"><span style="font-style: italic;" class="mycode_i">APRIL</span></span></span><br />
+<tag><div class='codeblock' style='margin-top:5px'><div class='title smallfont' style='margin-bottom:2px'><strong>Spoiler: </strong> <input type='button' value='Show' class='button spoiler_button'></div><div  style='margin: 0px; padding: 6px;'><div style='display: none;'><span style="color: #FFFFFF;" class="mycode_color"><ul class="mycode_list"><li>Battlefleet Gothic: Armada (PC) – April 21<br />
+</li>
+<li>Star Fox Zero (Wii U) – April 22<br />
+</li>
+<li>Star Fox Guard (Wii U) – April 22<br />
+</li>
+<li>Dungeons 2 (PS4) – April 22<br />
+</li>
+<li>Alienation (PS4) – April 26<br />
+</li>
+<li>Hitman – Episode 2 Italy (PC, PS4, Xbox One) – April 26<br />
+</li>
+<li>Lost Reavers (Wii U) – April 28<br />
+</li>
+<li>o-Kai Watch (3DS) – April 29 Europe<br />
+</li>
+<li>Time Machine VR (PC) – April<br />
+</li>
+<li>Pixel Privateers (PC) – Quarter 1</span><br />
+</li>
+</ul></div></div></div></tag><span style="color: #9400D3;" class="mycode_color"><span style="font-size: x-large;" class="mycode_size"><span style="font-style: italic;" class="mycode_i">MAY</span></span></span><br />
+<tag><div class='codeblock' style='margin-top:5px'><div class='title smallfont' style='margin-bottom:2px'><strong>Spoiler: </strong> <input type='button' value='Show' class='button spoiler_button'></div><div  style='margin: 0px; padding: 6px;'><div style='display: none;'><span style="color: #FFFFFF;" class="mycode_color"><ul class="mycode_list"><li>Battleborn (PC, PS4, Xbox One) – May 3<br />
+</li>
+<li>Uncharted 4: A Thief’s End (PS4) – May 10<br />
+</li>
+<li>DOOM (PC, PS4, Xbox One) – May 13<br />
+</li>
+<li>Disney Art Academy (3DS) – May 13<br />
+</li>
+<li>Homefront: The Revolution (PC, PS4, Xbox One) – May 17<br />
+</li>
+<li>Valkyria Chronicles Remastered (PS4) – May 17<br />
+</li>
+<li>Shadow of the Beast (PS4) – May 17<br />
+</li>
+<li>Mirror’s Edge Catalyst (PC, PS4, Xbox One) – May 24<br />
+</li>
+<li>Total War: Warhammer (PC) – May 24<br />
+</li>
+<li>Overwatch (PC, PS4, Xbox One) – May 24<br />
+</li>
+<li>Teenage Mutant Ninja Turtles: Mutants in Manhattan (PC, PS3, PS4, Xbox 360, Xbox One) – May</li>
+<li>24<br />
+</li>
+<li>Dangerous Golf – (PC, PS4, Xbox One)<br />
+</li>
+<li>Pocket Card Jockey – (3DS) – May<br />
+</li>
+<li>Sherlock Holmes: The Devil’s Daughter (PC, PS4, Xbox One) – May 27<br />
+</li>
+<li>One Piece: Burning Blood (PC, PS4, Xbox One, Vita) – May 31<br />
+</li>
+<li>Dead Island: Definitive Collection (PC, PS4, Xbox One) – May 31<br />
+</li>
+<li>Fallout 4: Far Harbor DLC – (PC, PS4, Xbox One) – May<br />
+</li>
+<li>Shadwen – (PC, PS4,) – May</span></li>
+</ul></div></div></div></tag><br />
+<span style="color: #9400D3;" class="mycode_color"><span style="font-size: x-large;" class="mycode_size"><span style="font-style: italic;" class="mycode_i">JUNE</span></span></span><br />
+<tag><div class='codeblock' style='margin-top:5px'><div class='title smallfont' style='margin-bottom:2px'><strong>Spoiler: </strong> <input type='button' value='Show' class='button spoiler_button'></div><div  style='margin: 0px; padding: 6px;'><div style='display: none;'><span style="color: #FFFFFF;" class="mycode_color"><ul class="mycode_list"><li>No Man’s Sky (PC, PS4) – June 21<br />
+</li>
+<li>ARK: Survival Evolved (PC, PS4, Xbox One) – official launch for the Early Access game on all</li>
+<li>platforms<br />
+</li>
+<li>Assetto Corsa (PS4, Xbox One) – June 3<br />
+</li>
+<li>Odin Sphere: Leifthrasir (PS3, PS4, Vita) – June 7<br />
+</li>
+<li>Kirby: Planet Robobot (3DS) – June 10<br />
+</li>
+<li>Deadlight: Director’s Cut (PC, PS4, Xbox One) – June 21<br />
+</li>
+<li>The Technomancer (PC, PS4, Xbox One) – June 21<br />
+</li>
+<li>Resident Evil: Umbrella Corps (PC, PS4) – June 21<br />
+</li>
+<li>Tokyo Mirage Sessions FE (Wii U) – June 24<br />
+</li>
+<li>Mario &amp; Sonic at the Rio 2016 Olympic Games (Wii U) – June 24<br />
+</li>
+<li>LEGO Star Wars: The Force Awakens (3DS, PC, PS3, PS4, Vita, Wii U, Xbox 360, Xbox One) –</li>
+<li>June 28<br />
+</li>
+<li>Star Ocean 5: Integrity and Faithlessness (PS4) – June 28<br />
+</li>
+<li>Obduction (PC) – June<br />
+</li>
+<li>The Division: DLC 1 Underground (30 days early on Xbox One) – June<br />
+</li>
+<li>We Happy Few (PC, Xbox One) – June<br />
+</li>
+<li>Valentino Rossi The Game (PC, PS4, Xbox One) – June<br />
+</li>
+<li>Mighty No. 9 (PC, PS3, PS4, Xbox 360, Xbox One, Wii U) – Spring<br />
+</span></li>
+</ul></div></div></div></tag><span style="color: #9400D3;" class="mycode_color"><span style="font-size: x-large;" class="mycode_size"><span style="font-style: italic;" class="mycode_i">JULY TO DECEMBER</span></span></span><br />
+<tag><div class='codeblock' style='margin-top:5px'><div class='title smallfont' style='margin-bottom:2px'><strong>Spoiler: </strong> <input type='button' value='Show' class='button spoiler_button'></div><div  style='margin: 0px; padding: 6px;'><div style='display: none;'><span style="color: #FFFFFF;" class="mycode_color"><ul class="mycode_list"><li>Romance of the Three Kingdoms 13 (PC, PS4) – July 5<br />
+</li>
+<li>Song of the Deep – (PC, PS4, Xbox One) – July 12<br />
+</li>
+<li>Deus Ex: Mankind Divided (PC, PS4, Xbox One) – August 23<br />
+</li>
+<li>World of Warcraft: Legion (PC) – August 30<br />
+</li>
+<li>The Division: DLC 2 Survival (30 days early on Xbox One) – Summer<br />
+</li>
+<li>Attack on Titan: Wings of Freedom (PC, PS3, PS4, Vita, Xbox One) – August 30<br />
+</li>
+<li>Final Fantasy 15 (PS4, Xbox One) – September 30<br />
+</li>
+<li>NBA 2K17 (PC, PS3, PS4, Xbox 360, Xbox One) – September<br />
+</li>
+<li>Mafia 3 (PC, PS4, Xbox One) – October 7<br />
+</li>
+<li>Gears of War 4 (beta April 18) (Xbox One) – October 11<br />
+</span></li>
+</ul></div></div></div></tag><span style="font-size: x-large;" class="mycode_size"><span style="color: #9400D3;" class="mycode_color"><span style="font-style: italic;" class="mycode_i">CONFIRMED FOR 2016 WITH DATES TBA</span></span></span><br />
+<span style="color: #FFFFFF;" class="mycode_color">Naturally, this will be the largest list at the year’s start, and that’s because publishers have been delaying games to 2016 for a while, even the ones that may not be ready for a 2016 launch have been tentatively slapped with a 2016 date. Expect some of these to either move to 2017, or get sorted in one of the previous pages.</span><br />
+<tag><div class='codeblock' style='margin-top:5px'><div class='title smallfont' style='margin-bottom:2px'><strong>Spoiler: </strong> <input type='button' value='Show' class='button spoiler_button'></div><div  style='margin: 0px; padding: 6px;'><div style='display: none;'><span style="color: #FFFFFF;" class="mycode_color"><ul class="mycode_list"><li>Below (PC, Xbox One)<br />
+</li>
+<li>Battlezone 98 (PC) – Spring<br />
+</li>
+<li>Carmageddon: Max Damage (PC, PS4, Xbox One)<br />
+</li>
+<li>H1Z1: King of the Kill (PC, PS4, Xbox One) – Summer<br />
+</li>
+<li>Prison Architect (PS4, Xbox One) – Spring<br />
+</li>
+<li>Warhammer 40,000: Eternal Crusade – (PC, PS4, Xbox One) – Summer<br />
+</li>
+<li>Sunless Sea: Zubmariner – (PC)<br />
+</li>
+<li>Frozen Synapse 2 – (PC)<br />
+</li>
+<li>Conan Exiles – (PC, PS4, Xbox One) – Early access in Summer<br />
+</li>
+<li>Livelock – (PC, PS4, Xbox One)<br />
+</li>
+<li>SMITE – (PS4)<br />
+</li>
+<li>Batman: A Telltale Games Series (PC, PS3, PS4, Xbox 360, Xbox One)<br />
+</li>
+<li>Crackdown 3 (Multiplayer in summer) (Xbox One)<br />
+</li>
+<li>Cuphead (PC, Xbox One)<br />
+</li>
+<li>Dishonored 2 (PC, PS4, Xbox One)<br />
+</li>
+<li>Halo Wars 2 (PC, Xbox One)<br />
+</li>
+<li>UFC 2 (PS4, Xbox One)<br />
+</li>
+<li>Dreadnought (PC)<br />
+</li>
+<li>Gravity Rush 2 (PS4)<br />
+</li>
+<li>Hellblade (PC, PS4)<br />
+</li>
+<li>Horizon Zero Dawn (PS4)<br />
+</li>
+<li>JoJo’s Bizarre Adventure Eyes of Heaven (PS4)<br />
+</li>
+<li>LawBreakers (PC)<br />
+</li>
+<li>Let it Die (PS4)<br />
+</li>
+<li>Furi (PS4)<br />
+</li>
+<li>Resident Evil 4 re-release (PS4, Xbox One) – Fall<br />
+</li>
+<li>Resident Evil 5 re-release (PS4, Xbox One) – Summer<br />
+</li>
+<li>Mirage: Arcade Warfare (PC)<br />
+</li>
+<li>Jotun: Valhalla Edition (PS4, Xbox One) – Summer<br />
+</li>
+<li>Ni-Oh (PS4)<br />
+</li>
+<li>Necropolis (PC, PS4, Xbox One) – Summer<br />
+</li>
+<li>Monster Boy and the Cursed Kingdom (PC, PS4, Xbox One)<br />
+</li>
+<li>Song of the Deep – (PC, PS4, Xbox One) – Summer<br />
+</li>
+<li>Farming Simulator 2017 (PC, PS4, Xbox One)<br />
+</li>
+<li>Nier: Automata (PS4)<br />
+</li>
+<li>Neverending Nightmares (PS4, Vita) – Quarter 2<br />
+</li>
+<li>Outlast 2 (PC, PS4, Xbox One)<br />
+</li>
+<li>Paragon (PC, PS4)<br />
+</li>
+<li>Persona 5 (PS4)<br />
+</li>
+<li>God Eater Resurrection (PS4, PSVita)<br />
+</li>
+<li>God Eater 2 Rage Burst (PS4, PSVita)<br />
+</li>
+<li>Forza 6: Apex (PC) – Spring<br />
+</li>
+<li>Rhythm Heaven Megamix (3DS)<br />
+</li>
+<li>Azure Striker Gunvolt 2 (3DS) – Summer<br />
+</li>
+<li>ReCore (Xbox One)<br />
+</li>
+<li>Rise of the Tomb Raider (PS4)<br />
+</li>
+<li>Rising Storm 2: Vietnam (PC)<br />
+</li>
+<li>Sea of Thieves (PC, Xbox One)<br />
+</li>
+<li>The Culling (PC)<br />
+</li>
+<li>Paper Mario: Color Splash (Wii U)<br />
+</li>
+<li>The Wild Eight (PC, Xbox One) – December<br />
+</li>
+<li>NeuroVoider (PS4) – Spring<br />
+</li>
+<li>Shadow Warrior 2 (PC, PS4, Xbox One)<br />
+</li>
+<li>Shadow Complex Remastered (PS4, Xbox One)<br />
+</li>
+<li>Styx: Shards of Darkness (PC, PS4, Xbox One)<br />
+</li>
+<li>Sniper Elite 4 (PC, PS4, Xbox One)<br />
+</li>
+<li>Sniper: Ghost Warrior 3 (PC, PS4, Xbox One)<br />
+</li>
+<li>The Division: DLC 3 Last Stand (PC, PS4, Xbox One) – Winter<br />
+</li>
+<li>Hard Reset: Redux (PC, PS4, Xbox One)<br />
+</li>
+<li>Postal Redux (PC, PS4)<br />
+</li>
+<li>Sword Art Onine Hollow Realization (PS4)<br />
+</li>
+<li>Tekken 7 (PS4)<br />
+</li>
+<li>The Last Guardian (PS4)<br />
+</li>
+<li>The Legend of Zelda U (Wii U)<br />
+</li>
+<li>The Witcher 3: Blood and Wine expansion (PC, PS4, Xbox One)<br />
+</li>
+<li>World of Final Fantasy (PS4, PSVita)<br />
+</li>
+<li>Sword Coast Legends (PS4, Xbox One) – Spring</span></li>
+</ul></div></div></div></tag><br />
+<span style="color: #9400D3;" class="mycode_color"><span style="font-size: x-large;" class="mycode_size"><span style="font-style: italic;" class="mycode_i">DELAYED AND ANNOUNCED FOR 2017</span></span></span><br />
+<span style="color: #FFFFFF;" class="mycode_color">A few games will inevitably get pushed to 2017, whether we find out about them weeks before launch or, in the case of Scalebound, the beginning of the year, the list will continue to grow.</span><br />
+<tag><div class='codeblock' style='margin-top:5px'><div class='title smallfont' style='margin-bottom:2px'><strong>Spoiler: </strong> <input type='button' value='Show' class='button spoiler_button'></div><div  style='margin: 0px; padding: 6px;'><div style='display: none;'><span style="color: #FFFFFF;" class="mycode_color"><ul class="mycode_list"><li>Scalebound (Xbox One)<br />
+</li>
+<li>Overkill’s The Walking Dead (PC, PS4, Xbox One)<br />
+</li>
+<li>Strafe (PC)<br />
+</li>
+<li>Hitman [disc version] (PC, PS4, Xbox One) – January<br />
+</li>
+<li>Pyre (PC, PS4) – 2017<br />
+</li>
+<li>The Church in the Darkness (PC, PS4, Xbox One) – Early 2017<br />
+</li>
+<li>Mass Effect: Andromeda (PC, PS4, Xbox One)</span></li>
+</ul></div></div></div></tag><br />
+<a href="http://www.vg247.com/2016/03/14/video-game-release-dates-2016/" target="_blank" class="mycode_url"><span style="color: #A9A9A9;" class="mycode_color"><span style="font-style: italic;" class="mycode_i"><span style="font-size: small;" class="mycode_size">/source/</span></span></span></a>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569429">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569429"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="https://media.tenor.com/images/40e171e6954998e4c640c1a106cd238c/tenor.gif" loading="lazy" alt="[Image: tenor.gif]" class="mycode_img" /><br />
+<br />
+🍫  🍬 🎀</div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_569429">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569429);return false;" title="[+]" id="tyl_a_expcol_569429"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569429" /></a>  
+	<span id="tyl_title_569429" style="display: none;"></span><span id="tyl_title_collapsed_569429" style=""></span><br />
+	<span id="tyl_data_569429" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=3292" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=3292" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569429" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569429&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569429, 65682); return false;" title="Like this Post" id="tyl_a569429"><span id="tyl_i569429">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569429" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569429); return false;" style="display: none;" id="multiquote_link_569429" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569429">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569429').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569429); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569448" id="pid569448"></a>
+<div class="post classic tborder tfixed " style="" id="post_569448">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|98" href="User-m0dem"><img src="https://sinister.ly/uploads/avatars/avatar_57608.png?dateline=1451834851" alt="" width="125" height="98" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-m0dem"><span style="text-shadow: 0 0 5px #0EBFE9; color: #0EBFE9; font-weight: bold;">m0dem</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Oni 2.0</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/diamond.png" alt="Registered (Diamond)" title="Registered (Diamond)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BFA760;"><strong>Six Years of Service</strong></div>
+<div>Posts: <span class="float_right">1,339</span></div>
+	<div>Threads: <span class="float_right">68</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=57608"><strong class="reputation_positive">103</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">427 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=57608">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 03:08 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569448#pid569448" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#2</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569448">
+	Wow!  Nice resource.<br />
+Thanks for sharing!  <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" /><br />
+<hr class="mycode_hr" />
+<span style="font-style: italic;" class="mycode_i">LEGO Star Wars: The Force Awakens</span> looks interesting.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569448">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569448">
+<span class="edited_post">(This post was last modified: 04-22-2016, 03:10 AM by <a href="https://sinister.ly/User-m0dem">m0dem</a>.)</span>
+</div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="" id="tyl_569448">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569448);return false;" title="[+]" id="tyl_a_expcol_569448"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569448" /></a>  
+	<span id="tyl_title_569448" style="display: none;"><strong>The following 1 user Likes <a href="https://sinister.ly/User-m0dem"><span style="text-shadow: 0 0 5px #0EBFE9; color: #0EBFE9; font-weight: bold;">m0dem</span></a>'s post:</strong></span><span id="tyl_title_collapsed_569448" style=""><strong>1 user Likes <a href="https://sinister.ly/User-m0dem"><span style="text-shadow: 0 0 5px #0EBFE9; color: #0EBFE9; font-weight: bold;">m0dem</span></a>'s post</strong></span><br />
+	<span id="tyl_data_569448" style="display: none;">&nbsp;&nbsp;• <span class="smalltext"></span><a href="User-Customer" class="smalltext" title='04-22-2016'><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a></span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=57608" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=57608" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=57608" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569448" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569448&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569448, 65682); return false;" title="Like this Post" id="tyl_a569448"><span id="tyl_i569448">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569448" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569448); return false;" style="display: none;" id="multiquote_link_569448" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569448">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569448').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569448); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569455" id="pid569455"></a>
+<div class="post classic tborder tfixed " style="" id="post_569455">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Blue"><img src="https://i.imgur.com/eoyZArf.png?dateline=1586221793" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Blue"><span style="text-shadow: 0 0 5px #0073de;color: #0073de; font-weight: bold;color: #0073de;">Blue</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">yo'</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/legends.png" alt="Registered (Legends)" title="Registered (Legends)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">1,962</span></div>
+	<div>Threads: <span class="float_right">240</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=5248"><strong class="reputation_positive">15</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">252 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=5248">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Elite.png" alt="Elite" title="Elite" /><img src="uploads/awards/Stoner.png" alt="Stoner" title="Stoner" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 03:17 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569455#pid569455" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#3</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569455">
+	"Total War: Warhammer (PC) – May 24" <br />
+<br />
+Yes, I love Total War games! <br />
+<br />
+Also " No Man’s Sky  " <br />
+<br />
+Is another game I am looking forward too!
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569455">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569455"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://i.imgur.com/xlbdwZT.png" loading="lazy" alt="[Image: xlbdwZT.png]" class="mycode_img" /></div>
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="" id="tyl_569455">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569455);return false;" title="[+]" id="tyl_a_expcol_569455"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569455" /></a>  
+	<span id="tyl_title_569455" style="display: none;"><strong>The following 1 user Likes <a href="https://sinister.ly/User-Blue"><span style="text-shadow: 0 0 5px #0073de;color: #0073de; font-weight: bold;color: #0073de;">Blue</span></a>'s post:</strong></span><span id="tyl_title_collapsed_569455" style=""><strong>1 user Likes <a href="https://sinister.ly/User-Blue"><span style="text-shadow: 0 0 5px #0073de;color: #0073de; font-weight: bold;color: #0073de;">Blue</span></a>'s post</strong></span><br />
+	<span id="tyl_data_569455" style="display: none;">&nbsp;&nbsp;• <span class="smalltext"></span><a href="User-Customer" class="smalltext" title='04-22-2016'><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a></span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=5248" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=5248" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=5248" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569455" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569455&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569455, 65682); return false;" title="Like this Post" id="tyl_a569455"><span id="tyl_i569455">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569455" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569455); return false;" style="display: none;" id="multiquote_link_569455" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569455">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569455').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569455); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569457" id="pid569457"></a>
+<div class="post classic tborder tfixed " style="" id="post_569457">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|104" href="User-Aeolian"><img src="https://sinister.ly/uploads/avatars/avatar_60331.gif?dateline=1537887390" alt="" width="125" height="104" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Aeolian"><span style="text-shadow: 0 0 5px #affc41;color: #affc41; font-weight: bold;color: #affc41;">Aeolian</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">ANONYCOCK</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/diamond.png" alt="Registered (Diamond)" title="Registered (Diamond)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF3E13;"><strong>Four Years of Service</strong></div>
+<div>Posts: <span class="float_right">3,378</span></div>
+	<div>Threads: <span class="float_right">402</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=60331"><strong class="reputation_positive">168</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">221 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=60331">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Bitcoin.png" alt="Bitcoin" title="Bitcoin" /><img src="uploads/awards/Bunny.png" alt="Bunny" title="Bunny" /><img src="uploads/awards/Donator (Rank II).png" alt="Donator (Rank II)" title="Donator (Rank II)" /><img src="uploads/awards/Fireworks.png" alt="Fireworks" title="Fireworks" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Santa Hat.png" alt="Santa Hat" title="Santa Hat" /><img src="uploads/awards/Turkey.png" alt="Turkey" title="Turkey" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Award Whore.png" alt="Award Whore" title="Award Whore" /><img src="uploads/awards/Power Poster.png" alt="Power Poster" title="Power Poster" /><img src="uploads/awards/Ageless.png" alt="Ageless" title="Ageless" /><img src="uploads/awards/Birthday.png" alt="Birthday" title="Birthday" /><img src="uploads/awards/Over 9000.png" alt="Over 9000" title="Over 9000" /><img src="uploads/awards/Hoarder.png" alt="Hoarder" title="Hoarder" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 03:37 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569457#pid569457" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#4</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569457">
+	Bookmarked, thanks for the share, I'll definitely use this.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569457">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569457"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: right;" class="mycode_align"><span style="color: #ffffff;" class="mycode_color"><span style="font-size: small;" class="mycode_size">'You can't just have your characters announce how they feel, that makes me feel angry!</span></span> <img src="https://i.imgur.com/A993dMx.png?1" loading="lazy" alt="[Image: A993dMx.png?1]" class="mycode_img" /></div>
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="" id="tyl_569457">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569457);return false;" title="[+]" id="tyl_a_expcol_569457"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569457" /></a>  
+	<span id="tyl_title_569457" style="display: none;"><strong>The following 1 user Likes <a href="https://sinister.ly/User-Aeolian"><span style="text-shadow: 0 0 5px #affc41;color: #affc41; font-weight: bold;color: #affc41;">Aeolian</span></a>'s post:</strong></span><span id="tyl_title_collapsed_569457" style=""><strong>1 user Likes <a href="https://sinister.ly/User-Aeolian"><span style="text-shadow: 0 0 5px #affc41;color: #affc41; font-weight: bold;color: #affc41;">Aeolian</span></a>'s post</strong></span><br />
+	<span id="tyl_data_569457" style="display: none;">&nbsp;&nbsp;• <span class="smalltext"></span><a href="User-Customer" class="smalltext" title='04-22-2016'><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a></span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=60331" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=60331" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569457" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569457&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569457, 65682); return false;" title="Like this Post" id="tyl_a569457"><span id="tyl_i569457">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569457" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569457); return false;" style="display: none;" id="multiquote_link_569457" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569457">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569457').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569457); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569459" id="pid569459"></a>
+<div class="post classic tborder tfixed " style="" id="post_569459">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Customer"><img src="https://sinister.ly/uploads/avatars/avatar_3292.jpg?dateline=1566233226" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Customer"><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">not a serial killer</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/otaku.png" alt="Otaku" title="Otaku" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">4,235</span></div>
+	<div>Threads: <span class="float_right">126</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=3292"><strong class="reputation_positive">36</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">39 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=3292">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Member of the Month.png" alt="Member of the Month" title="Member of the Month" /><img src="uploads/awards/Night Owl.png" alt="Night Owl" title="Night Owl" /><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Ninja.png" alt="Ninja" title="Ninja" /><img src="uploads/awards/Loved.png" alt="Loved" title="Loved" /><img src="uploads/awards/Staff.png" alt="Staff" title="Staff" /><img src="uploads/awards/Super Elite.png" alt="Super Elite" title="Super Elite" /><img src="uploads/awards/Legendary.png" alt="Legendary" title="Legendary" /><img src="uploads/awards/Power Poster.png" alt="Power Poster" title="Power Poster" /><img src="uploads/awards/Award Whore.png" alt="Award Whore" title="Award Whore" /><img src="uploads/awards/YouTube.png" alt="YouTube" title="YouTube" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Stoner.png" alt="Stoner" title="Stoner" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Ageless.png" alt="Ageless" title="Ageless" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Hoarder.png" alt="Hoarder" title="Hoarder" /><img src="uploads/awards/Over 9000.png" alt="Over 9000" title="Over 9000" /><img src="uploads/awards/Birthday.png" alt="Birthday" title="Birthday" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 03:46 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569459#pid569459" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#5</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569459">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2016, 03:17 AM)</span>Blue Wrote:  <a href="https://sinister.ly/Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569455#pid569455" class="quick_jump"></a></cite>"Total War: Warhammer (PC) – May 24" <br />
+<br />
+Yes, I love Total War games! <br />
+<br />
+Also " No Man’s Sky  " <br />
+<br />
+Is another game I am looking forward too!</blockquote><br />
+YOU CANNOT FATHOM THE IMMENSITY OF HYPE IN WHICH THIS GAME HAS CAUSED FOR ME.<br />
+<br />
+I'm super hyped for this. A LOT of cool games coming out this and next month!
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569459">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569459"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="https://media.tenor.com/images/40e171e6954998e4c640c1a106cd238c/tenor.gif" loading="lazy" alt="[Image: tenor.gif]" class="mycode_img" /><br />
+<br />
+🍫  🍬 🎀</div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="" id="tyl_569459">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569459);return false;" title="[+]" id="tyl_a_expcol_569459"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569459" /></a>  
+	<span id="tyl_title_569459" style="display: none;"><strong>The following 1 user Likes <a href="https://sinister.ly/User-Customer"><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a>'s post:</strong></span><span id="tyl_title_collapsed_569459" style=""><strong>1 user Likes <a href="https://sinister.ly/User-Customer"><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a>'s post</strong></span><br />
+	<span id="tyl_data_569459" style="display: none;">&nbsp;&nbsp;• <span class="smalltext"></span><a href="User-Blue" class="smalltext" title='04-22-2016'><span style="text-shadow: 0 0 5px #0073de;color: #0073de; font-weight: bold;color: #0073de;">Blue</span></a></span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=3292" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=3292" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569459" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569459&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569459, 65682); return false;" title="Like this Post" id="tyl_a569459"><span id="tyl_i569459">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569459" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569459); return false;" style="display: none;" id="multiquote_link_569459" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569459">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569459').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569459); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569461" id="pid569461"></a>
+<div class="post classic tborder tfixed " style="" id="post_569461">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Blue"><img src="https://i.imgur.com/eoyZArf.png?dateline=1586221793" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Blue"><span style="text-shadow: 0 0 5px #0073de;color: #0073de; font-weight: bold;color: #0073de;">Blue</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">yo'</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/legends.png" alt="Registered (Legends)" title="Registered (Legends)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">1,962</span></div>
+	<div>Threads: <span class="float_right">240</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=5248"><strong class="reputation_positive">15</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">252 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=5248">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Elite.png" alt="Elite" title="Elite" /><img src="uploads/awards/Stoner.png" alt="Stoner" title="Stoner" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 03:50 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569461#pid569461" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#6</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569461">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2016, 03:46 AM)</span>Customer Wrote:  <a href="https://sinister.ly/Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569459#pid569459" class="quick_jump"></a></cite>YOU CANNOT FATHOM THE IMMENSITY OF HYPE IN WHICH THIS GAME HAS CAUSED FOR ME.<br />
+<br />
+I'm super hyped for this. A LOT of cool games coming out this and next month!</blockquote><br />
+<br />
+OH SHIT MEANWHILE I WAS EXPLORING THE THREAD<br />
+<br />
+"Romance of the Three Kingdoms 13" - July 5 <br />
+<br />
+I don't know if we have any Romance of the Three Kingdoms fans here but OH MY GODDDDDD, I played Romance of the Three Kingdoms back on my PS2, and PS3, and eventually on PC. I am such a huge fan of the game, If i'm not mistaken there are books out also but I haven't ever read them but I've done my research on the history and stuff. ANYWAYS, If you love strategy games, I'd recommend that game to anyone.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569461">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569461"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://i.imgur.com/xlbdwZT.png" loading="lazy" alt="[Image: xlbdwZT.png]" class="mycode_img" /></div>
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_569461">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569461);return false;" title="[+]" id="tyl_a_expcol_569461"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569461" /></a>  
+	<span id="tyl_title_569461" style="display: none;"></span><span id="tyl_title_collapsed_569461" style=""></span><br />
+	<span id="tyl_data_569461" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=5248" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=5248" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=5248" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569461" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569461&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569461, 65682); return false;" title="Like this Post" id="tyl_a569461"><span id="tyl_i569461">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569461" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569461); return false;" style="display: none;" id="multiquote_link_569461" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569461">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569461').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569461); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569478" id="pid569478"></a>
+<div class="post classic tborder tfixed " style="" id="post_569478">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_100|100" href="User-Master"><img src="http://i.imgur.com/995pDLd.jpg?dateline=1438710139" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Master"><span style="color: #B8B8B8;">Master</span><span style="color: #914dca;">-chan</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Otaku &amp; Gamer</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/otaku.png" alt="Otaku" title="Otaku" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BFB186;"><strong>Five Years of Service</strong></div>
+<div>Posts: <span class="float_right">773</span></div>
+	<div>Threads: <span class="float_right">197</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=13879"><strong class="reputation_positive">4</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">224 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=13879">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 08:12 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569478#pid569478" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#7</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569478">
+	I can't wait for Dishonored 2 for those who don't know it continues from the previous story line (in the future). <br />
+<br />
+I was framed for murder so I killed everyone to prove my innocence. Turns out in doing so I traumatized a small child. Oops. Freeze Time, disable the alarm, throw a grenade in the air and shoot it, killing every guard in the vicinity as time resumes and the bullet hits the grenade, causing it to explode. Pretty much Dishonored in a nutshell.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569478">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569478"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://pile.randimg.net/1/62/78105/master645.png" width="450" height="253" loading="lazy" alt="[Image: master645.png]" class="mycode_img" /></div>
+<div style="text-align: center;" class="mycode_align">
+<br />
+“<span style="font-style: italic;" class="mycode_i">Life before death, strength before weakness, journey before destination.</span>” ― The Way of Kings by Brandon Sanderson</div>
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_569478">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569478);return false;" title="[+]" id="tyl_a_expcol_569478"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569478" /></a>  
+	<span id="tyl_title_569478" style="display: none;"></span><span id="tyl_title_collapsed_569478" style=""></span><br />
+	<span id="tyl_data_569478" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=13879" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=13879" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569478" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569478&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569478, 65682); return false;" title="Like this Post" id="tyl_a569478"><span id="tyl_i569478">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569478" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569478); return false;" style="display: none;" id="multiquote_link_569478" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569478">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569478').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569478); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569483" id="pid569483"></a>
+<div class="post classic tborder tfixed " style="" id="post_569483">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Customer"><img src="https://sinister.ly/uploads/avatars/avatar_3292.jpg?dateline=1566233226" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Customer"><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">not a serial killer</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/otaku.png" alt="Otaku" title="Otaku" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">4,235</span></div>
+	<div>Threads: <span class="float_right">126</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=3292"><strong class="reputation_positive">36</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">39 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=3292">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Member of the Month.png" alt="Member of the Month" title="Member of the Month" /><img src="uploads/awards/Night Owl.png" alt="Night Owl" title="Night Owl" /><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Ninja.png" alt="Ninja" title="Ninja" /><img src="uploads/awards/Loved.png" alt="Loved" title="Loved" /><img src="uploads/awards/Staff.png" alt="Staff" title="Staff" /><img src="uploads/awards/Super Elite.png" alt="Super Elite" title="Super Elite" /><img src="uploads/awards/Legendary.png" alt="Legendary" title="Legendary" /><img src="uploads/awards/Power Poster.png" alt="Power Poster" title="Power Poster" /><img src="uploads/awards/Award Whore.png" alt="Award Whore" title="Award Whore" /><img src="uploads/awards/YouTube.png" alt="YouTube" title="YouTube" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Stoner.png" alt="Stoner" title="Stoner" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Ageless.png" alt="Ageless" title="Ageless" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Hoarder.png" alt="Hoarder" title="Hoarder" /><img src="uploads/awards/Over 9000.png" alt="Over 9000" title="Over 9000" /><img src="uploads/awards/Birthday.png" alt="Birthday" title="Birthday" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 11:47 AM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569483#pid569483" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#8</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569483">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2016, 08:12 AM)</span>Master Wrote:  <a href="https://sinister.ly/Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569478#pid569478" class="quick_jump"></a></cite>I can't wait for Dishonored 2 for those how don't it continues from the previous story line (in the future). <br />
+<br />
+I was framed for murder so I killed everyone to prove my innocence. Turns out in doing so I traumatized a small child. Oops. Freeze Time, disable the alarm, throw a grenade in the air and shoot it, killing every guard in the vicinity as time resumes and the bullet hits the grenade, causing it to explode. Pretty much Dishonored in a nutshell.</blockquote><br />
+I totally watched a shitload of those super fast kill mission videos on youtube.. shit looks TOO dope. Really hyped.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569483">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569483"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="https://media.tenor.com/images/40e171e6954998e4c640c1a106cd238c/tenor.gif" loading="lazy" alt="[Image: tenor.gif]" class="mycode_img" /><br />
+<br />
+🍫  🍬 🎀</div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_569483">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569483);return false;" title="[+]" id="tyl_a_expcol_569483"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569483" /></a>  
+	<span id="tyl_title_569483" style="display: none;"></span><span id="tyl_title_collapsed_569483" style=""></span><br />
+	<span id="tyl_data_569483" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=3292" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=3292" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569483" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569483&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569483, 65682); return false;" title="Like this Post" id="tyl_a569483"><span id="tyl_i569483">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569483" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569483); return false;" style="display: none;" id="multiquote_link_569483" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569483">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569483').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569483); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569492" id="pid569492"></a>
+<div class="post classic tborder tfixed " style="" id="post_569492">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_89|111" href="User-BurritoBeans"><img src="https://sinister.ly/uploads/avatars/avatar_60722.gif?dateline=1457402749" alt="" width="89" height="111" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-BurritoBeans"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">BurritoBeans</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Potato-dono!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF3E13;"><strong>Four Years of Service</strong></div>
+<div>Posts: <span class="float_right">335</span></div>
+	<div>Threads: <span class="float_right">17</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=60722"><strong class="reputation_positive">32</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">120 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=60722">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 04:29 PM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569492#pid569492" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#9</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569492">
+	Oh wow, thanks for the list, I haven't been keeping up with new releases all too much so this is nice to see.<br />
+   Some of the stuff I haven't heard of yet is kinda cool, too. Total War: Warhammer seems like it could be great, I love tabletop Warhammer/W40K, and Total War: Rome was pretty fun, so I think that could be a nice title to get. Also, Romance of the Three Kingdoms 13? First off, I didn't even know the series was this big so that's neat. I have I and II on the MSX2, and then I have VI on Dreamcast, all of 'em are fun games so I think I'll be watching this title too.<br />
+   So yeah, thanks again for the list - neat to see all this new stuff.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569492">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569492"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: x-small;" class="mycode_size">airgames, on 08 Dec 2014 - 5:24 PM, said:<br />
+close this discussion of dick !!<br />
+I broke !!<br />
+thanks<br />
+<br />
+'backin89', on 22 Dec 2010 - 6:40 PM, said:<br />
+Igot your fucking crackpipe bitch. i dont even smoke cigarrettes. i hope you all sleep in the fucking cold</span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_569492">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569492);return false;" title="[+]" id="tyl_a_expcol_569492"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569492" /></a>  
+	<span id="tyl_title_569492" style="display: none;"></span><span id="tyl_title_collapsed_569492" style=""></span><br />
+	<span id="tyl_data_569492" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=60722" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=60722" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=60722" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569492" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569492&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569492, 65682); return false;" title="Like this Post" id="tyl_a569492"><span id="tyl_i569492">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569492" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569492); return false;" style="display: none;" id="multiquote_link_569492" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569492">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569492').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569492); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid569515" id="pid569515"></a>
+<div class="post classic tborder tfixed " style="" id="post_569515">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Customer"><img src="https://sinister.ly/uploads/avatars/avatar_3292.jpg?dateline=1566233226" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Customer"><span style="color: #B8B8B8;">Customer</span><span style="color: #914dca;">-chan</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">not a serial killer</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/otaku.png" alt="Otaku" title="Otaku" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">4,235</span></div>
+	<div>Threads: <span class="float_right">126</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=3292"><strong class="reputation_positive">36</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">39 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=3292">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Member of the Month.png" alt="Member of the Month" title="Member of the Month" /><img src="uploads/awards/Night Owl.png" alt="Night Owl" title="Night Owl" /><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Ninja.png" alt="Ninja" title="Ninja" /><img src="uploads/awards/Loved.png" alt="Loved" title="Loved" /><img src="uploads/awards/Staff.png" alt="Staff" title="Staff" /><img src="uploads/awards/Super Elite.png" alt="Super Elite" title="Super Elite" /><img src="uploads/awards/Legendary.png" alt="Legendary" title="Legendary" /><img src="uploads/awards/Power Poster.png" alt="Power Poster" title="Power Poster" /><img src="uploads/awards/Award Whore.png" alt="Award Whore" title="Award Whore" /><img src="uploads/awards/YouTube.png" alt="YouTube" title="YouTube" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Stoner.png" alt="Stoner" title="Stoner" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Ageless.png" alt="Ageless" title="Ageless" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Hoarder.png" alt="Hoarder" title="Hoarder" /><img src="uploads/awards/Over 9000.png" alt="Over 9000" title="Over 9000" /><img src="uploads/awards/Birthday.png" alt="Birthday" title="Birthday" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Every confirmed game for the rest of 2016 + </span><span class="float_right"><span class="post_date postbit_date">04-22-2016, 10:44 PM </span> 
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569515#pid569515" class="thead posturl" title="RE: Every confirmed game for the rest of 2016 +">#10</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_569515">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2016, 04:29 PM)</span>BurritoBeans Wrote:  <a href="https://sinister.ly/Thread-Every-confirmed-game-for-the-rest-of-2016?pid=569492#pid569492" class="quick_jump"></a></cite>Oh wow, thanks for the list, I haven't been keeping up with new releases all too much so this is nice to see.<br />
+   Some of the stuff I haven't heard of yet is kinda cool, too. Total War: Warhammer seems like it could be great, I love tabletop Warhammer/W40K, and Total War: Rome was pretty fun, so I think that could be a nice title to get. Also, Romance of the Three Kingdoms 13? First off, I didn't even know the series was this big so that's neat. I have I and II on the MSX2, and then I have VI on Dreamcast, all of 'em are fun games so I think I'll be watching this title too.<br />
+   So yeah, thanks again for the list - neat to see all this new stuff.</blockquote><br />
+No problem! Glad it helped out a little heh. <img src="https://sinister.ly/images/smilies/set/tongue.png" alt="Tongue" title="Tongue" class="smilie smilie_37" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_569515">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_569515"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="https://media.tenor.com/images/40e171e6954998e4c640c1a106cd238c/tenor.gif" loading="lazy" alt="[Image: tenor.gif]" class="mycode_img" /><br />
+<br />
+🍫  🍬 🎀</div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_569515">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(569515);return false;" title="[+]" id="tyl_a_expcol_569515"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_569515" /></a>  
+	<span id="tyl_title_569515" style="display: none;"></span><span id="tyl_title_collapsed_569515" style=""></span><br />
+	<span id="tyl_data_569515" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=3292" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=3292" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_569515" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=569515&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(569515, 65682); return false;" title="Like this Post" id="tyl_a569515"><span id="tyl_i569515">Like</span></a></div>
+
+<a href="newreply.php?tid=65682&amp;replyto=569515" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(569515); return false;" style="display: none;" id="multiquote_link_569515" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_569515">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_569515').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(569515); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+ <span class="pagination_current">1</span>
+
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?page=2" class="pagination_page">2</a>
+
+<a href="Thread-Every-confirmed-game-for-the-rest-of-2016?page=2" class="pagination_next">Next &raquo;</a>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=65682" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=65682&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: Every confirmed game for the rest of 2016 +" />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="8dd5797adaea7659d46be23db9e7d9c9" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="684023" />
+	<input type="hidden" name="from_page" value="1" />
+	<input type="hidden" name="tid" value="65682" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=65682&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="65682" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: </span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(111);"><br />
+<center>
+<span title="Odin.to"><a href="https://odin.to/"><img src="https://i.imgur.com/Tnvx2M9.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-65682.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '65682',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

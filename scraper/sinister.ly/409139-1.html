@@ -1,0 +1,2043 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>HC GUI's APP.</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=41638&amp;page=1&amp;perpage=10&amp;fid=83&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=41638&amp;page=1&amp;perpage=10&amp;fid=83&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=41638&page=1&perpage=10&fid=83" />
+        
+<meta name="description" content="What do you think? I really want this to be a .exe, if somebody knows how to make this then PLEASE contact me. I'm willing to pay if neccery." />
+<link rel="canonical" href="https://sinister.ly/Thread-HC-GUI-s-APP" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DHC-GUI-s-APP"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Design"><span>Design</span></a></li>
+
+<li><a href="Forum-Feedback?page=53"><span>Feedback</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>HC GUI's APP.</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(106);"><br />
+<center>
+<span title="Xleet.to"><a href="https://xleet.to/"><img src="https://i.imgur.com/Mjw7cY8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+ <span class="pagination_current">1</span>
+
+<a href="Thread-HC-GUI-s-APP?page=2" class="pagination_page">2</a>
+
+<a href="Thread-HC-GUI-s-APP?page=3" class="pagination_page">3</a>
+
+<a href="Thread-HC-GUI-s-APP?page=2" class="pagination_next">Next &raquo;</a>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=41638" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>HC GUI's APP.</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=41638">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=41638&amp;pid=370346#pid370346" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=41638&amp;pid=370346#pid370346" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=41638">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=41638">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=41638&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid370346" id="pid370346"></a>
+<div class="post classic tborder tfixed " style="" id="post_370346">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_140|140" href="User-bluedog-tar-gz"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-bluedog-tar-gz"><span style="color: #b8b8b8;">bluedog.tar.gz</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Posting Freak</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">8,518</span></div>
+	<div>Threads: <span class="float_right">1,285</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15317"><strong class="reputation_positive">6</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15317">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 05:47 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370346#pid370346" class="thead posturl" title="HC GUI's APP.">#1</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370346">
+	<div style="text-align: center;" class="mycode_align"><img src="http://i.imgur.com/ZSQjr.jpg" loading="lazy" alt="[Image: ZSQjr.jpg]" class="mycode_img" /></div>
+<br />
+<br />
+What do you think?<br />
+I really want this to be a .exe, if somebody knows how to make this then PLEASE contact me. I'm willing to pay if neccery.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370346">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370346"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370346">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370346);return false;" title="[+]" id="tyl_a_expcol_370346"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370346" /></a>  
+	<span id="tyl_title_370346" style="display: none;"></span><span id="tyl_title_collapsed_370346" style=""></span><br />
+	<span id="tyl_data_370346" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15317" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15317" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15317" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370346" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370346&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370346, 41638); return false;" title="Like this Post" id="tyl_a370346"><span id="tyl_i370346">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370346" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370346); return false;" style="display: none;" id="multiquote_link_370346" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370346">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370346').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370346); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370868" id="pid370868"></a>
+<div class="post classic tborder tfixed " style="" id="post_370868">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Shining-White"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Shining-White"><span style="color: #b8b8b8;">Shining White</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Belong to Nature</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">2,249</span></div>
+	<div>Threads: <span class="float_right">167</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14685"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">-0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14685">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 06:05 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370868#pid370868" class="thead posturl" title="RE: HC GUI's APP.">#2</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370868">
+	really like it , i don't think its hard to do , who knows Web Scripting , <br />
+coz already  XenForo and IPB hace notification system , <br />
+Developer can take Idea from those forum system ,
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370868">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370868"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://i.imgur.com/Wfxdx.png" loading="lazy" alt="[Image: Wfxdx.png]" class="mycode_img" /></div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370868">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370868);return false;" title="[+]" id="tyl_a_expcol_370868"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370868" /></a>  
+	<span id="tyl_title_370868" style="display: none;"></span><span id="tyl_title_collapsed_370868" style=""></span><br />
+	<span id="tyl_data_370868" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=14685" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14685" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370868" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370868&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370868, 41638); return false;" title="Like this Post" id="tyl_a370868"><span id="tyl_i370868">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370868" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370868); return false;" style="display: none;" id="multiquote_link_370868" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370868">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370868').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370868); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370869" id="pid370869"></a>
+<div class="post classic tborder tfixed " style="" id="post_370869">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_140|140" href="User-bluedog-tar-gz"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-bluedog-tar-gz"><span style="color: #b8b8b8;">bluedog.tar.gz</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Posting Freak</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">8,518</span></div>
+	<div>Threads: <span class="float_right">1,285</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15317"><strong class="reputation_positive">6</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15317">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 06:09 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370869#pid370869" class="thead posturl" title="RE: HC GUI's APP.">#3</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370869">
+	I would really love to see this getting a real .exe
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370869">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370869"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370869">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370869);return false;" title="[+]" id="tyl_a_expcol_370869"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370869" /></a>  
+	<span id="tyl_title_370869" style="display: none;"></span><span id="tyl_title_collapsed_370869" style=""></span><br />
+	<span id="tyl_data_370869" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15317" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15317" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15317" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370869" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370869&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370869, 41638); return false;" title="Like this Post" id="tyl_a370869"><span id="tyl_i370869">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370869" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370869); return false;" style="display: none;" id="multiquote_link_370869" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370869">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370869').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370869); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370871" id="pid370871"></a>
+<div class="post classic tborder tfixed " style="" id="post_370871">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_140|140" href="User-Dawnc0re"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Dawnc0re"><span style="color: #b8b8b8;">Dawnc0re</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">1337</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">781</span></div>
+	<div>Threads: <span class="float_right">52</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15939"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15939">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 06:15 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370871#pid370871" class="thead posturl" title="RE: HC GUI's APP.">#4</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370871">
+	Damn, it looks awesome :O<br />
+Jacob and 1llusion are programming gods.... let's see what they have to offer :epic:
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370871">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370871"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><span style="font-weight: bold;" class="mycode_b"><img src="http://i.imgur.com/RC2Wi.png" loading="lazy" alt="[Image: RC2Wi.png]" class="mycode_img" /></span></div>
+<br />
+<span style="font-weight: bold;" class="mycode_b"><div style="text-align: center;" class="mycode_align"><a href="http://www.youtube.com/watch?v=qN7gSMPQFss" target="_blank" class="mycode_url">Arctic Monkeys - One For The Road</a></div></span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370871">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370871);return false;" title="[+]" id="tyl_a_expcol_370871"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370871" /></a>  
+	<span id="tyl_title_370871" style="display: none;"></span><span id="tyl_title_collapsed_370871" style=""></span><br />
+	<span id="tyl_data_370871" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15939" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15939" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15939" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370871" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370871&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370871, 41638); return false;" title="Like this Post" id="tyl_a370871"><span id="tyl_i370871">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370871" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370871); return false;" style="display: none;" id="multiquote_link_370871" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370871">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370871').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370871); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370874" id="pid370874"></a>
+<div class="post classic tborder tfixed " style="" id="post_370874">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_170|210" href="User-Frooxius"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Frooxius"><span style="color: #b8b8b8;">Frooxius</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Weird by default</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">721</span></div>
+	<div>Threads: <span class="float_right">49</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14540"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14540">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 06:22 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370874#pid370874" class="thead posturl" title="RE: HC GUI's APP.">#5</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370874">
+	<span style="color: #FFD700;" class="mycode_color">I can make it.<br />
+<br />
+Though if you want to leave it to Jacob or 1llusion, okay... They're probably better.</span>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370874">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370874"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I love <span style="color: #FF6347;" class="mycode_color">creativity</span> and <span style="color: #FFD700;" class="mycode_color">creating</span>, I love <span style="color: #32CD32;" class="mycode_color">science</span> and <span style="color: #00BFFF;" class="mycode_color">rational thought</span>, I am an <span style="color: #9370DB;" class="mycode_color">open atheist</span> and <span style="color: #FF69B4;" class="mycode_color">avid self-learner</span>.
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370874">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370874);return false;" title="[+]" id="tyl_a_expcol_370874"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370874" /></a>  
+	<span id="tyl_title_370874" style="display: none;"></span><span id="tyl_title_collapsed_370874" style=""></span><br />
+	<span id="tyl_data_370874" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14540" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14540" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://frooxius.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14540" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370874" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370874&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370874, 41638); return false;" title="Like this Post" id="tyl_a370874"><span id="tyl_i370874">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370874" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370874); return false;" style="display: none;" id="multiquote_link_370874" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370874">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370874').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370874); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370875" id="pid370875"></a>
+<div class="post classic tborder tfixed " style="" id="post_370875">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_140|140" href="User-bluedog-tar-gz"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-bluedog-tar-gz"><span style="color: #b8b8b8;">bluedog.tar.gz</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Posting Freak</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">8,518</span></div>
+	<div>Threads: <span class="float_right">1,285</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15317"><strong class="reputation_positive">6</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15317">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 06:24 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370875#pid370875" class="thead posturl" title="RE: HC GUI's APP.">#6</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370875">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2012, 06:22 PM)</span>Frooxius Wrote:  <a href="https://sinister.ly/showthread.php?pid=79877#pid79877" class="quick_jump"></a></cite><span style="color: #FFD700;" class="mycode_color">I can make it.<br />
+<br />
+Though if you want to leave it to Jacob or 1llusion, okay... They're probably better.</span></blockquote><br />
+Frooxius, your the genius on HC here.<br />
+Can we talk on msn?
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370875">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370875"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370875">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370875);return false;" title="[+]" id="tyl_a_expcol_370875"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370875" /></a>  
+	<span id="tyl_title_370875" style="display: none;"></span><span id="tyl_title_collapsed_370875" style=""></span><br />
+	<span id="tyl_data_370875" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15317" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15317" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15317" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370875" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370875&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370875, 41638); return false;" title="Like this Post" id="tyl_a370875"><span id="tyl_i370875">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370875" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370875); return false;" style="display: none;" id="multiquote_link_370875" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370875">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370875').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370875); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370886" id="pid370886"></a>
+<div class="post classic tborder tfixed " style="" id="post_370886">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_170|210" href="User-Frooxius"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Frooxius"><span style="color: #b8b8b8;">Frooxius</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Weird by default</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">721</span></div>
+	<div>Threads: <span class="float_right">49</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14540"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14540">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 07:29 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370886#pid370886" class="thead posturl" title="RE: HC GUI's APP.">#7</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370886">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2012, 06:24 PM)</span>bluedog.tar.gz Wrote:  <a href="https://sinister.ly/Thread-Another-name-change?pid=79878#pid79878" class="quick_jump"></a></cite><blockquote class="mycode_quote"><cite><span> (04-22-2012, 06:22 PM)</span>Frooxius Wrote:  <a href="https://sinister.ly/showthread.php?pid=79877#pid79877" class="quick_jump"></a></cite><span style="color: #FFD700;" class="mycode_color">I can make it.<br />
+<br />
+Though if you want to leave it to Jacob or 1llusion, okay... They're probably better.</span></blockquote><br />
+Frooxius, your the genius on HC here.<br />
+Can we talk on msn?</blockquote><br />
+<span style="color: #FFD700;" class="mycode_color">And they're the gods apparently.</span> <img src="http://data.solirax.org/hp/48x48/razz3.png" loading="lazy" alt="[Image: razz3.png]" class="mycode_img" /><br />
+<span style="color: #FFD700;" class="mycode_color">But yes... maybe... I'm not sure after the last stunt on MSN (well... WLM)</span>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370886">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370886"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I love <span style="color: #FF6347;" class="mycode_color">creativity</span> and <span style="color: #FFD700;" class="mycode_color">creating</span>, I love <span style="color: #32CD32;" class="mycode_color">science</span> and <span style="color: #00BFFF;" class="mycode_color">rational thought</span>, I am an <span style="color: #9370DB;" class="mycode_color">open atheist</span> and <span style="color: #FF69B4;" class="mycode_color">avid self-learner</span>.
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370886">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370886);return false;" title="[+]" id="tyl_a_expcol_370886"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370886" /></a>  
+	<span id="tyl_title_370886" style="display: none;"></span><span id="tyl_title_collapsed_370886" style=""></span><br />
+	<span id="tyl_data_370886" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14540" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14540" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://frooxius.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14540" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370886" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370886&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370886, 41638); return false;" title="Like this Post" id="tyl_a370886"><span id="tyl_i370886">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370886" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370886); return false;" style="display: none;" id="multiquote_link_370886" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370886">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370886').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370886); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370888" id="pid370888"></a>
+<div class="post classic tborder tfixed " style="" id="post_370888">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-1llusion"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-1llusion"><span style="color: #b8b8b8;">1llusion</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">(&amp;lt;marquee&amp;gt;)</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">3,801</span></div>
+	<div>Threads: <span class="float_right">957</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14219"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">-0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14219">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 07:42 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370888#pid370888" class="thead posturl" title="RE: HC GUI's APP.">#8</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370888">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2012, 06:15 PM)</span>Dawnc0re Wrote:  <a href="https://sinister.ly/showthread.php?pid=79872#pid79872" class="quick_jump"></a></cite>Damn, it looks awesome :O<br />
+Jacob and 1llusion are programming gods.... let's see what they have to offer :epic:</blockquote><br />
+I can offer you a cookie!<br />
+I'm not really a coder tbh o.o
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370888">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370888"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-weight: bold;" class="mycode_b"><div style="text-align: center;" class="mycode_align">Staff will never ever ask you for your personal information.<br />
+We know everything about you anyway.</div></span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370888">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370888);return false;" title="[+]" id="tyl_a_expcol_370888"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370888" /></a>  
+	<span id="tyl_title_370888" style="display: none;"></span><span id="tyl_title_collapsed_370888" style=""></span><br />
+	<span id="tyl_data_370888" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=14219" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://www.1llusion.info" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14219" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370888" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370888&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370888, 41638); return false;" title="Like this Post" id="tyl_a370888"><span id="tyl_i370888">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370888" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370888); return false;" style="display: none;" id="multiquote_link_370888" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370888">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370888').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370888); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370889" id="pid370889"></a>
+<div class="post classic tborder tfixed " style="" id="post_370889">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_140|140" href="User-Dawnc0re"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Dawnc0re"><span style="color: #b8b8b8;">Dawnc0re</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">1337</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">781</span></div>
+	<div>Threads: <span class="float_right">52</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15939"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15939">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 07:45 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370889#pid370889" class="thead posturl" title="RE: HC GUI's APP.">#9</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370889">
+	<blockquote class="mycode_quote"><cite><span> (04-22-2012, 07:29 PM)</span>Frooxius Wrote:  <a href="https://sinister.ly/Thread-Xbox-servers?pid=79893#pid79893" class="quick_jump"></a></cite><blockquote class="mycode_quote"><cite><span> (04-22-2012, 06:24 PM)</span>bluedog.tar.gz Wrote:  <a href="https://sinister.ly/Thread-Another-name-change?pid=79878#pid79878" class="quick_jump"></a></cite><blockquote class="mycode_quote"><cite><span> (04-22-2012, 06:22 PM)</span>Frooxius Wrote:  <a href="https://sinister.ly/showthread.php?pid=79877#pid79877" class="quick_jump"></a></cite><span style="color: #FFD700;" class="mycode_color">I can make it.<br />
+<br />
+Though if you want to leave it to Jacob or 1llusion, okay... They're probably better.</span></blockquote><br />
+Frooxius, your the genius on HC here.<br />
+Can we talk on msn?</blockquote><br />
+<span style="color: #FFD700;" class="mycode_color">And they're the gods apparently.</span> <img src="http://data.solirax.org/hp/48x48/razz3.png" loading="lazy" alt="[Image: razz3.png]" class="mycode_img" /><br />
+<span style="color: #FFD700;" class="mycode_color">But yes... maybe... I'm not sure after the last stunt on MSN (well... WLM)</span></blockquote>Ok, damn <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" /><br />
+I forgot you <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" /><br />
+I know your the best of them, i've heard lot about you <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370889">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370889"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><span style="font-weight: bold;" class="mycode_b"><img src="http://i.imgur.com/RC2Wi.png" loading="lazy" alt="[Image: RC2Wi.png]" class="mycode_img" /></span></div>
+<br />
+<span style="font-weight: bold;" class="mycode_b"><div style="text-align: center;" class="mycode_align"><a href="http://www.youtube.com/watch?v=qN7gSMPQFss" target="_blank" class="mycode_url">Arctic Monkeys - One For The Road</a></div></span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370889">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370889);return false;" title="[+]" id="tyl_a_expcol_370889"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370889" /></a>  
+	<span id="tyl_title_370889" style="display: none;"></span><span id="tyl_title_collapsed_370889" style=""></span><br />
+	<span id="tyl_data_370889" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15939" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15939" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15939" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370889" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370889&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370889, 41638); return false;" title="Like this Post" id="tyl_a370889"><span id="tyl_i370889">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370889" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370889); return false;" style="display: none;" id="multiquote_link_370889" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370889">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370889').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370889); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid370900" id="pid370900"></a>
+<div class="post classic tborder tfixed " style="" id="post_370900">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_140|140" href="User-bluedog-tar-gz"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-bluedog-tar-gz"><span style="color: #b8b8b8;">bluedog.tar.gz</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Posting Freak</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">8,518</span></div>
+	<div>Threads: <span class="float_right">1,285</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15317"><strong class="reputation_positive">6</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15317">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: HC GUI's APP. </span><span class="float_right"><span class="post_date postbit_date">04-22-2012, 08:05 PM </span> 
+<a href="Thread-HC-GUI-s-APP?pid=370900#pid370900" class="thead posturl" title="RE: HC GUI's APP.">#10</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_370900">
+	If you know any coders then let me know prease :}
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_370900">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_370900"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_370900">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(370900);return false;" title="[+]" id="tyl_a_expcol_370900"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_370900" /></a>  
+	<span id="tyl_title_370900" style="display: none;"></span><span id="tyl_title_collapsed_370900" style=""></span><br />
+	<span id="tyl_data_370900" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15317" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15317" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15317" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_370900" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=370900&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(370900, 41638); return false;" title="Like this Post" id="tyl_a370900"><span id="tyl_i370900">Like</span></a></div>
+
+<a href="newreply.php?tid=41638&amp;replyto=370900" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(370900); return false;" style="display: none;" id="multiquote_link_370900" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_370900">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_370900').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(370900); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+ <span class="pagination_current">1</span>
+
+<a href="Thread-HC-GUI-s-APP?page=2" class="pagination_page">2</a>
+
+<a href="Thread-HC-GUI-s-APP?page=3" class="pagination_page">3</a>
+
+<a href="Thread-HC-GUI-s-APP?page=2" class="pagination_next">Next &raquo;</a>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=41638" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=41638&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: HC GUI's APP." />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="490ef35aa70c168cdb787e5a45514eda" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="371339" />
+	<input type="hidden" name="from_page" value="1" />
+	<input type="hidden" name="tid" value="41638" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=41638&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="41638" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: <a href="User-seraleOne" title="Reading&hellip; (09:39 AM)"><span style="color: #b8b8b8;">seraleOne</span></a></span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(103);"><br />
+<center>
+<span title="sh3elltools.io"><a href="https://sh3elltools.io/"><img src="https://i.imgur.com/8Vz9XR8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-41638.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '41638',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

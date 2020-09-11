@@ -1,0 +1,1843 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Magician - 245 eBooks about Mentalisim Magic</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=13237&amp;page=1&amp;perpage=10&amp;fid=61&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=13237&amp;page=1&amp;perpage=10&amp;fid=61&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=13237&page=1&perpage=10&fid=61" />
+        
+<meta name="description" content="Magician - 245 eBooks about Mentalisim Magic Size: 1.03 GB This is a great collection of Mentalism eBooks. From Derren Brown's tricks to the best Cold Reading Manual out there (You can find in this Co" />
+<link rel="canonical" href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DMagician-245-eBooks-about-Mentalisim-Magic"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Sharing"><span>Sharing</span></a></li>
+
+<li><a href="Forum-eBooks?page=6"><span>eBooks</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>Magician - 245 eBooks about Mentalisim Magic</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(106);"><br />
+<center>
+<span title="Xleet.to"><a href="https://xleet.to/"><img src="https://i.imgur.com/Mjw7cY8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=13237" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>Magician - 245 eBooks about Mentalisim Magic</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=13237">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=13237&amp;pid=124068#pid124068" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=13237&amp;pid=124068#pid124068" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=13237">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=13237">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=13237&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid124068" id="pid124068"></a>
+<div class="post classic tborder tfixed " style="" id="post_124068">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_92|100" href="User-Ronnie"><img src="https://sinister.ly/uploads/avatars/avatar_6215.jpg?dateline=1391432421" alt="" width="92" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Ronnie"><span style="color: #b8b8b8;">Ronnie</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Problem?</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">942</span></div>
+	<div>Threads: <span class="float_right">151</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6215"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">-2 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6215">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Elite.png" alt="Elite" title="Elite" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 Magician - 245 eBooks about Mentalisim Magic </span><span class="float_right"><span class="post_date postbit_date">05-27-2013, 12:16 AM </span> 
+<a href="Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=124068#pid124068" class="thead posturl" title="Magician - 245 eBooks about Mentalisim Magic">#1</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_124068">
+	<span style="font-family: Tahoma;" class="mycode_font"><div style="text-align: left;" class="mycode_align"><img src="http://i1271.photobucket.com/albums/jj626/OldSanta/pom.jpg" loading="lazy" alt="[Image: pom.jpg]" class="mycode_img" /><br />
+[hide]<br />
+Magician - 245 eBooks about Mentalisim Magic<br />
+Size: 1.03 GB<br />
+<br />
+This is a great collection of Mentalism eBooks. From Derren Brown's tricks to the best Cold Reading Manual out there (You can find in this Collection TRADECRAFT, the Cold Reading Book Mentioned by Style in his &amp;quot;Anihillation Method&amp;quot; DVDs).<br />
+Here you will find everything you will ever need in order to become a succesful Mentalism Magician.<br />
+This is also very useful for sarging chicks, as you can use a lot of the tricks from these manuals to DHV<br />
+<br />
+CONTENT:<br />
+<br />
+Angelo Stagnaro - European Mentalism Lecture Notes - 2005.doc<br />
+Banachek - Card Revelations, The Telephone Bullet Catch and more.pdf<br />
+Banachek - Easy Effects.pdf<br />
+Banachek - Effects.pdf<br />
+Banachek - PK Touches.pdf<br />
+Banachek - PreThoughts.pdf<br />
+Banachek - Psychokinetic Time.pdf<br />
+Banachek - Psychokinetic Touches.pdf<br />
+Banachek - Psychological Subtleties.pdf<br />
+Banachek - Psychophysiological Thought Reading.pdf<br />
+Banachek - taming the poltergeist.pdf<br />
+Basil Horfitz - Mental Magic IV.pdf<br />
+Ben Rayot - Deadly Mentalism.PDF<br />
+Body Language - Allan Pease.pdf<br />
+Body Language.pdf<br />
+Bob Cassidy - The Real Work Of Cold Reading<br />
+Bob Cassidy - The Real Work Of Cold Reading(3)<br />
+Bob Cassidy - 39 Steps to Mentalism.pdf<br />
+Bob Cassidy - Art of Mentalism 1.pdf<br />
+Bob Cassidy - Art Of Mentalism 2.pdf<br />
+Bob Cassidy - Art of mentalism 3.pdf<br />
+Bob Cassidy - Bent On Strange.pdf<br />
+Bob Cassidy - But Stranger Still.pdf<br />
+Bob Cassidy - Crossroads Crosswords.pdf<br />
+Bob Cassidy - Dr. Crow's Psychic Secrets.pdf<br />
+Bob Cassidy - Dreams and Devices.pdf<br />
+Bob Cassidy - Extremely Remote.pdf<br />
+Bob Cassidy - Fundamentals - A Guidebook To Mentalism (1).pdf<br />
+Bob Cassidy - Fundamentals - A Guidebook To Mentalism(1).pdf<br />
+Bob Cassidy - Fundamentals - A Guidebook to Mentalism.pdf<br />
+Bob Cassidy - Fundamentals 1.pdf<br />
+Bob Cassidy - Fundamentals 2.pdf<br />
+Bob Cassidy - fundamentalsfour.pdf<br />
+Bob Cassidy - hanussen proof (parapsychology).pdf<br />
+Bob Cassidy - Immortal and Cassandra Combo.pdf<br />
+Bob Cassidy - Lab Conditions.pdf<br />
+Bob Cassidy - Mentalism - Tricks - Compleat Principia Menta.pdf<br />
+Bob Cassidy - Mentalism - Tricks - Confessions Of Dr Crow.pdf<br />
+Bob Cassidy - Mentalism and Magick.pdf<br />
+Bob Cassidy - Mind Explosions.pdf<br />
+Bob Cassidy - Mind Games.pdf<br />
+Bob Cassidy - Mind Razor.pdf<br />
+Bob Cassidy - PseudoMentally Yours.pdf<br />
+Bob Cassidy - Scorpio's Message.pdf<br />
+Bob Cassidy - Side Effects.pdf<br />
+Bob Cassidy - Strange 2.pdf<br />
+Bob Cassidy - Strange Impressions.pdf<br />
+Bob Cassidy - Techniques of Mentalism.pdf<br />
+Bob Cassidy - Techniquesof Mentalism Lecture Notes.pdf<br />
+Bob Cassidy - The Art of Mentalism 1.pdf<br />
+Bob Cassidy - The Black Book of Mentalism.pdf<br />
+Bob Cassidy - The Exclusive Routines.pdf<br />
+Bob Cassidy - The Invisible Mirror.pdf<br />
+Bob Cassidy - The Moldavian Switch.pdf<br />
+Bob Cassidy - The RV Tester.pdf<br />
+Bob Cassidy - The Schattenjaeger.pdf<br />
+Bob Cassidy - theheresies.pdf<br />
+Bob Cassidy - Theories And Methods For The Practical Psychic.pdf<br />
+Bob Cassidy - Triple Edge.pdf<br />
+Bob Cassidy - Universe An ebook of Practical Mentalism.pdf<br />
+Chuck Hickok - Mentalism Incorporated.pdf<br />
+Corinda - 13 Steps To Mentalism (Complete).pdf<br />
+Derren Brown - 7 Deceptions By Luke Jermay2.pdf<br />
+Derren Brown - Behind the screen.pdf<br />
+Derren Brown - Book - Absolute Magic.pdf<br />
+Derren Brown - Book - Pure effect.pdf<br />
+Derren Brown - ESP.pdf<br />
+Derren Brown - Hand Stuck On Table.pdf<br />
+Derren Brown - how to get the truth out of anyone.pdf<br />
+Derren Brown - Lift.pdf<br />
+Derren Brown - Losing Hand.pdf<br />
+Derren Brown - Mentalism Tricks.pdf<br />
+Derren Brown - Mentalism.pdf<br />
+Derren Brown - Mind Games - Vol 1.pdf<br />
+Derren Brown - Reading Minds.pdf<br />
+Derren Brown - Reminiscence.pdf<br />
+Derren Brown - Rock Paper Scissors.pdf<br />
+Derren Brown - Style - 3 Tricks.pdf<br />
+Derren Brown - Style - Easy Mentalism.pdf<br />
+Derren Brown - Style - Mind Reading Tricks Volume 1.pdf<br />
+Derren Brown - Style - Ultimate Effect.pdf<br />
+Derren Brown - Style - Welcome to Derren Brown Mentalism Tricks.pdf<br />
+Derren Brown - Subliminal Force.pdf<br />
+Derren Brown - Synchronized Drinking.pdf<br />
+Derren Brown - Techniques.pdf<br />
+Derren Brown - Tricks Magic Seduction.pdf<br />
+Derren Brown - Tricks Volume 1.pdf<br />
+Derren Brown - Tricks.pdf<br />
+Derren Brown - Workbook.pdf<br />
+Derren Brown Tricks MagicSeduction.pdf<br />
+Encyclopedic Dictionary of Mentalism - Volume 1.pdf<br />
+Encyclopedic Dictionary of Mentalism - Volume 3.pdf<br />
+George B. Anderson - Dynamite Mentalism.pdf<br />
+How to Tell if Someone is Lying.pdf<br />
+Impromptu Mind Reading Effect.pdf<br />
+Jas Jakutsch - Completely Mental - Vol 2.pdf<br />
+Joseph R. Plazo - PhD of Persuasion.pdf<br />
+Juan Tamariz - Mental Blockbuster Prediction.pdf<br />
+Katz - mentalism in linguistics.pdf<br />
+Kenton Knepper - 3-way Billet.pdf<br />
+Kenton Knepper - Alexander Opera House.pdf<br />
+Kenton Knepper - An Enchanted Evening.PDF<br />
+Kenton Knepper - Bentcent.pdf<br />
+Kenton Knepper - Card Through Banknote.pdf<br />
+Kenton Knepper - Completely Cold (1).pdf<br />
+Kenton Knepper - Completely Cold.pdf<br />
+Kenton Knepper - Date With Destiny 1.pdf<br />
+Kenton Knepper - KENT.pdf<br />
+Kenton Knepper - Kentonism.pdf<br />
+Kenton Knepper - Killer kard 2.pdf<br />
+Kenton Knepper - Killer Konceptions(1).pdf<br />
+Kenton Knepper - Killer Konceptions.pdf<br />
+Kenton Knepper - Kolossal Killer.pdf<br />
+Kenton Knepper - Little Book of Wonders.pdf<br />
+Kenton Knepper - Little Book of Wonders1.pdf<br />
+Kenton Knepper - Lucky Number.pdf<br />
+Kenton Knepper - Mind Reading.pdf<br />
+Kenton Knepper - Miracles of Suggestion.pdf<br />
+Kenton Knepper - Miraculous Ploys.pdf<br />
+Kenton Knepper - Okitodoll.pdf<br />
+Kenton Knepper - Rants into Raves.PDF<br />
+Kenton Knepper - SAR.pdf<br />
+Kenton Knepper - Sorcerer Series (1).pdf<br />
+Kenton Knepper - Sorcerer Series 1.pdf<br />
+Kenton Knepper - Sorcerer Series 2.pdf<br />
+Kenton Knepper - Sorcerer Series 3.pdf<br />
+Kenton Knepper - The Ring.pdf<br />
+Kenton Knepper - Three Bill Monte.pdf<br />
+Kenton Knepper - Tippler2 harbin (2004).pdf<br />
+Kenton Knepper - Web1 (1).pdf<br />
+Kenton Knepper - Weird Enough.pdf<br />
+Kenton Knepper - Wonder Wizard Private Files.pdf<br />
+Kenton Knepper - Wonder Words 1.pdf<br />
+Kenton Knepper - Wonder Words 2.pdf<br />
+Kenton Knepper - Wonder Words 3.pdf<br />
+Kenton Knepper - X.pdf<br />
+Kenton Knepper &amp;amp; Rex Steven Sikes - Wonder Readings.pdf<br />
+Kenton Knepper &amp;amp; Rex Steven Sikes-Wonder Readings.pdf<br />
+Kenton Knepper Completely Cold1.pdf<br />
+Kenton Knepper- Hermit Dream .pdf<br />
+Larry Becker - Bold Business.pdf<br />
+Larry Becker - Book Test 4 Dummies.pdf<br />
+Larry Becker - Out of Body.pdf<br />
+Larry Becker - World of Super Mentalism I.pdf<br />
+Larry Becker - World Of Super Mentalism, II.pdf<br />
+Lee Earle - 1-2-3 Trilogy.pdf<br />
+Lee Earle - Early Earle.pdf<br />
+Lee Earle - M.I.N.D..pdf<br />
+lee earle - manifestations.pdf<br />
+Lee Earle - Out of Syzygy.pdf<br />
+Lee Earle - Silver Bullet Lite.pdf<br />
+Lee Earle - Sun Signs (XBXCSA).pdf<br />
+Lee Earle - Sun Signs.pdf<br />
+Lee Earle - Superscript (Password KYJNKA).pdf<br />
+Lee Earle - Syzygy - Graphics.pdf<br />
+Lee Earle - Syzygy - The First Five Volumes.pdf<br />
+Lee Earle - Syzygy - Vol 1.pdf<br />
+Lee Earle - The Gentle Art of Cold Reading.pdf<br />
+Making Manifestations (Building the Commercial Seance) by Lee Earle.pdf<br />
+Marc Spelmann - Glimpse.pdf<br />
+Mark Timon - Triple Impact Design Duplication - Mentalism.pdf<br />
+Master Of Body Language.pdf<br />
+Mastering Hypnosis.pdf<br />
+Max Maven - Flaunting Five Fanciful Formulae.pdf<br />
+Mental tricks 6 techniques (pwd=ebookPublications).pdf<br />
+Nick Trost - Mental Card Miracles.pdf<br />
+Ormond McGill - Psychic Magic - Vol 2.pdf<br />
+Ormond McGill - Psychic Magic - Vol 4.pdf<br />
+Patrick Page - Entertaining ESP.pdf<br />
+Phil Goldstein - The Blue, Red, And Green Books Of Mentalism.pdf<br />
+Phil Goldstein - The Blue-green and red Book Of Mentalism.pdf<br />
+Phil Goldstein - The Violet Book of Mentalism.pdf<br />
+Phil Goldstein - The Yellow Book Of Mentalism.pdf<br />
+Psychokinesis Magic Book.pdf<br />
+Ralph W Read - One Man Mind Reading Secrets.pdf<br />
+Richard Osterlind - Black Box.pdf<br />
+Richard Osterlind - Breakthrough Card System.pdf<br />
+Richard Osterlind - Dynamic Mysteries 1.PDF<br />
+Richard Osterlind - Dynamic Mysteries 2.pdf<br />
+Richard Osterlind - Dynamic Mysteries.pdf<br />
+Richard Osterlind - Essays.pdf<br />
+Richard Osterlind - Making Magic Real.pdf<br />
+Richard Osterlind - Making Real Magic.pdf<br />
+Richard Osterlind - The Blindfold Book v1.PDF<br />
+Richard Osterlind - The Blindfold Book v3.pdf<br />
+Richard Osterlind - The Blindfold Book.pdf<br />
+Richard Osterlind - The Breakthrough Card System.pdf<br />
+Richard Osterlind - The Perfected Center Tear.pdf<br />
+Richard Osterlind - The Principles of Magic.pdf<br />
+Richard Osterlind - The Very Modern Mindreader.pdf<br />
+Richard Osterlind - Thought Scan1.pdf<br />
+Richard Osterlind - Transparent Forces.pdf<br />
+Robert Nelson - Deluxe Club Mind Reading.pdf<br />
+Sealed Vision - Will Dexters.pdf<br />
+Using Playing Cards in Mentalism.pdf<br />
+William Walker Atkinson - Practical Mind Reading.pdf<br />
+Cold Reading - Discussion and Review.pdf<br />
+Cold Reading.pdf<br />
+Denis Dutton - On Cold Reading.pdf<br />
+Herb Dewey - Red Hot Cold Reading.pdf<br />
+Richard Webster - Cold Reading Variations.pdf<br />
+Robert Nelson - Sequel to The Art of Cold Reading.pdf<br />
+Robert Nelson - The Art Of Cold Reading.pdf<br />
+Tradecraft - The Art And Science Of Cold Reading.pdf<br />
+<br />
+<a href="http://rapidgator.net/file/0036e25e866e6cfae89d1ea96bf4a718/Magician_-_245_eBooks_about_Mentalisim_Magic.rar.html" target="_blank" class="mycode_url">RapidGator</a>[/hide]</div></span>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_124068">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_124068"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: medium;" class="mycode_size"><div style="text-align: center;" class="mycode_align"><span style="text-decoration: underline;" class="mycode_u"><span style="font-weight: bold;" class="mycode_b">Help me out by clicking these links, thanks!</span></span><br />
+<a href="http://p.pw/5Dx" target="_blank" class="mycode_url">Link1</a> | <a href="http://p.pw/Wo2" target="_blank" class="mycode_url">Link2</a> | <a href="http://p.pw/rqR" target="_blank" class="mycode_url">Link3</a> | <a href="http://p.pw/9Nq" target="_blank" class="mycode_url">Link4</a></div></span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_124068">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(124068);return false;" title="[+]" id="tyl_a_expcol_124068"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_124068" /></a>  
+	<span id="tyl_title_124068" style="display: none;"></span><span id="tyl_title_collapsed_124068" style=""></span><br />
+	<span id="tyl_data_124068" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6215" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6215" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6215" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_124068" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=124068&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(124068, 13237); return false;" title="Like this Post" id="tyl_a124068"><span id="tyl_i124068">Like</span></a></div>
+
+<a href="newreply.php?tid=13237&amp;replyto=124068" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(124068); return false;" style="display: none;" id="multiquote_link_124068" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_124068">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_124068').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(124068); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid884717" id="pid884717"></a>
+<div class="post classic tborder tfixed " style="" id="post_884717">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_" href="User-DaveD"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-DaveD"><span style="color: #b8b8b8;">DaveD</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Junior Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9486;"><strong>One Year of Service</strong></div>
+<div>Posts: <span class="float_right">2</span></div>
+	<div>Threads: <span class="float_right">1</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=116876"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">4 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=116876">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Magician - 245 eBooks about Mentalisim Magic </span><span class="float_right"><span class="post_date postbit_date">06-07-2019, 09:45 PM </span> 
+<a href="Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=884717#pid884717" class="thead posturl" title="RE: Magician - 245 eBooks about Mentalisim Magic">#2</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_884717">
+	Can this great collection be downloaded ?<br />
+DaveD
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_884717">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_884717"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_884717">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(884717);return false;" title="[+]" id="tyl_a_expcol_884717"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_884717" /></a>  
+	<span id="tyl_title_884717" style="display: none;"></span><span id="tyl_title_collapsed_884717" style=""></span><br />
+	<span id="tyl_data_884717" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=116876" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=116876" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=116876" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_884717" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=884717&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(884717, 13237); return false;" title="Like this Post" id="tyl_a884717"><span id="tyl_i884717">Like</span></a></div>
+
+<a href="newreply.php?tid=13237&amp;replyto=884717" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(884717); return false;" style="display: none;" id="multiquote_link_884717" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_884717">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_884717').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(884717); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid884722" id="pid884722"></a>
+<div class="post classic tborder tfixed " style="" id="post_884722">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|118" href="User-Drako"><img src="https://sinister.ly/uploads/avatars/avatar_74772.jpg?dateline=1587832686" alt="" width="125" height="118" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Drako"><span style="text-shadow: 0 0 5px #8823db;color: #8823db; font-weight: bold;color: #8823db;">Drako</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">これは私の場所です。</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/diamond.png" alt="Registered (Diamond)" title="Registered (Diamond)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF5B39;"><strong>Three Years of Service</strong></div>
+<div>Posts: <span class="float_right">2,376</span></div>
+	<div>Threads: <span class="float_right">94</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=74772"><strong class="reputation_positive">130</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">582 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=74772">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Bunny.png" alt="Bunny" title="Bunny" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Fireworks.png" alt="Fireworks" title="Fireworks" /><img src="uploads/awards/Birthday.png" alt="Birthday" title="Birthday" /><img src="uploads/awards/Jack-O-Lantern.png" alt="Jack-O-Lantern" title="Jack-O-Lantern" /><img src="uploads/awards/Santa Hat.png" alt="Santa Hat" title="Santa Hat" /><img src="uploads/awards/American.png" alt="American" title="American" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Magician - 245 eBooks about Mentalisim Magic </span><span class="float_right"><span class="post_date postbit_date">06-07-2019, 10:34 PM </span> 
+<a href="Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=884722#pid884722" class="thead posturl" title="RE: Magician - 245 eBooks about Mentalisim Magic">#3</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_884722">
+	<blockquote class="mycode_quote"><cite><span> (06-07-2019, 09:45 PM)</span>DaveD Wrote:  <a href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=884717#pid884717" class="quick_jump"></a></cite>Can this great collection be downloaded ?<br />
+DaveD</blockquote><br />
+Yes if the link at the bottom of the thread is still up. Also, you're super gravedigging. This thread was made in 2013...
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_884722">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_884722"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://66.media.tumblr.com/2c03ad4b908d9ab744ef42e7a79dc262/tumblr_n4fsswcwZa1sbhzgao1_250.gif" loading="lazy" alt="[Image: tumblr_n4fsswcwZa1sbhzgao1_250.gif]" class="mycode_img" /></div>
+<hr class="mycode_hr" />
+<div style="text-align: center;" class="mycode_align"><span style="font-style: italic;" class="mycode_i">"Crack it open, throw it in a pan and let it cook." ~ Filthy Frank</span></div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_884722">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(884722);return false;" title="[+]" id="tyl_a_expcol_884722"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_884722" /></a>  
+	<span id="tyl_title_884722" style="display: none;"></span><span id="tyl_title_collapsed_884722" style=""></span><br />
+	<span id="tyl_data_884722" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=74772" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=74772" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_884722" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=884722&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(884722, 13237); return false;" title="Like this Post" id="tyl_a884722"><span id="tyl_i884722">Like</span></a></div>
+
+<a href="newreply.php?tid=13237&amp;replyto=884722" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(884722); return false;" style="display: none;" id="multiquote_link_884722" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_884722">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_884722').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(884722); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid887241" id="pid887241"></a>
+<div class="post classic tborder tfixed " style="" id="post_887241">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-DashingDave"><img src="https://png.clipart.me/istock/thumbs/2337/23371728-united-arab-emirates-flag-glossy-button.jpg?dateline=1556652005" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-DashingDave"><span style="color: #b8b8b8;">DashingDave</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9486;"><strong>One Year of Service</strong></div>
+<div>Posts: <span class="float_right">58</span></div>
+	<div>Threads: <span class="float_right">0</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=113885"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">63 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=113885">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Magician - 245 eBooks about Mentalisim Magic </span><span class="float_right"><span class="post_date postbit_date">06-21-2019, 10:43 AM </span> 
+<a href="Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887241#pid887241" class="thead posturl" title="RE: Magician - 245 eBooks about Mentalisim Magic">#4</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_887241">
+	Dude, it says file not available anymore, 404 error.<br />
+Thanks for sharing it, anyway. Your efforts are much appreciated.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_887241">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_887241"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_887241">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(887241);return false;" title="[+]" id="tyl_a_expcol_887241"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_887241" /></a>  
+	<span id="tyl_title_887241" style="display: none;"></span><span id="tyl_title_collapsed_887241" style=""></span><br />
+	<span id="tyl_data_887241" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=113885" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=113885" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_887241" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=887241&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(887241, 13237); return false;" title="Like this Post" id="tyl_a887241"><span id="tyl_i887241">Like</span></a></div>
+
+<a href="newreply.php?tid=13237&amp;replyto=887241" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(887241); return false;" style="display: none;" id="multiquote_link_887241" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_887241">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_887241').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(887241); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid887242" id="pid887242"></a>
+<div class="post classic tborder tfixed " style="" id="post_887242">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-mothered"><img src="https://sinister.ly/uploads/avatars/avatar_14860.png?dateline=1503586032" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-mothered"><span style="color: #43b026; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000; font-weight: bold;">mothered</span></a></span></strong> 
+<a href="online.php" title="Online"><img src="https://sinister.ly/images/modern/buddy_online.png" border="0" alt="Online" class="buddy_status" /></a>
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Nevermind how, I will login</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/super_moderator.png" alt="Super Moderator" title="Super Moderator" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">34,787</span></div>
+	<div>Threads: <span class="float_right">314</span></div>
+	
+	
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">12,165 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14860">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Turkey.png" alt="Turkey" title="Turkey" /><img src="uploads/awards/Power Poster.png" alt="Power Poster" title="Power Poster" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Legendary.png" alt="Legendary" title="Legendary" /><img src="uploads/awards/Staff.png" alt="Staff" title="Staff" /><img src="uploads/awards/Golden Staff.png" alt="Golden Staff" title="Golden Staff" /><img src="uploads/awards/Loved.png" alt="Loved" title="Loved" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Magician - 245 eBooks about Mentalisim Magic </span><span class="float_right"><span class="post_date postbit_date">06-21-2019, 10:50 AM </span> 
+<a href="Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887242#pid887242" class="thead posturl" title="RE: Magician - 245 eBooks about Mentalisim Magic">#5</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_887242">
+	<blockquote class="mycode_quote"><cite><span> (06-21-2019, 10:43 AM)</span>DashingDave Wrote:  <a href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887241#pid887241" class="quick_jump"></a></cite>Dude, it says file not available anymore, 404 error.<br />
+Thanks for sharing it, anyway. Your efforts are much appreciated.</blockquote><br />
+You do realize this thread Is over 6 years old, and the OP hasn't been active for 5 of those years?
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_887242">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_887242"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<a href="https://www.socialengineers.net/" target="_blank" class="mycode_url">SocialEngineers.Net </a>        <br />
+<br />
+<img src="http://i.imgur.com/AD83g1A.png" loading="lazy" alt="[Image: AD83g1A.png]" class="mycode_img" />
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_887242">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(887242);return false;" title="[+]" id="tyl_a_expcol_887242"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_887242" /></a>  
+	<span id="tyl_title_887242" style="display: none;"></span><span id="tyl_title_collapsed_887242" style=""></span><br />
+	<span id="tyl_data_887242" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14860" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14860" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="https://www.socialengineers.net/" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14860" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_887242" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=887242&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(887242, 13237); return false;" title="Like this Post" id="tyl_a887242"><span id="tyl_i887242">Like</span></a></div>
+
+<a href="newreply.php?tid=13237&amp;replyto=887242" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(887242); return false;" style="display: none;" id="multiquote_link_887242" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_887242">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_887242').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(887242); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid887244" id="pid887244"></a>
+<div class="post classic tborder tfixed " style="" id="post_887244">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-DashingDave"><img src="https://png.clipart.me/istock/thumbs/2337/23371728-united-arab-emirates-flag-glossy-button.jpg?dateline=1556652005" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-DashingDave"><span style="color: #b8b8b8;">DashingDave</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9486;"><strong>One Year of Service</strong></div>
+<div>Posts: <span class="float_right">58</span></div>
+	<div>Threads: <span class="float_right">0</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=113885"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">63 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=113885">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Magician - 245 eBooks about Mentalisim Magic </span><span class="float_right"><span class="post_date postbit_date">06-21-2019, 11:01 AM </span> 
+<a href="Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887244#pid887244" class="thead posturl" title="RE: Magician - 245 eBooks about Mentalisim Magic">#6</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_887244">
+	<blockquote class="mycode_quote"><cite><span> (06-21-2019, 10:50 AM)</span>mothered Wrote:  <a href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887242#pid887242" class="quick_jump"></a></cite><blockquote class="mycode_quote"><cite><span> (06-21-2019, 10:43 AM)</span>DashingDave Wrote:  <a href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887241#pid887241" class="quick_jump"></a></cite>Dude, it says file not available anymore, 404 error.<br />
+Thanks for sharing it, anyway. Your efforts are much appreciated.</blockquote><br />
+You do realize this thread Is over 6 years old, and the OP hasn't been active for 5 of those years?</blockquote><br />
+I just realised that i am such a noob. Please, don't mind.<br />
+I'll look it up on Google. Thanks for opening my eyes, haha
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_887244">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_887244"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_887244">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(887244);return false;" title="[+]" id="tyl_a_expcol_887244"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_887244" /></a>  
+	<span id="tyl_title_887244" style="display: none;"></span><span id="tyl_title_collapsed_887244" style=""></span><br />
+	<span id="tyl_data_887244" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=113885" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=113885" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_887244" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=887244&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(887244, 13237); return false;" title="Like this Post" id="tyl_a887244"><span id="tyl_i887244">Like</span></a></div>
+
+<a href="newreply.php?tid=13237&amp;replyto=887244" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(887244); return false;" style="display: none;" id="multiquote_link_887244" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_887244">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_887244').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(887244); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid887316" id="pid887316"></a>
+<div class="post classic tborder tfixed " style="" id="post_887316">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-mothered"><img src="https://sinister.ly/uploads/avatars/avatar_14860.png?dateline=1503586032" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-mothered"><span style="color: #43b026; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000; font-weight: bold;">mothered</span></a></span></strong> 
+<a href="online.php" title="Online"><img src="https://sinister.ly/images/modern/buddy_online.png" border="0" alt="Online" class="buddy_status" /></a>
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Nevermind how, I will login</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><img src="/images/groupimages/userstars/super_moderator.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/super_moderator.png" alt="Super Moderator" title="Super Moderator" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">34,787</span></div>
+	<div>Threads: <span class="float_right">314</span></div>
+	
+	
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">12,165 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14860">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Turkey.png" alt="Turkey" title="Turkey" /><img src="uploads/awards/Power Poster.png" alt="Power Poster" title="Power Poster" /><img src="uploads/awards/Reputable.png" alt="Reputable" title="Reputable" /><img src="uploads/awards/Legendary.png" alt="Legendary" title="Legendary" /><img src="uploads/awards/Staff.png" alt="Staff" title="Staff" /><img src="uploads/awards/Golden Staff.png" alt="Golden Staff" title="Golden Staff" /><img src="uploads/awards/Loved.png" alt="Loved" title="Loved" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Magician - 245 eBooks about Mentalisim Magic </span><span class="float_right"><span class="post_date postbit_date">06-22-2019, 02:59 AM </span> 
+<a href="Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887316#pid887316" class="thead posturl" title="RE: Magician - 245 eBooks about Mentalisim Magic">#7</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_887316">
+	<blockquote class="mycode_quote"><cite><span> (06-21-2019, 11:01 AM)</span>DashingDave Wrote:  <a href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887244#pid887244" class="quick_jump"></a></cite><blockquote class="mycode_quote"><cite><span> (06-21-2019, 10:50 AM)</span>mothered Wrote:  <a href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887242#pid887242" class="quick_jump"></a></cite><blockquote class="mycode_quote"><cite><span> (06-21-2019, 10:43 AM)</span>DashingDave Wrote:  <a href="https://sinister.ly/Thread-Magician-245-eBooks-about-Mentalisim-Magic?pid=887241#pid887241" class="quick_jump"></a></cite>Dude, it says file not available anymore, 404 error.<br />
+Thanks for sharing it, anyway. Your efforts are much appreciated.</blockquote><br />
+You do realize this thread Is over 6 years old, and the OP hasn't been active for 5 of those years?</blockquote><br />
+I just realised that i am such a noob. Please, don't mind.<br />
+I'll look it up on Google. Thanks for opening my eyes, haha</blockquote><br />
+No problem at all, It's easily overlooked.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_887316">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_887316"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<a href="https://www.socialengineers.net/" target="_blank" class="mycode_url">SocialEngineers.Net </a>        <br />
+<br />
+<img src="http://i.imgur.com/AD83g1A.png" loading="lazy" alt="[Image: AD83g1A.png]" class="mycode_img" />
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_887316">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(887316);return false;" title="[+]" id="tyl_a_expcol_887316"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_887316" /></a>  
+	<span id="tyl_title_887316" style="display: none;"></span><span id="tyl_title_collapsed_887316" style=""></span><br />
+	<span id="tyl_data_887316" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14860" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14860" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="https://www.socialengineers.net/" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14860" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_887316" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=887316&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(887316, 13237); return false;" title="Like this Post" id="tyl_a887316"><span id="tyl_i887316">Like</span></a></div>
+
+<a href="newreply.php?tid=13237&amp;replyto=887316" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(887316); return false;" style="display: none;" id="multiquote_link_887316" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_887316">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_887316').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(887316); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=13237" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=13237&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: Magician - 245 eBooks about Mentalisim Magic" />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="3af9d0ad43d9fac16291790e8853f938" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="887316" />
+	<input type="hidden" name="from_page" value="1" />
+	<input type="hidden" name="tid" value="13237" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=13237&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="13237" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: <a href="User-seraleOne" title="Reading&hellip; (09:31 AM)"><span style="color: #b8b8b8;">seraleOne</span></a></span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(105);"><br />
+<center>
+<span title="hackshop2016"><a href="https://t.me/hackshop2016_bot"><img src="https://i.imgur.com/3fgnDWS.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-13237.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '13237',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

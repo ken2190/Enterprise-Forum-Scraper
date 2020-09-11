@@ -1,0 +1,2036 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Learning Python, 5th Edition</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=91405&amp;page=1&amp;perpage=10&amp;fid=61&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=91405&amp;page=1&amp;perpage=10&amp;fid=61&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=91405&page=1&perpage=10&fid=61" />
+        
+<meta name="description" content="Code:Part I. Getting Started 1. A Python Q&amp;A Session . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3 Why Do People Use Python? 3 Software Qualit" />
+<link rel="canonical" href="https://sinister.ly/Thread-Learning-Python-5th-Edition" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DLearning-Python-5th-Edition"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Sharing"><span>Sharing</span></a></li>
+
+<li><a href="Forum-eBooks?page=12"><span>eBooks</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>Learning Python, 5th Edition</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(82);"><br />
+<center>
+<span title="https://xsmtp.to/"><a href="https://xsmtp.to/"><img src="https://i.imgur.com/8J3Y03V.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=91405" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>Learning Python, 5th Edition</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=91405">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=91405&amp;pid=775841#pid775841" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=91405&amp;pid=775841#pid775841" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=91405">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=91405">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=91405&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid775841" id="pid775841"></a>
+<div class="post classic tborder tfixed " style="" id="post_775841">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-ZanGetsu"><img src="http://i.imgur.com/1ZLrJzO.png?dateline=1504539945" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-ZanGetsu"><span style="text-shadow: 0 0 5px #ff0000;color: #ff0000; font-weight: bold;color: #ff0000;">ZanGetsu</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Hi Im ZanGetsu</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/gold.png" alt="Registered (Gold)" title="Registered (Gold)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF5B39;"><strong>Three Years of Service</strong></div>
+<div>Posts: <span class="float_right">364</span></div>
+	<div>Threads: <span class="float_right">255</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=81998"><strong class="reputation_positive">29</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">122 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=81998">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 Learning Python, 5th Edition </span><span class="float_right"><span class="post_date postbit_date">09-07-2017, 02:39 PM </span> 
+<a href="Thread-Learning-Python-5th-Edition?pid=775841#pid775841" class="thead posturl" title="Learning Python, 5th Edition">#1</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_775841">
+	<div style="text-align: center;" class="mycode_align"><img src="https://i.gyazo.com/10486802ba70e0522020209ca2abd041.png" loading="lazy" alt="[Image: 10486802ba70e0522020209ca2abd041.png]" class="mycode_img" /></div>
+<br />
+<div class="codeblock"><div class="title">Code:</div><div class="body" dir="ltr"><code>Part I. Getting Started<br />
+1. A Python Q&amp;A Session . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3<br />
+Why Do People Use Python? 3<br />
+Software Quality 4<br />
+Developer Productivity 5<br />
+Is Python a �??Scripting Language�?�? 5<br />
+OK, but What�??s the Downside? 7<br />
+Who Uses Python Today? 9<br />
+What Can I Do with Python? 10<br />
+Systems Programming 11<br />
+GUIs 11<br />
+Internet Scripting 11<br />
+Component Integration 12<br />
+Database Programming 12<br />
+Rapid Prototyping 13<br />
+Numeric and Scientific Programming 13<br />
+And More: Gaming, Images, Data Mining, Robots, Excel... 14<br />
+How Is Python Developed and Supported? 15<br />
+Open Source Tradeoffs 15<br />
+What Are Python�??s Technical Strengths? 16<br />
+It�??s Object-Oriented and Functional 16<br />
+It�??s Free 17<br />
+It�??s Portable 17<br />
+It�??s Powerful 18<br />
+It�??s Mixable 19<br />
+It�??s Relatively Easy to Use 19<br />
+It�??s Relatively Easy to Learn 20<br />
+It�??s Named After Monty Python 20<br />
+v<br />
+<br />
+How Does Python Stack Up to Language X? 21<br />
+Chapter Summary 22<br />
+Test Your Knowledge: Quiz 23<br />
+Test Your Knowledge: Answers 23<br />
+2. How Python Runs Programs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27<br />
+Introducing the Python Interpreter 27<br />
+Program Execution 28<br />
+The Programmer�??s View 28<br />
+Python�??s View 30<br />
+Execution Model Variations 33<br />
+Python Implementation Alternatives 33<br />
+Execution Optimization Tools 37<br />
+Frozen Binaries 39<br />
+Future Possibilities? 40<br />
+Chapter Summary 40<br />
+Test Your Knowledge: Quiz 41<br />
+Test Your Knowledge: Answers 41<br />
+3. How You Run Programs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43<br />
+The Interactive Prompt 43<br />
+Starting an Interactive Session 44<br />
+The System Path 45<br />
+New Windows Options in 3.3: PATH, Launcher 46<br />
+Where to Run: Code Directories 47<br />
+What Not to Type: Prompts and Comments 48<br />
+Running Code Interactively 49<br />
+Why the Interactive Prompt? 50<br />
+Usage Notes: The Interactive Prompt 52<br />
+System Command Lines and Files 54<br />
+A First Script 55<br />
+Running Files with Command Lines 56<br />
+Command-Line Usage Variations 57<br />
+Usage Notes: Command Lines and Files 58<br />
+Unix-Style Executable Scripts: #! 59<br />
+Unix Script Basics 59<br />
+The Unix env Lookup Trick 60<br />
+The Python 3.3 Windows Launcher: #! Comes to Windows 60<br />
+Clicking File Icons 62<br />
+Icon-Click Basics 62<br />
+Clicking Icons on Windows 63<br />
+The input Trick on Windows 63<br />
+Other Icon-Click Limitations 66<br />
+vi | Table of Contents<br />
+<br />
+Module Imports and Reloads 66<br />
+Import and Reload Basics 66<br />
+The Grander Module Story: Attributes 68<br />
+Usage Notes: import and reload 71<br />
+Using exec to Run Module Files 72<br />
+The IDLE User Interface 73<br />
+IDLE Startup Details 74<br />
+IDLE Basic Usage 75<br />
+IDLE Usability Features 76<br />
+Advanced IDLE Tools 77<br />
+Usage Notes: IDLE 78<br />
+Other IDEs 79<br />
+Other Launch Options 81<br />
+Embedding Calls 81<br />
+Frozen Binary Executables 82<br />
+Text Editor Launch Options 82<br />
+Still Other Launch Options 82<br />
+Future Possibilities? 83<br />
+Which Option Should I Use? 83<br />
+Chapter Summary 85<br />
+Test Your Knowledge: Quiz 85<br />
+Test Your Knowledge: Answers 86<br />
+Test Your Knowledge: Part I Exercises 87<br />
+Part II. Types and Operations<br />
+4. Introducing Python Object Types . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 93<br />
+The Python Conceptual Hierarchy 93<br />
+Why Use Built-in Types? 94<br />
+Python�??s Core Data Types 95<br />
+Numbers 97<br />
+Strings 99<br />
+Sequence Operations 99<br />
+Immutability 101<br />
+Type-Specific Methods 102<br />
+Getting Help 104<br />
+Other Ways to Code Strings 105<br />
+Unicode Strings 106<br />
+Pattern Matching 108<br />
+Lists 109<br />
+Sequence Operations 109<br />
+Type-Specific Operations 109<br />
+Table of Contents | vii<br />
+<br />
+Bounds Checking 110<br />
+Nesting 110<br />
+Comprehensions 111<br />
+Dictionaries 113<br />
+Mapping Operations 114<br />
+Nesting Revisited 115<br />
+Missing Keys: if Tests 116<br />
+Sorting Keys: for Loops 118<br />
+Iteration and Optimization 120<br />
+Tuples 121<br />
+Why Tuples? 122<br />
+Files 122<br />
+Binary Bytes Files 123<br />
+Unicode Text Files 124<br />
+Other File-Like Tools 126<br />
+Other Core Types 126<br />
+How to Break Your Code�??s Flexibility 128<br />
+User-Defined Classes 129<br />
+And Everything Else 130<br />
+Chapter Summary 130<br />
+Test Your Knowledge: Quiz 131<br />
+Test Your Knowledge: Answers 131<br />
+5. Numeric Types . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 133<br />
+Numeric Type Basics 133<br />
+Numeric Literals 134<br />
+Built-in Numeric Tools 136<br />
+Python Expression Operators 136<br />
+Numbers in Action 141<br />
+Variables and Basic Expressions 141<br />
+Numeric Display Formats 143<br />
+Comparisons: Normal and Chained 144<br />
+Division: Classic, Floor, and True 146<br />
+Integer Precision 150<br />
+Complex Numbers 151<br />
+Hex, Octal, Binary: Literals and Conversions 151<br />
+Bitwise Operations 153<br />
+Other Built-in Numeric Tools 155<br />
+Other Numeric Types 157<br />
+Decimal Type 157<br />
+Fraction Type 160<br />
+Sets 163<br />
+Booleans 171<br />
+viii | Table of Contents<br />
+<br />
+Numeric Extensions 172<br />
+Chapter Summary 172<br />
+Test Your Knowledge: Quiz 173<br />
+Test Your Knowledge: Answers 173<br />
+6. The Dynamic Typing Interlude . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 175<br />
+The Case of the Missing Declaration Statements 175<br />
+Variables, Objects, and References 176<br />
+Types Live with Objects, Not Variables 177<br />
+Objects Are Garbage-Collected 178<br />
+Shared References 180<br />
+Shared References and In-Place Changes 181<br />
+Shared References and Equality 183<br />
+Dynamic Typing Is Everywhere 185<br />
+Chapter Summary 186<br />
+Test Your Knowledge: Quiz 186<br />
+Test Your Knowledge: Answers 186<br />
+7. String Fundamentals . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 189<br />
+This Chapter�??s Scope 189<br />
+Unicode: The Short Story 189<br />
+String Basics 190<br />
+String Literals 192<br />
+Single- and Double-Quoted Strings Are the Same 193<br />
+Escape Sequences Represent Special Characters 193<br />
+Raw Strings Suppress Escapes 196<br />
+Triple Quotes Code Multiline Block Strings 198<br />
+Strings in Action 200<br />
+Basic Operations 200<br />
+Indexing and Slicing 201<br />
+String Conversion Tools 205<br />
+Changing Strings I 208<br />
+String Methods 209<br />
+Method Call Syntax 209<br />
+Methods of Strings 210<br />
+String Method Examples: Changing Strings II 211<br />
+String Method Examples: Parsing Text 213<br />
+Other Common String Methods in Action 214<br />
+The Original string Module�??s Functions (Gone in 3.X) 215<br />
+String Formatting Expressions 216<br />
+Formatting Expression Basics 217<br />
+Advanced Formatting Expression Syntax 218<br />
+Advanced Formatting Expression Examples 220<br />
+Table of Contents | ix<br />
+<br />
+Dictionary-Based Formatting Expressions 221<br />
+String Formatting Method Calls 222<br />
+Formatting Method Basics 222<br />
+Adding Keys, Attributes, and Offsets 223<br />
+Advanced Formatting Method Syntax 224<br />
+Advanced Formatting Method Examples 225<br />
+Comparison to the % Formatting Expression 227<br />
+Why the Format Method? 230<br />
+General Type Categories 235<br />
+Types Share Operation Sets by Categories 235<br />
+Mutable Types Can Be Changed in Place 236<br />
+Chapter Summary 237<br />
+Test Your Knowledge: Quiz 237<br />
+Test Your Knowledge: Answers 237<br />
+8. Lists and Dictionaries . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 239<br />
+Lists 239<br />
+Lists in Action 242<br />
+Basic List Operations 242<br />
+List Iteration and Comprehensions 242<br />
+Indexing, Slicing, and Matrixes 243<br />
+Changing Lists in Place 244<br />
+Dictionaries 250<br />
+Dictionaries in Action 252<br />
+Basic Dictionary Operations 253<br />
+Changing Dictionaries in Place 254<br />
+More Dictionary Methods 254<br />
+Example: Movie Database 256<br />
+Dictionary Usage Notes 258<br />
+Other Ways to Make Dictionaries 262<br />
+Dictionary Changes in Python 3.X and 2.7 264<br />
+Chapter Summary 271<br />
+Test Your Knowledge: Quiz 272<br />
+Test Your Knowledge: Answers 272<br />
+9. Tuples, Files, and Everything Else . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 275<br />
+Tuples 276<br />
+Tuples in Action 277<br />
+Why Lists and Tuples? 279<br />
+Records Revisited: Named Tuples 280<br />
+Files 282<br />
+Opening Files 283<br />
+Using Files 284<br />
+x | Table of Contents<br />
+<br />
+Files in Action 285<br />
+Text and Binary Files: The Short Story 287<br />
+Storing Python Objects in Files: Conversions 288<br />
+Storing Native Python Objects: pickle 290<br />
+Storing Python Objects in JSON Format 291<br />
+Storing Packed Binary Data: struct 293<br />
+File Context Managers 294<br />
+Other File Tools 294<br />
+Core Types Review and Summary 295<br />
+Object Flexibility 297<br />
+References Versus Copies 297<br />
+Comparisons, Equality, and Truth 300<br />
+The Meaning of True and False in Python 304<br />
+Python�??s Type Hierarchies 306<br />
+Type Objects 306<br />
+Other Types in Python 308<br />
+Built-in Type Gotchas 308<br />
+Assignment Creates References, Not Copies 308<br />
+Repetition Adds One Level Deep 309<br />
+Beware of Cyclic Data Structures 310<br />
+Immutable Types Can�??t Be Changed in Place 311<br />
+Chapter Summary 311<br />
+Test Your Knowledge: Quiz 311<br />
+Test Your Knowledge: Answers 312<br />
+Test Your Knowledge: Part II Exercises 313<br />
+Part III. Statements and Syntax<br />
+10. Introducing Python Statements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 319<br />
+The Python Conceptual Hierarchy Revisited 319<br />
+Python�??s Statements 320<br />
+A Tale of Two ifs 322<br />
+What Python Adds 322<br />
+What Python Removes 323<br />
+Why Indentation Syntax? 324<br />
+A Few Special Cases 327<br />
+A Quick Example: Interactive Loops 329<br />
+A Simple Interactive Loop 329<br />
+Doing Math on User Inputs 331<br />
+Handling Errors by Testing Inputs 332<br />
+Handling Errors with try Statements 333<br />
+Nesting Code Three Levels Deep 335<br />
+Table of Contents | xi<br />
+<br />
+Chapter Summary 336<br />
+Test Your Knowledge: Quiz 336<br />
+Test Your Knowledge: Answers 336<br />
+11. Assignments, Expressions, and Prints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 339<br />
+Assignment Statements 339<br />
+Assignment Statement Forms 340<br />
+Sequence Assignments 341<br />
+Extended Sequence Unpacking in Python 3.X 344<br />
+Multiple-Target Assignments 348<br />
+Augmented Assignments 350<br />
+Variable Name Rules 352<br />
+Expression Statements 356<br />
+Expression Statements and In-Place Changes 357<br />
+Print Operations 358<br />
+The Python 3.X print Function 359<br />
+The Python 2.X print Statement 361<br />
+Print Stream Redirection 363<br />
+Version-Neutral Printing 366<br />
+Chapter Summary 369<br />
+Test Your Knowledge: Quiz 370<br />
+Test Your Knowledge: Answers 370<br />
+12. if Tests and Syntax Rules . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 371<br />
+if Statements 371<br />
+General Format 371<br />
+Basic Examples 372<br />
+Multiway Branching 372<br />
+Python Syntax Revisited 375<br />
+Block Delimiters: Indentation Rules 376<br />
+Statement Delimiters: Lines and Continuations 378<br />
+A Few Special Cases 379<br />
+Truth Values and Boolean Tests 380<br />
+The if/else Ternary Expression 382<br />
+Chapter Summary 385<br />
+Test Your Knowledge: Quiz 385<br />
+Test Your Knowledge: Answers 386<br />
+13. while and for Loops . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 387<br />
+while Loops 387<br />
+General Format 388<br />
+Examples 388<br />
+break, continue, pass, and the Loop else 389<br />
+xii | Table of Contents<br />
+<br />
+General Loop Format 389<br />
+pass 390<br />
+continue 391<br />
+break 391<br />
+Loop else 392<br />
+for Loops 395<br />
+General Format 395<br />
+Examples 395<br />
+Loop Coding Techniques 402<br />
+Counter Loops: range 402<br />
+Sequence Scans: while and range Versus for 403<br />
+Sequence Shufflers: range and len 404<br />
+Nonexhaustive Traversals: range Versus Slices 405<br />
+Changing Lists: range Versus Comprehensions 406<br />
+Parallel Traversals: zip and map 407<br />
+Generating Both Offsets and Items: enumerate 410<br />
+Chapter Summary 413<br />
+Test Your Knowledge: Quiz 414<br />
+Test Your Knowledge: Answers 414<br />
+14. Iterations and Comprehensions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 415<br />
+Iterations: A First Look 416<br />
+The Iteration Protocol: File Iterators 416<br />
+Manual Iteration: iter and next 419<br />
+Other Built-in Type Iterables 422<br />
+List Comprehensions: A First Detailed Look 424<br />
+List Comprehension Basics 425<br />
+Using List Comprehensions on Files 426<br />
+Extended List Comprehension Syntax 427<br />
+Other Iteration Contexts 429<br />
+New Iterables in Python 3.X 434<br />
+Impacts on 2.X Code: Pros and Cons 434<br />
+The range Iterable 435<br />
+The map, zip, and filter Iterables 436<br />
+Multiple Versus Single Pass Iterators 438<br />
+Dictionary View Iterables 439<br />
+Other Iteration Topics 440<br />
+Chapter Summary 441<br />
+Test Your Knowledge: Quiz 441<br />
+Test Your Knowledge: Answers 441<br />
+15. The Documentation Interlude . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 443<br />
+Python Documentation Sources 443<br />
+Table of Contents | xiii<br />
+<br />
+# Comments 444<br />
+The dir Function 444<br />
+Docstrings: __doc__ 446<br />
+PyDoc: The help Function 449<br />
+PyDoc: HTML Reports 452<br />
+Beyond docstrings: Sphinx 461<br />
+The Standard Manual Set 461<br />
+Web Resources 462<br />
+Published Books 463<br />
+Common Coding Gotchas 463<br />
+Chapter Summary 465<br />
+Test Your Knowledge: Quiz 466<br />
+Test Your Knowledge: Answers 466<br />
+Test Your Knowledge: Part III Exercises 467<br />
+Part IV. Functions and Generators<br />
+16. Function Basics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 473<br />
+Why Use Functions? 474<br />
+Coding Functions 475<br />
+def Statements 476<br />
+def Executes at Runtime 477<br />
+A First Example: Definitions and Calls 478<br />
+Definition 478<br />
+Calls 478<br />
+Polymorphism in Python 479<br />
+A Second Example: Intersecting Sequences 480<br />
+Definition 481<br />
+Calls 481<br />
+Polymorphism Revisited 482<br />
+Local Variables 483<br />
+Chapter Summary 483<br />
+Test Your Knowledge: Quiz 483<br />
+Test Your Knowledge: Answers 484<br />
+17. Scopes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 485<br />
+Python Scope Basics 485<br />
+Scope Details 486<br />
+Name Resolution: The LEGB Rule 488<br />
+Scope Example 490<br />
+The Built-in Scope 491<br />
+The global Statement 494<br />
+xiv | Table of Contents<br />
+<br />
+Program Design: Minimize Global Variables 495<br />
+Program Design: Minimize Cross-File Changes 497<br />
+Other Ways to Access Globals 498<br />
+Scopes and Nested Functions 499<br />
+Nested Scope Details 500<br />
+Nested Scope Examples 500<br />
+Factory Functions: Closures 501<br />
+Retaining Enclosing Scope State with Defaults 504<br />
+The nonlocal Statement in 3.X 508<br />
+nonlocal Basics 508<br />
+nonlocal in Action 509<br />
+Why nonlocal? State Retention Options 512<br />
+State with nonlocal: 3.X only 512<br />
+State with Globals: A Single Copy Only 513<br />
+State with Classes: Explicit Attributes (Preview) 513<br />
+State with Function Attributes: 3.X and 2.X 515<br />
+Chapter Summary 519<br />
+Test Your Knowledge: Quiz 519<br />
+Test Your Knowledge: Answers 520<br />
+18. Arguments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 523<br />
+Argument-Passing Basics 523<br />
+Arguments and Shared References 524<br />
+Avoiding Mutable Argument Changes 526<br />
+Simulating Output Parameters and Multiple Results 527<br />
+Special Argument-Matching Modes 528<br />
+Argument Matching Basics 529<br />
+Argument Matching Syntax 530<br />
+The Gritty Details 531<br />
+Keyword and Default Examples 532<br />
+Arbitrary Arguments Examples 534<br />
+Python 3.X Keyword-Only Arguments 539<br />
+The min Wakeup Call! 542<br />
+Full Credit 542<br />
+Bonus Points 544<br />
+The Punch Line... 544<br />
+Generalized Set Functions 545<br />
+Emulating the Python 3.X print Function 547<br />
+Using Keyword-Only Arguments 548<br />
+Chapter Summary 550<br />
+Test Your Knowledge: Quiz 551<br />
+Test Your Knowledge: Answers 552<br />
+Table of Contents | xv<br />
+<br />
+19. Advanced Function Topics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 553<br />
+Function Design Concepts 553<br />
+Recursive Functions 555<br />
+Summation with Recursion 555<br />
+Coding Alternatives 556<br />
+Loop Statements Versus Recursion 557<br />
+Handling Arbitrary Structures 558<br />
+Function Objects: Attributes and Annotations 562<br />
+Indirect Function Calls: �??First Class�?� Objects 562<br />
+Function Introspection 563<br />
+Function Attributes 564<br />
+Function Annotations in 3.X 565<br />
+Anonymous Functions: lambda 567<br />
+lambda Basics 568<br />
+Why Use lambda? 569<br />
+How (Not) to Obfuscate Your Python Code 571<br />
+Scopes: lambdas Can Be Nested Too 572<br />
+Functional Programming Tools 574<br />
+Mapping Functions over Iterables: map 574<br />
+Selecting Items in Iterables: filter 576<br />
+Combining Items in Iterables: reduce 576<br />
+Chapter Summary 578<br />
+Test Your Knowledge: Quiz 578<br />
+Test Your Knowledge: Answers 578<br />
+20. Comprehensions and Generations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 581<br />
+List Comprehensions and Functional Tools 581<br />
+List Comprehensions Versus map 582<br />
+Adding Tests and Nested Loops: filter 583<br />
+Example: List Comprehensions and Matrixes 586<br />
+Don�??t Abuse List Comprehensions: KISS 588<br />
+Generator Functions and Expressions 591<br />
+Generator Functions: yield Versus return 592<br />
+Generator Expressions: Iterables Meet Comprehensions 597<br />
+Generator Functions Versus Generator Expressions 602<br />
+Generators Are Single-Iteration Objects 604<br />
+Generation in Built-in Types, Tools, and Classes 606<br />
+Example: Generating Scrambled Sequences 609<br />
+Don�??t Abuse Generators: EIBTI 614<br />
+Example: Emulating zip and map with Iteration Tools 617<br />
+Comprehension Syntax Summary 622<br />
+Scopes and Comprehension Variables 623<br />
+Comprehending Set and Dictionary Comprehensions 624<br />
+xvi | Table of Contents<br />
+<br />
+Extended Comprehension Syntax for Sets and Dictionaries 625<br />
+Chapter Summary 626<br />
+Test Your Knowledge: Quiz 626<br />
+Test Your Knowledge: Answers 626<br />
+21. The Benchmarking Interlude . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 629<br />
+Timing Iteration Alternatives 629<br />
+Timing Module: Homegrown 630<br />
+Timing Script 634<br />
+Timing Results 635<br />
+Timing Module Alternatives 638<br />
+Other Suggestions 642<br />
+Timing Iterations and Pythons with timeit 642<br />
+Basic timeit Usage 643<br />
+Benchmark Module and Script: timeit 647<br />
+Benchmark Script Results 649<br />
+More Fun with Benchmarks 651<br />
+Other Benchmarking Topics: pystones 656<br />
+Function Gotchas 656<br />
+Local Names Are Detected Statically 657<br />
+Defaults and Mutable Objects 658<br />
+Functions Without returns 660<br />
+Miscellaneous Function Gotchas 661<br />
+Chapter Summary 661<br />
+Test Your Knowledge: Quiz 662<br />
+Test Your Knowledge: Answers 662<br />
+Test Your Knowledge: Part IV Exercises 663<br />
+Part V. Modules and Packages<br />
+22. Modules: The Big Picture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 669<br />
+Why Use Modules? 669<br />
+Python Program Architecture 670<br />
+How to Structure a Program 671<br />
+Imports and Attributes 671<br />
+Standard Library Modules 673<br />
+How Imports Work 674<br />
+1. Find It 674<br />
+2. Compile It (Maybe) 675<br />
+3. Run It 675<br />
+Byte Code Files: __pycache__ in Python 3.2+ 676<br />
+Byte Code File Models in Action 677<br />
+Table of Contents | xvii<br />
+<br />
+The Module Search Path 678<br />
+Configuring the Search Path 681<br />
+Search Path Variations 681<br />
+The sys.path List 681<br />
+Module File Selection 682<br />
+Chapter Summary 685<br />
+Test Your Knowledge: Quiz 685<br />
+Test Your Knowledge: Answers 685<br />
+23. Module Coding Basics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 687<br />
+Module Creation 687<br />
+Module Filenames 687<br />
+Other Kinds of Modules 688<br />
+Module Usage 688<br />
+The import Statement 689<br />
+The from Statement 689<br />
+The from * Statement 689<br />
+Imports Happen Only Once 690<br />
+import and from Are Assignments 691<br />
+import and from Equivalence 692<br />
+Potential Pitfalls of the from Statement 693<br />
+Module Namespaces 694<br />
+Files Generate Namespaces 695<br />
+Namespace Dictionaries: __dict__ 696<br />
+Attribute Name Qualification 697<br />
+Imports Versus Scopes 698<br />
+Namespace Nesting 699<br />
+Reloading Modules 700<br />
+reload Basics 701<br />
+reload Example 702<br />
+Chapter Summary 703<br />
+Test Your Knowledge: Quiz 704<br />
+Test Your Knowledge: Answers 704<br />
+24. Module Packages . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 707<br />
+Package Import Basics 708<br />
+Packages and Search Path Settings 708<br />
+Package __init__.py Files 709<br />
+Package Import Example 711<br />
+from Versus import with Packages 713<br />
+Why Use Package Imports? 713<br />
+A Tale of Three Systems 714<br />
+Package Relative Imports 717<br />
+xviii | Table of Contents<br />
+<br />
+Changes in Python 3.X 718<br />
+Relative Import Basics 718<br />
+Why Relative Imports? 720<br />
+The Scope of Relative Imports 722<br />
+Module Lookup Rules Summary 723<br />
+Relative Imports in Action 723<br />
+Pitfalls of Package-Relative Imports: Mixed Use 729<br />
+Python 3.3 Namespace Packages 734<br />
+Namespace Package Semantics 735<br />
+Impacts on Regular Packages: Optional __init__.py 736<br />
+Namespace Packages in Action 737<br />
+Namespace Package Nesting 738<br />
+Files Still Have Precedence over Directories 740<br />
+Chapter Summary 742<br />
+Test Your Knowledge: Quiz 742<br />
+Test Your Knowledge: Answers 742<br />
+25. Advanced Module Topics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 745<br />
+Module Design Concepts 745<br />
+Data Hiding in Modules 747<br />
+Minimizing from * Damage: _X and __all__ 747<br />
+Enabling Future Language Features: __future__ 748<br />
+Mixed Usage Modes: __name__ and __main__ 749<br />
+Unit Tests with __name__ 750<br />
+Example: Dual Mode Code 751<br />
+Currency Symbols: Unicode in Action 754<br />
+Docstrings: Module Documentation at Work 756<br />
+Changing the Module Search Path 756<br />
+The as Extension for import and from 758<br />
+Example: Modules Are Objects 759<br />
+Importing Modules by Name String 761<br />
+Running Code Strings 762<br />
+Direct Calls: Two Options 762<br />
+Example: Transitive Module Reloads 763<br />
+A Recursive Reloader 764<br />
+Alternative Codings 767<br />
+Module Gotchas 770<br />
+Module Name Clashes: Package and Package-Relative Imports 771<br />
+Statement Order Matters in Top-Level Code 771<br />
+from Copies Names but Doesn�??t Link 772<br />
+from * Can Obscure the Meaning of Variables 773<br />
+reload May Not Impact from Imports 773<br />
+reload, from, and Interactive Testing 774<br />
+Table of Contents | xix<br />
+<br />
+Recursive from Imports May Not Work 775<br />
+Chapter Summary 776<br />
+Test Your Knowledge: Quiz 777<br />
+Test Your Knowledge: Answers 777<br />
+Test Your Knowledge: Part V Exercises 778<br />
+Part VI. Classes and OOP<br />
+26. OOP: The Big Picture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 783<br />
+Why Use Classes? 784<br />
+OOP from 30,000 Feet 785<br />
+Attribute Inheritance Search 785<br />
+Classes and Instances 788<br />
+Method Calls 788<br />
+Coding Class Trees 789<br />
+Operator Overloading 791<br />
+OOP Is About Code Reuse 792<br />
+Chapter Summary 795<br />
+Test Your Knowledge: Quiz 795<br />
+Test Your Knowledge: Answers 795<br />
+27. Class Coding Basics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 797<br />
+Classes Generate Multiple Instance Objects 797<br />
+Class Objects Provide Default Behavior 798<br />
+Instance Objects Are Concrete Items 798<br />
+A First Example 799<br />
+Classes Are Customized by Inheritance 801<br />
+A Second Example 802<br />
+Classes Are Attributes in Modules 804<br />
+Classes Can Intercept Python Operators 805<br />
+A Third Example 806<br />
+Why Use Operator Overloading? 808<br />
+The World�??s Simplest Python Class 809<br />
+Records Revisited: Classes Versus Dictionaries 812<br />
+Chapter Summary 814<br />
+Test Your Knowledge: Quiz 815<br />
+Test Your Knowledge: Answers 815<br />
+28. A More Realistic Example . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 817<br />
+Step 1: Making Instances 818<br />
+Coding Constructors 818<br />
+Testing As You Go 819<br />
+xx | Table of Contents<br />
+<br />
+Using Code Two Ways 820<br />
+Step 2: Adding Behavior Methods 822<br />
+Coding Methods 824<br />
+Step 3: Operator Overloading 826<br />
+Providing Print Displays 826<br />
+Step 4: Customizing Behavior by Subclassing 828<br />
+Coding Subclasses 828<br />
+Augmenting Methods: The Bad Way 829<br />
+Augmenting Methods: The Good Way 829<br />
+Polymorphism in Action 832<br />
+Inherit, Customize, and Extend 833<br />
+OOP: The Big Idea 833<br />
+Step 5: Customizing Constructors, Too 834<br />
+OOP Is Simpler Than You May Think 836<br />
+Other Ways to Combine Classes 836<br />
+Step 6: Using Introspection Tools 840<br />
+Special Class Attributes 840<br />
+A Generic Display Tool 842<br />
+Instance Versus Class Attributes 843<br />
+Name Considerations in Tool Classes 844<br />
+Our Classes�?? Final Form 845<br />
+Step 7 (Final): Storing Objects in a Database 847<br />
+Pickles and Shelves 847<br />
+Storing Objects on a Shelve Database 848<br />
+Exploring Shelves Interactively 849<br />
+Updating Objects on a Shelve 851<br />
+Future Directions 853<br />
+Chapter Summary 855<br />
+Test Your Knowledge: Quiz 855<br />
+Test Your Knowledge: Answers 856<br />
+29. Class Coding Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 859<br />
+The class Statement 859<br />
+General Form 860<br />
+Example 860<br />
+Methods 862<br />
+Method Example 863<br />
+Calling Superclass Constructors 864<br />
+Other Method Call Possibilities 864<br />
+Inheritance 865<br />
+Attribute Tree Construction 865<br />
+Specializing Inherited Methods 866<br />
+Class Interface Techniques 867<br />
+Table of Contents | xxi<br />
+<br />
+Abstract Superclasses 869<br />
+Namespaces: The Conclusion 872<br />
+Simple Names: Global Unless Assigned 872<br />
+Attribute Names: Object Namespaces 872<br />
+The �??Zen�?� of Namespaces: Assignments Classify Names 873<br />
+Nested Classes: The LEGB Scopes Rule Revisited 875<br />
+Namespace Dictionaries: Review 878<br />
+Namespace Links: A Tree Climber 880<br />
+Documentation Strings Revisited 882<br />
+Classes Versus Modules 884<br />
+Chapter Summary 884<br />
+Test Your Knowledge: Quiz 884<br />
+Test Your Knowledge: Answers 885<br />
+30. Operator Overloading . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 887<br />
+The Basics 887<br />
+Constructors and Expressions: __init__ and __sub__ 888<br />
+Common Operator Overloading Methods 888<br />
+Indexing and Slicing: __getitem__ and __setitem__ 890<br />
+Intercepting Slices 891<br />
+Slicing and Indexing in Python 2.X 893<br />
+But 3.X�??s __index__ Is Not Indexing! 894<br />
+Index Iteration: __getitem__ 894<br />
+Iterable Objects: __iter__ and __next__ 895<br />
+User-Defined Iterables 896<br />
+Multiple Iterators on One Object 899<br />
+Coding Alternative: __iter__ plus yield 902<br />
+Membership: __contains__, __iter__, and __getitem__ 906<br />
+Attribute Access: __getattr__ and __setattr__ 909<br />
+Attribute Reference 909<br />
+Attribute Assignment and Deletion 910<br />
+Other Attribute Management Tools 912<br />
+Emulating Privacy for Instance Attributes: Part 1 912<br />
+String Representation: __repr__ and __str__ 913<br />
+Why Two Display Methods? 914<br />
+Display Usage Notes 916<br />
+Right-Side and In-Place Uses: __radd__ and __iadd__ 917<br />
+Right-Side Addition 917<br />
+In-Place Addition 920<br />
+Call Expressions: __call__ 921<br />
+Function Interfaces and Callback-Based Code 923<br />
+Comparisons: __lt__, __gt__, and Others 925<br />
+The __cmp__ Method in Python 2.X 926<br />
+xxii | Table of Contents<br />
+<br />
+Boolean Tests: __bool__ and __len__ 927<br />
+Boolean Methods in Python 2.X 928<br />
+Object Destruction: __del__ 929<br />
+Destructor Usage Notes 930<br />
+Chapter Summary 931<br />
+Test Your Knowledge: Quiz 931<br />
+Test Your Knowledge: Answers 931<br />
+31. Designing with Classes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 933<br />
+Python and OOP 933<br />
+Polymorphism Means Interfaces, Not Call Signatures 934<br />
+OOP and Inheritance: �??Is-a�?� Relationships 935<br />
+OOP and Composition: �??Has-a�?� Relationships 937<br />
+Stream Processors Revisited 938<br />
+OOP and Delegation: �??Wrapper�?� Proxy Objects 942<br />
+Pseudoprivate Class Attributes 944<br />
+Name Mangling Overview 945<br />
+Why Use Pseudoprivate Attributes? 945<br />
+Methods Are Objects: Bound or Unbound 948<br />
+Unbound Methods Are Functions in 3.X 950<br />
+Bound Methods and Other Callable Objects 951<br />
+Classes Are Objects: Generic Object Factories 954<br />
+Why Factories? 955<br />
+Multiple Inheritance: �??Mix-in�?� Classes 956<br />
+Coding Mix-in Display Classes 957<br />
+Other Design-Related Topics 977<br />
+Chapter Summary 977<br />
+Test Your Knowledge: Quiz 978<br />
+Test Your Knowledge: Answers 978<br />
+32. Advanced Class Topics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 979<br />
+Extending Built-in Types 980<br />
+Extending Types by Embedding 980<br />
+Extending Types by Subclassing 981<br />
+The �??New Style�?� Class Model 983<br />
+Just How New Is New-Style? 984<br />
+New-Style Class Changes 985<br />
+Attribute Fetch for Built-ins Skips Instances 987<br />
+Type Model Changes 992<br />
+All Classes Derive from �??object�?� 995<br />
+Diamond Inheritance Change 997<br />
+More on the MRO: Method Resolution Order 1001<br />
+Example: Mapping Attributes to Inheritance Sources 1004<br />
+Table of Contents | xxiii<br />
+<br />
+New-Style Class Extensions 1010<br />
+Slots: Attribute Declarations 1010<br />
+Properties: Attribute Accessors 1020<br />
+__getattribute__ and Descriptors: Attribute Tools 1023<br />
+Other Class Changes and Extensions 1023<br />
+Static and Class Methods 1024<br />
+Why the Special Methods? 1024<br />
+Static Methods in 2.X and 3.X 1025<br />
+Static Method Alternatives 1027<br />
+Using Static and Class Methods 1028<br />
+Counting Instances with Static Methods 1030<br />
+Counting Instances with Class Methods 1031<br />
+Decorators and Metaclasses: Part 1 1034<br />
+Function Decorator Basics 1035<br />
+A First Look at User-Defined Function Decorators 1037<br />
+A First Look at Class Decorators and Metaclasses 1038<br />
+For More Details 1040<br />
+The super Built-in Function: For Better or Worse? 1041<br />
+The Great super Debate 1041<br />
+Traditional Superclass Call Form: Portable, General 1042<br />
+Basic super Usage and Its Tradeoffs 1043<br />
+The super Upsides: Tree Changes and Dispatch 1049<br />
+Runtime Class Changes and super 1049<br />
+Cooperative Multiple Inheritance Method Dispatch 1050<br />
+The super Summary 1062<br />
+Class Gotchas 1064<br />
+Changing Class Attributes Can Have Side Effects 1064<br />
+Changing Mutable Class Attributes Can Have Side Effects, Too 1065<br />
+Multiple Inheritance: Order Matters 1066<br />
+Scopes in Methods and Classes 1068<br />
+Miscellaneous Class Gotchas 1069<br />
+KISS Revisited: �??Overwrapping-itis�?� 1070<br />
+Chapter Summary 1070<br />
+Test Your Knowledge: Quiz 1071<br />
+Test Your Knowledge: Answers 1071<br />
+Test Your Knowledge: Part VI Exercises 1072<br />
+Part VII. Exceptions and Tools<br />
+33. Exception Basics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1081<br />
+Why Use Exceptions? 1081<br />
+Exception Roles 1082<br />
+xxiv | Table of Contents<br />
+<br />
+Exceptions: The Short Story 1083<br />
+Default Exception Handler 1083<br />
+Catching Exceptions 1084<br />
+Raising Exceptions 1085<br />
+User-Defined Exceptions 1086<br />
+Termination Actions 1087<br />
+Chapter Summary 1089<br />
+Test Your Knowledge: Quiz 1090<br />
+Test Your Knowledge: Answers 1090<br />
+34. Exception Coding Details . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1093<br />
+The try/except/else Statement 1093<br />
+How try Statements Work 1094<br />
+try Statement Clauses 1095<br />
+The try else Clause 1098<br />
+Example: Default Behavior 1098<br />
+Example: Catching Built-in Exceptions 1100<br />
+The try/finally Statement 1100<br />
+Example: Coding Termination Actions with try/finally 1101<br />
+Unified try/except/finally 1102<br />
+Unified try Statement Syntax 1104<br />
+Combining finally and except by Nesting 1104<br />
+Unified try Example 1105<br />
+The raise Statement 1106<br />
+Raising Exceptions 1107<br />
+Scopes and try except Variables 1108<br />
+Propagating Exceptions with raise 1110<br />
+Python 3.X Exception Chaining: raise from 1110<br />
+The assert Statement 1112<br />
+Example: Trapping Constraints (but Not Errors!) 1113<br />
+with/as Context Managers 1114<br />
+Basic Usage 1114<br />
+The Context Management Protocol 1116<br />
+Multiple Context Managers in 3.1, 2.7, and Later 1118<br />
+Chapter Summary 1119<br />
+Test Your Knowledge: Quiz 1120<br />
+Test Your Knowledge: Answers 1120<br />
+35. Exception Objects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1123<br />
+Exceptions: Back to the Future 1124<br />
+String Exceptions Are Right Out! 1124<br />
+Class-Based Exceptions 1125<br />
+Coding Exceptions Classes 1126<br />
+Table of Contents | xxv<br />
+<br />
+Why Exception Hierarchies? 1128<br />
+Built-in Exception Classes 1131<br />
+Built-in Exception Categories 1132<br />
+Default Printing and State 1133<br />
+Custom Print Displays 1135<br />
+Custom Data and Behavior 1136<br />
+Providing Exception Details 1136<br />
+Providing Exception Methods 1137<br />
+Chapter Summary 1139<br />
+Test Your Knowledge: Quiz 1139<br />
+Test Your Knowledge: Answers 1139<br />
+36. Designing with Exceptions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1141<br />
+Nesting Exception Handlers 1141<br />
+Example: Control-Flow Nesting 1143<br />
+Example: Syntactic Nesting 1143<br />
+Exception Idioms 1145<br />
+Breaking Out of Multiple Nested Loops: �??go to�?� 1145<br />
+Exceptions Aren�??t Always Errors 1146<br />
+Functions Can Signal Conditions with raise 1147<br />
+Closing Files and Server Connections 1148<br />
+Debugging with Outer try Statements 1149<br />
+Running In-Process Tests 1149<br />
+More on sys.exc_info 1150<br />
+Displaying Errors and Tracebacks 1151<br />
+Exception Design Tips and Gotchas 1152<br />
+What Should Be Wrapped 1152<br />
+Catching Too Much: Avoid Empty except and Exception 1153<br />
+Catching Too Little: Use Class-Based Categories 1155<br />
+Core Language Summary 1155<br />
+The Python Toolset 1156<br />
+Development Tools for Larger Projects 1157<br />
+Chapter Summary 1160<br />
+Test Your Knowledge: Quiz 1161<br />
+Test Your Knowledge: Answers 1161<br />
+Test Your Knowledge: Part VII Exercises 1161<br />
+Part VIII. Advanced Topics<br />
+37. Unicode and Byte Strings . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1165<br />
+String Changes in 3.X 1166<br />
+String Basics 1167<br />
+xxvi | Table of Contents<br />
+<br />
+Character Encoding Schemes 1167<br />
+How Python Stores Strings in Memory 1170<br />
+Python�??s String Types 1171<br />
+Text and Binary Files 1173<br />
+Coding Basic Strings 1174<br />
+Python 3.X String Literals 1175<br />
+Python 2.X String Literals 1176<br />
+String Type Conversions 1177<br />
+Coding Unicode Strings 1178<br />
+Coding ASCII Text 1178<br />
+Coding Non-ASCII Text 1179<br />
+Encoding and Decoding Non-ASCII text 1180<br />
+Other Encoding Schemes 1181<br />
+Byte String Literals: Encoded Text 1183<br />
+Converting Encodings 1184<br />
+Coding Unicode Strings in Python 2.X 1185<br />
+Source File Character Set Encoding Declarations 1187<br />
+Using 3.X bytes Objects 1189<br />
+Method Calls 1189<br />
+Sequence Operations 1190<br />
+Other Ways to Make bytes Objects 1191<br />
+Mixing String Types 1192<br />
+Using 3.X/2.6+ bytearray Objects 1192<br />
+bytearrays in Action 1193<br />
+Python 3.X String Types Summary 1195<br />
+Using Text and Binary Files 1195<br />
+Text File Basics 1196<br />
+Text and Binary Modes in 2.X and 3.X 1197<br />
+Type and Content Mismatches in 3.X 1198<br />
+Using Unicode Files 1199<br />
+Reading and Writing Unicode in 3.X 1199<br />
+Handling the BOM in 3.X 1201<br />
+Unicode Files in 2.X 1204<br />
+Unicode Filenames and Streams 1205<br />
+Other String Tool Changes in 3.X 1206<br />
+The re Pattern-Matching Module 1206<br />
+The struct Binary Data Module 1207<br />
+The pickle Object Serialization Module 1209<br />
+XML Parsing Tools 1211<br />
+Chapter Summary 1215<br />
+Test Your Knowledge: Quiz 1215<br />
+Test Your Knowledge: Answers 1216<br />
+Table of Contents | xxvii<br />
+<br />
+38. Managed Attributes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1219<br />
+Why Manage Attributes? 1219<br />
+Inserting Code to Run on Attribute Access 1220<br />
+Properties 1221<br />
+The Basics 1222<br />
+A First Example 1222<br />
+Computed Attributes 1224<br />
+Coding Properties with Decorators 1224<br />
+Descriptors 1226<br />
+The Basics 1227<br />
+A First Example 1229<br />
+Computed Attributes 1231<br />
+Using State Information in Descriptors 1232<br />
+How Properties and Descriptors Relate 1236<br />
+__getattr__ and __getattribute__ 1237<br />
+The Basics 1238<br />
+A First Example 1241<br />
+Computed Attributes 1243<br />
+__getattr__ and __getattribute__ Compared 1245<br />
+Management Techniques Compared 1246<br />
+Intercepting Built-in Operation Attributes 1249<br />
+Example: Attribute Validations 1256<br />
+Using Properties to Validate 1256<br />
+Using Descriptors to Validate 1259<br />
+Using __getattr__ to Validate 1263<br />
+Using __getattribute__ to Validate 1265<br />
+Chapter Summary 1266<br />
+Test Your Knowledge: Quiz 1266<br />
+Test Your Knowledge: Answers 1267<br />
+39. Decorators . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1269<br />
+What�??s a Decorator? 1269<br />
+Managing Calls and Instances 1270<br />
+Managing Functions and Classes 1270<br />
+Using and Defining Decorators 1271<br />
+Why Decorators? 1271<br />
+The Basics 1273<br />
+Function Decorators 1273<br />
+Class Decorators 1277<br />
+Decorator Nesting 1279<br />
+Decorator Arguments 1281<br />
+Decorators Manage Functions and Classes, Too 1282<br />
+Coding Function Decorators 1283<br />
+xxviii | Table of Contents<br />
+<br />
+Tracing Calls 1283<br />
+Decorator State Retention Options 1285<br />
+Class Blunders I: Decorating Methods 1289<br />
+Timing Calls 1295<br />
+Adding Decorator Arguments 1298<br />
+Coding Class Decorators 1301<br />
+Singleton Classes 1301<br />
+Tracing Object Interfaces 1303<br />
+Class Blunders II: Retaining Multiple Instances 1308<br />
+Decorators Versus Manager Functions 1309<br />
+Why Decorators? (Revisited) 1310<br />
+Managing Functions and Classes Directly 1312<br />
+Example: �??Private�?� and �??Public�?� Attributes 1314<br />
+Implementing Private Attributes 1314<br />
+Implementation Details I 1317<br />
+Generalizing for Public Declarations, Too 1318<br />
+Implementation Details II 1320<br />
+Open Issues 1321<br />
+Python Isn�??t About Control 1329<br />
+Example: Validating Function Arguments 1330<br />
+The Goal 1330<br />
+A Basic Range-Testing Decorator for Positional Arguments 1331<br />
+Generalizing for Keywords and Defaults, Too 1333<br />
+Implementation Details 1336<br />
+Open Issues 1338<br />
+Decorator Arguments Versus Function Annotations 1340<br />
+Other Applications: Type Testing (If You Insist!) 1342<br />
+Chapter Summary 1343<br />
+Test Your Knowledge: Quiz 1344<br />
+Test Your Knowledge: Answers 1345<br />
+40. Metaclasses . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1355<br />
+To Metaclass or Not to Metaclass 1356<br />
+Increasing Levels of �??Magic�?� 1357<br />
+A Language of Hooks 1358<br />
+The Downside of �??Helper�?� Functions 1359<br />
+Metaclasses Versus Class Decorators: Round 1 1361<br />
+The Metaclass Model 1364<br />
+Classes Are Instances of type 1364<br />
+Metaclasses Are Subclasses of Type 1366<br />
+Class Statement Protocol 1367<br />
+Declaring Metaclasses 1368<br />
+Declaration in 3.X 1369<br />
+Table of Contents | xxix<br />
+<br />
+Declaration in 2.X 1369<br />
+Metaclass Dispatch in Both 3.X and 2.X 1370<br />
+Coding Metaclasses 1370<br />
+A Basic Metaclass 1371<br />
+Customizing Construction and Initialization 1372<br />
+Other Metaclass Coding Techniques 1373<br />
+Inheritance and Instance 1378<br />
+Metaclass Versus Superclass 1381<br />
+Inheritance: The Full Story 1382<br />
+Metaclass Methods 1388<br />
+Metaclass Methods Versus Class Methods 1389<br />
+Operator Overloading in Metaclass Methods 1390<br />
+Example: Adding Methods to Classes 1391<br />
+Manual Augmentation 1391<br />
+Metaclass-Based Augmentation 1393<br />
+Metaclasses Versus Class Decorators: Round 2 1394<br />
+Example: Applying Decorators to Methods 1400<br />
+Tracing with Decoration Manually 1400<br />
+Tracing with Metaclasses and Decorators 1401<br />
+Applying Any Decorator to Methods 1403<br />
+Metaclasses Versus Class Decorators: Round 3 (and Last) 1404<br />
+Chapter Summary 1407<br />
+Test Your Knowledge: Quiz 1407<br />
+Test Your Knowledge: Answers 1408<br />
+41. All Good Things . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1409<br />
+The Python Paradox 1409<br />
+On �??Optional�?� Language Features 1410<br />
+Against Disquieting Improvements 1411<br />
+Complexity Versus Power 1412<br />
+Simplicity Versus Elitism 1412<br />
+Closing Thoughts 1413<br />
+Where to Go From Here 1414<br />
+Encore: Print Your Own Completion Certificate! 1414<br />
+Part IX. Appendixes<br />
+A. Installation and Configuration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1421<br />
+Installing the Python Interpreter 1421<br />
+Is Python Already Present? 1421<br />
+Where to Get Python 1422<br />
+Installation Steps 1423<br />
+xxx | Table of Contents<br />
+<br />
+Configuring Python 1427<br />
+Python Environment Variables 1427<br />
+How to Set Configuration Options 1429<br />
+Python Command-Line Arguments 1432<br />
+Python 3.3 Windows Launcher Command Lines 1435<br />
+For More Help 1436<br />
+B. The Python 3.3 Windows Launcher . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1437<br />
+The Unix Legacy 1437<br />
+The Windows Legacy 1438<br />
+Introducing the New Windows Launcher 1439<br />
+A Windows Launcher Tutorial 1441<br />
+Step 1: Using Version Directives in Files 1441<br />
+Step 2: Using Command-Line Version Switches 1444<br />
+Step 3: Using and Changing Defaults 1445<br />
+Pitfalls of the New Windows Launcher 1447<br />
+Pitfall 1: Unrecognized Unix !# Lines Fail 1447<br />
+Pitfall 2: The Launcher Defaults to 2.X 1448<br />
+Pitfall 3: The New PATH Extension Option 1449<br />
+Conclusions: A Net Win for Windows 1450<br />
+C. Python Changes and This Book . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1451<br />
+Major 2.X/3.X Differences 1451<br />
+3.X Differences 1452<br />
+3.X-Only Extensions 1453<br />
+General Remarks: 3.X Changes 1454<br />
+Changes in Libraries and Tools 1454<br />
+Migrating to 3.X 1455<br />
+Fifth Edition Python Changes: 2.7, 3.2, 3.3 1456<br />
+Changes in Python 2.7 1456<br />
+Changes in Python 3.3 1457<br />
+Changes in Python 3.2 1458<br />
+Fourth Edition Python Changes: 2.6, 3.0, 3.1 1458<br />
+Changes in Python 3.1 1458<br />
+Changes in Python 3.0 and 2.6 1459<br />
+Specific Language Removals in 3.0 1460<br />
+Third Edition Python Changes: 2.3, 2.4, 2.5 1462<br />
+Earlier and Later Python Changes 1463<br />
+D. Solutions to End-of-Part Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1465<br />
+Part I, Getting Started 1465<br />
+Part II, Types and Operations 1467<br />
+Part III, Statements and Syntax 1473<br />
+Table of Contents | xxxi<br />
+<br />
+Part IV, Functions and Generators 1475<br />
+Part V, Modules and Packages 1485<br />
+Part VI, Classes and OOP 1489<br />
+Part VII, Exceptions and Tools 1497</code></div></div><br />
+<div style="text-align: center;" class="mycode_align"><a href="https://jumpshare.com/v/vZtKpqhZo1awMCiHIHy5" target="_blank" class="mycode_url"><span style="font-weight: bold;" class="mycode_b"><span style="color: #ff3333;" class="mycode_color">Download</span></span></a></div>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_775841">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_775841"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="https://i.imgur.com/Vs4P58c.png" loading="lazy" alt="[Image: Vs4P58c.png]" class="mycode_img" /></div>
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_775841">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(775841);return false;" title="[+]" id="tyl_a_expcol_775841"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_775841" /></a>  
+	<span id="tyl_title_775841" style="display: none;"></span><span id="tyl_title_collapsed_775841" style=""></span><br />
+	<span id="tyl_data_775841" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=81998" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=81998" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=81998" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_775841" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=775841&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(775841, 91405); return false;" title="Like this Post" id="tyl_a775841"><span id="tyl_i775841">Like</span></a></div>
+
+<a href="newreply.php?tid=91405&amp;replyto=775841" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(775841); return false;" style="display: none;" id="multiquote_link_775841" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_775841">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_775841').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(775841); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=91405" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=91405&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: Learning Python, 5th Edition" />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="13f2144017f84049f2e6b4fe3b99f996" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="775841" />
+	<input type="hidden" name="from_page" value="1" />
+	<input type="hidden" name="tid" value="91405" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=91405&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="91405" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: <a href="User-seraleOne" title="Reading&hellip; (09:28 AM)"><span style="color: #b8b8b8;">seraleOne</span></a></span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(107);"><br />
+<center>
+<span title="Xleet.to"><a href="https://xleet.to/"><img src="https://i.imgur.com/Mjw7cY8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-91405.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '91405',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

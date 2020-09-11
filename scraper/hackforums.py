@@ -12,8 +12,8 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 2
-NO_OF_THREADS = 2
+REQUEST_DELAY = 1
+NO_OF_THREADS = 10
 # USERNAME = "vrx9"
 # PASSWORD = "Night#Hack001"
 # USERNAME = "z234567890"

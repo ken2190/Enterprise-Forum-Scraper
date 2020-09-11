@@ -1,0 +1,2189 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Going for WR: The Process of Speedrunning</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=94431&amp;page=1&amp;perpage=10&amp;fid=57&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=94431&amp;page=1&amp;perpage=10&amp;fid=57&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=94431&page=1&perpage=10&fid=57" />
+        
+<meta name="description" content="Woah, how can he play that fast? Speedrunning, an age-old method of playing games as fast as possible, has been around since timers existed in games. Instead of playing it slow, enjoying the story and" />
+<link rel="canonical" href="https://sinister.ly/Thread-Going-for-WR-The-Process-of-Speedrunning" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DGoing-for-WR-The-Process-of-Speedrunning"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Gaming"><span>Gaming</span></a></li>
+
+<li><a href="Forum-Cross-Platform?page=4"><span>Cross-Platform</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>Going for WR: The Process of Speedrunning</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(110);"><br />
+<center>
+<span title="Odin.to"><a href="https://odin.to/"><img src="https://i.imgur.com/Tnvx2M9.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=94431" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>Going for WR: The Process of Speedrunning</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=94431">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=94431&amp;pid=798003#pid798003" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=94431&amp;pid=798003#pid798003" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=94431">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=94431">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=94431&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid798003" id="pid798003"></a>
+<div class="post classic tborder tfixed " style="" id="post_798003">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_89|111" href="User-BurritoBeans"><img src="https://sinister.ly/uploads/avatars/avatar_60722.gif?dateline=1457402749" alt="" width="89" height="111" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-BurritoBeans"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">BurritoBeans</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Potato-dono!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF3E13;"><strong>Four Years of Service</strong></div>
+<div>Posts: <span class="float_right">335</span></div>
+	<div>Threads: <span class="float_right">17</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=60722"><strong class="reputation_positive">32</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">120 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=60722">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-10-2018, 02:32 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798003#pid798003" class="thead posturl" title="Going for WR: The Process of Speedrunning">#1</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798003">
+	<span style="font-style: italic;" class="mycode_i">Woah, how can he play that fast?</span><br />
+<br />
+<span style="text-decoration: underline;" class="mycode_u">Speedrunning</span>, an age-old method of playing games as fast as possible, has been around since timers existed in games. Instead of playing it slow, enjoying the story and scenery, you’re trying to go as fast as humanly possible (with methods determined by the category) to beat the game and hopefully be faster than anyone else.<br />
+<br />
+So why does this thread exist? Well, it’s not an explanation as much as it is documenting the process of myself attempting to do a serious run for the first time in over four years.<br />
+<br />
+<span style="font-size: large;" class="mycode_size"><span style="font-weight: bold;" class="mycode_b">The Method:</span></span><br />
+I will be picking a game - selected at random by means of a random number generator with the numbers relating to games in my collection which I have the means to record - and devote at least one month of gameplay with the purpose of going as fast as possible to it. <br />
+<br />
+Requirements that I have set for myself include:<ul class="mycode_list"><li>The game must be played for at least an hour a day to make and be able to show some sort of progression<br />
+</li>
+<li>If able to compete on leaderboards times will be posted online and verified by those in the scene to show that they’re legitimate - this will involve video proof which will be put on Youtube<br />
+</li>
+<li>Even if the first week of gameplay is me getting Game Over after Game Over I will still post my failures to show that I am making some sort of progress<br />
+</li>
+<li>If I go for more than two days without a valid excuse as to why I couldn’t play I will consider this project a failure and either reset with a new game or end it<br />
+</li>
+</ul>
+<span style="font-size: large;" class="mycode_size"><br />
+<span style="font-weight: bold;" class="mycode_b">The Purpose:</span></span><br />
+I’ve always loved speedrunning - I remember watching things like Lockwood hitting Streets 1:12, andrewg1990 setting record on top of record in Super Mario Bros, the early Games Done Quick events when it was just a room of people from the community, and heck even I was fairly active in Goldeneye from 2006 to 2014 trying to compete in the rankings. I ended up quitting speedrunning to go pursue other hobbies and kicked it to the side - sure I worked on a TAS here or there and kept my skills up for GE/PD, but I felt like I left a big part of what kept me playing games behind.<br />
+<br />
+So, like stated above, this is a way for me to document my process - I figure that if I say “oh I’ll do it” to one person on Discord that I’ll just give up in two days like most of what I say I’ll try to get done. Being that this is going on a forum and I'm making a commitment to posting this will give me some more incentive to try and do well instead of giving up and going back to just watching runs on youtube.<br />
+<br />
+<span style="font-size: large;" class="mycode_size"><span style="font-weight: bold;" class="mycode_b">The Issues:</span></span><br />
+As with everything I try to dedicate time to in life, issues arise. Currently there is school, work, D&amp;D sessions, and other projects like finishing up my guitar amp builds and starting on my Dekatron-based devices.<br />
+<br />
+<span style="font-size: large;" class="mycode_size"><span style="font-weight: bold;" class="mycode_b">The Restrictions:</span></span><br />
+Due to TASing and old runs I will not be allowing myself to play any game which I already know inside and out. I am going to allow myself to watch other runs to get a general sense of tricks, but I’m not going to allow breakdowns of specific tricks - if I want to figure it out I’ll either do it myself or I won't do it at all.<br />
+<span style="font-size: large;" class="mycode_size"><br />
+<span style="font-weight: bold;" class="mycode_b">The Start:</span></span><br />
+I’ll be tallying up the number of games which I can play on real hardware over the course of Saturday and either by the end of Saturday or 10:00PM on Sunday I will have a game picked out and start on either Sunday or Monday.<br />
+<br />
+<span style="font-size: large;" class="mycode_size"><span style="font-weight: bold;" class="mycode_b">The Documentation:</span></span><br />
+Every week of results will include at the very least:<ul class="mycode_list"><li>Video proof of my gameplay<br />
+</li>
+<li>Detail on how the gameplay went<br />
+</li>
+<li>Detail on plans for the next week of gameplay<br />
+</li>
+</ul>
+More content will be added as seen fit, but for now I think that what I have listed is enough.<br />
+<span style="font-size: large;" class="mycode_size"><br />
+<span style="font-weight: bold;" class="mycode_b">The Excuses:</span></span><br />
+If I am unable to play due to jeopardizing my grades, work issues, and/or other life-based events I will skip a day - I’d love to commit more time to this but I don’t want to ruin my life while doing it.<br />
+<br />
+<span style="font-size: large;" class="mycode_size"><span style="font-weight: bold;" class="mycode_b">The End:</span></span><br />
+I don’t have any plans but the ultimate goal would be to pick a game with which I could go for the world record and continue to play until I can claim that spot for myself - depending on the popularity of whatever game is picked this may be impossible as optimization can be nuts (go watch Goldeneye, it takes me and just about everyone else hundreds of hours just to cut one second on times nowadays) - if I can’t then I would like to be at a decent spot to say the least.<br />
+<br />
+<span style="font-size: large;" class="mycode_size"><span style="font-weight: bold;" class="mycode_b">Conclusions:</span></span><br />
+Forcing myself to play a game which I don’t even know may sound crazy but I feel that if I get this out and either succeed at improving or show my failure that I should be able to give myself some sort of kick back into the scene.<br />
+<br />
+<span style="text-decoration: underline;" class="mycode_u">If you want to be crazy alongside me</span>, feel free to join in - you don’t need to make similar commitments but I’d love to see what other people in the community can do be it challenging me to the game I’m playing or starting your own.<br />
+<br />
+As-mentioned, I will have a game picked out by Sunday at 10:00PM - expect to see weekly updates and if people enjoy watching me struggle enough I may take this farther than I already am.<br />
+<br />
+<span style="font-style: italic;" class="mycode_i">Thanks for reading,<br />
+BurritoBeans</span>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798003">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798003"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: x-small;" class="mycode_size">airgames, on 08 Dec 2014 - 5:24 PM, said:<br />
+close this discussion of dick !!<br />
+I broke !!<br />
+thanks<br />
+<br />
+'backin89', on 22 Dec 2010 - 6:40 PM, said:<br />
+Igot your fucking crackpipe bitch. i dont even smoke cigarrettes. i hope you all sleep in the fucking cold</span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798003">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798003);return false;" title="[+]" id="tyl_a_expcol_798003"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798003" /></a>  
+	<span id="tyl_title_798003" style="display: none;"></span><span id="tyl_title_collapsed_798003" style=""></span><br />
+	<span id="tyl_data_798003" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=60722" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=60722" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=60722" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798003" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798003&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798003, 94431); return false;" title="Like this Post" id="tyl_a798003"><span id="tyl_i798003">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798003" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798003); return false;" style="display: none;" id="multiquote_link_798003" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798003">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798003').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798003); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798006" id="pid798006"></a>
+<div class="post classic tborder tfixed " style="" id="post_798006">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Skullmeat"><img src="https://sinister.ly/uploads/avatars/avatar_6.png?dateline=1599624163" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Skullmeat"><span style="text-shadow: 0 0 5px #9a9a9a;color: #9a9a9a; font-weight: bold;color: #9a9a9a;">Skullmeat</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Soooo Tasty!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/diamond.png" alt="Registered (Diamond)" title="Registered (Diamond)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">2,467</span></div>
+	<div>Threads: <span class="float_right">262</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6"><strong class="reputation_positive">65</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">396 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Social.png" alt="Social" title="Social" /><img src="uploads/awards/Tech Savvy.png" alt="Tech Savvy" title="Tech Savvy" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Santa Hat.png" alt="Santa Hat" title="Santa Hat" /><img src="uploads/awards/Gamer.png" alt="Gamer" title="Gamer" /><img src="uploads/awards/akane.png" alt="Akane" title="Akane" /><img src="uploads/awards/Ninja.png" alt="Ninja" title="Ninja" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-10-2018, 02:49 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798006#pid798006" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#2</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798006">
+	Paper Mario. For 300+ frame perfect inputs.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798006">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798006"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://i.skull.moe/skullsig5_2.png" loading="lazy" alt="[Image: skullsig5_2.png]" class="mycode_img" /></div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798006">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798006);return false;" title="[+]" id="tyl_a_expcol_798006"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798006" /></a>  
+	<span id="tyl_title_798006" style="display: none;"></span><span id="tyl_title_collapsed_798006" style=""></span><br />
+	<span id="tyl_data_798006" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798006" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798006&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798006, 94431); return false;" title="Like this Post" id="tyl_a798006"><span id="tyl_i798006">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798006" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798006); return false;" style="display: none;" id="multiquote_link_798006" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798006">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798006').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798006); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798023" id="pid798023"></a>
+<div class="post classic tborder tfixed " style="" id="post_798023">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_" href="User-hy6rid"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-hy6rid"><span style="color: #b8b8b8;">hy6rid</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Junior Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF7860;"><strong>Two Years of Service</strong></div>
+<div>Posts: <span class="float_right">26</span></div>
+	<div>Threads: <span class="float_right">0</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=88321"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">25 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=88321">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-10-2018, 05:19 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798023#pid798023" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#3</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798023">
+	speed running has never been really interesting for me tbh. I just like the adventure aspect of a game, not the high scores part.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798023">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798023"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798023">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798023);return false;" title="[+]" id="tyl_a_expcol_798023"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798023" /></a>  
+	<span id="tyl_title_798023" style="display: none;"></span><span id="tyl_title_collapsed_798023" style=""></span><br />
+	<span id="tyl_data_798023" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=88321" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=88321" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798023" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798023&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798023, 94431); return false;" title="Like this Post" id="tyl_a798023"><span id="tyl_i798023">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798023" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798023); return false;" style="display: none;" id="multiquote_link_798023" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798023">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798023').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798023); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798025" id="pid798025"></a>
+<div class="post classic tborder tfixed " style="" id="post_798025">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-Skullmeat"><img src="https://sinister.ly/uploads/avatars/avatar_6.png?dateline=1599624163" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Skullmeat"><span style="text-shadow: 0 0 5px #9a9a9a;color: #9a9a9a; font-weight: bold;color: #9a9a9a;">Skullmeat</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Soooo Tasty!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><img src="/images/groupimages/userstars/diamond.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/diamond.png" alt="Registered (Diamond)" title="Registered (Diamond)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">2,467</span></div>
+	<div>Threads: <span class="float_right">262</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6"><strong class="reputation_positive">65</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">396 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Social.png" alt="Social" title="Social" /><img src="uploads/awards/Tech Savvy.png" alt="Tech Savvy" title="Tech Savvy" /><img src="uploads/awards/Cookie.png" alt="Cookie" title="Cookie" /><img src="uploads/awards/Santa Hat.png" alt="Santa Hat" title="Santa Hat" /><img src="uploads/awards/Gamer.png" alt="Gamer" title="Gamer" /><img src="uploads/awards/akane.png" alt="Akane" title="Akane" /><img src="uploads/awards/Ninja.png" alt="Ninja" title="Ninja" /><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-10-2018, 05:21 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798025#pid798025" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#4</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798025">
+	<blockquote class="mycode_quote"><cite><span> (02-10-2018, 05:19 AM)</span>hy6rid Wrote:  <a href="https://sinister.ly/Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798023#pid798023" class="quick_jump"></a></cite>speed running has never been really interesting for me tbh. I just like the adventure aspect of a game, not the high scores part.</blockquote><br />
+Speedrunning isn't about scores, its about completing the game as quickly as possible.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798025">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798025"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://i.skull.moe/skullsig5_2.png" loading="lazy" alt="[Image: skullsig5_2.png]" class="mycode_img" /></div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798025">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798025);return false;" title="[+]" id="tyl_a_expcol_798025"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798025" /></a>  
+	<span id="tyl_title_798025" style="display: none;"></span><span id="tyl_title_collapsed_798025" style=""></span><br />
+	<span id="tyl_data_798025" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798025" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798025&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798025, 94431); return false;" title="Like this Post" id="tyl_a798025"><span id="tyl_i798025">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798025" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798025); return false;" style="display: none;" id="multiquote_link_798025" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798025">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798025').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798025); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798028" id="pid798028"></a>
+<div class="post classic tborder tfixed " style="" id="post_798028">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_" href="User-hy6rid"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-hy6rid"><span style="color: #b8b8b8;">hy6rid</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Junior Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF7860;"><strong>Two Years of Service</strong></div>
+<div>Posts: <span class="float_right">26</span></div>
+	<div>Threads: <span class="float_right">0</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=88321"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">25 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=88321">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-10-2018, 05:33 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798028#pid798028" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#5</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798028">
+	<blockquote class="mycode_quote"><cite><span> (02-10-2018, 05:21 AM)</span>Skullmeat Wrote:  <a href="https://sinister.ly/Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798025#pid798025" class="quick_jump"></a></cite><blockquote class="mycode_quote"><cite><span> (02-10-2018, 05:19 AM)</span>hy6rid Wrote:  <a href="https://sinister.ly/Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798023#pid798023" class="quick_jump"></a></cite>speed running has never been really interesting for me tbh. I just like the adventure aspect of a game, not the high scores part.</blockquote><br />
+Speedrunning isn't about scores, its about completing the game as quickly as possible.</blockquote><br />
+ye.. that's what I mean... like you're trying to get the lowest time, which is what I meant by score
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798028">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798028"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798028">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798028);return false;" title="[+]" id="tyl_a_expcol_798028"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798028" /></a>  
+	<span id="tyl_title_798028" style="display: none;"></span><span id="tyl_title_collapsed_798028" style=""></span><br />
+	<span id="tyl_data_798028" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=88321" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=88321" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798028" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798028&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798028, 94431); return false;" title="Like this Post" id="tyl_a798028"><span id="tyl_i798028">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798028" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798028); return false;" style="display: none;" id="multiquote_link_798028" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798028">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798028').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798028); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798039" id="pid798039"></a>
+<div class="post classic tborder tfixed " style="" id="post_798039">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_115|125" href="User-ZOM-BIES"><img src="https://sinister.ly/uploads/avatars/avatar_88353.png?dateline=1517224431" alt="" width="115" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-ZOM-BIES"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">ZOM_BIES</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Went for Bronze, got Silver.</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF7860;"><strong>Two Years of Service</strong></div>
+<div>Posts: <span class="float_right">208</span></div>
+	<div>Threads: <span class="float_right">12</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=88353"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">35 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=88353">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-10-2018, 08:17 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798039#pid798039" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#6</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798039">
+	looking forward to this, I personally never spedran (that's how u write it?) any games <img src="https://sinister.ly/images/smilies/set/sad.png" alt="Sad" title="Sad" class="smilie smilie_22" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798039">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798039"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><span style="color: #33cccc;" class="mycode_color">...حىنما تكذب<br />
+... حاول ان تكذب باتقان<br />
+!و تحترم ذكاء الآخرىن </span></div>[/align]<br />
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798039">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798039);return false;" title="[+]" id="tyl_a_expcol_798039"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798039" /></a>  
+	<span id="tyl_title_798039" style="display: none;"></span><span id="tyl_title_collapsed_798039" style=""></span><br />
+	<span id="tyl_data_798039" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=88353" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=88353" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798039" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798039&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798039, 94431); return false;" title="Like this Post" id="tyl_a798039"><span id="tyl_i798039">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798039" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798039); return false;" style="display: none;" id="multiquote_link_798039" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798039">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798039').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798039); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798162" id="pid798162"></a>
+<div class="post classic tborder tfixed " style="" id="post_798162">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_89|111" href="User-BurritoBeans"><img src="https://sinister.ly/uploads/avatars/avatar_60722.gif?dateline=1457402749" alt="" width="89" height="111" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-BurritoBeans"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">BurritoBeans</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Potato-dono!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF3E13;"><strong>Four Years of Service</strong></div>
+<div>Posts: <span class="float_right">335</span></div>
+	<div>Threads: <span class="float_right">17</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=60722"><strong class="reputation_positive">32</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">120 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=60722">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-11-2018, 04:44 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798162#pid798162" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#7</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798162">
+	<span style="text-decoration: underline;" class="mycode_u">After a few hours of documenting 1,197 eligible games, the one which was picked to be ran is...</span><br />
+<br />
+<span style="font-weight: bold;" class="mycode_b"><span style="font-size: large;" class="mycode_size">Update: 2/11/18: </span></span><br />
+After talking with three different people from the community who I have some sort of connection to on Lufia being the run to get me back into running I was told that I'm a complete idiot - that makes sense. I know that  I said I'd stick with what I've got but being that runners who usually play JRPGs are telling me that it's a mistake makes me quite worried - <span style="text-decoration: underline;" class="mycode_u">because of this, I'll be switching my game</span>. Expect a new post with the game to be ran and some sort of start by the end of today.<br />
+<br />
+<span style="font-size: xx-small;" class="mycode_size"><span style="text-decoration: line-through;" class="mycode_s">Lufia &amp; The Fortress of Doom<br />
+Platform: SNES<br />
+Year Released - 1993<br />
+Genre - RPG<br />
+Developer - Neverland<br />
+Publisher - Taito<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">What do I know about this title?</span><br />
+Well, I know that I got this when I was five at a local EB Games (before they were Gamestop anyways) which had it sitting on a shelf - the box looked neat and I wanted to have more than Super Mario World on the Super Nintendo which I used when I wasn't on the 3DO, so I convinced my parents to get it for me as it was only &#36;10 or so. I vaguely remember beating it but I had to be in elementary school, maybe eight or nine years old at most - the most I can remember off the top of my head is that it was fun but took a while to get through.<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">The Issues</span><br />
+Well, for starters, I know that it took a ton of time when I first played it - if I can clear it without knowing anything in the first week then I'll be absolutely amazed. Alongside that, usually I don't like to speed through RPGs - I'm going to have to teach myself to work with less grinding/over-leveling and hope for the best.<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">A Possible Adjustment</span><br />
+<span style="font-weight: bold;" class="mycode_b">Due to this being the game which was picked</span> I may have to increase time for practice to a few hours at least per session - this isn't a short RPG by any means. If this becomes an issue (Which I'd imagine it may depending on my work schedule) I may only play every other day for a full session but I'd like to keep playtime as a daily thing even if only to make small bits of progress. <br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">The Setup</span><br />
+Since as-mentioned earlier I can't stream on my connection, the very best I can do is record my time and come up with some split system that can then be uploaded to somewhere like youtube. I will <span style="font-style: italic;" class="mycode_i">only</span> be playing on real hardware - a NTSC-U SNES - with the video going out to whatever capture card I can get and the video being displayed on a seperate monitor.<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">The (Current) Plan</span><br />
+My goal is to have <span style="text-decoration: underline;" class="mycode_u">at least</span> one full playthrough of this, probably segmented, within two weeks from now - one week would be amazing, the less time the better, but it'll depend on how fast I can figure the game out. Once that is done, alongside practicing, I would optimally have a basic route plotted out by the end of the month.<br />
+<br />
+Due to it being just about midnight at the time of posting this, I'm going to hold back playtime until after I get some sleep - expect to see the first progress update at the end of next week with the chance of updates during the week depending on what I get done.</span></span>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798162">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798162">
+<span class="edited_post">(This post was last modified: 02-11-2018, 04:23 PM by <a href="https://sinister.ly/User-BurritoBeans">BurritoBeans</a>.)</span>
+</div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: x-small;" class="mycode_size">airgames, on 08 Dec 2014 - 5:24 PM, said:<br />
+close this discussion of dick !!<br />
+I broke !!<br />
+thanks<br />
+<br />
+'backin89', on 22 Dec 2010 - 6:40 PM, said:<br />
+Igot your fucking crackpipe bitch. i dont even smoke cigarrettes. i hope you all sleep in the fucking cold</span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798162">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798162);return false;" title="[+]" id="tyl_a_expcol_798162"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798162" /></a>  
+	<span id="tyl_title_798162" style="display: none;"></span><span id="tyl_title_collapsed_798162" style=""></span><br />
+	<span id="tyl_data_798162" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=60722" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=60722" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=60722" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798162" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798162&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798162, 94431); return false;" title="Like this Post" id="tyl_a798162"><span id="tyl_i798162">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798162" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798162); return false;" style="display: none;" id="multiquote_link_798162" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798162">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798162').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798162); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798164" id="pid798164"></a>
+<div class="post classic tborder tfixed " style="" id="post_798164">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_89|111" href="User-BurritoBeans"><img src="https://sinister.ly/uploads/avatars/avatar_60722.gif?dateline=1457402749" alt="" width="89" height="111" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-BurritoBeans"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">BurritoBeans</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Potato-dono!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF3E13;"><strong>Four Years of Service</strong></div>
+<div>Posts: <span class="float_right">335</span></div>
+	<div>Threads: <span class="float_right">17</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=60722"><strong class="reputation_positive">32</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">120 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=60722">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-11-2018, 04:51 AM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798164#pid798164" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#8</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798164">
+	<blockquote class="mycode_quote"><cite><span> (02-10-2018, 02:49 AM)</span>Skullmeat Wrote:  <a href="https://sinister.ly/Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798006#pid798006" class="quick_jump"></a></cite>Paper Mario. For 300+ frame perfect inputs.</blockquote>In my dreams. For anyone who doesn't get this reference and has interest in possibly the most complex trick in a Nintendo 64 game, please take the seven minutes to watch this video:<br />
+<iframe width="560" height="315" src="//www.youtube.com/embed/8u2PqzWqSaE" frameborder="0" allowfullscreen></iframe><br />
+<br />
+<blockquote class="mycode_quote"><cite><span> (02-10-2018, 05:19 AM)</span>hy6rid Wrote:  <a href="https://sinister.ly/Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798023#pid798023" class="quick_jump"></a></cite>speed running has never been really interesting for me tbh. I just like the adventure aspect of a game, not the high scores part.</blockquote>Yeah, it's all really personal preference. I love it myself - I spent a ton of time playing games like Goldeneye/Perfect Dark/Timesplitters which encourage quick play and made me love the concept - but hey, at least you know what you like.<br />
+<br />
+<blockquote class="mycode_quote"><cite><span> (02-10-2018, 08:17 AM)</span>ZOM_BIES Wrote:  <a href="https://sinister.ly/Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798039#pid798039" class="quick_jump"></a></cite>looking forward to this, I personally never spedran (that's how u write it?) any games <img src="https://sinister.ly/images/smilies/set/sad.png" alt="Sad" title="Sad" class="smilie smilie_22" /></blockquote><br />
+Well, you could always give it a try xD<br />
+<br />
+Really though, thanks for showing interest - I'm never exactly that sure if I should write threads since I feel that topics will just be bumped out and die in three replies so I like knowing that someone may at least follow it for a little while.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798164">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798164"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: x-small;" class="mycode_size">airgames, on 08 Dec 2014 - 5:24 PM, said:<br />
+close this discussion of dick !!<br />
+I broke !!<br />
+thanks<br />
+<br />
+'backin89', on 22 Dec 2010 - 6:40 PM, said:<br />
+Igot your fucking crackpipe bitch. i dont even smoke cigarrettes. i hope you all sleep in the fucking cold</span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798164">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798164);return false;" title="[+]" id="tyl_a_expcol_798164"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798164" /></a>  
+	<span id="tyl_title_798164" style="display: none;"></span><span id="tyl_title_collapsed_798164" style=""></span><br />
+	<span id="tyl_data_798164" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=60722" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=60722" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=60722" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798164" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798164&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798164, 94431); return false;" title="Like this Post" id="tyl_a798164"><span id="tyl_i798164">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798164" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798164); return false;" style="display: none;" id="multiquote_link_798164" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798164">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798164').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798164); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid798283" id="pid798283"></a>
+<div class="post classic tborder tfixed " style="" id="post_798283">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_89|111" href="User-BurritoBeans"><img src="https://sinister.ly/uploads/avatars/avatar_60722.gif?dateline=1457402749" alt="" width="89" height="111" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-BurritoBeans"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">BurritoBeans</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Potato-dono!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF3E13;"><strong>Four Years of Service</strong></div>
+<div>Posts: <span class="float_right">335</span></div>
+	<div>Threads: <span class="float_right">17</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=60722"><strong class="reputation_positive">32</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">120 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=60722">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-11-2018, 06:29 PM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=798283#pid798283" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#9</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_798283">
+	<span style="font-style: italic;" class="mycode_i">So after hearing from now nine different people saying that Lufia is a complete mistake and to switch to a simpler and non-standard RPG, I've done just as such.</span><br />
+<br />
+<img src="https://i.imgur.com/IUNFBygl.jpg" loading="lazy" alt="[Image: IUNFBygl.jpg]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">Hydlide 3: Yami Kara no Houmonsha</span><br />
+Also Known As: Hydlide 3: The Space Memories<br />
+Year - 1989<br />
+Genre - Action RPG<br />
+Developer - T&amp;E Soft<br />
+Publisher - Namcot<br />
+<br />
+<span style="font-size: large;" class="mycode_size">So why the change to another RPG?</span><br />
+Well, I stuck with the same method of picking a game which goes a little something like this:<br />
+<ol type="1" class="mycode_list"><li>Put the amount of games into a random number generator<br />
+</li>
+<li>Have it pick a number<br />
+</li>
+<li>Go find that number in relation to the spreadsheet of games that I can play<br />
+</li>
+<li>Go get that game off the shelf<br />
+</li>
+</ol>
+This may be a complete mistake, but I know for a fact based on the first third of Super Hydlide that this should be a lot more tolerable - it plays more like Zelda and has a funky plot.<br />
+<br />
+<span style="font-size: large;" class="mycode_size">The (New) Issues</span><br />
+Well, to start, it's in Japanese - it's nothing complex, the Famicom never does anything more than standard kana characters due to graphical and memory limitations, but this means that I have to figure out menu options and make some sort of guide for myself. I could run from an emulator and use a patch for English but I'd much rather not as any patched ROM could be deemed cheating and invalidated by mods on speedrunning sites.<br />
+<br />
+<span style="font-size: large;" class="mycode_size">Are you going to change again?</span><br />
+Nope - I told myself that the first game would be the one I stuck with and broke it because people called me crazy for wanting to use Lufia, but at this point I feel that swapping again would be a mistake as I'd never actually get on with the concept.<br />
+<br />
+<span style="font-size: large;" class="mycode_size">Are glitches allowed?</span><br />
+Well, the category is going to be any% for this so the quicker the better - if I could find some ways to do things like make my stats crazy and be able to breeze through then that'd be amazing, but I guess I'll just have to see.<br />
+<br />
+<span style="font-size: large;" class="mycode_size">What if this game gets boring?</span><br />
+I'm sticking through until I feel I have a good run - if it gets that boring then I'll find a stopping place to leave the run and go start a new one.<br />
+<br />
+<span style="font-size: large;" class="mycode_size">The Goals</span><br />
+These are the same as I said they'd be in the Lufia post before I went back on it - I want to have a full run of the game by hopefully the end of the week, a route by the end of the month, and be able to submit times by the end of the month.<br />
+<br />
+Expect some sort of video soon, possibly by the end of the day if I can figure out anything.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_798283">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_798283"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: x-small;" class="mycode_size">airgames, on 08 Dec 2014 - 5:24 PM, said:<br />
+close this discussion of dick !!<br />
+I broke !!<br />
+thanks<br />
+<br />
+'backin89', on 22 Dec 2010 - 6:40 PM, said:<br />
+Igot your fucking crackpipe bitch. i dont even smoke cigarrettes. i hope you all sleep in the fucking cold</span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_798283">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(798283);return false;" title="[+]" id="tyl_a_expcol_798283"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_798283" /></a>  
+	<span id="tyl_title_798283" style="display: none;"></span><span id="tyl_title_collapsed_798283" style=""></span><br />
+	<span id="tyl_data_798283" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=60722" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=60722" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=60722" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_798283" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=798283&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(798283, 94431); return false;" title="Like this Post" id="tyl_a798283"><span id="tyl_i798283">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=798283" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(798283); return false;" style="display: none;" id="multiquote_link_798283" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_798283">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_798283').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(798283); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid799072" id="pid799072"></a>
+<div class="post classic tborder tfixed " style="" id="post_799072">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_89|111" href="User-BurritoBeans"><img src="https://sinister.ly/uploads/avatars/avatar_60722.gif?dateline=1457402749" alt="" width="89" height="111" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-BurritoBeans"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">BurritoBeans</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Potato-dono!</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF3E13;"><strong>Four Years of Service</strong></div>
+<div>Posts: <span class="float_right">335</span></div>
+	<div>Threads: <span class="float_right">17</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=60722"><strong class="reputation_positive">32</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">120 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=60722">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Going for WR: The Process of Speedrunning </span><span class="float_right"><span class="post_date postbit_date">02-17-2018, 11:44 PM </span> 
+<a href="Thread-Going-for-WR-The-Process-of-Speedrunning?pid=799072#pid799072" class="thead posturl" title="RE: Going for WR: The Process of Speedrunning">#10</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_799072">
+	<span style="font-size: large;" class="mycode_size">Week One</span><br />
+<br />
+If you can't guess based on the title, holy hell do I suck at this game. Due to this and other issues with recording, I won't have a video as you don't want to sit through nine hours of me walking into NPCs and then stabbing some dude in the kneecaps - it would have to be segmented (read under "The Bad) which invalidates the whole run - so maybe at a later date after this is said and done I'll put it up, until then it's going to sit in the pile of shame.<br />
+<br />
+<span style="font-size: large;" class="mycode_size">The Good:</span><br />
+<ol type="1" class="mycode_list"><li>I did clear the game with a time of 9h34min58sec. It's a bad time but it is a win.<br />
+</li>
+<li>I've got a basic idea on strategies for enemies<br />
+</li>
+<li>There is a list of splits to base my times off of.<br />
+</li>
+</ol>
+<span style="font-size: large;" class="mycode_size">The Bad:</span><br />
+<ol type="1" class="mycode_list"><li>My Japanese sucks so I have a hard time figuring out which items I do and don't want to get at stores. I've found the basics - weapons, armor, rations, the lamp and oil, etc. - but past that I've got as much of a clue as a seal.<br />
+</li>
+<li>My time is notably worse on this version of the game than Super Hydlide when I went and played it after my first clear - this is probably because Super Hydlide is somewhat easier gameplay-wise for what I can tell but most of it is probably just me being bad at the game.<br />
+</li>
+<li>I'm having constant issues with OBS stopping and starting or locking up when saving the video file once it goes for so long - I'm assuming this is my computer and due to needing an unedited video file for the run to be accepted I'll be switching to a different computer or finding out an alternative.<br />
+</li>
+</ol>
+<br />
+So yeah, a bit of good and a bit of bad. The recording-related issues should be worked out soon - I have an older mITX computer which I can use as a dedicated machine for recording and should play a bit nicer with the software. The one issue with this is that I'm using an RF-out Famicom, not an A/V Famicom, but the video quality is good enough that you can clearly see what's happening. For the issue of Japanese I'll be making myself some sort of sheet that lists out items and their translations to English which should help me out.<br />
+<br />
+On the topic of OBS I would like to know what people usually like for setups - currently it looks like this<br />
+<img src="https://i.imgur.com/O8nLQiul.png" loading="lazy" alt="[Image: O8nLQiul.png]" class="mycode_img" /><br />
+I may adjust splits but I'm sure there would still be blank space in the corner so I'd like to know if people think a camera of my hands on the controller logos and whatnot would be better to fill that blank space.<br />
+<br />
+<span style="font-size: large;" class="mycode_size">For Next Week</span><br />
+The goals are somewhat stated above, but for clarity I would like to:<br />
+<ol type="1" class="mycode_list"><li>Lower my time (Now that I have a general idea of the game, an hour or more would be nice)<br />
+</li>
+<li>Get a proper setup with which I can record and a somewhat better layout<br />
+</li>
+<li>Start on maps, lists, and routes<br />
+</li>
+<li>Put some sort of video online as a starting point<br />
+</li>
+</ol>
+
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_799072">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_799072"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: x-small;" class="mycode_size">airgames, on 08 Dec 2014 - 5:24 PM, said:<br />
+close this discussion of dick !!<br />
+I broke !!<br />
+thanks<br />
+<br />
+'backin89', on 22 Dec 2010 - 6:40 PM, said:<br />
+Igot your fucking crackpipe bitch. i dont even smoke cigarrettes. i hope you all sleep in the fucking cold</span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_799072">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(799072);return false;" title="[+]" id="tyl_a_expcol_799072"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_799072" /></a>  
+	<span id="tyl_title_799072" style="display: none;"></span><span id="tyl_title_collapsed_799072" style=""></span><br />
+	<span id="tyl_data_799072" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=60722" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=60722" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=60722" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_799072" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=799072&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(799072, 94431); return false;" title="Like this Post" id="tyl_a799072"><span id="tyl_i799072">Like</span></a></div>
+
+<a href="newreply.php?tid=94431&amp;replyto=799072" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(799072); return false;" style="display: none;" id="multiquote_link_799072" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_799072">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_799072').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(799072); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=94431" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=94431&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: Going for WR: The Process of Speedrunning" />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="248b752106d6176af168192bf27625d8" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="799072" />
+	<input type="hidden" name="from_page" value="1" />
+	<input type="hidden" name="tid" value="94431" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=94431&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="94431" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: <a href="User-seraleOne" title="Reading&hellip; (09:48 AM)"><span style="color: #b8b8b8;">seraleOne</span></a></span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(103);"><br />
+<center>
+<span title="sh3elltools.io"><a href="https://sh3elltools.io/"><img src="https://i.imgur.com/8Vz9XR8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-94431.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '94431',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

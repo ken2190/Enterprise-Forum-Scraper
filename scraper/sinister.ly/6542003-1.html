@@ -1,0 +1,2065 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Why the &quot;Xbox One&quot; has already failed.</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=13100&amp;page=1&amp;perpage=10&amp;fid=18&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=13100&amp;page=1&amp;perpage=10&amp;fid=18&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=13100&page=1&perpage=10&fid=18" />
+        
+<meta name="description" content="Microsoft has made MANY bad decisions when it comes to the Xbox One and I would like to state a few of them for you so that you may be a bit more informed. - No backwards compatibility. You won't be a" />
+<link rel="canonical" href="https://sinister.ly/Thread-Why-the-Xbox-One-has-already-failed" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DWhy-the-Xbox-One-has-already-failed"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Gaming"><span>Gaming</span></a></li>
+
+<li><a href="Forum-Microsoft-Consoles?page=15"><span>Microsoft Consoles</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>Why the &quot;Xbox One&quot; has already failed.</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(106);"><br />
+<center>
+<span title="Xleet.to"><a href="https://xleet.to/"><img src="https://i.imgur.com/Mjw7cY8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+ <span class="pagination_current">1</span>
+
+<a href="Thread-Why-the-Xbox-One-has-already-failed?page=2" class="pagination_page">2</a>
+
+<a href="Thread-Why-the-Xbox-One-has-already-failed?page=3" class="pagination_page">3</a>
+
+<a href="Thread-Why-the-Xbox-One-has-already-failed?page=2" class="pagination_next">Next &raquo;</a>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=13100" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>Why the &quot;Xbox One&quot; has already failed.</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=13100">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=13100&amp;pid=123063#pid123063" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=13100&amp;pid=123063#pid123063" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=13100">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=13100">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=13100&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid123063" id="pid123063"></a>
+<div class="post classic tborder tfixed " style="" id="post_123063">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_0" href="User-PhysXtron"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-PhysXtron"><span style="color: #b8b8b8;">PhysXtron</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">52</span></div>
+	<div>Threads: <span class="float_right">17</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6276"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">1 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6276">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-24-2013, 07:42 PM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123063#pid123063" class="thead posturl" title="Why the &quot;Xbox One&quot; has already failed.">#1</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123063">
+	<div style="text-align: center;" class="mycode_align">Microsoft has made MANY bad decisions when it comes to the Xbox One and I would like to state a few of them for you so that you may be a bit more informed.<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">- No backwards compatibility.</span><br />
+<span style="font-style: italic;" class="mycode_i">You won't be able to play all those xbox 360 games you played over the years on your new system.</span><br />
+<span style="font-size: xx-small;" class="mycode_size">Note - PS4 doesn't support backwards compatibility either but we're discussing Microsoft here.</span><br />
+<br />
+<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">- Horrible reception at the reveal.  Why you ask?</span><br />
+<span style="font-style: italic;" class="mycode_i">1. Microsoft's over-hyped, constantly advertised reveal was a short, tepid display of marketing which left a lot of people saying .. "Is that all you got?"<br />
+<br />
+2. Sony's stock actually JUMPED 9% after One was revealed while Microsoft's stock dropped .66% (Neither good nor bad...Which is bad because they just revealed a new console which should phase the stock more than <span style="color: #FF0000;" class="mycode_color">-.66%</span>.)<br />
+<br />
+3. COD, SPORTS, TV were the the main buzz words used during the reveal.  We've had all of these three things for YEARS now ... how dull.  They made it clear they had absolutely nothing new to bring to the table and they are solely relying on hype to sell this generation's Xbox. </span><br />
+<br />
+4.  We were told that we were going to have 15 new exclusives and yet they only premiered 2 games which were Quantum Break and Forza 5.  <br />
+<br />
+<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">- A regular internet connection is required to even play single player games on your Xbox One.</span><br />
+<span style="font-style: italic;" class="mycode_i">Yes you heard right.  Microsoft will require to check into your internet at least once a day.  So if your internet were to go out for a week, you would not be able to play your Xbox One for that week.  Have fun!</span><br />
+<br />
+<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">- Your new Xbox One will ALWAYS WATCH YOU (Via Kinect).</span><br />
+<span style="font-style: italic;" class="mycode_i">Your Xbox One will always have to be connected to its partner in crime; The Kinect, and they can watch you legally 24/7.  It's like paying to be ratted!</span><br />
+<span style="font-style: italic;" class="mycode_i">Here's something else for you to think about too. "Microsoft has filed a patent last year on a method of using Kinect to monitor an entire room to confirm that everyone watching a movie or other content has purchased an individual license for watching that content."  Imagine having to kick your friend out because he hasn't bought the license to watch the movie.  Yeah.  Something like that.</span><br />
+<br />
+<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">You will have to install every single game you purchase.</span><br />
+<span style="font-style: italic;" class="mycode_i">That's right.  Every game you get for your Xbox One, will have to be installed before you can play it.  This will test your patience when installing the game, and your HDD's memory.<br />
+</span><br />
+<br />
+<br />
+<span style="font-weight: bold;" class="mycode_b">Paying EXTRA to play used games.</span><br />
+<span style="font-style: italic;" class="mycode_i">You will have to pay an extra fee to install a used game to your Xbox One.  Might as well buy the game new, right?<br />
+</span><br />
+<br />
+<br />
+That's all I really have right now.  I'm sure I've missed some key points here but I'll add them later.<br />
+Overall Microsoft have displayed some smart, yet blunderous marketing decisions over the past few months that has definitely hurt them.</div>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123063">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123063"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123063">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123063);return false;" title="[+]" id="tyl_a_expcol_123063"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123063" /></a>  
+	<span id="tyl_title_123063" style="display: none;"></span><span id="tyl_title_collapsed_123063" style=""></span><br />
+	<span id="tyl_data_123063" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6276" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6276" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6276" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123063" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123063&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123063, 13100); return false;" title="Like this Post" id="tyl_a123063"><span id="tyl_i123063">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123063" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123063); return false;" style="display: none;" id="multiquote_link_123063" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123063">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123063').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123063); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123065" id="pid123065"></a>
+<div class="post classic tborder tfixed " style="" id="post_123065">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_94|125" href="User-Mafia"><img src="https://sinister.ly/uploads/avatars/avatar_6128.jpg?dateline=1489103708" alt="" width="94" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Mafia"><span style="text-shadow: 0 0 5px #C0C0C0; color: #C0C0C0; font-weight: bold;">Mafia</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">imgay</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><img src="/images/groupimages/userstars/silver.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/silver.png" alt="Registered (Silver)" title="Registered (Silver)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">2,357</span></div>
+	<div>Threads: <span class="float_right">195</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6128"><strong class="reputation_positive">15</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">107 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6128">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Elite.png" alt="Elite" title="Elite" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-24-2013, 07:47 PM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123065#pid123065" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#2</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123065">
+	I agree, I was always a console gamer, now I'm just going on PC
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123065">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123065"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123065">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123065);return false;" title="[+]" id="tyl_a_expcol_123065"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123065" /></a>  
+	<span id="tyl_title_123065" style="display: none;"></span><span id="tyl_title_collapsed_123065" style=""></span><br />
+	<span id="tyl_data_123065" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6128" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6128" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://onlymafia.pw" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6128" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123065" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123065&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123065, 13100); return false;" title="Like this Post" id="tyl_a123065"><span id="tyl_i123065">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123065" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123065); return false;" style="display: none;" id="multiquote_link_123065" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123065">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123065').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123065); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123107" id="pid123107"></a>
+<div class="post classic tborder tfixed " style="" id="post_123107">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_100|100" href="User-Judas"><img src="https://sinister.ly/uploads/avatars/avatar_6075.jpeg?dateline=1395505114" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Judas"><span style="color: #934afa; font-weight: bold;">Judas</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">zombies</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/legends.png" alt="Registered (Legends)" title="Registered (Legends)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">2,188</span></div>
+	<div>Threads: <span class="float_right">74</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6075"><strong class="reputation_positive">18</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">36 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6075">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Over 9000.png" alt="Over 9000" title="Over 9000" /><img src="uploads/awards/Super Elite.png" alt="Super Elite" title="Super Elite" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-24-2013, 08:00 PM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123107#pid123107" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#3</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123107">
+	You provide a lot of solid points, and I agree with most of them.<br />
+I'm not getting an Xbox One.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123107">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123107"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="https://i.imgur.com/U2JKI5T.png" loading="lazy" alt="[Image: U2JKI5T.png]" class="mycode_img" /></div>
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123107">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123107);return false;" title="[+]" id="tyl_a_expcol_123107"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123107" /></a>  
+	<span id="tyl_title_123107" style="display: none;"></span><span id="tyl_title_collapsed_123107" style=""></span><br />
+	<span id="tyl_data_123107" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=6075" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6075" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123107" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123107&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123107, 13100); return false;" title="Like this Post" id="tyl_a123107"><span id="tyl_i123107">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123107" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123107); return false;" style="display: none;" id="multiquote_link_123107" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123107">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123107').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123107); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123119" id="pid123119"></a>
+<div class="post classic tborder tfixed " style="" id="post_123119">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_92|100" href="User-Ronnie"><img src="https://sinister.ly/uploads/avatars/avatar_6215.jpg?dateline=1391432421" alt="" width="92" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Ronnie"><span style="color: #b8b8b8;">Ronnie</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Problem?</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">942</span></div>
+	<div>Threads: <span class="float_right">151</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6215"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">-2 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6215">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Elite.png" alt="Elite" title="Elite" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-24-2013, 08:04 PM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123119#pid123119" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#4</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123119">
+	I definetly won't be getting this, Xbox360 for the win.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123119">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123119"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-size: medium;" class="mycode_size"><div style="text-align: center;" class="mycode_align"><span style="text-decoration: underline;" class="mycode_u"><span style="font-weight: bold;" class="mycode_b">Help me out by clicking these links, thanks!</span></span><br />
+<a href="http://p.pw/5Dx" target="_blank" class="mycode_url">Link1</a> | <a href="http://p.pw/Wo2" target="_blank" class="mycode_url">Link2</a> | <a href="http://p.pw/rqR" target="_blank" class="mycode_url">Link3</a> | <a href="http://p.pw/9Nq" target="_blank" class="mycode_url">Link4</a></div></span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123119">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123119);return false;" title="[+]" id="tyl_a_expcol_123119"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123119" /></a>  
+	<span id="tyl_title_123119" style="display: none;"></span><span id="tyl_title_collapsed_123119" style=""></span><br />
+	<span id="tyl_data_123119" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6215" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6215" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6215" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123119" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123119&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123119, 13100); return false;" title="Like this Post" id="tyl_a123119"><span id="tyl_i123119">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123119" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123119); return false;" style="display: none;" id="multiquote_link_123119" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123119">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123119').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123119); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123183" id="pid123183"></a>
+<div class="post classic tborder tfixed " style="" id="post_123183">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_" href="User-Clique"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Clique"><span style="color: #b8b8b8;">Clique</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Wild For The Night</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">538</span></div>
+	<div>Threads: <span class="float_right">35</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=3858"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=3858">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-24-2013, 10:04 PM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123183#pid123183" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#5</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123183">
+	I most likely won't be getting this. <br />
+<br />
+PS4 is looking pretty good.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123183">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123183"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<a href="http://cliquue.tumblr.com" target="_blank" class="mycode_url"><div style="text-align: center;" class="mycode_align"><img src="http://i.imgur.com/Vm3TtLV.png" loading="lazy" alt="[Image: Vm3TtLV.png]" class="mycode_img" /></div></a>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123183">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123183);return false;" title="[+]" id="tyl_a_expcol_123183"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123183" /></a>  
+	<span id="tyl_title_123183" style="display: none;"></span><span id="tyl_title_collapsed_123183" style=""></span><br />
+	<span id="tyl_data_123183" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=3858" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=3858" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://www.cliquue.tumblr.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=3858" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123183" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123183&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123183, 13100); return false;" title="Like this Post" id="tyl_a123183"><span id="tyl_i123183">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123183" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123183); return false;" style="display: none;" id="multiquote_link_123183" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123183">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123183').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123183); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123187" id="pid123187"></a>
+<div class="post classic tborder tfixed " style="" id="post_123187">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_0" href="User-Soccer"><img src="http://www.discussionzone.net/uploads/avatars/avatar_1.gif?dateline=1377104224?dateline=1377198559" alt=""  /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Soccer"><span style="color: #787878; text-decoration: line-through;">Soccer</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Banned</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">61</span></div>
+	<div>Threads: <span class="float_right">5</span></div>
+	
+	
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">1 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6248">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-24-2013, 10:07 PM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123187#pid123187" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#6</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123187">
+	You do have nice points and as I am very upset that it will not allow previous Xbox Gen. Games.<br />
+But It does look very easy to use, and good comfort.<br />
+<br />
+Blue ray also is coming to.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123187">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123187"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123187">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123187);return false;" title="[+]" id="tyl_a_expcol_123187"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123187" /></a>  
+	<span id="tyl_title_123187" style="display: none;"></span><span id="tyl_title_collapsed_123187" style=""></span><br />
+	<span id="tyl_data_123187" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6248" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6248" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6248" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123187" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123187&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123187, 13100); return false;" title="Like this Post" id="tyl_a123187"><span id="tyl_i123187">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123187" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123187); return false;" style="display: none;" id="multiquote_link_123187" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123187">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123187').css("display", "");
+// -->
+</script>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123233" id="pid123233"></a>
+<div class="post classic tborder tfixed " style="" id="post_123233">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_0" href="User-Creator"><img src="http://i.imgur.com/vaPjaAD.gif?dateline=1369465011" alt=""  /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Creator"><span style="color: #b8b8b8;">Creator</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">67</span></div>
+	<div>Threads: <span class="float_right">4</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6280"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6280">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-25-2013, 07:17 AM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123233#pid123233" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#7</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123233">
+	I think you have covered everything.  I don't like the fact that you can't play 360 games on the Xbox One.  It is a dumb decision by Xbox and I don't think a lot of people will be too happy about that.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123233">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123233"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://i.imgur.com/Z3Mo9EF.gif" loading="lazy" alt="[Image: Z3Mo9EF.gif]" class="mycode_img" /></div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123233">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123233);return false;" title="[+]" id="tyl_a_expcol_123233"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123233" /></a>  
+	<span id="tyl_title_123233" style="display: none;"></span><span id="tyl_title_collapsed_123233" style=""></span><br />
+	<span id="tyl_data_123233" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6280" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6280" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6280" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123233" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123233&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123233, 13100); return false;" title="Like this Post" id="tyl_a123233"><span id="tyl_i123233">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123233" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123233); return false;" style="display: none;" id="multiquote_link_123233" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123233">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123233').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123233); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123538" id="pid123538"></a>
+<div class="post classic tborder tfixed " style="" id="post_123538">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_100|60" href="User-Guardian"><img src="https://sinister.ly/uploads/avatars/avatar_6204.jpg?dateline=1388016045" alt="" width="100" height="60" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Guardian"><span style="color: #934afa; font-weight: bold;">Guardian</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Registered (Legends)</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/legends.png" alt="Registered (Legends)" title="Registered (Legends)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">1,510</span></div>
+	<div>Threads: <span class="float_right">49</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6204"><strong class="reputation_positive">7</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">55 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6204">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Elite.png" alt="Elite" title="Elite" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-26-2013, 01:58 AM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123538#pid123538" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#8</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123538">
+	Very valid points and they are concerns of mine as well. I am already dead set on NOT getting this. I didn't know about the internet connection required thing and that seals the deal for me. That's just bogus.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123538">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123538"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+Get creative: <a href="http://makestation.net/member.php?action=register&amp;referrer=313" target="_blank" class="mycode_url">Makestation</a><br />
+Make some money: <a href="https://revenueherald.com/" target="_blank" class="mycode_url">RevenueHerald.com</a>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123538">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123538);return false;" title="[+]" id="tyl_a_expcol_123538"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123538" /></a>  
+	<span id="tyl_title_123538" style="display: none;"></span><span id="tyl_title_collapsed_123538" style=""></span><br />
+	<span id="tyl_data_123538" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6204" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6204" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="https://revenueherald.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6204" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123538" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123538&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123538, 13100); return false;" title="Like this Post" id="tyl_a123538"><span id="tyl_i123538">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123538" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123538); return false;" style="display: none;" id="multiquote_link_123538" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123538">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123538').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123538); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123544" id="pid123544"></a>
+<div class="post classic tborder tfixed " style="" id="post_123544">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_100|100" href="User-Sly"><img src="https://sinister.ly/uploads/avatars/avatar_4209.png?dateline=1388817543" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Sly"><span style="color: #b8b8b8;">Sly</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Forward Thinker.</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">636</span></div>
+	<div>Threads: <span class="float_right">46</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=4209"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=4209">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Elite.png" alt="Elite" title="Elite" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-26-2013, 02:12 AM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123544#pid123544" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#9</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123544">
+	As much as I don't think the Xbox One will be a good as success as the 360, please make sure that when you post something like this don't use rumors. Major Nelson has stated that you will not have to pay extra to play used games, and that they haven't finished their used games' policy.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123544">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123544"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="color: #FFFFFF;" class="mycode_color"><div style="text-align: center;" class="mycode_align">
+How soon, unaccountable, I became tired and sick;	         <br />
+Till rising and gliding out, I wander’d off by myself,	 <br />
+In the mystical moist night-air, and from time to time,	 <br />
+Look’d up in perfect silence at the stars.</div></span>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123544">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123544);return false;" title="[+]" id="tyl_a_expcol_123544"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123544" /></a>  
+	<span id="tyl_title_123544" style="display: none;"></span><span id="tyl_title_collapsed_123544" style=""></span><br />
+	<span id="tyl_data_123544" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=4209" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=4209" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://slyestcat.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=4209" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123544" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123544&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123544, 13100); return false;" title="Like this Post" id="tyl_a123544"><span id="tyl_i123544">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123544" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123544); return false;" style="display: none;" id="multiquote_link_123544" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123544">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123544').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123544); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid123576" id="pid123576"></a>
+<div class="post classic tborder tfixed " style="" id="post_123576">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_0" href="User-Unknown"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Unknown"><span style="color: #b8b8b8;">Unknown</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9E39;"><strong>Seven Years of Service</strong></div>
+<div>Posts: <span class="float_right">75</span></div>
+	<div>Threads: <span class="float_right">6</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=6152"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=6152">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: Why the &quot;Xbox One&quot; has already failed. </span><span class="float_right"><span class="post_date postbit_date">05-26-2013, 10:42 AM </span> 
+<a href="Thread-Why-the-Xbox-One-has-already-failed?pid=123576#pid123576" class="thead posturl" title="RE: Why the &quot;Xbox One&quot; has already failed.">#10</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_123576">
+	<blockquote class="mycode_quote"><cite><span> (05-25-2013, 07:17 AM)</span>Creator Wrote:  <a href="https://sinister.ly/Thread-Make-a-ProgressBar-work?pid=24260#pid24260" class="quick_jump"></a></cite>I think you have covered everything.  I don't like the fact that you can't play 360 games on the Xbox One.  It is a dumb decision by Xbox and I don't think a lot of people will be too happy about that.</blockquote><br />
+I'm pretty sure PS4 can't play PS3 games either.
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_123576">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_123576"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="http://i.imgur.com/O6fH2LQ.png" loading="lazy" alt="[Image: O6fH2LQ.png]" class="mycode_img" /></div>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_123576">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(123576);return false;" title="[+]" id="tyl_a_expcol_123576"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_123576" /></a>  
+	<span id="tyl_title_123576" style="display: none;"></span><span id="tyl_title_collapsed_123576" style=""></span><br />
+	<span id="tyl_data_123576" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=6152" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=6152" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=6152" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_123576" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=123576&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(123576, 13100); return false;" title="Like this Post" id="tyl_a123576"><span id="tyl_i123576">Like</span></a></div>
+
+<a href="newreply.php?tid=13100&amp;replyto=123576" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(123576); return false;" style="display: none;" id="multiquote_link_123576" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_123576">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_123576').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(123576); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+ <span class="pagination_current">1</span>
+
+<a href="Thread-Why-the-Xbox-One-has-already-failed?page=2" class="pagination_page">2</a>
+
+<a href="Thread-Why-the-Xbox-One-has-already-failed?page=3" class="pagination_page">3</a>
+
+<a href="Thread-Why-the-Xbox-One-has-already-failed?page=2" class="pagination_next">Next &raquo;</a>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=13100" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=13100&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: Why the &quot;Xbox One&quot; has already failed." />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="e8f9230f1c4185563ea39a8e91f48ad9" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="124146" />
+	<input type="hidden" name="from_page" value="1" />
+	<input type="hidden" name="tid" value="13100" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=13100&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="13100" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: <a href="User-seraleOne" title="Reading&hellip; (09:11 AM)"><span style="color: #b8b8b8;">seraleOne</span></a>, 1 Guest(s)</span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(83);"><br />
+<center>
+<span title="https://xsmtp.to/"><a href="https://xsmtp.to/"><img src="https://i.imgur.com/8J3Y03V.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-13100.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '13100',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

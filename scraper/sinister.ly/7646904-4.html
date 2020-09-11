@@ -1,0 +1,2142 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>My (Frooxius') gallery</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=32452&amp;page=4&amp;perpage=10&amp;fid=83&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=32452&amp;page=4&amp;perpage=10&amp;fid=83&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=32452&page=4&perpage=10&fid=83" />
+        
+<meta name="description" content="omg, they are very good even your 'low quality' images. You have some serious talent! Keep it up!" />
+<link rel="canonical" href="https://sinister.ly/Thread-My-Frooxius-gallery?page=4" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DMy-Frooxius-gallery%26page%3D4"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Design"><span>Design</span></a></li>
+
+<li><a href="Forum-Feedback?page=24"><span>Feedback</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>My (Frooxius') gallery</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(106);"><br />
+<center>
+<span title="Xleet.to"><a href="https://xleet.to/"><img src="https://i.imgur.com/Mjw7cY8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+<a href="Thread-My-Frooxius-gallery?page=3" class="pagination_previous">&laquo; Previous</a>
+
+<a href="Thread-My-Frooxius-gallery?page=1" class="pagination_first">1</a> 
+
+<a href="Thread-My-Frooxius-gallery?page=2" class="pagination_page">2</a>
+
+<a href="Thread-My-Frooxius-gallery?page=3" class="pagination_page">3</a>
+
+ <span class="pagination_current">4</span>
+
+<a href="Thread-My-Frooxius-gallery?page=5" class="pagination_page">5</a>
+
+<a href="Thread-My-Frooxius-gallery?page=6" class="pagination_page">6</a>
+
+&hellip;  <a href="Thread-My-Frooxius-gallery?page=8" class="pagination_last">8</a>
+
+<a href="Thread-My-Frooxius-gallery?page=5" class="pagination_next">Next &raquo;</a>
+
+<div class="popup_menu drop_go_page" style="display: none;">
+	<form action="Thread-My-Frooxius-gallery?page=1" method="post">
+		<label for="page">Jump to page:</label> <input type="text" class="textbox" name="page" value="4" size="4" />
+		<input type="submit" class="button" value="Go" />
+	</form>
+</div>
+<a href="javascript:;" class="go_page" title="Jump to page"><i class="material-icons">subdirectory_arrow_right</i></a>&nbsp;
+<script type="text/javascript">
+	var go_page = 'go_page_' + $(".go_page").length;
+	$(".go_page").last().attr('id', go_page);
+	$(".drop_go_page").last().attr('id', go_page + '_popup');
+	$('#' + go_page).popupMenu(false).click(function() {
+		var drop_go_page = $(this).prev('.drop_go_page');
+		if (drop_go_page.is(':visible')) {
+			drop_go_page.find('.textbox').focus();
+		}
+	});
+</script>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=32452" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>My (Frooxius') gallery</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=32452">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=32452&amp;pid=339240#pid339240" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=32452&amp;pid=339240#pid339240" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=32452">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=32452">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=32452&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid339240" id="pid339240"></a>
+<div class="post classic tborder tfixed " style="" id="post_339240">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_88|100" href="User-SoulSector"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-SoulSector"><span style="color: #b8b8b8;">SoulSector</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">HungrÃƒâ€˜Ã¢â‚¬Â¡ fÃƒÂÃ†â€™r BlÃƒÂÃ†â€™ÃƒÂÃ†â€™d</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">39</span></div>
+	<div>Threads: <span class="float_right">5</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15131"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15131">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-26-2011, 05:11 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=339240#pid339240" class="thead posturl" title="RE: My (Frooxius') gallery">#31</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_339240">
+	omg, they are very good even your 'low quality' images. You have some serious talent! Keep it up! <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_339240">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_339240"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_339240">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(339240);return false;" title="[+]" id="tyl_a_expcol_339240"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_339240" /></a>  
+	<span id="tyl_title_339240" style="display: none;"></span><span id="tyl_title_collapsed_339240" style=""></span><br />
+	<span id="tyl_data_339240" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15131" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15131" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15131" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_339240" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=339240&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(339240, 32452); return false;" title="Like this Post" id="tyl_a339240"><span id="tyl_i339240">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=339240" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(339240); return false;" style="display: none;" id="multiquote_link_339240" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_339240">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_339240').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(339240); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid339681" id="pid339681"></a>
+<div class="post classic tborder tfixed " style="" id="post_339681">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_170|210" href="User-Frooxius"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Frooxius"><span style="color: #b8b8b8;">Frooxius</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Weird by default</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">721</span></div>
+	<div>Threads: <span class="float_right">49</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14540"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14540">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-27-2011, 08:51 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=339681#pid339681" class="thead posturl" title="RE: My (Frooxius') gallery">#32</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_339681">
+	Thanks ^_^'<br />
+1234Darkmaster: well amateur photographer, I do it only as a hobby when I get the opportunity :-)<br />
+<br />
+SoulSector: Thanks, but what exactly do you mean by "low quality" images?
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_339681">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_339681"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I love <span style="color: #FF6347;" class="mycode_color">creativity</span> and <span style="color: #FFD700;" class="mycode_color">creating</span>, I love <span style="color: #32CD32;" class="mycode_color">science</span> and <span style="color: #00BFFF;" class="mycode_color">rational thought</span>, I am an <span style="color: #9370DB;" class="mycode_color">open atheist</span> and <span style="color: #FF69B4;" class="mycode_color">avid self-learner</span>.
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_339681">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(339681);return false;" title="[+]" id="tyl_a_expcol_339681"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_339681" /></a>  
+	<span id="tyl_title_339681" style="display: none;"></span><span id="tyl_title_collapsed_339681" style=""></span><br />
+	<span id="tyl_data_339681" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14540" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14540" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://frooxius.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14540" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_339681" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=339681&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(339681, 32452); return false;" title="Like this Post" id="tyl_a339681"><span id="tyl_i339681">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=339681" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(339681); return false;" style="display: none;" id="multiquote_link_339681" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_339681">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_339681').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(339681); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid340420" id="pid340420"></a>
+<div class="post classic tborder tfixed " style="" id="post_340420">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_170|210" href="User-Frooxius"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Frooxius"><span style="color: #b8b8b8;">Frooxius</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Weird by default</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">721</span></div>
+	<div>Threads: <span class="float_right">49</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14540"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14540">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-29-2011, 12:09 AM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=340420#pid340420" class="thead posturl" title="RE: My (Frooxius') gallery">#33</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_340420">
+	<span style="color: #FF4500;" class="mycode_color">New drawing! </span><br />
+<br />
+<a href="http://frooxius.deviantart.com/#/d485nx1" target="_blank" class="mycode_url">http://frooxius.deviantart.com/#/d485nx1</a><br />
+<img src="http://fc04.deviantart.net/fs71/i/2011/240/2/7/fluffy_integral_by_frooxius-d485nx1.png" loading="lazy" alt="[Image: fluffy_integral_by_frooxius-d485nx1.png]" class="mycode_img" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_340420">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_340420"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I love <span style="color: #FF6347;" class="mycode_color">creativity</span> and <span style="color: #FFD700;" class="mycode_color">creating</span>, I love <span style="color: #32CD32;" class="mycode_color">science</span> and <span style="color: #00BFFF;" class="mycode_color">rational thought</span>, I am an <span style="color: #9370DB;" class="mycode_color">open atheist</span> and <span style="color: #FF69B4;" class="mycode_color">avid self-learner</span>.
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_340420">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(340420);return false;" title="[+]" id="tyl_a_expcol_340420"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_340420" /></a>  
+	<span id="tyl_title_340420" style="display: none;"></span><span id="tyl_title_collapsed_340420" style=""></span><br />
+	<span id="tyl_data_340420" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14540" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14540" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://frooxius.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14540" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_340420" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=340420&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(340420, 32452); return false;" title="Like this Post" id="tyl_a340420"><span id="tyl_i340420">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=340420" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(340420); return false;" style="display: none;" id="multiquote_link_340420" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_340420">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_340420').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(340420); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid340598" id="pid340598"></a>
+<div class="post classic tborder tfixed " style="" id="post_340598">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_170|210" href="User-Frooxius"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Frooxius"><span style="color: #b8b8b8;">Frooxius</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Weird by default</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">721</span></div>
+	<div>Threads: <span class="float_right">49</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14540"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14540">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-29-2011, 12:09 AM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=340598#pid340598" class="thead posturl" title="RE: My (Frooxius') gallery">#34</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_340598">
+	<span style="color: #FF4500;" class="mycode_color">New drawing! </span><br />
+<br />
+<a href="http://frooxius.deviantart.com/#/d485nx1" target="_blank" class="mycode_url">http://frooxius.deviantart.com/#/d485nx1</a><br />
+<img src="http://fc04.deviantart.net/fs71/i/2011/240/2/7/fluffy_integral_by_frooxius-d485nx1.png" loading="lazy" alt="[Image: fluffy_integral_by_frooxius-d485nx1.png]" class="mycode_img" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_340598">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_340598"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I love <span style="color: #FF6347;" class="mycode_color">creativity</span> and <span style="color: #FFD700;" class="mycode_color">creating</span>, I love <span style="color: #32CD32;" class="mycode_color">science</span> and <span style="color: #00BFFF;" class="mycode_color">rational thought</span>, I am an <span style="color: #9370DB;" class="mycode_color">open atheist</span> and <span style="color: #FF69B4;" class="mycode_color">avid self-learner</span>.
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_340598">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(340598);return false;" title="[+]" id="tyl_a_expcol_340598"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_340598" /></a>  
+	<span id="tyl_title_340598" style="display: none;"></span><span id="tyl_title_collapsed_340598" style=""></span><br />
+	<span id="tyl_data_340598" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14540" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14540" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://frooxius.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14540" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_340598" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=340598&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(340598, 32452); return false;" title="Like this Post" id="tyl_a340598"><span id="tyl_i340598">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=340598" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(340598); return false;" style="display: none;" id="multiquote_link_340598" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_340598">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_340598').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(340598); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid341112" id="pid341112"></a>
+<div class="post classic tborder tfixed " style="" id="post_341112">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_84|84" href="User-ynot71121"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-ynot71121"><span style="color: #b8b8b8;">ynot71121</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Junior Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">35</span></div>
+	<div>Threads: <span class="float_right">3</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15135"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15135">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-29-2011, 08:44 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=341112#pid341112" class="thead posturl" title="RE: My (Frooxius') gallery">#35</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_341112">
+	Your work is amazing! I love the concepts behind some of these... still trying to pick a favorite but I can't decide <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_341112">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_341112"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I think computer viruses should count as life. I think it says something about human nature that the only form of life we have created so far is purely destructive. We've created life in our own image.<br />
+~Stephen Hawking
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_341112">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(341112);return false;" title="[+]" id="tyl_a_expcol_341112"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_341112" /></a>  
+	<span id="tyl_title_341112" style="display: none;"></span><span id="tyl_title_collapsed_341112" style=""></span><br />
+	<span id="tyl_data_341112" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15135" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15135" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15135" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_341112" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=341112&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(341112, 32452); return false;" title="Like this Post" id="tyl_a341112"><span id="tyl_i341112">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=341112" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(341112); return false;" style="display: none;" id="multiquote_link_341112" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_341112">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_341112').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(341112); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid341300" id="pid341300"></a>
+<div class="post classic tborder tfixed " style="" id="post_341300">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_84|84" href="User-ynot71121"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-ynot71121"><span style="color: #b8b8b8;">ynot71121</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Junior Member</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">35</span></div>
+	<div>Threads: <span class="float_right">3</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15135"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15135">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-29-2011, 08:44 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=341300#pid341300" class="thead posturl" title="RE: My (Frooxius') gallery">#36</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_341300">
+	Your work is amazing! I love the concepts behind some of these... still trying to pick a favorite but I can't decide <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_341300">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_341300"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I think computer viruses should count as life. I think it says something about human nature that the only form of life we have created so far is purely destructive. We've created life in our own image.<br />
+~Stephen Hawking
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_341300">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(341300);return false;" title="[+]" id="tyl_a_expcol_341300"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_341300" /></a>  
+	<span id="tyl_title_341300" style="display: none;"></span><span id="tyl_title_collapsed_341300" style=""></span><br />
+	<span id="tyl_data_341300" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15135" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15135" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15135" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_341300" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=341300&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(341300, 32452); return false;" title="Like this Post" id="tyl_a341300"><span id="tyl_i341300">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=341300" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(341300); return false;" style="display: none;" id="multiquote_link_341300" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_341300">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_341300').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(341300); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid341120" id="pid341120"></a>
+<div class="post classic tborder tfixed " style="" id="post_341120">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_100|75" href="User-DeffoN"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-DeffoN"><span style="color: #b8b8b8;">DeffoN</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">DeffoNRampagE.Enabled = True</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">827</span></div>
+	<div>Threads: <span class="float_right">63</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14484"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14484">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-29-2011, 08:45 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=341120#pid341120" class="thead posturl" title="RE: My (Frooxius') gallery">#37</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_341120">
+	<blockquote class="mycode_quote"><cite><span> (08-29-2011, 08:44 PM)</span>ynot71121 Wrote:  <a href="https://sinister.ly/showthread.php?pid=39337#pid39337" class="quick_jump"></a></cite>Your work is amazing! I love the concepts behind some of these... still trying to pick a favorite but I can't decide <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" /></blockquote>Yep ! ! !<br />
+That's our froxY <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" /><br />
+&lt;3<br />
+<br />
+
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_341120">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_341120"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-weight: bold;" class="mycode_b"><div style="text-align: center;" class="mycode_align"><blockquote class="mycode_quote"><cite>ThisBitch Wrote:</cite><span style="color: Blue;" class="mycode_color">m3 w4n75 70 h4cK F4C3|300|&lt;   ?<br />
+m3 15 pr0 1337 h4X0rr !</span></div></span></blockquote>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_341120">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(341120);return false;" title="[+]" id="tyl_a_expcol_341120"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_341120" /></a>  
+	<span id="tyl_title_341120" style="display: none;"></span><span id="tyl_title_collapsed_341120" style=""></span><br />
+	<span id="tyl_data_341120" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=14484" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14484" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_341120" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=341120&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(341120, 32452); return false;" title="Like this Post" id="tyl_a341120"><span id="tyl_i341120">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=341120" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(341120); return false;" style="display: none;" id="multiquote_link_341120" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_341120">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_341120').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(341120); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid341306" id="pid341306"></a>
+<div class="post classic tborder tfixed " style="" id="post_341306">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_100|75" href="User-DeffoN"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-DeffoN"><span style="color: #b8b8b8;">DeffoN</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">DeffoNRampagE.Enabled = True</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">827</span></div>
+	<div>Threads: <span class="float_right">63</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14484"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14484">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">08-29-2011, 08:45 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=341306#pid341306" class="thead posturl" title="RE: My (Frooxius') gallery">#38</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_341306">
+	<blockquote class="mycode_quote"><cite><span> (08-29-2011, 08:44 PM)</span>ynot71121 Wrote:  <a href="https://sinister.ly/showthread.php?pid=39337#pid39337" class="quick_jump"></a></cite>Your work is amazing! I love the concepts behind some of these... still trying to pick a favorite but I can't decide <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" /></blockquote>Yep ! ! !<br />
+That's our froxY <img src="https://sinister.ly/images/smilies/set/smile.png" alt="Smile" title="Smile" class="smilie smilie_24" /><br />
+&lt;3<br />
+<br />
+
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_341306">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_341306"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<span style="font-weight: bold;" class="mycode_b"><div style="text-align: center;" class="mycode_align"><blockquote class="mycode_quote"><cite>ThisBitch Wrote:</cite><span style="color: Blue;" class="mycode_color">m3 w4n75 70 h4cK F4C3|300|&lt;   ?<br />
+m3 15 pr0 1337 h4X0rr !</span></div></span></blockquote>
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_341306">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(341306);return false;" title="[+]" id="tyl_a_expcol_341306"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_341306" /></a>  
+	<span id="tyl_title_341306" style="display: none;"></span><span id="tyl_title_collapsed_341306" style=""></span><br />
+	<span id="tyl_data_341306" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="private.php?action=send&amp;uid=14484" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14484" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_341306" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=341306&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(341306, 32452); return false;" title="Like this Post" id="tyl_a341306"><span id="tyl_i341306">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=341306" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(341306); return false;" style="display: none;" id="multiquote_link_341306" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_341306">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_341306').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(341306); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid360489" id="pid360489"></a>
+<div class="post classic tborder tfixed " style="" id="post_360489">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_170|210" href="User-Frooxius"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-Frooxius"><span style="color: #b8b8b8;">Frooxius</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Weird by default</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">721</span></div>
+	<div>Threads: <span class="float_right">49</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=14540"><strong class="reputation_neutral">0</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=14540">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">02-10-2012, 05:15 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=360489#pid360489" class="thead posturl" title="RE: My (Frooxius') gallery">#39</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_360489">
+	<span style="color: #FF0000;" class="mycode_color"><span style="font-weight: bold;" class="mycode_b">Here are some new pictures:</span></span><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">No Way Out</span><br />
+<a href="http://frooxius.deviantart.com/art/No-Way-Out-260934927" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/No-Way-Out-260934927</a><br />
+<img src="http://fc07.deviantart.net/fs70/i/2011/273/e/5/no_way_out_by_frooxius-d4bcqof.png" loading="lazy" alt="[Image: no_way_out_by_frooxius-d4bcqof.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">Sad Birthday</span><br />
+You can usually say "Happy Birthday!", but what if it's the opposite? If it's sad day, that just reminds you how much time you wasted, how much more you could've achieved and that you're a year closer to your death... No reals friends, no cakes, no gifts, just the realization of the wasted time and loneliness.<br />
+<a href="http://frooxius.deviantart.com/art/Sad-Birthday-267833668" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/Sad-B...-267833668</a><br />
+<img src="http://fc09.deviantart.net/fs71/i/2011/311/7/8/sad_birthday_by_frooxius-d4fgls4.png" loading="lazy" alt="[Image: sad_birthday_by_frooxius-d4fgls4.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">DiveroHike</span><br />
+<a href="http://frooxius.deviantart.com/art/DiveroHike-261198321" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/DiveroHike-261198321</a><br />
+<img src="http://fc00.deviantart.net/fs71/i/2011/274/f/8/diverohike_by_frooxius-d4bidwx.png" loading="lazy" alt="[Image: diverohike_by_frooxius-d4bidwx.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">Furiversos</span><br />
+<a href="http://frooxius.deviantart.com/art/Furiversos-266854496" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/Furiversos-266854496</a><br />
+<img src="http://fc05.deviantart.net/fs70/i/2011/306/b/2/furiversos_by_frooxius-d4evm8w.png" loading="lazy" alt="[Image: furiversos_by_frooxius-d4evm8w.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">Mind</span><br />
+<a href="http://frooxius.deviantart.com/art/Mind-273825780" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/Mind-273825780</a><br />
+<img src="http://fc07.deviantart.net/fs70/i/2011/347/3/f/mind_by_frooxius-d4j11bo.png" loading="lazy" alt="[Image: mind_by_frooxius-d4j11bo.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: xx-large;" class="mycode_size">Christmas (2011) with Science - Collection</span><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">AttoyottA</span><br />
+<a href="http://frooxius.deviantart.com/art/AttoyottA-275492559" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/AttoyottA-275492559</a><br />
+<img src="http://fc00.deviantart.net/fs71/i/2011/361/c/b/attoyotta_by_frooxius-d4k0rf3.png" loading="lazy" alt="[Image: attoyotta_by_frooxius-d4k0rf3.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">Christmasium</span><br />
+<a href="http://frooxius.deviantart.com/art/Christmasium-275492912" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/Chris...-275492912</a><br />
+<img src="http://fc03.deviantart.net/fs70/i/2011/357/0/d/christmasium_by_frooxius-d4k0row.png" loading="lazy" alt="[Image: christmasium_by_frooxius-d4k0row.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">Christmacillium Elevensis</span><br />
+<a href="http://frooxius.deviantart.com/art/Christmacillium-Elevensis-275669378" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/Chris...-275669378</a><br />
+<img src="http://fc03.deviantart.net/fs71/i/2011/358/e/8/christmacillium_elevensis_by_frooxius-d4k4juq.png" loading="lazy" alt="[Image: christmacillium_elevensis_by_frooxius-d4k4juq.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">InfTree</span><br />
+<a href="http://frooxius.deviantart.com/art/InfTree-275506265" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/InfTree-275506265</a><br />
+<img src="http://fc09.deviantart.net/fs71/i/2011/357/5/c/inftree_by_frooxius-d4k11zt.png" loading="lazy" alt="[Image: inftree_by_frooxius-d4k11zt.png]" class="mycode_img" /><br />
+<br />
+<span style="font-size: x-large;" class="mycode_size">Snowman under a microscope</span><br />
+<a href="http://frooxius.deviantart.com/art/Snowman-under-a-microscope-275493433" target="_blank" class="mycode_url">http://frooxius.deviantart.com/art/Snowm...-275493433</a><br />
+<img src="http://fc06.deviantart.net/fs70/i/2011/358/e/7/snowman_under_a_microscope_by_frooxius-d4k0s3d.png" loading="lazy" alt="[Image: snowman_under_a_microscope_by_frooxius-d4k0s3d.png]" class="mycode_img" />
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_360489">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_360489"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+I love <span style="color: #FF6347;" class="mycode_color">creativity</span> and <span style="color: #FFD700;" class="mycode_color">creating</span>, I love <span style="color: #32CD32;" class="mycode_color">science</span> and <span style="color: #00BFFF;" class="mycode_color">rational thought</span>, I am an <span style="color: #9370DB;" class="mycode_color">open atheist</span> and <span style="color: #FF69B4;" class="mycode_color">avid self-learner</span>.
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_360489">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(360489);return false;" title="[+]" id="tyl_a_expcol_360489"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_360489" /></a>  
+	<span id="tyl_title_360489" style="display: none;"></span><span id="tyl_title_collapsed_360489" style=""></span><br />
+	<span id="tyl_data_360489" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=14540" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=14540" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="http://frooxius.com" target="_blank" title="Visit this user's website" class="postbit_website"><span>Website</span></a>
+
+<a href="search.php?action=finduser&amp;uid=14540" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_360489" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=360489&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(360489, 32452); return false;" title="Like this Post" id="tyl_a360489"><span id="tyl_i360489">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=360489" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(360489); return false;" style="display: none;" id="multiquote_link_360489" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_360489">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_360489').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(360489); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+
+<a name="pid360490" id="pid360490"></a>
+<div class="post classic tborder tfixed " style="" id="post_360490">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_140|140" href="User-bluedog-tar-gz"><img src="https://sinister.ly/images/default_avatar.png" alt="" width="100" height="100" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-bluedog-tar-gz"><span style="color: #b8b8b8;">bluedog.tar.gz</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Posting Freak</span><br /></span>
+				<span class="post_userstars"></span>
+				
+<div class="post_groupimage"><img src="" alt="" title="" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF9413;"><strong>Eight Years of Service</strong></div>
+<div>Posts: <span class="float_right">8,518</span></div>
+	<div>Threads: <span class="float_right">1,285</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=15317"><strong class="reputation_positive">6</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">0 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=15317">Donate</a>]</span>
+</span></div>
+<div align="center"></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 RE: My (Frooxius') gallery </span><span class="float_right"><span class="post_date postbit_date">02-10-2012, 05:18 PM </span> 
+<a href="Thread-My-Frooxius-gallery?pid=360490#pid360490" class="thead posturl" title="RE: My (Frooxius') gallery">#40</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_360490">
+	Wow.. just wow.<br />
+<br />
+R-E-S-P-E-C-T
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_360490">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_360490"></div>
+
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_360490">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(360490);return false;" title="[+]" id="tyl_a_expcol_360490"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_360490" /></a>  
+	<span id="tyl_title_360490" style="display: none;"></span><span id="tyl_title_collapsed_360490" style=""></span><br />
+	<span id="tyl_data_360490" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=15317" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=15317" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=15317" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_360490" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=360490&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(360490, 32452); return false;" title="Like this Post" id="tyl_a360490"><span id="tyl_i360490">Like</span></a></div>
+
+<a href="newreply.php?tid=32452&amp;replyto=360490" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(360490); return false;" style="display: none;" id="multiquote_link_360490" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_360490">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_360490').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(360490); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+<div class="pagination">
+
+
+<a href="Thread-My-Frooxius-gallery?page=3" class="pagination_previous">&laquo; Previous</a>
+
+<a href="Thread-My-Frooxius-gallery?page=1" class="pagination_first">1</a> 
+
+<a href="Thread-My-Frooxius-gallery?page=2" class="pagination_page">2</a>
+
+<a href="Thread-My-Frooxius-gallery?page=3" class="pagination_page">3</a>
+
+ <span class="pagination_current">4</span>
+
+<a href="Thread-My-Frooxius-gallery?page=5" class="pagination_page">5</a>
+
+<a href="Thread-My-Frooxius-gallery?page=6" class="pagination_page">6</a>
+
+&hellip;  <a href="Thread-My-Frooxius-gallery?page=8" class="pagination_last">8</a>
+
+<a href="Thread-My-Frooxius-gallery?page=5" class="pagination_next">Next &raquo;</a>
+
+<div class="popup_menu drop_go_page" style="display: none;">
+	<form action="Thread-My-Frooxius-gallery?page=1" method="post">
+		<label for="page">Jump to page:</label> <input type="text" class="textbox" name="page" value="4" size="4" />
+		<input type="submit" class="button" value="Go" />
+	</form>
+</div>
+<a href="javascript:;" class="go_page" title="Jump to page"><i class="material-icons">subdirectory_arrow_right</i></a>&nbsp;
+<script type="text/javascript">
+	var go_page = 'go_page_' + $(".go_page").length;
+	$(".go_page").last().attr('id', go_page);
+	$(".drop_go_page").last().attr('id', go_page + '_popup');
+	$('#' + go_page).popupMenu(false).click(function() {
+		var drop_go_page = $(this).prev('.drop_go_page');
+		if (drop_go_page.is(':visible')) {
+			drop_go_page.find('.textbox').focus();
+		}
+	});
+</script>
+
+</div>
+
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=32452" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=32452&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: My (Frooxius') gallery" />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="b1bd26f24c039cae43db73ab26711e55" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="474070" />
+	<input type="hidden" name="from_page" value="4" />
+	<input type="hidden" name="tid" value="32452" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=32452&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="32452" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: </span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(107);"><br />
+<center>
+<span title="Xleet.to"><a href="https://xleet.to/"><img src="https://i.imgur.com/Mjw7cY8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-32452.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '32452',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>

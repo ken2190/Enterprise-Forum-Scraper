@@ -1,0 +1,1403 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Linux Kernel Development, 3rd Edition</title>
+
+<link rel="alternate" type="application/rss+xml" title="Latest Threads (RSS 2.0)" href="https://sinister.ly/syndication.php" />
+<link rel="alternate" type="application/atom+xml" title="Latest Threads (Atom 1.0)" href="https://sinister.ly/syndication.php?type=atom1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.js?ver=1813"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/jquery.plugins.min.js?ver=1813"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/general.js?ver=1817"></script>
+<link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/global.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/star_ratings.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/thankyoulike.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/mentionme.css" />
+<link type="text/css" rel="stylesheet" href="https://sinister.ly/cache/themes/theme26/responsive.css" />
+
+<script type="text/javascript">
+<!--
+	lang.unknown_error = "An unknown error has occurred.";
+
+	lang.select2_match = "One result is available, press enter to select it.";
+	lang.select2_matches = "{1} results are available, use up and down arrow keys to navigate.";
+	lang.select2_nomatches = "No matches found";
+	lang.select2_inputtooshort_single = "Please enter one or more character";
+	lang.select2_inputtooshort_plural = "Please enter {1} or more characters";
+	lang.select2_inputtoolong_single = "Please delete one character";
+	lang.select2_inputtoolong_plural = "Please delete {1} characters";
+	lang.select2_selectiontoobig_single = "You can only select one item";
+	lang.select2_selectiontoobig_plural = "You can only select {1} items";
+	lang.select2_loadmore = "Loading more results&hellip;";
+	lang.select2_searching = "Searching&hellip;";
+var cookieSecureFlag = "0";
+	var cookieDomain = "sinister.ly";
+	var cookiePath = "/";
+	var cookiePrefix = "";
+	var deleteevent_confirm = "Are you sure you want to delete this event?";
+	var removeattach_confirm = "Are you sure you want to remove the selected attachment from this post?";
+	var loading_text = 'Loading. <br />Please Wait&hellip;';
+	var saving_changes = 'Saving changes&hellip;';
+	var use_xmlhttprequest = "1";
+	var my_post_key = "91a3a41c3827e3b7bdf958573be6eb4d";
+	var rootpath = "https://sinister.ly";
+	var imagepath = "https://sinister.ly/images/modern";
+  	var yes_confirm = "Yes";
+	var no_confirm = "No";
+	var MyBBEditor = null;
+	var spinner_image = "https://sinister.ly/images/modern/spinner.gif";
+	var spinner = "<div class='ajax-spinner'><span></span></div>";
+	var modal_zindex = 9999;
+	var default_avatar = "images/default_avatar.png";
+        var alert_count = "0";
+        var uid  = "85951";
+		var cookieSecureFlag = "0";
+
+var templates = {
+		modal: '<div class=\"modal\">\
+	<div style=\"overflow-y: auto; max-height: 400px;\">\
+		<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"tborder\">\
+			<tr>\
+				<td class=\"thead\" colspan=\"2\"><strong>__message__</strong></td>\
+			</tr>\
+			<tr>\
+				<td colspan=\"2\" class=\"trow1\">\
+				<div style=\"text-align: center\" class=\"modal_buttons\">__buttons__</div></td>\
+			</tr>\
+		</table>\
+	</div>\
+</div>',
+		modal_button: '<input type=\"submit\" class=\"button\" value=\"__title__\"/>&nbsp;'
+	};
+
+
+
+// -->
+</script>
+
+
+
+<script type="text/javascript" src="https://sinister.ly/images/modern/functions.js"></script>
+<script type="text/javascript" id="user_script_main"></script>
+
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+
+
+$(".online_today a[href*='User']").click(function() {
+  var this_link = $(this);
+if(uid != 0) {
+
+
+if($(this).is("[data-modal]")) {
+  var modal_id = $(this).attr("data-modal");
+  $(modal_id).modal({fadeDuration: 100,keepelement: true});
+  return false;
+}
+
+else {
+
+
+//If uid isn't equal zero
+
+
+             var url = $(this).attr("href");
+	   
+    $.ajax({
+	     type: 'GET',
+	     url: url,
+	        dataType: 'html',
+ 	     beforeSend:function(){
+		$("body").append(spinner);
+    	     },
+	     success:function(data){
+var avatar = $(data).find('.data').data('avatar');
+var username= $(data).find('.data').data('username');
+var usertitle = $(data).find('.data').data('usertitle');
+var num_posts = $(data).find('.data').data('num-posts');
+var num_threads = $(data).find('.data').data('num-threads');
+var num_rep = $(data).find('.data').data('num-rep');
+var refer_count = $(data).find('.data').data('refer-count');
+var newpoints = $(data).find('.data').data('newpoints');
+var user_uid = $(data).find('.data').data('user-uid');
+var online_status = $(data).find('.data').data('online-status');
+
+
+      if(online_status != "") {
+                        var user_status = "online";
+                 } else {
+                        var user_status = "offline";
+                 }
+                 if(avatar == "") {
+                      avatar = default_avatar;
+                 } 
+
+          
+$("body").append("<div class='modal profile_modal' id='profile_modal_" + user_uid + "'><div class='modal_header' style='background:#0f0f0f;'><div class='profile_info'><span class='avatar'><img src='"+avatar+"' alt='#' /></span><span class='profile_about'><span class='username largetext'>"+username+"</span><br /><span class='usertitle smalltext'>"+usertitle+"</span></span></div></div><div class='modal_container'><ul class='stats'><li><span class='theme_text'>"+num_posts+"</span>Posts</li><li><span class='theme_text'>"+num_threads+"</span>Threads</li><li><span class='theme_text'>"+num_rep+"</span>Rep</li><li><span class='theme_text'>"+refer_count+"</span>Referrals</li><li><span class='theme_text'>"+newpoints+"</span>Currency</li></ul><span class='links smalltext'><a href='member.php?action=profile&uid="+user_uid+"' class='button'>Profile</a><a href='private.php?action=send&uid="+user_uid +"' class='button'>Message</a><a href='search.php?action=finduser&uid="+user_uid+"' class='button'>Search</a></span><span class='user_" + user_status + "'></span></div></div>");  
+
+       this_link.attr("data-modal", "#profile_modal_" + user_uid);
+ $("body .online_today a[href='"+ url  + "']:not(.popup_item)").each(function() {
+                   
+                     $(this).attr("data-modal", "#profile_modal_" + user_uid);
+            });
+	
+
+
+
+      
+	     },
+	     error:function(){
+	     
+		 }
+	     }).done(function() {
+	         $(".ajax-spinner").remove();
+	     
+          $(this_link.attr("data-modal")).modal({fadeDuration: 100,keepelement: true});
+	     });
+  
+
+
+  return false;
+
+}
+
+
+}
+
+
+});
+
+
+
+});
+
+</script>
+
+
+
+<style type="text/css">
+.profile_modal {
+ width:400px;
+ background-color:#202020;
+}
+
+
+
+.profile_modal .profile_about{
+ position:absolute;
+ left:120px;
+ bottom:5px;
+}
+
+.profile_modal .modal_header {
+  height:110px;
+  background-repeat:no-repeat;
+  position:relative;
+  background-size:cover;
+}
+
+.profile_modal .avatar {
+  position:absolute;
+  left:20px;
+  bottom:-30px;
+}
+
+.profile_modal .avatar img {
+  border-radius:4px;
+  width:80px;
+  height:80px;
+  border:3px solid rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .modal_container {
+ padding: 40px 10px 8px 120px;
+ position:relative;
+} 
+
+.profile_modal .stats {
+    padding: 6px;
+    margin: 0;
+    margin-left:-100px;
+    list-style: none;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.300);
+    text-align: center;
+}
+
+.profile_modal .stats li {
+display: inline-block;
+text-align: center;
+padding: 0px 10px;
+}
+
+.profile_modal .stats li span {
+ display:block;
+ font-size:16px;
+}
+
+.profile_modal .links {
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+
+.profile_modal .links a.button:not(:hover) {
+    background-color: rgba(0, 0, 0, 0.300);
+}
+
+.profile_modal .links a {
+ margin-left:3px;
+}
+
+
+.profile_modal .user_online, .profile_modal .user_offline {
+position: absolute;
+top: 5.5px;
+left: 120px;
+text-align: center;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 2px;
+width: 105px;
+box-sizing:border-box;
+color: rgba(21, 18, 18, 0.78);
+}
+
+.profile_modal .user_online {
+ background-color:rgba(0, 255, 0, 0.3);
+}
+
+.profile_modal .user_offline {
+ background-color:rgba(255, 24, 24, 0.32);
+}
+
+.profile_modal .user_online:after {
+  content:"User is online";
+  display:block;
+}
+
+
+.profile_modal .user_offline:after {
+  content:"User is offline";
+  display:block;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+    var unreadAlerts = '0';
+</script>
+
+
+<script type="text/javascript" src="jscripts/tabcontent.js"></script>
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=colorchanger&mode=saved" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/3rd_party/colpick.css" />
+<link rel="stylesheet" type="text/css" href="https://sinister.ly/images/modern/script.php?action=header_bg" />
+
+
+<script type="text/javascript">
+<!--
+	var quickdelete_confirm = "Are you sure you want to delete this post?";
+	var quickrestore_confirm = "Are you sure you want to restore this post?";
+	var allowEditReason = "1";
+	lang.save_changes = "Save Changes";
+	lang.cancel_edit = "Cancel Edit";
+	lang.quick_edit_update_error = "There was an error editing your reply:";
+	lang.quick_reply_post_error = "There was an error posting your reply:";
+	lang.quick_delete_error = "There was an error deleting your reply:";
+	lang.quick_delete_success = "The post was deleted successfully.";
+	lang.quick_delete_thread_success = "The thread was deleted successfully.";
+	lang.quick_restore_error = "There was an error restoring your reply:";
+	lang.quick_restore_success = "The post was restored successfully.";
+	lang.editreason = "Edit Reason";
+// -->
+</script>
+<!-- jeditable (jquery) -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/report.js?ver=1804"></script>
+<script src="https://sinister.ly/jscripts/jeditable/jeditable.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thread.js?ver=1808"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/thankyoulike.min.js"></script>
+<script type="text/javascript">
+<!--
+	var tylEnabled = "1";
+	var tylDisplayGrowl = "1";
+	var tylCollapsible = "1";
+	var tylUser = "85951";
+	var tylSend = "Adding Like to this post";
+	var tylRemove = "Removing Like from this post";
+// -->
+</script>
+
+        <!-- App Indexing for Google Search -->
+        <link href="android-app://com.quoord.tapatalkpro.activity/tapatalk/sinister.ly/?location=topic&amp;tid=91404&amp;page=1&amp;perpage=10&amp;fid=61&amp;channel=google-indexing" rel="alternate" />
+        <link href="ios-app://307880732/tapatalk/sinister.ly/?location=topic&amp;tid=91404&amp;page=1&amp;perpage=10&amp;fid=61&amp;channel=google-indexing" rel="alternate" />
+        
+        <link href="https://groups.tapatalk-cdn.com/static/manifest/manifest.json" rel="manifest">
+        
+        <meta name="apple-itunes-app" content="app-id=307880732, affiliate-data=at=10lR7C, app-argument=tapatalk://sinister.ly/?location=topic&tid=91404&page=1&perpage=10&fid=61" />
+        
+<meta name="description" content="Code:Table of Contents 1 Introduction to the Linux Kernel 1 History of Unix 1 Along Came Linus: Introduction to Linux 3 Overview of Operating Systems and Kernels 4 Linux Versus Classic Unix Kernels 6" />
+<link rel="canonical" href="https://sinister.ly/Thread-Linux-Kernel-Development-3rd-Edition" />
+</head>
+<body class='showthread_page showthread_thread'>
+	
+
+<a href="#bg_prev"><i class="material-icons">chevron_left</i></a>
+
+<a href="#bg_next"><i class="material-icons">chevron_right</i></a>
+
+<div class="top"><div>
+
+
+<a href="#user_menu"><img src="" alt="#" /></a>
+
+
+
+
+<a href="private.php?fid=1"><i class="material-icons">mail_outline</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+
+<a href="#alerts_menu"><i class="material-icons">chat</i><span class="relative_position"><span class="theme_bg count count_0">0</span></span></a>
+
+<div id="alerts_menu" class="popup_menu">
+
+
+
+<table width="100%" class="tborder" cellpadding="5" cellspacing="0">
+<tr><td class="thead" colspan="2"><strong>Recent Alerts</strong></td></tr>
+
+
+<tbody id="alerts_body" data-loaded="0"></tbody>
+
+<tr><td class="tfoot" colspan="2" align="left"> <a href="https://sinister.ly/alerts.php">View Alerts</a>
+         
+
+&nbsp;&nbsp;<a href="https://sinister.ly/alerts.php?action=delete_all&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d&amp;ret_link=https%3A%2F%2Fsinister.ly%2Fshowthread.php%3Fgoogle_seo_thread%3DLinux-Kernel-Development-3rd-Edition"
+                       onclick="return confirm('Really delete all alerts? This cannot be undone!')">Delete All Alerts</a>
+       </td></tr>
+
+</table>
+
+
+</div>
+
+
+<script type="text/javascript">
+$("document").ready(function() {
+$("a[href='#alerts_menu']").click(function() {
+
+  if($("#alerts_body").is("[data-loaded='0']")) {
+var content;
+  $.get('alerts.php?action=modal', function(data){
+    content= data;
+    $('#alerts_body').prepend(content);
+   $("#alerts_body").attr("data-loaded", "1");
+});
+}
+
+
+   if($(this).find(".count").text() != 0) {
+$.get( "alerts.php", function( data ) {
+  $("a[href='#alerts_menu'] .count").text("0").hide();
+});
+}
+});
+});
+
+</script>
+
+
+<a href="https://sinister.ly/member.php?action=logout&amp;logoutkey=dcc24b5f1833379c0665e0739fab2474" title="Log Out"><i class="material-icons">power_settings_new</i></a>
+
+
+<div class="popup_menu" id="user_menu">
+<a href="usercp.php" class="popup_item">Control panel</a>
+
+<a href="member.php?action=profile&amp;uid=85951" class="popup_item">Profile</a>
+
+<a href="search.php?action=finduserthreads&amp;uid=85951" class="popup_item">My Threads</a>
+<a href="search.php?action=finduser&amp;uid=85951" class="popup_item">My Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getnew" class="">New Posts</a>
+<a class="popup_item" href="https://sinister.ly/search.php?action=getdaily" class="">Today's Posts</a>
+<a href="usercp.php?action=editlists" class="popup_item">Buddy List</a>
+
+</div>
+
+
+<a href="#theme_colorpicker" class="float_right"><i class="material-icons">invert_colors</i></a>
+
+<a href="#header_backgrounds" class="float_right"><i class="material-icons">photo_library</i></a>
+
+
+
+</div></div>
+
+
+<div class="header">
+
+
+
+
+<div class="logo_wrapper">
+  <a href="index.php" class="logo">
+    <span class="first_logo"></span>
+    <span class="second_logo"></span>
+   </a>
+</div>
+
+<ul class="nav_menu">
+
+<li><a href="#nav_menu"><i class="material-icons">menu</i></a></li>
+<li><a href="index.php"><i class="material-icons">home</i><span>Home</span></a></li>
+<li><a href="memberlist.php"><i class="material-icons">group</i><span>Members</span></a></li>
+<li><a href="search.php"><i class="material-icons">search</i><span>Search</span></a></li>
+<li><a href="misc.php?action=help"><i class="material-icons">book</i><span>Help</span></a></li>
+<li><a href="newpoints.php"><i class="material-icons">star</i><span>Points</span></a></li>
+<li><a href="misc.php?page=upgrade"><i class="material-icons">shopping_cart</i><span>Upgrade</span></a></li>
+<li><a href="https://discord.gg/5ttdbf2"><i class="material-icons">forum</i><span>Discord</span></a></li>
+<li class="float_right"><a href="#sidebar_button"><i class="material-icons"></i></a></li>
+
+</ul>
+
+</div>
+
+<div class="container">
+
+
+
+<div class="breadcrumb">
+<ul>
+<li class="first_crumb"><a href="index.php"><span>i</span>
+<span>&nbsp;</span></a>
+<li><a href="https://sinister.ly/index.php"><span>Sinisterly</span></a></li>
+
+<li><a href="Forum-Sharing"><span>Sharing</span></a></li>
+
+<li><a href="Forum-eBooks?page=12"><span>eBooks</span></a></li>
+
+
+
+<li><a href="#" class="active"><span>Linux Kernel Development, 3rd Edition</span></a></li>
+
+</ul>
+</div>
+
+	
+<div class="content" id="content">
+
+<div onclick="MyAdvertisements.do_click(108);"><center><a href="https://doxbin.org/">DOXBIN</a> - Censorship-free Dox Archive</center>
+<br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/gTSNUb0.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(82);"><br />
+<center>
+<span title="https://xsmtp.to/"><a href="https://xsmtp.to/"><img src="https://i.imgur.com/8J3Y03V.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+	
+		
+
+				
+				
+				
+				
+				
+				
+
+	
+	
+	
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=91404" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+<br class="clear" /><br />
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder tfixed clear">
+		<tr>
+			<td class="thead" colspan="2">
+	<strong>Linux Kernel Development, 3rd Edition</strong>
+
+<a href="#thread_menu" class="float_right"><i class="material-icons">filter_list</i></a>
+
+<div class="popup_menu" id="thread_menu" align="right">
+
+<a class="popup_item" href="sendthread.php?tid=91404">Send this Thread to a Friend</a>
+
+
+<a href="showthread.php?mode=linear&amp;tid=91404&amp;pid=775839#pid775839" class="popup_item">Linear Mode</a>
+<a href="showthread.php?mode=threaded&amp;tid=91404&amp;pid=775839#pid775839" class="popup_item">Threaded Mode</a>
+
+<a class="popup_item" href="printthread.php?tid=91404">View a Printable Version</a>
+
+			
+<a class="popup_item" href="sendthread.php?tid=91404">Send this Thread to a Friend</a>
+
+			
+<a class="popup_item" href="usercp.php?action=addsubscription&amp;tid=91404&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d">Subscribe to this thread</a>
+
+			
+
+
+</div>
+
+
+			
+				
+				
+			</td>
+		</tr>
+<tr>
+			<td class="tcat" colspan="2">
+
+<div class="showthread_header_author">
+<span class="smalltext"><strong>Author</strong></span>
+</div>
+<div class="showthread_header_message">
+<span class="smalltext"><strong>Message</strong></span>
+
+</div></td>
+
+		</tr>
+
+	</table>
+
+<div id="posts">
+		
+
+<a name="pid775839" id="pid775839"></a>
+<div class="post classic tborder tfixed " style="" id="post_775839">
+
+<div class="post_author scaleimages">
+	
+<div class="author_avatar postbit_avatar"><a class="avatar_dimensions_125|125" href="User-ZanGetsu"><img src="http://i.imgur.com/1ZLrJzO.png?dateline=1504539945" alt="" width="125" height="125" /></a></div>
+
+	<div class="author_information">
+			<strong><span class="largetext postbit_username"><a href="https://sinister.ly/User-ZanGetsu"><span style="text-shadow: 0 0 5px #ff0000;color: #ff0000; font-weight: bold;color: #ff0000;">ZanGetsu</span></a></span></strong> 
+<img src="https://sinister.ly/images/modern/buddy_offline.png" title="Offline" alt="Offline" class="buddy_status" />
+<br />
+			<span class="smalltext">
+				<span class="postbit_usertitle">Hi Im ZanGetsu</span><br /></span>
+				<span class="post_userstars"><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><img src="/images/groupimages/userstars/gold.png" border="0" alt="*" /><br /></span>
+				
+<div class="post_groupimage"><img src="/images/groupimages/gold.png" alt="Registered (Gold)" title="Registered (Gold)" /></div>
+
+			
+	</div>
+	<div class="author_statistics smalltext">
+		
+	<div class="post_userdetails" style="text-align: center; color: #BF5B39;"><strong>Three Years of Service</strong></div>
+<div>Posts: <span class="float_right">364</span></div>
+	<div>Threads: <span class="float_right">255</span></div>
+	
+	
+<div>Reputation: <span class="float_right">
+<a href="reputation.php?uid=81998"><strong class="reputation_positive">29</strong></a>
+</span></div>
+
+
+<div class="smalltext">Currency: <span class="float_right"><a href="https://sinister.ly/newpoints.php">122 NSP</a>
+ <span class="smalltext">[<a href="https://sinister.ly/newpoints.php?action=donate&amp;uid=81998">Donate</a>]</span>
+</span></div>
+<div align="center"><span style="white-space:normal; width: 100%;"><img src="uploads/awards/Gold.png" alt="Gold" title="Gold" /></span></div>
+	</div>
+</div>
+
+
+<div class="post_content">
+
+<div class="post_head smalltext">
+		<span class="post_title postbit_title">
+		 Linux Kernel Development, 3rd Edition </span><span class="float_right"><span class="post_date postbit_date">09-07-2017, 02:34 PM </span> 
+<a href="Thread-Linux-Kernel-Development-3rd-Edition?pid=775839#pid775839" class="thead posturl" title="Linux Kernel Development, 3rd Edition">#1</a>
+
+</span>
+		
+	
+	</div>
+
+
+
+
+
+	<div class="post_body scaleimages" id="pid_775839">
+	<div style="text-align: center;" class="mycode_align"><img src="https://i.gyazo.com/56222214dc4647f507fcbe62c1416ab4.png" loading="lazy" alt="[Image: 56222214dc4647f507fcbe62c1416ab4.png]" class="mycode_img" /></div>
+<br />
+<div class="codeblock"><div class="title">Code:</div><div class="body" dir="ltr"><code>Table of Contents<br />
+1 Introduction to the Linux Kernel 1<br />
+History of Unix 1<br />
+Along Came Linus: Introduction to Linux 3<br />
+Overview of Operating Systems and Kernels 4<br />
+Linux Versus Classic Unix Kernels 6<br />
+Linux Kernel Versions 8<br />
+The Linux Kernel Development Community 10<br />
+Before We Begin 10<br />
+2 Getting Started with the Kernel 11<br />
+Obtaining the Kernel Source 11<br />
+Using Git 11<br />
+Installing the Kernel Source 12<br />
+Using Patches 12<br />
+The Kernel Source Tree 12<br />
+Building the Kernel 13<br />
+Configuring the Kernel 14<br />
+Minimizing Build Noise 15<br />
+Spawning Multiple Build Jobs 16<br />
+Installing the New Kernel 16<br />
+A Beast of a Different Nature 16<br />
+No libc or Standard Headers 17<br />
+GNU C 18<br />
+Inline Functions 18<br />
+Inline Assembly 19<br />
+Branch Annotation 19<br />
+No Memory Protection 20<br />
+No (Easy) Use of Floating Point 20<br />
+Small, Fixed-Size Stack 20<br />
+Synchronization and Concurrency 21<br />
+Importance of Portability 21<br />
+Conclusion 21<br />
+  <br />
+ptg<br />
+viii Contents<br />
+3 Process Management 23<br />
+The Process 23<br />
+Process Descriptor and the Task Structure 24<br />
+Allocating the Process Descriptor 25<br />
+Storing the Process Descriptor 26<br />
+Process State 27<br />
+Manipulating the Current Process State 29<br />
+Process Context 29<br />
+The Process Family Tree 29<br />
+Process Creation 31<br />
+Copy-on-Write 31<br />
+Forking 32<br />
+vfork() 33<br />
+The Linux Implementation of Threads 33<br />
+Creating Threads 34<br />
+Kernel Threads 35<br />
+Process Termination 36<br />
+Removing the Process Descriptor 37<br />
+The Dilemma of the Parentless Task 38<br />
+Conclusion 40<br />
+4 Process Scheduling 41<br />
+Multitasking 41<br />
+Linux�??s Process Scheduler 42<br />
+Policy 43<br />
+I/O-Bound Versus Processor-Bound Processes 43<br />
+Process Priority 44<br />
+Timeslice 45<br />
+The Scheduling Policy in Action 45<br />
+The Linux Scheduling Algorithm 46<br />
+Scheduler Classes 46<br />
+Process Scheduling in Unix Systems 47<br />
+Fair Scheduling 48<br />
+The Linux Scheduling Implementation 50<br />
+Time Accounting 50<br />
+The Scheduler Entity Structure 50<br />
+The Virtual Runtime 51<br />
+  <br />
+ptg<br />
+Contents ix<br />
+Process Selection 52<br />
+Picking the Next Task 53<br />
+Adding Processes to the Tree 54<br />
+Removing Processes from the Tree 56<br />
+The Scheduler Entry Point 57<br />
+Sleeping and Waking Up 58<br />
+Wait Queues 58<br />
+Waking Up 61<br />
+Preemption and Context Switching 62<br />
+User Preemption 62<br />
+Kernel Preemption 63<br />
+Real-Time Scheduling Policies 64<br />
+Scheduler-Related System Calls 65<br />
+Scheduling Policy and Priority-Related<br />
+System Calls 66<br />
+Processor Affinity System Calls 66<br />
+Yielding Processor Time 66<br />
+Conclusion 67<br />
+5 System Calls 69<br />
+Communicating with the Kernel 69<br />
+APIs, POSIX, and the C Library 70<br />
+Syscalls 71<br />
+System Call Numbers 72<br />
+System Call Performance 72<br />
+System Call Handler 73<br />
+Denoting the Correct System Call 73<br />
+Parameter Passing 74<br />
+System Call Implementation 74<br />
+Implementing System Calls 74<br />
+Verifying the Parameters 75<br />
+System Call Context 78<br />
+Final Steps in Binding a System Call 79<br />
+Accessing the System Call from User-Space 81<br />
+Why Not to Implement a System Call 82<br />
+Conclusion 83<br />
+  <br />
+ptg<br />
+x Contents<br />
+6 Kernel Data Structures 85<br />
+Linked Lists 85<br />
+Singly and Doubly Linked Lists 85<br />
+Circular Linked Lists 86<br />
+Moving Through a Linked List 87<br />
+The Linux Kernel�??s Implementation 88<br />
+The Linked List Structure 88<br />
+Defining a Linked List 89<br />
+List Heads 90<br />
+Manipulating Linked Lists 90<br />
+Adding a Node to a Linked List 90<br />
+Deleting a Node from a Linked List 91<br />
+Moving and Splicing Linked List Nodes 92<br />
+Traversing Linked Lists 93<br />
+The Basic Approach 93<br />
+The Usable Approach 93<br />
+Iterating Through a List Backward 94<br />
+Iterating While Removing 95<br />
+Other Linked List Methods 96<br />
+Queues 96<br />
+kfifo 97<br />
+Creating a Queue 97<br />
+Enqueuing Data 98<br />
+Dequeuing Data 98<br />
+Obtaining the Size of a Queue 98<br />
+Resetting and Destroying the Queue 99<br />
+Example Queue Usage 99<br />
+Maps 100<br />
+Initializing an idr 101<br />
+Allocating a New UID 101<br />
+Looking Up a UID 102<br />
+Removing a UID 103<br />
+Destroying an idr 103<br />
+Binary Trees 103<br />
+Binary Search Trees 104<br />
+Self-Balancing Binary Search Trees 105<br />
+Red-Black Trees 105<br />
+rbtrees 106<br />
+  <br />
+ptg<br />
+Contents xi<br />
+What Data Structure to Use, When 108<br />
+Algorithmic Complexity 109<br />
+Algorithms 109<br />
+Big-O Notation 109<br />
+Big Theta Notation 109<br />
+Time Complexity 110<br />
+Conclusion 111<br />
+7 Interrupts and Interrupt Handlers 113<br />
+Interrupts 113<br />
+Interrupt Handlers 114<br />
+Top Halves Versus Bottom Halves 115<br />
+Registering an Interrupt Handler 116<br />
+Interrupt Handler Flags 116<br />
+An Interrupt Example 117<br />
+Freeing an Interrupt Handler 118<br />
+Writing an Interrupt Handler 118<br />
+Shared Handlers 119<br />
+A Real-Life Interrupt Handler 120<br />
+Interrupt Context 122<br />
+Implementing Interrupt Handlers 123<br />
+/proc/interrupts 126<br />
+Interrupt Control 127<br />
+Disabling and Enabling Interrupts 127<br />
+Disabling a Specific Interrupt Line 129<br />
+Status of the Interrupt System 130<br />
+Conclusion 131<br />
+8 Bottom Halves and Deferring Work 133<br />
+Bottom Halves 134<br />
+Why Bottom Halves? 134<br />
+A World of Bottom Halves 135<br />
+The Original �??Bottom Half�?� 135<br />
+Task Queues 135<br />
+Softirqs and Tasklets 136<br />
+Dispelling the Confusion 137<br />
+  <br />
+ptg<br />
+xii Contents<br />
+Softirqs 137<br />
+Implementing Softirqs 137<br />
+The Softirq Handler 138<br />
+Executing Softirqs 138<br />
+Using Softirqs 140<br />
+Assigning an Index 140<br />
+Registering Your Handler 141<br />
+Raising Your Softirq 141<br />
+Tasklets 142<br />
+Implementing Tasklets 142<br />
+The Tasklet Structure 142<br />
+Scheduling Tasklets 143<br />
+Using Tasklets 144<br />
+Declaring Your Tasklet 144<br />
+Writing Your Tasklet Handler 145<br />
+Scheduling Your Tasklet 145<br />
+ksoftirqd 146<br />
+The Old BH Mechanism 148<br />
+Work Queues 149<br />
+Implementing Work Queues 149<br />
+Data Structures Representing the Threads 149<br />
+Data Structures Representing the Work 150<br />
+Work Queue Implementation Summary 152<br />
+Using Work Queues 153<br />
+Creating Work 153<br />
+Your Work Queue Handler 153<br />
+Scheduling Work 153<br />
+Flushing Work 154<br />
+Creating New Work Queues 154<br />
+The Old Task Queue Mechanism 155<br />
+Which Bottom Half Should I Use? 156<br />
+Locking Between the Bottom Halves 157<br />
+Disabling Bottom Halves 157<br />
+Conclusion 159<br />
+9 An Introduction to Kernel Synchronization 161<br />
+Critical Regions and Race Conditions 162<br />
+Why Do We Need Protection? 162<br />
+The Single Variable 163<br />
+  <br />
+ptg<br />
+Contents xiii<br />
+Locking 165<br />
+Causes of Concurrency 167<br />
+Knowing What to Protect 168<br />
+Deadlocks 169<br />
+Contention and Scalability 171<br />
+Conclusion 172<br />
+10 Kernel Synchronization Methods 175<br />
+Atomic Operations 175<br />
+Atomic Integer Operations 176<br />
+64-Bit Atomic Operations 180<br />
+Atomic Bitwise Operations 181<br />
+Spin Locks 183<br />
+Spin Lock Methods 184<br />
+Other Spin Lock Methods 186<br />
+Spin Locks and Bottom Halves 187<br />
+Reader-Writer Spin Locks 188<br />
+Semaphores 190<br />
+Counting and Binary Semaphores 191<br />
+Creating and Initializing Semaphores 192<br />
+Using Semaphores 193<br />
+Reader-Writer Semaphores 194<br />
+Mutexes 195<br />
+Semaphores Versus Mutexes 197<br />
+Spin Locks Versus Mutexes 197<br />
+Completion Variables 197<br />
+BKL: The Big Kernel Lock 198<br />
+Sequential Locks 200<br />
+Preemption Disabling 201<br />
+Ordering and Barriers 203<br />
+Conclusion 206<br />
+11 Timers and Time Management 207<br />
+Kernel Notion of Time 208<br />
+The Tick Rate: HZ 208<br />
+The Ideal HZ Value 210<br />
+Advantages with a Larger HZ 210<br />
+Disadvantages with a Larger HZ 211<br />
+  <br />
+ptg<br />
+xiv Contents<br />
+Jiffies 212<br />
+Internal Representation of Jiffies 213<br />
+Jiffies Wraparound 214<br />
+User-Space and HZ 216<br />
+Hardware Clocks and Timers 216<br />
+Real-Time Clock 217<br />
+System Timer 217<br />
+The Timer Interrupt Handler 217<br />
+The Time of Day 220<br />
+Timers 222<br />
+Using Timers 222<br />
+Timer Race Conditions 224<br />
+Timer Implementation 224<br />
+Delaying Execution 225<br />
+Busy Looping 225<br />
+Small Delays 226<br />
+schedule_timeout() 227<br />
+schedule_timeout() Implementation 228<br />
+Sleeping on a Wait Queue, with a Timeout 229<br />
+Conclusion 230<br />
+12 Memory Management 231<br />
+Pages 231<br />
+Zones 233<br />
+Getting Pages 235<br />
+Getting Zeroed Pages 236<br />
+Freeing Pages 237<br />
+kmalloc() 238<br />
+gfp_mask Flags 238<br />
+Action Modifiers 239<br />
+Zone Modifiers 240<br />
+Type Flags 241<br />
+kfree() 243<br />
+vmalloc() 244<br />
+Slab Layer 245<br />
+Design of the Slab Layer 246<br />
+  <br />
+ptg<br />
+Contents xv<br />
+Slab Allocator Interface 249<br />
+Allocating from the Cache 250<br />
+Example of Using the Slab Allocator 251<br />
+Statically Allocating on the Stack 252<br />
+Single-Page Kernel Stacks 252<br />
+Playing Fair on the Stack 253<br />
+High Memory Mappings 253<br />
+Permanent Mappings 254<br />
+Temporary Mappings 254<br />
+Per-CPU Allocations 255<br />
+The New percpu Interface 256<br />
+Per-CPU Data at Compile-Time 256<br />
+Per-CPU Data at Runtime 257<br />
+Reasons for Using Per-CPU Data 258<br />
+Picking an Allocation Method 259<br />
+Conclusion 260<br />
+13 The Virtual Filesystem 261<br />
+Common Filesystem Interface 261<br />
+Filesystem Abstraction Layer 262<br />
+Unix Filesystems 263<br />
+VFS Objects and Their Data Structures 265<br />
+The Superblock Object 266<br />
+Superblock Operations 267<br />
+The Inode Object 270<br />
+Inode Operations 271<br />
+The Dentry Object 275<br />
+Dentry State 276<br />
+The Dentry Cache 276<br />
+Dentry Operations 278<br />
+The File Object 279<br />
+File Operations 280<br />
+Data Structures Associated with Filesystems 285<br />
+Data Structures Associated with a Process 286<br />
+Conclusion 288<br />
+  <br />
+ptg<br />
+xvi Contents<br />
+14 The Block I/O Layer 289<br />
+Anatomy of a Block Device 290<br />
+Buffers and Buffer Heads 291<br />
+The bio Structure 294<br />
+I/O vectors 295<br />
+The Old Versus the New 296<br />
+Request Queues 297<br />
+I/O Schedulers 297<br />
+The Job of an I/O Scheduler 298<br />
+The Linus Elevator 299<br />
+The Deadline I/O Scheduler 300<br />
+The Anticipatory I/O Scheduler 302<br />
+The Complete Fair Queuing I/O Scheduler 303<br />
+The Noop I/O Scheduler 303<br />
+I/O Scheduler Selection 304<br />
+Conclusion 304<br />
+15 The Process Address Space 305<br />
+Address Spaces 305<br />
+The Memory Descriptor 306<br />
+Allocating a Memory Descriptor 308<br />
+Destroying a Memory Descriptor 309<br />
+The mm_struct and Kernel Threads 309<br />
+Virtual Memory Areas 309<br />
+VMA Flags 311<br />
+VMA Operations 312<br />
+Lists and Trees of Memory Areas 313<br />
+Memory Areas in Real Life 314<br />
+Manipulating Memory Areas 315<br />
+find_vma() 316<br />
+find_vma_prev() 317<br />
+find_vma_intersection() 317<br />
+mmap() and do_mmap(): Creating an<br />
+Address Interval 318<br />
+munmap() and do_munmap(): Removing an<br />
+Address Interval 320<br />
+Page Tables 320<br />
+Conclusion 322<br />
+  <br />
+ptg<br />
+Contents xvii<br />
+16 The Page Cache and Page Writeback 323<br />
+Approaches to Caching 323<br />
+Write Caching 324<br />
+Cache Eviction 324<br />
+Least Recently Used 325<br />
+The Two-List Strategy 325<br />
+The Linux Page Cache 326<br />
+The address_space Object 326<br />
+address_space Operations 328<br />
+Radix Tree 330<br />
+The Old Page Hash Table 330<br />
+The Buffer Cache 330<br />
+The Flusher Threads 331<br />
+Laptop Mode 333<br />
+History: bdflush, kupdated, and pdflush 333<br />
+Avoiding Congestion with Multiple Threads 334<br />
+Conclusion 335<br />
+17 Devices and Modules 337<br />
+Device Types 337<br />
+Modules 338<br />
+Hello, World! 338<br />
+Building Modules 340<br />
+Living in the Source Tree 340<br />
+Living Externally 342<br />
+Installing Modules 342<br />
+Generating Module Dependencies 342<br />
+Loading Modules 343<br />
+Managing Configuration Options 344<br />
+Module Parameters 346<br />
+Exported Symbols 348<br />
+The Device Model 348<br />
+Kobjects 349<br />
+Ktypes 350<br />
+Ksets 351<br />
+Interrelation of Kobjects, Ktypes, and Ksets 351<br />
+Managing and Manipulating Kobjects 352<br />
+  <br />
+ptg<br />
+xviii Contents<br />
+Reference Counts 353<br />
+Incrementing and Decrementing<br />
+Reference Counts 354<br />
+Krefs 354<br />
+sysfs 355<br />
+Adding and Removing kobjects from sysfs 357<br />
+Adding Files to sysfs 358<br />
+Default Attributes 358<br />
+Creating New Attributes 359<br />
+Destroying Attributes 360<br />
+sysfs Conventions 360<br />
+The Kernel Events Layer 361<br />
+Conclusion 362<br />
+18 Debugging 363<br />
+Getting Started 363<br />
+Bugs in the Kernel 364<br />
+Debugging by Printing 364<br />
+Robustness 365<br />
+Loglevels 365<br />
+The Log Buffer 366<br />
+syslogd and klogd 367<br />
+Transposing printf() and printk() 367<br />
+Oops 367<br />
+ksymoops 369<br />
+kallsyms 369<br />
+Kernel Debugging Options 370<br />
+Asserting Bugs and Dumping Information 370<br />
+Magic SysRq Key 371<br />
+The Saga of a Kernel Debugger 372<br />
+gdb 372<br />
+kgdb 373<br />
+Poking and Probing the System 373<br />
+Using UID as a Conditional 373<br />
+Using Condition Variables 374<br />
+Using Statistics 374<br />
+Rate and Occurrence Limiting Your Debugging 375<br />
+  <br />
+ptg<br />
+Contents xix<br />
+Binary Searching to Find the Culprit Change 376<br />
+Binary Searching with Git 376<br />
+When All Else Fails: The Community 377<br />
+Conclusion 378<br />
+19 Portability 379<br />
+Portable Operating Systems 379<br />
+History of Portability in Linux 380<br />
+Word Size and Data Types 381<br />
+Opaque Types 384<br />
+Special Types 384<br />
+Explicitly Sized Types 385<br />
+Signedness of Chars 386<br />
+Data Alignment 386<br />
+Avoiding Alignment Issues 387<br />
+Alignment of Nonstandard Types 387<br />
+Structure Padding 387<br />
+Byte Order 389<br />
+Time 391<br />
+Page Size 391<br />
+Processor Ordering 392<br />
+SMP, Kernel Preemption, and High Memory 393<br />
+Conclusion 393<br />
+20 Patches, Hacking, and the Community 395<br />
+The Community 395<br />
+Linux Coding Style 396<br />
+Indention 396<br />
+Switch Statements 396<br />
+Spacing 397<br />
+Braces 398<br />
+Line Length 399<br />
+Naming 400<br />
+Functions 400<br />
+Comments 400<br />
+Typedefs 401<br />
+Use Existing Routines 402<br />
+  <br />
+ptg<br />
+xx Contents<br />
+Minimize ifdefs in the Source 402<br />
+Structure Initializers 402<br />
+Fixing Up Code Ex Post Facto 403<br />
+Chain of Command 403<br />
+Submitting Bug Reports 403<br />
+Patches 404<br />
+Generating Patches 404<br />
+Generating Patches with Git 405<br />
+Submitting Patches 406<br />
+Conclusion 406</code></div></div><br />
+<div style="text-align: center;" class="mycode_align"><a href="https://jumpshare.com/v/5s54ERca7jOke66ZcYHy" target="_blank" class="mycode_url"><span style="font-weight: bold;" class="mycode_b"><span style="color: #ff3333;" class="mycode_color">Download</span></span></a></div>
+	</div>
+
+
+
+
+	
+
+	<div class="post_meta" id="post_meta_775839">
+		
+	</div>
+
+<div class="post_edit" align="right" id="edited_by_775839"></div>
+
+
+<div class="signature sig_sep"></div><div class="scaleimages">
+<div style="text-align: center;" class="mycode_align"><img src="https://i.imgur.com/Vs4P58c.png" loading="lazy" alt="[Image: Vs4P58c.png]" class="mycode_img" /></div>
+
+</div>
+
+
+
+
+</div>
+<br class="clear" />
+
+<div style="display: none;" id="tyl_775839">
+<div class="post_controls tyllist_classic ">
+	<a href="javascript:void(0)" onclick="thankyoulike.tgl(775839);return false;" title="[+]" id="tyl_a_expcol_775839"><img src="https://sinister.ly/images/modern/collapse_collapsed.png" alt="[+]" id="tyl_i_expcol_775839" /></a>  
+	<span id="tyl_title_775839" style="display: none;"></span><span id="tyl_title_collapsed_775839" style=""></span><br />
+	<span id="tyl_data_775839" style="display: none;">&nbsp;&nbsp;• </span>
+</div>
+</div>
+<div class="post_controls">
+	<div class="postbit_buttons author_buttons float_left">
+		
+<a href="member.php?action=emailuser&amp;uid=81998" title="Send this user an email" class="postbit_email"><span>Email</span></a>
+
+<a href="private.php?action=send&amp;uid=81998" title="Send this user a private message" class="postbit_pm"><span>PM</span></a>
+
+<a href="search.php?action=finduser&amp;uid=81998" title="Find all posts by this user" class="postbit_find"><span>Find</span></a>
+
+	</div>
+	<div class="postbit_buttons post_management_buttons float_right">
+		
+<div id="tyl_btn_775839" class="postbit_buttons"><a class="add_tyl_button" href="thankyoulike.php?action=add&amp;pid=775839&amp;my_post_key=91a3a41c3827e3b7bdf958573be6eb4d" onclick="thankyoulike.add(775839, 91404); return false;" title="Like this Post" id="tyl_a775839"><span id="tyl_i775839">Like</span></a></div>
+
+<a href="newreply.php?tid=91404&amp;replyto=775839" title="Quote this message in a reply" class="postbit_quote postbit_mirage"><span>Reply</span></a>
+
+<a href="javascript:void(0)" onclick="Thread.multiQuote(775839); return false;" style="display: none;" id="multiquote_link_775839" title="Quote this post" class="postbit_multiquote postbit_mirage"><span id="multiquote_775839">Quote</span></a>
+<script type="text/javascript">
+//<!--
+	$('#multiquote_link_775839').css("display", "");
+// -->
+</script>
+
+<a href="javascript:void(0)" onclick="Report.reportPost(775839); return false;" title="Report this post to a moderator" class="postbit_report"><span>Report</span></a>
+
+	</div>
+
+<br class="clear" />
+
+</div>
+
+
+</div>
+
+	</div>
+
+<br />
+	<div class="float_left">
+		
+	</div>
+	<div class="float_right">
+		
+<a href="newreply.php?tid=91404" class="button new_reply_button"><span>New Reply</span></a>&nbsp;
+
+	</div>
+	<br class="clear" /><br />
+	
+<div id="quickreply_spinner" class="showthread_spinner" style="display: none"><div class="ajax-spinner"><span></span></div></div>
+<br />
+
+<div class="red_alert">The last post in this thread was made 90  days ago. Please only reply if you have a good reason to.</div>
+
+<form method="post" action="newreply.php?tid=91404&amp;processed=1" name="quick_reply_form" id="quick_reply_form">
+	<input type="hidden" name="my_post_key" value="91a3a41c3827e3b7bdf958573be6eb4d" />
+	<input type="hidden" name="subject" value="RE: Linux Kernel Development, 3rd Edition" />
+	<input type="hidden" name="action" value="do_newreply" />
+	<input type="hidden" name="posthash" value="ddb5667e17ac29a8bb05724c726b32ac" id="posthash" />
+	<input type="hidden" name="quoted_ids" value="" id="quoted_ids" />
+	<input type="hidden" name="lastpid" id="lastpid" value="775839" />
+	<input type="hidden" name="from_page" value="1" />
+	<input type="hidden" name="tid" value="91404" />
+	<input type="hidden" name="method" value="quickreply" />
+
+	<table border="0" cellspacing="0" cellpadding="5" class="tborder">
+		<thead>
+			<tr>
+				<td class="thead" colspan="2">
+					<div class="expcolimage"><img src="https://sinister.ly/images/modern/collapse.png" id="quickreply_img" class="expander" alt="[-]" title="[-]" /></div>
+					<div><strong>Quick Reply</strong></div>
+				</td>
+			</tr>
+		</thead>
+		<tbody style="" id="quickreply_e">
+			<tr>
+				<td class="trow1" valign="top" width="22%">
+					<strong>Message</strong><br />
+					<span class="smalltext">Type your reply to this message here.<br /><br />
+					
+<label><input type="checkbox" class="checkbox" name="postoptions[signature]" value="1"  />&nbsp;<strong>Signature</strong></label><br />
+
+					<label><input type="checkbox" class="checkbox" name="postoptions[disablesmilies]" value="1" />&nbsp;<strong>Disable Smilies</strong></label></span>
+				</td>
+				<td class="trow1">
+					<div style="width: 95%">
+						<textarea style="width: 100%; padding: 4px; margin: 0;" rows="8" cols="80" name="message" id="message" tabindex="1"></textarea>
+					</div>
+					<div class="editor_control_bar" style="width: 95%; padding: 4px; margin-top: 3px; display: none;" id="quickreply_multiquote">
+						<span class="smalltext">
+							You have selected one or more posts to quote. <a href="./newreply.php?tid=91404&amp;load_all_quotes=1" onclick="return Thread.loadMultiQuoted();">Quote these posts now</a> or <a href="javascript:Thread.clearMultiQuoted();">deselect them</a>.
+						</span>
+					</div>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2" align="center" class="tfoot"><input type="submit" class="button" value="Post Reply" tabindex="2" accesskey="s" id="quick_reply_submit" /> <input type="submit" class="button" name="previewpost" value="Preview Post" tabindex="3" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+	
+	
+	<br />
+	
+
+	<div class="float_right" style="text-align: right;">
+		
+		
+
+	<br />
+		<form action="search.php" method="post">
+			<input type="hidden" name="action" value="thread" />
+			<input type="hidden" name="tid" value="91404" /><strong class="smalltext">Search thread:</strong> 
+			<input type="text" name="keywords" value="Enter Keywords" onfocus="if(this.value == 'Enter Keywords') { this.value = ''; }" onblur="if(this.value=='') { this.value='Enter Keywords'; }" class="textbox" size="25" />
+			<input type="submit" class="button" value="Go" />
+		</form>
+
+	</div>
+	<br class="clear" />
+	
+<br />
+<span class="smalltext">Users browsing this thread: </span>
+<br />
+
+	
+<div onclick="MyAdvertisements.do_click(109);"><br />
+<center>
+<span title="Darthdiccus Refund Service"><a href="https://sinister.ly/Thread-Silver-DarthDiccus-Refunding-Services-Record-Setting-Refunder-Unlike-the-Competition"><img src="https://i.imgur.com/33TXYKr.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center></div>
+<div onclick="MyAdvertisements.do_click(103);"><br />
+<center>
+<span title="sh3elltools.io"><a href="https://sh3elltools.io/"><img src="https://i.imgur.com/8Vz9XR8.gif" style="max-width:100%;max-height:90px;"></a></span>
+</center>
+<br /></div>
+
+</div>
+
+<div id="footer" class="footer smalltext">
+
+Powered By <a href="http://mybb.com/" target="_blank">MyBB</a>, &copy; Sinisterly
+
+<div class="footer_menu float_right">
+					<a href="https://sinister.ly">Sinisterly</a>
+					<a href="mailto:unverified@hotmail.com">Contact Us</a>
+					<a href="#top">Return to Top</a>
+					<a href="https://sinister.ly/archive/index.php?thread-91404.html">Lite (Archive) Mode</a> 
+					<a href="https://sinister.ly/misc.php?action=syndication">RSS Syndication</a><a href="https://sinister.ly/myawards.php">Awards</a>
+					<a href="https://sinister.ly/misc.php?page=bans">Bans</a>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+<!-- The following piece of code allows MyBB to run scheduled tasks. DO NOT REMOVE --><!-- End task image code -->
+
+<script type="text/javascript">if(MyBB) { $([document, window]).bind("load", function() { MyBB.detectDSTChange('0'); }); }</script>
+
+
+<!-- MentionMe Autocomplete Scripts -->
+<script type="text/javascript" src="https://sinister.ly/jscripts/Caret.js/jquery.caret.min.js"></script>
+<script type="text/javascript" src="https://sinister.ly/jscripts/MentionMe/autocomplete.min.js"></script>
+<script type="text/javascript">
+<!--
+	MentionMe.autoComplete.setup({
+		lang: {
+			instructions: 'type a user name',
+		},
+		minLength: '3',
+		maxLength: '30',
+		maxItems: '5',
+		tid: '91404',
+		fullText: '0',
+		showAvatars: '0',
+		imageDirectory: 'https://sinister.ly/images/modern',
+		lockSelection: '1',
+	});
+// -->
+</script>
+<div id="mentionme_master_popup" class="mentionme_popup" style="display: none;">
+	<div class="mentionme_spinner">
+		<img src="images/spinner.gif" />
+		<span></span>
+	</div>
+	<div class="mentionme_popup_input_container">
+		<input class="mentionme_popup_input" type="text" autocomplete="off" />
+	</div>
+	<div class="mentionme_popup_body"></div>
+</div>
+
+
+
+
+
+</body>
+</html>
