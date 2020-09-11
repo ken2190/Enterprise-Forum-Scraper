@@ -45,6 +45,9 @@ class CardingSiteSpider(SitemapSpider):
         re.IGNORECASE
     )
 
+    # captcha stuffs
+    bypass_success_xpath = '//a[@href="/login/"]'
+
     # Other settings
     use_proxy = True
     sitemap_datetime_format = '%b %d, %Y'
@@ -104,9 +107,6 @@ class CardingSiteSpider(SitemapSpider):
 
         # Parse generic avatar
         yield from super().parse_avatars(response)
-
-    def check_bypass_success(self, browser):
-        return bool(browser.find_elements_by_xpath('//a[@href="/login/"]'))
 
 
 class CardingSiteScraper(SiteMapScrapper):
