@@ -1,7 +1,5 @@
 import re
 
-from datetime import datetime
-
 from scrapy import (
     Request,
     FormRequest
@@ -46,7 +44,7 @@ class SinisterSpider(SitemapSpider):
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
-        r".*/(\w+\.\w+)",
+        r"avatar_(\d+\.\w+)",
         re.IGNORECASE
     )
 
