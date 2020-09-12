@@ -40,8 +40,10 @@ class XakerSpider(SitemapSpider):
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
                         '/text()'
     post_date_xpath = '//div[contains(@class,"privateControls")]//span[@'\
-                      'class="DateTime"]/text()|//div[@class="privateCon'\
-                      'trols"]//abbr[@class="DateTime"]/@data-datestring'
+                      'class="DateTime"]/@title|//div[@class="privateCon'\
+                      'trols"]//abbr[@class="DateTime"]/@data-datestring|'\
+                      '//div[contains(@class,"privateControls")]//span[@'\
+                      'class="DateTime"]/text()'
 
     avatar_xpath = '//div[contains(@class,"avatarHolder")]//img/@src'
 
@@ -135,9 +137,13 @@ class XakerSpider(SitemapSpider):
         all_forums = response.xpath(self.forum_xpath).extract()
 
         for forum_url in all_forums:
+            print(forum_url)
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
+
+            if not '41' in forum_url:
+                continue
 
             yield Request(
                 url=forum_url,
