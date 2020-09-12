@@ -262,19 +262,18 @@ class BaseTemplate:
 
         # check if date is already a timestamp
         try:
-            date = float(date)
-            return date
-        except:
-            pass
-        try:
-            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
-            return str(date)
+            date = dateparser.parse(date).timestamp()
+            return str(date)            
         except:
             try:
-                date = dateparser.parse(date).timestamp()
-                return str(date)
+                date = float(date)
+                return date
             except:
-                pass
+                try:
+                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+                    return str(date)
+                except:
+                    pass
 
         return ""
 
