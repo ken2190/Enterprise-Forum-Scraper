@@ -39,14 +39,13 @@ class XakerSpider(SitemapSpider):
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
                         '/text()'
-    post_date_xpath = '//div[@class="messageDetails"]'\
-                      '//span[@class="DateTime"]/text()|'\
-                      '//div[@class="messageDetails"]'\
-                      '//abbr[@class="DateTime"]/@data-datestring'
+    post_date_xpath = '//div[contains(@class,"privateControls")]//span[@'\
+                      'class="DateTime"]/text()|//div[@class="privateCon'\
+                      'trols"]//abbr[@class="DateTime"]/@data-datestring'
 
     avatar_xpath = '//div[contains(@class,"avatarHolder")]//img/@src'
 
-    #captcha stuffs
+    # captcha stuffs
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
 
     # Regex stuffs
@@ -122,7 +121,6 @@ class XakerSpider(SitemapSpider):
 
         yield from self.start_requests(cookies=cookies, ip=ip)
 
-
     def parse_start(self, response):
 
         # Synchronize user agent for cloudfare middlewares
@@ -147,7 +145,6 @@ class XakerSpider(SitemapSpider):
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response)
             )
-
 
     def parse_thread(self, response):
 
