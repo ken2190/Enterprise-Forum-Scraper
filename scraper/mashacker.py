@@ -1,16 +1,9 @@
-import time
-import requests
-import os
-import json
 import re
-import scrapy
-from math import ceil
-import configparser
-from urllib.parse import urlencode
-from lxml.html import fromstring
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import SiteMapScrapper
+import uuid
+from scrapy.http import Request
+from scraper.base_scrapper import SiteMapScrapper, SitemapSpider
+import dateparser
+from datetime import datetime
 
 
 REQUEST_DELAY = 0.3
@@ -21,130 +14,96 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
              'Chrome/79.0.3945.117 Safari/537.36',
 
 
-class MasHackerSpider(scrapy.Spider):
+class MasHackerSpider(SitemapSpider):
     name = 'mashacker_spider'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = "https://www.mashacker.com/"
-        self.topic_pattern = re.compile(r'showthread\.php/(\d+)-')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*/page(\d+)')
-        self.start_url = "https://www.mashacker.com/"
-        self.output_path = kwargs.get("output_path")
-        self.avatar_path = kwargs.get("avatar_path")
-        self.headers = {
-            'user-agent': USER_AGENT
-        }
+    base_url = "https://www.mashacker.com/"
 
-    def start_requests(self):
-        yield Request(
-            url=self.start_url,
-            headers=self.headers,
-            callback=self.parse
+    # # Xpath stuffs
+    forum_xpath = '//div[@class="datacontainer"]//h2[@class="forumtitle"]/a'\
+                  '/@href|//li[@class="subforum"]/a/@href'
+
+    thread_xpath = '//li[contains(@class,"threadbit")]'
+    thread_first_page_xpath = '//h3[@class="threadtitle"]/a[@class="title"]/@href'
+    thread_last_page_xpath = '//dl[contains(@class,"pagination")]//dd//span[last()]/a/text()'
+
+    thread_date_xpath = '//div[contains(@class,"author")]//span/a[contains(@class,"username")][1]/@title' #split date later
+
+    pagination_xpath = '//a[@rel="next"]/@href'
+    thread_pagination_xpath = '//a[@rel="prev"]/@href'
+    thread_page_xpath = '//span[@class="selected"]/a/text()'
+    post_date_xpath = '//span[@class="date"]/text()'
+
+    avatar_xpath = '//a[@class="postuseravatar"]/img/@src'
+
+    topic_pattern = re.compile(r'showthread\.php/(\d+)-')
+    avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+    pagination_pattern = re.compile(r'.*/page(\d+)')
+
+    # # Recaptcha stuffs
+    bypass_success_xpath = '//div[@class="datacontainer"]'
+
+    # # Other settings
+    use_proxy = True
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+
+    def start_requests(self, cookies=None, ip=None):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
         )
 
-    def parse(self, response):
-        forums = response.xpath(
-            '//div[@class="datacontainer"]//h2[@class="forumtitle"]/a')
-        sub_forums = response.xpath(
-            '//li[@class="subforum"]/a')
-        forums.extend(sub_forums)
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
 
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse_start
+        )
 
-    def parse_forum(self, response):
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//h3[@class="threadtitle"]/a[@class="title"]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+    def parse_thread_date(self, thread_date):
+        if thread_date:
+            thread_date = thread_date.split('on')[-1]
+            return dateparser.parse(thread_date)
+        else:
+            return datetime.datetime.now()
 
-        next_page = response.xpath(
-            '//span[@class="prev_next"]/a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
+    def parse_start(self, response):
+
+        # Synchronize user agent for cloudfare middlewares
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+
+        for forum_url in all_forums:
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+
             yield Request(
-                url=next_page_url,
+                url=forum_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
             )
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath(
-            '//a[@class="postuseravatar"]/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if self.base_url not in avatar_url:
-                avatar_url = self.base_url + avatar_url
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
-            )
+        # Save generic thread
+        yield from super().parse_thread(response)
 
-        next_page = response.xpath(
-            '//span[@class="prev_next"]/a[@rel="next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('.', 1)[0]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar for {file_name_only} done..!")
+        # Save avatars
+        yield from super().parse_avatars(response)
 
 
 class MasHackerScrapper(SiteMapScrapper):

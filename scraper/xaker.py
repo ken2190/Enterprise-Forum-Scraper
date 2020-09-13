@@ -142,9 +142,6 @@ class XakerSpider(SitemapSpider):
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
 
-            if not '41' in forum_url:
-                continue
-
             yield Request(
                 url=forum_url,
                 headers=self.headers,
