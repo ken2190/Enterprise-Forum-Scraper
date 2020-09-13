@@ -1,5 +1,6 @@
 import os
 import re
+import time
 
 from datetime import (
     datetime,
@@ -60,7 +61,8 @@ class OmertaSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
+    use_vip_proxy = True
     sitemap_datetime_format = "%m-%d-%Y"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
@@ -68,12 +70,13 @@ class OmertaSpider(SitemapSpider):
         super().__init__(*args, **kwargs)
         self.headers.update(
             {
-                "Connection": "keep-alive",
-                "Host": "omerta.cc",
-                "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "none",
-                "Sec-Fetch-User": "?1",
-                "Referer": "https://omerta.cc/",
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'DNT': '1',
+                'Upgrade-Insecure-Requests': '1',
+                'Cache-Control': 'max-age=0',
             }
         )
 
@@ -126,20 +129,23 @@ class OmertaSpider(SitemapSpider):
             formcss=self.login_form_css,
             formdata={
                 "vb_login_username": USERNAME,
-                "vb_login_password": "",
-                "securitytoken": "guest",
-                "vb_login_md5password": MD5PASS,
-                "vb_login_md5password_utf": MD5PASS,
-                "do": "login",
-                "url": "/"
+                "vb_login_password": PASSWORD,
+                # "securitytoken": "guest",
+                # "vb_login_md5password": MD5PASS,
+                # "vb_login_md5password_utf": MD5PASS,
+                # "do": "login",
+                # "url": "/"
             },
+            headers=self.headers,
             dont_filter=True,
+            dont_click=True,
             callback=self.parse_login
         )
 
     def parse_login(self, response):
         # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
+        time.sleep(2)
 
         yield Request(
             url=self.base_url,
