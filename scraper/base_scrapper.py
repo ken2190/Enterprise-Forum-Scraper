@@ -965,19 +965,30 @@ class SitemapSpider(BypassCloudfareSpider):
 
     def get_existing_file_date(self, topic_id):
 
-        # Load first page file name
-        file_name = os.path.join(
-            self.output_path,
-            "%s-1.html" % topic_id
-        )
+        ## Load first page file name
+        #file_name = os.path.join(
+            #self.output_path,
+            #"%s-1.html" % topic_id
+        #)
 
-        # If file name exist then return
-        if not os.path.exists(file_name):
-            return
+        ## If file name exist then return
+        #if not os.path.exists(file_name):
+            #return
 
-        # Else return time stamp
-        created_ts = os.stat(file_name).st_mtime
-        return datetime.fromtimestamp(created_ts)
+        last_scrape_datetimes = [
+            datetime.fromtimestamp(
+                os.stat(os.path.join(self.output_path, fn)).st_mtime
+            )
+            for fn in os.listdir(self.output_path)
+            if re.match(r'%s-\d{1,3}\.html' % topic_id, fn)
+        ]
+
+        if last_scrape_datetimes:
+            return max(last_scrape_datetimes)
+
+        ## Else return time stamp
+        # created_ts = os.stat(file_name).st_mtime
+        # return datetime.fromtimestamp(created_ts)
 
     def check_existing_file_date(self, **kwargs):
         # Load variables
