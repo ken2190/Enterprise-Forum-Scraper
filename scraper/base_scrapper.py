@@ -19,6 +19,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.exceptions import CloseSpider
 from copy import deepcopy
 from datetime import datetime
+from urllib.parse import urljoin
 from middlewares.utils import IpHandler
 from anticaptchaofficial.recaptchav2proxyon import *
 from anticaptchaofficial.recaptchav2proxyless import *
@@ -2114,7 +2115,7 @@ class SeleniumSpider(SitemapSpider):
         temp_url = next_page
 
         if self.base_url not in next_page:
-            temp_url = response.urljoin(next_page)
+            temp_url = urljoin(self.base_url, next_page)
 
         if self.base_url not in temp_url:
             temp_url = self.base_url + next_page
@@ -2183,7 +2184,7 @@ class SeleniumSpider(SitemapSpider):
             temp_url = next_page
 
             if self.base_url not in next_page:
-                temp_url = response.urljoin(next_page)
+                temp_url = urljoin(self.base_url, next_page)
 
             if self.base_url not in temp_url:
                 temp_url = self.base_url + next_page
@@ -2201,7 +2202,7 @@ class SeleniumSpider(SitemapSpider):
             temp_url = avatar_url
             # Standardize avatar url
             if not avatar_url.lower().startswith("http"):
-                temp_url = response.urljoin(avatar_url)
+                temp_url = urljoin(self.base_url, avatar_url)
 
             if self.base_url not in temp_url:
                 temp_url = self.base_url + avatar_url
