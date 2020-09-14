@@ -1,20 +1,22 @@
-INPUT_PATH = '/Users/mac/programming/filter/data.json'
-OUTPUT_PATH = '/Users/mac/programming/filter/result.json'
-
-import json
 import re
 import os
+import sys
+import json
 
 accumulator = []
 slash = False
 
-if os.path.exists(OUTPUT_PATH):
-    os.system(f'rm {OUTPUT_PATH}')
+HELP_MESSAGE = """
+    Usage: python deduplicate.py --input=path/to/input --output=path/to/output
+"""
+
+INPUT_PATH = None
+OUTPUT_PATH = None
+
 
 def write_json(data):
     global slash
     with open(OUTPUT_PATH, 'a+') as op:
-        # print(f'{data["_source"]["cid"]} -cid {data["_source"]["pid"]}-pid done!')        
         if slash:
             op.write('\n' + json.dumps(data, ensure_ascii=False))
         else:
@@ -28,7 +30,7 @@ def empty_accumulator():
     global accumulator
 
     if len(accumulator) == 0:
-        return 
+        return
 
     img_found = False
     is_different = False
@@ -60,26 +62,58 @@ def empty_accumulator():
     accumulator = []
 
 
-with open(INPUT_PATH, 'r') as ip:
-    prev_pid = prev_cid = None
-    for num, line in enumerate(ip,1):
-        try:
-            data = json.loads(line)
-        except:
-            print(f'Invalid json at line: {num}. Ignoring.')
-            continue
-        try:
-            cid = data['_source']['cid']
-        except:
-            print(f'cid not found in the line: {num}. Writing anyway.')
-            write_json(data)
-            continue
+def main():
+    with open(INPUT_PATH, 'r') as ip:
+        prev_pid = prev_cid = None
+        for num, line in enumerate(ip, 1):
+            try:
+                data = json.loads(line)
+            except Exception:
+                print(f'Invalid json at line: {num}. Ignoring.')
+                continue
+            try:
+                cid = data['_source']['cid']
+            except Exception:
+                print(f'cid not found in the line: {num}. Writing anyway.')
+                write_json(data)
+                continue
 
-        pid = data['_source']['pid']
+            pid = data['_source']['pid']
 
-        if (prev_cid, prev_pid) != (cid, pid):
-            empty_accumulator()
-        accumulator.append(data)
-        prev_cid, prev_pid = cid, pid
-    empty_accumulator()
+            if (prev_cid, prev_pid) != (cid, pid):
+                empty_accumulator()
+            accumulator.append(data)
+            prev_cid, prev_pid = cid, pid
+        empty_accumulator()
 
+
+for arg in sys.argv[1:]:
+    try:
+        key = arg.split('=')[0].split('--')[-1]
+        value = arg.split('=')[1]
+    except:
+        print('Missing values.')
+        print(HELP_MESSAGE)
+        exit()
+
+    if key == 'input':
+        # global INPUT_PATH
+        INPUT_PATH = value
+
+    if key == 'output':
+        # global OUTPUT_PATH
+        OUTPUT_PATH = value
+
+if not INPUT_PATH or not OUTPUT_PATH:
+    print(HELP_MESSAGE)
+    exit()
+
+if os.path.exists(OUTPUT_PATH):
+    os.system(f'rm {OUTPUT_PATH}')
+
+if not os.path.exists(INPUT_PATH):
+    print("INPUT_PATH doesn't exists.")
+    print(HELP_MESSAGE)
+    exit()
+
+main()
