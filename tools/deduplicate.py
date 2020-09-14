@@ -48,8 +48,8 @@ def empty_accumulator():
     if is_different:
         for win in accumulator:
             write_json(win)
-            accumulator = []
-            return
+        accumulator = []
+        return
 
     if not winners:
         write_json(accumulator[0])
