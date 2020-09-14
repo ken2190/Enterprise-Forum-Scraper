@@ -34,7 +34,7 @@ def empty_accumulator():
 
     img_found = False
     is_different = False
-    msg  = accumulator[0]['_source']['message']
+    msg = accumulator[0]['_source']['message']
     prev_author = accumulator[0]['_source']['author']
     winners = []
     for index, data in enumerate(accumulator,0):
@@ -54,7 +54,7 @@ def empty_accumulator():
         return
 
     if not winners:
-        write_json(accumulator[0])
+        write_json(accumulator[-1])
     else:
         for win in winners:
             write_json(win)
@@ -65,6 +65,7 @@ def empty_accumulator():
 def main():
     with open(INPUT_PATH, 'r') as ip:
         prev_pid = prev_cid = None
+        has_cid = True
         for num, line in enumerate(ip, 1):
             try:
                 data = json.loads(line)
@@ -74,8 +75,11 @@ def main():
             try:
                 cid = data['_source']['cid']
             except Exception:
-                print(f'cid not found in the line: {num}. Writing anyway.')
-                write_json(data)
+                if has_cid:
+                    empty_accumulator()
+                print(f'cid not found in the line: {num}.')
+                accumulator.append(data)
+                has_cid = False
                 continue
 
             pid = data['_source']['pid']
@@ -84,6 +88,7 @@ def main():
                 empty_accumulator()
             accumulator.append(data)
             prev_cid, prev_pid = cid, pid
+            has_cid = True
         empty_accumulator()
 
 
