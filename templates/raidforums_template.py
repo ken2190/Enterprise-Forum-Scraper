@@ -14,7 +14,7 @@ class RaidForumsParser(BaseTemplate):
         self.comments_xpath = '//div[@id="posts"]/div[contains(@class,"post")]'
         self.header_xpath = '//div[@id="posts"]/div[contains(@class,"post")]'
         self.date_xpath = 'div//span[@class="post_date"]/text()'
-        self.author_xpath = 'div//div[@class="post__user-profile largetext"]//span/text()'
+        self.author_xpath = 'div//div[contains(@class,"post__user-profile")]/a/@href'
         self.title_xpath = '//span[@class="thread-info__name rounded"]/text()'
         self.post_text_xpath = 'div//div[@class="post_body scaleimages"]//descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = 'div//a[@class="post__user-avatar"]/img/@src'
@@ -44,3 +44,12 @@ class RaidForumsParser(BaseTemplate):
                 )
 
         return post_text
+
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if author:
+            author = ''.join(author).strip()
+            author = author.split('User-')[-1]
+            return author
+        else:
+            return ''
