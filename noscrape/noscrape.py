@@ -5,6 +5,7 @@ from .noscrape_logger import NoScrapeLogger
 # from cli_parser import CliParser
 from .db_modules.elastic import Elastic
 from .db_modules.mongo import MongoScrape
+from .db_modules.cassandra import CassandraScrape
 
 from .main_modules.arg_verifier import ArgVerifier
 from .main_modules.arg_parser import ArgParser
@@ -53,8 +54,8 @@ class NoScrape:
         if new_config['type'] == 'mongo':
             self.run_nosql(new_config, 'mongo')
             #
-            # if new_config['type'] == 'cassandra':
-            #     self.run_nosql(new_config, 'cassandra')
+        if new_config['type'] == 'cassandra':
+            self.run_nosql(new_config, 'cassandra')
             #
             # if new_config['type'] == 's3':
             #     self.run_s3(new_config)
@@ -172,7 +173,7 @@ class NoScrape:
                 scrape_type=argparse_data['scrape_type'],
                 username=argparse_data['username'],
                 password=argparse_data['password'],
-                exclude_indexes=exclude_indexes
+                # exclude_indexes=exclude_indexes
             )
         else:
             raise ValueError("Type Should be either 'mongo' or 'cassandra'")
