@@ -48,9 +48,9 @@ class Elastic:
 
 
     def get_index_size(self, indexes, index_name):
-        for index in indexes:           
-            if index['index'] == index_name:                
-                return index['store.size']              
+        for index in indexes:
+            if index['index'] == index_name:
+                return index['store.size']
         return 0
 
     # get index names
