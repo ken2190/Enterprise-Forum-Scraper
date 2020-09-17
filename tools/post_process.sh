@@ -84,6 +84,7 @@ cd $CWD
 # archive scraped HTML and combined JSON
 ##############################################
 tar -cvzf $ARCHIVE_DIR/original/$SITE_NAME-html-$DATESTAMP.tar.gz $OUTPUT_DIR/$SITE_NAME/
+
 if [ $? -ne 0 ]
 then
     echo "ERROR: Failed to create HTML archive"
