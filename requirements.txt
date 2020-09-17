@@ -30,3 +30,4 @@ js2py
 imagehash==4.1.0
 pillow==7.2.0
 faker
+CouchDB==1.2

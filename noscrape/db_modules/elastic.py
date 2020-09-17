@@ -82,7 +82,6 @@ class Elastic:
                     for hit in records:
                         dumped.append(hit)
 
-
                     # elastic_dump_command = "sudo elasticdump --input=http://{}:{}/{} --output={}/{}.txt –ignore-errors --limit={}". \
                     #   format(self.target, self.port, index, self.target, index, self.limit)
                     # try:
@@ -124,7 +123,7 @@ class Elastic:
                     "_source": {
                         "indexes": []
                     }
-                }                   
+                }
 
                 obj["_source"]["ip"] = self.ip
                 obj["_source"]["port"] = self.port
@@ -133,14 +132,14 @@ class Elastic:
 
                 for index in indexes:
                     index_name = index["index"]
-                    
+
                     if self.valid_index(index_name):
                         index_data = self.init_index_json()
-                        
+
                         index_data["name"] = index_name
                         index_data["count"] = self.get_index_count(indexes, index_name)
-                        index_data["size"] = self.get_index_size(indexes, index_name)                       
-                        mappings = elastic_db.indices.get(index_name)                       
+                        index_data["size"] = self.get_index_size(indexes, index_name)
+                        mappings = elastic_db.indices.get(index_name)
 
                         properties = {}
 
@@ -172,14 +171,12 @@ class Elastic:
                     else:
                         continue
 
-
                 try:
                     elastic_db.close()
                 except Exception:
                     pass
 
                 return obj
-
 
         except Exception as e:
             self.logger.error("Unknown Exception: {}".format(str(e)))
