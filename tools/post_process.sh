@@ -62,8 +62,16 @@ RCLONE_BIN=rclone
 # merge parsed files
 ##############################################
 CWD=`pwd`
-cd $PARSE_DIR/$SITE_NAME
-$JQ_BIN . *.json -c >> $COMBO_DIR/$SITE_NAME-$DATESTAMP.json
+CUR="/data/prpcessomg/2/$SITE_NAME"
+
+#is the folder empty?
+if [ "$(ls -A $CUR)" ]; then
+        cd `echo $CUR`
+	$JQ_BIN . *.json -c >> /data/processing/3/$SITE_NAME-$DATESTAMP.json
+else
+    echo "$DIR is Empty"
+fi
+
 if [ $? -ne 0 ]
 then
     echo "ERROR: JQ exited with non-zero exit code"
