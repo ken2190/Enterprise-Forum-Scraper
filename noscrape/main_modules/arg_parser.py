@@ -7,7 +7,7 @@ scrape_types = ["meta", "dump"]
 class ArgParser():
     def parse_command_line(self):
         """This function parses and return arguments passed in"""
-        databases = ["mongo", "s3", "es", "cassandra"]
+        databases = ["mongo", "s3", "es", "cassandra", "couchdb"]
 
         # Assign description to the help doc
         parser = CustomArgumentParser()

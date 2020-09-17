@@ -6,6 +6,7 @@ from .noscrape_logger import NoScrapeLogger
 from .db_modules.elastic import Elastic
 from .db_modules.mongo import MongoScrape
 from .db_modules.cassandra import CassandraScrape
+from .db_modules.couchdb import CouchDB
 
 from .main_modules.arg_verifier import ArgVerifier
 from .main_modules.arg_parser import ArgParser
@@ -59,6 +60,9 @@ class NoScrape:
             #
             # if new_config['type'] == 's3':
             #     self.run_s3(new_config)
+
+        if new_config['type'] == 'couchdb':
+            self.run_nosql(new_config, 'couchdb')
 
         if new_config['type'] == 'es':
             self.run_es(new_config)
@@ -141,7 +145,6 @@ class NoScrape:
             arg_verifier.try_opening_filter_file()
             filter_list = self.create_filter_list(argparse_data['filter'])
 
-
         out_folder = None
         if argparse_data['out_folder'] is not None:
             out_folder = argparse_data['out_folder']
@@ -174,6 +177,12 @@ class NoScrape:
                 username=argparse_data['username'],
                 password=argparse_data['password'],
                 # exclude_indexes=exclude_indexes
+            )
+        elif nosql_type == 'couchdb':
+            nosql_tool = CouchDB(
+                scrape_type=argparse_data['scrape_type'],
+                username=argparse_data['username'],
+                password=argparse_data['password']
             )
         else:
             raise ValueError("Type Should be either 'mongo' or 'cassandra'")
