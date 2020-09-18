@@ -1,23 +1,16 @@
-import os
-import re
-import time
-import uuid
-import json
 
-from datetime import datetime, timedelta
+import re
+import uuid
+from datetime import datetime
 
 import js2py
 import requests
-from scrapy import (
-    Request,
-    FormRequest,
-    Selector
-)
+from scrapy import Request, FormRequest
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-
 
 REQUEST_DELAY = 1
 NO_OF_THREADS = 1
@@ -54,6 +47,7 @@ class YouGameSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
+    fraudulent_threshold = 50
     handle_httpstatus_list = [503]
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
@@ -69,6 +63,20 @@ class YouGameSpider(SitemapSpider):
         r".*page=(\d+)",
         re.IGNORECASE
     )
+
+    def start_requests(self):
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": self.ip_handler.get_good_ip()
+        }
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse,
+            dont_filter=True,
+            meta=meta
+        )
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -88,11 +96,13 @@ class YouGameSpider(SitemapSpider):
             return
 
         if response.xpath(self.captcha_form_xpath):
+            recaptcha_token = self.solve_recaptcha(response)
+
             yield FormRequest.from_response(
                 response,
                 formxpath=self.captcha_form_xpath,
                 formdata={
-                    "g-recaptcha-response": self.solve_recaptcha(response)
+                    "g-recaptcha-response": recaptcha_token
                 },
                 meta=self.synchronize_meta(response),
                 dont_filter=True,
