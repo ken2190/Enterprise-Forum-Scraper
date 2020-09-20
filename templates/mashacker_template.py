@@ -9,12 +9,6 @@ class MashackerParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser_name = "mashacker.com"
-        self.thread_name_pattern = re.compile(
-            r'(\d+).*html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'.*-(\d+)\.html$'
-        )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.comments_xpath = '//li[contains(@class,"postcontainer")]'
         self.header_xpath = '//li[contains(@class,"postcontainer")]'

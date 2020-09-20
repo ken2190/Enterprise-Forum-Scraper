@@ -24,11 +24,3 @@ class Dark2WebParser(BaseTemplate):
 
         # main function
         self.main()
-
-    def get_comment_id(self, tag):
-        comment_id = ""
-        comment_block = tag.xpath(self.comment_block_xpath)
-        if comment_block:
-            comment_id = comment_block[-1].split('#')[-1]
-
-        return comment_id.replace(',', '').strip()

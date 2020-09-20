@@ -1,9 +1,6 @@
-import time
 import os
 import re
-import scrapy
-from scrapy.http import Request, FormRequest
-from datetime import datetime, timedelta
+from scrapy.http import Request
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 REQUEST_DELAY = 0.5

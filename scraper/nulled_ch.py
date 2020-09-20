@@ -92,31 +92,11 @@ class NulledChSpider(SitemapSpider):
             'User-Agent': USER_AGENT
         })
 
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.split(',')[0].strip()
-        if not thread_date:
-            return
-
-        return datetime.strptime(
-            thread_date,
-            self.sitemap_datetime_format
-        )
-
-    def parse_post_date(self, post_date):
-        # Standardize thread_date
-        post_date = post_date.split(',')[0].strip()
-        if not post_date:
-            return
-        return datetime.strptime(
-            post_date,
-            self.post_datetime_format
-        )
-
     def get_cookies(self, use_proxy=False):
         # Init options
         options = ChromeOptions()
-        # options.add_argument("--headless")
-        # options.add_argument("--no-sandbox")
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
         if use_proxy:
             proxy = PROXY % (PROXY_USERNAME, PROXY_PASSWORD)
             options.add_argument(f'--proxy-server={proxy}')
