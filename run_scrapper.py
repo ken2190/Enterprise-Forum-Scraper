@@ -1,6 +1,4 @@
-import argparse
 import os
-from glob import glob
 from scraper import SCRAPER_MAP
 
 UPDATE_DB_PATH = '/Users/PathakUmesh/forums.db'
@@ -48,6 +46,10 @@ class Scraper:
             Optional:
             -s | --start_date START_DATE: Scrape threads that are newer than supplied date
             -l | --list:                  List available scrapers (tempalte namess)
+            --get_users                   Scrape forum users
+            --no_proxy                    Disable proxies
+            --proxy_countries             Comma-delimited list of proxy countries
+            --use_vip                     Use VIP proxies
 
             """
             print(help_message)
@@ -84,6 +86,7 @@ class Scraper:
             stats = scraper_obj.do_scrape()
 
         return stats
+
 
 def main():
     Scraper().do_scrape()
