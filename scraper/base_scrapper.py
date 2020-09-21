@@ -836,7 +836,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
     def synchronize_meta(self, response, default_meta={}):
         meta = {
-            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            key: response.meta.get(key) for key in ["cookiejar", "ip", "proxy"]
             if response.meta.get(key)
         }
 
