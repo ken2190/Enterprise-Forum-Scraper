@@ -1,5 +1,6 @@
 import os
 from scraper import SCRAPER_MAP
+from helpers.stats import get_warnings
 
 UPDATE_DB_PATH = '/Users/PathakUmesh/forums.db'
 
@@ -84,6 +85,16 @@ class Scraper:
         #         stats = scraper_obj.do_scrape()
         else:
             stats = scraper_obj.do_scrape()
+
+            # FIXME warnings works for the altenens scraper only for now
+            if template.lower() in ('altenens',):
+                warnings = get_warnings(stats)
+                if warnings:
+                    print('WARNINGS:')
+                    for warn in warnings:
+                        print(f' - {warn}')
+                else:
+                    print('Finished successfully')
 
         return stats
 
