@@ -8,6 +8,7 @@ from scrapy import (
     FormRequest,
     Selector
 )
+from scrapy.exceptions import CloseSpider
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -66,7 +67,14 @@ class AltenensSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    def parse(self, response):
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse_main
+        )
+
+    def parse_main(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
@@ -108,29 +116,19 @@ class AltenensSpider(SitemapSpider):
         }
         yield FormRequest(
             url="https://altenen.is/login/login",
-            callback=self.parse_start,
+            callback=self.parse,
             formdata=params,
             headers=self.headers,
             dont_filter=True,
         )
 
-    def parse_start(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        all_forums = response.xpath(self.forum_xpath).extract()
-        for forum_url in all_forums:
-
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
-            yield Request(
-                url=forum_url,
-                headers=self.headers,
-                callback=self.parse_forum,
-                meta=self.synchronize_meta(response),
-            )
-
     def parse_thread(self, response):
+
+        if response.status == 403:
+            err_msg = response.css(
+                '.p-body-pageContent > .blockMessage::text').get()
+            if err_msg:
+                self.logger.warning('%s - %s', response.url, err_msg.strip())
 
         # Parse generic thread
         yield from super().parse_thread(response)
@@ -147,6 +145,6 @@ class AltenensScrapper(SiteMapScrapper):
     def load_settings(self):
         settings = super().load_settings()
         settings.update({
-            'RETRY_HTTP_CODES': [403, 406, 429, 500, 503]
+            'RETRY_HTTP_CODES': [403, 406, 408, 429, 500, 502, 503, 504, 522, 524]
         })
         return settings

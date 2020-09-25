@@ -765,6 +765,10 @@ class SitemapSpider(BypassCloudfareSpider):
         self.kill = kwargs.get("kill")
         self.get_users = kwargs.get("get_users")
         self.topic_pages_saved = 0
+        self.forums = set()
+        self.topics = set()
+        self.topics_scraped = set()
+        self.avatars = set()
 
         if kwargs.get("no_proxy") is not None:
             self.use_proxy = False
@@ -850,22 +854,22 @@ class SitemapSpider(BypassCloudfareSpider):
         :return: thread url: str, thread lastmod: datetime
         """
         # Load selector
-        selector = Selector(text=thread)
+        # selector = Selector(text=thread)
 
         # Load stats
         thread_first_page_url = None
         if self.thread_first_page_xpath:
-            thread_first_page_url = selector.xpath(
+            thread_first_page_url = thread.xpath(
                 self.thread_first_page_xpath
             ).extract_first()
 
         thread_last_page_url = None
         if self.thread_last_page_xpath:
-            thread_last_page_url = selector.xpath(
+            thread_last_page_url = thread.xpath(
                 self.thread_last_page_xpath
             ).extract_first()
 
-        thread_lastmod = selector.xpath(
+        thread_lastmod = thread.xpath(
             self.thread_date_xpath
         ).extract_first()
 
@@ -1408,23 +1412,23 @@ class SitemapSpider(BypassCloudfareSpider):
         yield Request(**request_arguments)
 
     def parse(self, response):
-        all_forums = response.xpath(self.forum_xpath).extract()
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        all_forums = set(response.xpath(self.forum_xpath).extract())
+
+        # update stats
+        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
 
         for forum_url in all_forums:
-
-            # Standardize url
-            if 'http://' not in forum_url and 'https://' not in forum_url:
-                if self.base_url not in forum_url:
-                    forum_url = self.base_url + forum_url
-
-            yield Request(
+            yield response.follow(
                 url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response)
             )
 
-    def parse_forum(self, response, thread_meta={}):
+    def parse_forum(self, response, thread_meta={}, is_first_page=True):
 
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
@@ -1433,24 +1437,50 @@ class SitemapSpider(BypassCloudfareSpider):
             "Next_page_url: %s" % response.url
         )
 
-        threads = response.xpath(self.thread_xpath).extract()
-        lastmod_pool = []
+        threads = response.xpath(self.thread_xpath)
 
+        lastmod_pool = []
         for thread in threads:
             thread_url, thread_lastmod = self.extract_thread_stats(thread)
             if not thread_url:
-                continue
-
-            if self.start_date and thread_lastmod is None:
-                self.logger.info(
-                    "Date not found in thread %s " % thread_url
+                self.crawler.stats.inc_value("forum/thread_no_url_count")
+                self.logger.warning(
+                    "Unable to find thread URL on the forum: %s",
+                    response.url
                 )
                 continue
 
-            lastmod_pool.append(thread_lastmod)
+            # Parse topic id
+            topic_id = self.get_topic_id(thread_url)
+            if not topic_id:
+                self.crawler.stats.inc_value("forum/thread_no_topic_id_count")
+                self.logger.warning(
+                    "Unable to find topic ID of the thread: %s",
+                    response.join(thread_url)
+                )
+                continue
+
+            if thread_lastmod is None:
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("forum/thread_no_date_count")
+                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+
+                if self.start_date:
+                    self.logger.info(
+                        "Date not found in thread %s " % thread_url
+                    )
+                    continue
+            else:
+                lastmod_pool.append(thread_lastmod)
 
             # If start date, check last mod
             if self.start_date and thread_lastmod < self.start_date:
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("forum/thread_outdated_count")
+                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+
                 self.logger.info(
                     "Thread %s last updated is %s before start date %s. Ignored." % (
                         thread_url, thread_lastmod, self.start_date
@@ -1469,18 +1499,18 @@ class SitemapSpider(BypassCloudfareSpider):
 
                 thread_url = temp_url
 
-            # Parse topic id
-            topic_id = self.get_topic_id(thread_url)
-
-            if not topic_id:
-                continue
-
             # Check file exist
             if self.check_existing_file_date(
                     topic_id=topic_id,
                     thread_date=thread_lastmod,
                     thread_url=thread_url
             ):
+                # update stats
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("forum/thread_already_scraped_count")
+                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+
                 continue
 
             # Check thread meta
@@ -1492,6 +1522,10 @@ class SitemapSpider(BypassCloudfareSpider):
             # Update topic id
             meta["topic_id"] = topic_id
 
+            # update stats
+            self.topics.add(topic_id)
+            self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+
             yield Request(
                 url=thread_url,
                 headers=self.headers,
@@ -1501,10 +1535,16 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Pagination
         if not lastmod_pool:
+            self.crawler.stats.inc_value("forum/forum_no_threads_count")
             self.logger.info(
-                "Forum without thread, exit."
+                "Forum without thread, exit: %s",
+                response.url
             )
             return
+
+        # update stats
+        if is_first_page:
+            self.crawler.stats.inc_value("forum/forum_processed_count")
 
         if self.start_date and self.start_date > max(lastmod_pool):
             self.logger.info(
@@ -1520,7 +1560,8 @@ class SitemapSpider(BypassCloudfareSpider):
                 url=next_page,
                 headers=self.headers,
                 callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
+                meta=self.synchronize_meta(response),
+                cb_kwargs={'is_first_page': False}
             )
 
     def get_forum_next_page(self, response):
@@ -1543,6 +1584,12 @@ class SitemapSpider(BypassCloudfareSpider):
 
     def parse_thread(self, response):
 
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Get topic id
+        topic_id = response.meta.get("topic_id")
+
         # Load all post date
         post_dates = [
             self.parse_post_date(post_date) for post_date in
@@ -1551,20 +1598,20 @@ class SitemapSpider(BypassCloudfareSpider):
         ]
 
         if self.start_date and not post_dates:
-            print('No dates found in thread')
+            if topic_id not in self.topics_scraped:
+                self.crawler.stats.inc_value("forum/thread_no_messages_count")
+
+            self.logger.info('No dates found in thread')
             return
 
         if self.start_date and max(post_dates) < self.start_date:
+            if topic_id not in self.topics_scraped:
+                self.crawler.stats.inc_value("forum/thread_outdated_count")
+
             self.logger.info(
                 "No more post to update."
             )
             return
-
-        # Synchronize headers user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Get topic id
-        topic_id = response.meta.get("topic_id")
 
         # Save thread content
         if not self.useronly:
@@ -1587,9 +1634,10 @@ class SitemapSpider(BypassCloudfareSpider):
             self.topic_pages_saved += 1
 
             # Update stats
+            self.topics_scraped.add(topic_id)
             self.crawler.stats.set_value(
-                "topic pages saved",
-                self.topic_pages_saved
+                "forum/thread_saved_count",
+                len(self.topics_scraped)
             )
 
             # Kill task if kill count met
@@ -1644,7 +1692,8 @@ class SitemapSpider(BypassCloudfareSpider):
         self.synchronize_headers(response)
 
         # Save avatar content
-        all_avatars = response.xpath(self.avatar_xpath).extract()
+        all_avatars = set(response.xpath(self.avatar_xpath).extract())
+
         for avatar_url in all_avatars:
             # Standardize avatar url only if its not complete url
             slash = False
@@ -1674,6 +1723,10 @@ class SitemapSpider(BypassCloudfareSpider):
             if os.path.exists(file_name):
                 continue
 
+            # update stats
+            self.avatars.add(avatar_url)
+            self.crawler.stats.set_value("forum/avatar_count", len(self.avatars))
+
             yield Request(
                 url=avatar_url,
                 headers=self.headers,
@@ -1698,6 +1751,8 @@ class SitemapSpider(BypassCloudfareSpider):
             self.logger.info(
                 f"Avatar {avatar_name} done..!"
             )
+
+        self.crawler.stats.inc_value("forum/avatar_saved_count")
 
     def solve_cookies_captcha(self, browser, proxy=None):
         return browser, True
