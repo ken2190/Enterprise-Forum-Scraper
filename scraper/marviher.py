@@ -21,10 +21,10 @@ class MarviherSpider(SitemapSpider):
 
     pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
 
-    thread_xpath = '//li[@data-rowid]'
-    thread_first_page_xpath = '//span[@class="ipsType_break ipsContained"]'\
+    thread_xpath = '//ol/li[contains(@class,"ipsDataItem")]'
+    thread_first_page_xpath = './/span[@class="ipsType_break ipsContained"]'\
                               '/a/@href'
-    thread_last_page_xpath = '//span[@class="ipsPagination_page"][last()]'\
+    thread_last_page_xpath = './/span[@class="ipsPagination_page"][last()]'\
                              '/a/@href'
 
     thread_date_xpath = '//li[@class="ipsType_light"]/a/time/@datetime'
@@ -82,10 +82,6 @@ class MarviherSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         all_forums = response.xpath(self.forum_xpath).extract()
-        all_forums.extend([
-            'https://marviher.club/forum/91-sdelayu-zaliv/',
-            'https://marviher.club/forum/92-primu-zaliv/'
-        ])
         for forum_url in all_forums:
 
             # Standardize url
