@@ -21,7 +21,8 @@ PROXY = 'http://127.0.0.1:8118'
 
 class MajesticGardenSpider(SitemapSpider):
     name = 'majestic_garden_spider'
-    base_url = 'http://garden2b7zwrjskh2y3f4pkscgg2waogjp2ilax2mvikjlzmamylznad.onion/index.php'
+    base_url = 'http://garden2b7zwrjskh2y3f4pkscgg2waogjp2ilax2mvikjlzmamylznad.onion'
+    index_url = 'http://garden2b7zwrjskh2y3f4pkscgg2waogjp2ilax2mvikjlzmamylznad.onion/index.php'
 
     # Xpaths
     forum_xpath = '//a[contains(@href, "index.php?board=")]/@href'
@@ -56,7 +57,7 @@ class MajesticGardenSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"
     post_datetime_format = "%B %d, %Y, %I:%M:%S %p »"
     download_delay = REQUEST_DELAY
@@ -70,12 +71,13 @@ class MajesticGardenSpider(SitemapSpider):
 
     def start_requests(self):
         yield Request(
-            url=self.base_url,
+            url=self.index_url,
             callback=self.proceed_for_login,
             headers=self.headers,
             meta={
                 'proxy': PROXY
-            }
+            },
+            dont_filter=True
         )
 
     def proceed_for_login(self, response):
@@ -97,7 +99,7 @@ class MajesticGardenSpider(SitemapSpider):
             "user": USER,
             token_key: token_value,
         }
-        login_url = f'{self.base_url}?action=login2'
+        login_url = f'{self.index_url}?action=login2'
         yield FormRequest(
             url=login_url,
             headers=self.headers,
@@ -117,40 +119,6 @@ class MajesticGardenSpider(SitemapSpider):
         meta.update({'proxy': PROXY})
 
         return meta
-
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        thread_date = thread_date.strip()
-
-        if 'at ' in thread_date.lower():
-            return datetime.today()
-        else:
-            return datetime.strptime(
-                thread_date,
-                self.sitemap_datetime_format
-            )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        post_date = post_date.strip()
-
-        if "at " in post_date.lower():
-            return datetime.today()
-        else:
-            return datetime.strptime(
-                post_date,
-                self.post_datetime_format
-            )
 
     def parse_start(self, response):
         # Synchronize cloudfare user agent
