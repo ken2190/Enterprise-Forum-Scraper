@@ -1456,7 +1456,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 self.crawler.stats.inc_value("forum/thread_no_topic_id_count")
                 self.logger.warning(
                     "Unable to find topic ID of the thread: %s",
-                    response.join(thread_url)
+                    response.urljoin(thread_url)
                 )
                 continue
 
