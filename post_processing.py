@@ -84,7 +84,7 @@ def run():
     args = parse_args()
 
     # prepare paths
-    html_dir = os.path.join(HTML_DIR, args.site)
+    html_dir = os.path.join(OUTPUT_DIR, args.site)
     parse_dir = os.path.join(PARSE_DIR, args.site)
 
     # check input dirs
