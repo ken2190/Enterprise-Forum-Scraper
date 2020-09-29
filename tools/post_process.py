@@ -86,6 +86,7 @@ def run():
     parse_dir = os.path.join(PARSE_DIR, args.SITE_NAME)
 
     # check input dirs
+    print('Checking paths...')
     check_input_dirs(html_dir, parse_dir)
 
     # check if the parse dir contain at least one file
@@ -95,6 +96,7 @@ def run():
     ##############################################
     # merge parsed files
     ##############################################
+    print('Combining JSON files...')
     cmd = f"jq -c '.' {parse_dir}/*.json"
     combined_json_file = os.path.join(
         COMBO_DIR,
@@ -120,6 +122,7 @@ def run():
     ##############################################
     # archive scraped HTML and combined JSON
     ##############################################
+    print('Archiving HTML files...')
     html_archive = os.path.join(
         ARCHIVE_DIR,
         'original',
@@ -131,6 +134,7 @@ def run():
         print("ERROR: Failed to create HTML archive: %s" % err)
         sys.exit(2)
 
+    print('Archiving the combined JSON file...')
     combined_json_archive = os.path.join(
         ARCHIVE_DIR,
         f'{args.SITE_NAME}-{args.DATESTAMP}.tar.gz'
@@ -144,6 +148,7 @@ def run():
     ##############################################
     # move combined JSON to import dir
     ##############################################
+    print('Moving the combined JSON file to import folder...')
     try:
         shutil.move(combined_json_file, IMPORT_DIR)
     except OSError as err:
@@ -153,6 +158,7 @@ def run():
     ##############################################
     # delete scraped HTML and parsed JSON files
     ##############################################
+    print('Deleting source HTML and JSON files...')
     if not os.path.exists(html_archive):
         print("ERROR: missing archive file %s" % html_archive)
         sys.exit(2)
@@ -167,6 +173,7 @@ def run():
     # send archives offset
     ##############################################
     if args.sync:
+        print('Running rclone tool...')
         try:
             result = subprocess.run(
                 ["rclone", "copy", ARCHIVE_DIR, OFFSITE_DEST, "-v"],
@@ -180,6 +187,8 @@ def run():
                 "err=%s" % (err.returncode, err.stderr)
             )
             sys.exit(2)
+
+    print('Done')
 
 
 if __name__ == '__main__':
