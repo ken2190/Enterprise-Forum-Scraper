@@ -28,7 +28,8 @@ def parse_args():
     parser.add_argument('--sync', help='Sync with cloud', action='store_true',
                         default=False)
 
-    return parser.parse_args()
+    args, _ = parser.parse_known_args()
+    return args
 
 
 def check_input_dirs(html_dir, parse_dir):
@@ -74,7 +75,7 @@ def make_tarfile(output_filename, source):
         print(source)
 
 
-def main():
+def run():
     """ Main program flow """
 
     # parse cmdline arguments
@@ -182,4 +183,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run()

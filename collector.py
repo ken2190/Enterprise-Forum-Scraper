@@ -24,6 +24,9 @@ class Collector:
         elif kwargs.get("scan"):
             from noscrape.noscrape import NoScrape
             NoScrape(kwargs).run()
+        elif kwargs.get("post"):
+            from tools import post_process
+            post_process.run()
         else:
             self.parser.print_help()
 

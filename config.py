@@ -121,6 +121,10 @@ main_parser_arguments = [
             "default": None
         }
     },
+    {
+        "args": ("-post", '--post'),
+        "kwargs": {"help": 'Post processing', "action": 'store_true'}
+    }
 ]
 
 default_logging_config = {
