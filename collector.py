@@ -25,8 +25,8 @@ class Collector:
             from noscrape.noscrape import NoScrape
             NoScrape(kwargs).run()
         elif kwargs.get("post"):
-            from tools import post_process
-            post_process.run()
+            import post_processing
+            post_processing.run()
         else:
             self.parser.print_help()
 

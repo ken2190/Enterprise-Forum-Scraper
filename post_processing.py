@@ -11,20 +11,22 @@ import subprocess
 import sys
 import tarfile
 
-HTML_DIR = "/data/processing/1/"
-PARSE_DIR = "/data/processing/2/"
-COMBO_DIR = "/data/processing/3/"
-ARCHIVE_DIR = "/data/processing/offsite/"
-IMPORT_DIR = "/data/processing/import/"
-OFFSITE_DEST = "b2:/ViperStorage/datadumps/"
+from settings import (
+    OUTPUT_DIR,
+    PARSE_DIR,
+    COMBO_DIR,
+    ARCHIVE_DIR,
+    IMPORT_DIR,
+    OFFSITE_DEST
+)
 
 
 def parse_args():
     """ Parses cmdline arguments """
 
     parser = argparse.ArgumentParser(description='Post processing utility')
-    parser.add_argument('SITE_NAME', help='A site name')
-    parser.add_argument('DATESTAMP', help='A datestamp')
+    parser.add_argument('-site', help='A site name', required=True)
+    parser.add_argument('-date', help='A datestamp', required=True)
     parser.add_argument('--sync', help='Sync with cloud', action='store_true',
                         default=False)
 
@@ -82,8 +84,8 @@ def run():
     args = parse_args()
 
     # prepare paths
-    html_dir = os.path.join(HTML_DIR, args.SITE_NAME)
-    parse_dir = os.path.join(PARSE_DIR, args.SITE_NAME)
+    html_dir = os.path.join(HTML_DIR, args.site)
+    parse_dir = os.path.join(PARSE_DIR, args.site)
 
     # check input dirs
     print('Checking paths...')
@@ -100,7 +102,7 @@ def run():
     cmd = f"jq -c '.' {parse_dir}/*.json"
     combined_json_file = os.path.join(
         COMBO_DIR,
-        f'{args.SITE_NAME}-{args.DATESTAMP}.json'
+        f'{args.site}-{args.date}.json'
     )
     try:
         with open(combined_json_file, 'a') as f:
@@ -126,7 +128,7 @@ def run():
     html_archive = os.path.join(
         ARCHIVE_DIR,
         'original',
-        f'{args.SITE_NAME}-html-{args.DATESTAMP}.tar.gz'
+        f'{args.site}-html-{args.date}.tar.gz'
     )
     try:
         make_tarfile(html_archive, html_dir)
@@ -137,7 +139,7 @@ def run():
     print('Archiving the combined JSON file...')
     combined_json_archive = os.path.join(
         ARCHIVE_DIR,
-        f'{args.SITE_NAME}-{args.DATESTAMP}.tar.gz'
+        f'{args.site}-{args.date}.tar.gz'
     )
     try:
         make_tarfile(combined_json_archive, combined_json_file)
