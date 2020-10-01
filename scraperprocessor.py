@@ -8,6 +8,7 @@ import requests
 import subprocess
 import sys
 
+import post_processing
 from forumparse import Parser
 from run_scrapper import Scraper
 from settings import (
@@ -26,6 +27,7 @@ post_process_script = 'tools/post_process.sh'
 
 logger = logging.getLogger(__name__)
 
+
 def get_active_scrapers():
     """
     Retrieves the active scrapers from the Data Viper API.
@@ -35,11 +37,13 @@ def get_active_scrapers():
         raise Exception('Failed to get scrapers from API (status={})'.format(response.status_code))
     return response.json()
 
+
 def get_scraper(scraper_id):
     response = requests.get('{}/api/scraper/{}'.format(DV_BASE_URL, scraper_id), headers=headers)
     if response.status_code != 200:
         raise Exception('Failed to get scraper by ID from API (status={})'.format(response.status_code))
     return response.json()
+
 
 def update_scraper(scraper, payload):
     """
@@ -49,6 +53,7 @@ def update_scraper(scraper, payload):
     response = requests.patch(scraper_url, data=json.dumps(payload), headers=headers)
     if response.status_code != 200:
         logger.warning('Failed to update scraper (status={})'.format(response.status_code))
+
 
 def process_scraper(scraper):
     """
@@ -69,7 +74,7 @@ def process_scraper(scraper):
         ############################
         logger.info('Scraping {} from {}...'.format(template, start_date))
 
-        update_scraper(scraper, { 'status': 'Scraping' })
+        update_scraper(scraper, {'status': 'Scraping'})
 
         kwargs = {
             'start_date': start_date,
@@ -81,9 +86,9 @@ def process_scraper(scraper):
         ############################
         # Run parser for template
         ############################
-        logger.info('Processing {}'.format(template))
+        logger.info('Processing {}...'.format(template))
 
-        update_scraper(scraper, { 'status': 'Processing' })
+        update_scraper(scraper, {'status': 'Processing'})
 
         kwargs = {
             'template': template,
@@ -95,23 +100,31 @@ def process_scraper(scraper):
         ##############################
         # Post-process HTML & JSON
         ##############################
-        retcode = subprocess.call([post_process_script, scraper['name'], arrow.now().format('YYYY_MM_DD')])
-        if retcode != 0:
-            raise Exception('Post Processing failed')
+        logger.info('Post-processing {}...'.format(scraper['name']))
+
+        kwargs = dict(
+            site=scraper['name'],
+            date=arrow.now().format('YYYY_MM_DD'),
+            sync=True
+        )
+        post_processing.run(kwargs)
 
         ##############################
         # Update Scraper Status / Date
         ##############################
 
         # set the scraper's next start date to the current date and clear PID
-        update_scraper(scraper, { 'status': 'Idle', 'nextStartDate': process_date, 'pid': None })
+        update_scraper(scraper, {'status': 'Idle', 'nextStartDate': process_date, 'pid': None})
+        logger.info('Done')
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, { 'status': 'Error', 'pid': None })
+        update_scraper(scraper, {'status': 'Error', 'pid': None})
+
 
 def help():
     logger.info('scraperprocessor.py -s <scraper_id>')
+
 
 def main(argv):
     ##############################
@@ -126,11 +139,11 @@ def main(argv):
     scraper_id = None
 
     for opt, arg in opts:
-      if opt == '-h':
-         help()
-         sys.exit()
-      elif opt in ("-s", "--scraperid"):
-         scraper_id = arg
+        if opt == '-h':
+            help()
+            sys.exit()
+        elif opt in ("-s", "--scraperid"):
+            scraper_id = arg
 
     if scraper_id is None:
         logger.error('Missing required option scraper ID')
@@ -142,9 +155,15 @@ def main(argv):
         # Get / Process Scraper
         ##############################
         scraper = get_scraper(scraper_id)
+        # scraper = dict(
+            # nextStartDate=arrow.now().format('YYYY-MM-DD'),
+            # name=scraper_id,
+            # template=scraper_id
+        # )
         process_scraper(scraper)
     except Exception as e:
         logger.error('Failed to process scraper: {}'.format(e))
 
+
 if __name__ == "__main__":
-   main(sys.argv[1:])
+    main(sys.argv[1:])
