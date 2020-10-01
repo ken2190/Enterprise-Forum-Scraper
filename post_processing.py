@@ -34,21 +34,21 @@ def parse_args():
     return args
 
 
-def check_input_dirs(html_dir, parse_dir):
+def check_input_dirs(html_dir, parse_dir, exit):
     """ Checks input data """
 
     def is_dir_exists(path):
         return os.path.exists(path) and os.path.isdir(path)
 
     if not is_dir_exists(html_dir):
-        print("ERROR STAGE 0: Scraper output directory does not exist: %s"
-              % html_dir)
-        sys.exit(2)
+        err_msg = "ERROR STAGE 0: Scraper output directory does not exist: %s" % html_dir
+        print(err_msg)
+        exit(2, RuntimeError(err_msg))
 
     if not is_dir_exists(parse_dir):
-        print("ERROR STAGE 0: Parsing output directory does not exist: %s"
-              % PARSE_DIR)
-        sys.exit(2)
+        err_msg = "ERROR STAGE 0: Parsing output directory does not exist: %s" % PARSE_DIR
+        print(err_msg)
+        exit(2, RuntimeError(err_msg))
 
     if not is_dir_exists(COMBO_DIR):
         print("WARNING: JSON combo directory does not exist: %s" % COMBO_DIR)
@@ -60,8 +60,9 @@ def check_input_dirs(html_dir, parse_dir):
         os.makedirs(arch_original_dir)
 
     if not is_dir_exists(IMPORT_DIR):
-        print("ERROR: Import directory does not exist: %s" % IMPORT_DIR)
-        sys.exit(2)
+        err_msg = "ERROR: Import directory does not exist: %s" % IMPORT_DIR
+        print(err_msg)
+        exit(2, RuntimeError(err_msg))
 
 
 def make_tarfile(output_filename, source):
@@ -77,19 +78,34 @@ def make_tarfile(output_filename, source):
         print(source)
 
 
-def run():
+def run(kwargs=None):
     """ Main program flow """
 
-    # parse cmdline arguments
-    args = parse_args()
+    if kwargs:
+        args = None
+        site = kwargs['site']
+        date = kwargs['date']
+        sync = kwargs.get('sync', False)
+    else:
+        # parse cmdline arguments
+        args = parse_args()
+        site = args.site
+        date = args.date
+        sync = args.sync
+
+    def exit(exit_code=2, exception=None):
+        if args:
+            sys.exit(exit_code)
+        else:
+            raise exception
 
     # prepare paths
-    html_dir = os.path.join(OUTPUT_DIR, args.site)
-    parse_dir = os.path.join(PARSE_DIR, args.site)
+    html_dir = os.path.join(OUTPUT_DIR, site)
+    parse_dir = os.path.join(PARSE_DIR, site)
 
     # check input dirs
     print('Checking paths...')
-    check_input_dirs(html_dir, parse_dir)
+    check_input_dirs(html_dir, parse_dir, exit)
 
     # check if the parse dir contain at least one file
     if not os.listdir(parse_dir):
@@ -102,7 +118,7 @@ def run():
     cmd = f"jq -c '.' {parse_dir}/*.json"
     combined_json_file = os.path.join(
         COMBO_DIR,
-        f'{args.site}-{args.date}.json'
+        f'{site}-{date}.json'
     )
     try:
         with open(combined_json_file, 'a') as f:
@@ -119,7 +135,7 @@ def run():
             "ERROR: JQ exited with non-zero exit code: retcode=%d, err=%s" %
             (err.returncode, err.stderr)
         )
-        sys.exit(2)
+        exit(2, err)
 
     ##############################################
     # archive scraped HTML and combined JSON
@@ -128,24 +144,24 @@ def run():
     html_archive = os.path.join(
         ARCHIVE_DIR,
         'original',
-        f'{args.site}-html-{args.date}.tar.gz'
+        f'{site}-html-{date}.tar.gz'
     )
     try:
         make_tarfile(html_archive, html_dir)
     except OSError as err:
         print("ERROR: Failed to create HTML archive: %s" % err)
-        sys.exit(2)
+        exit(2, err)
 
     print('Archiving the combined JSON file...')
     combined_json_archive = os.path.join(
         ARCHIVE_DIR,
-        f'{args.site}-{args.date}.tar.gz'
+        f'{site}-{date}.tar.gz'
     )
     try:
         make_tarfile(combined_json_archive, combined_json_file)
     except OSError as err:
         print("ERROR: Failed to create JSON archive: %s" % err)
-        sys.exit(2)
+        exit(2, err)
 
     ##############################################
     # move combined JSON to import dir
@@ -155,7 +171,7 @@ def run():
         shutil.move(combined_json_file, IMPORT_DIR)
     except OSError as err:
         print("ERROR: Failed to move JSON to import directory: %s" % err)
-        sys.exit(2)
+        exit(2, err)
 
     ##############################################
     # delete scraped HTML and parsed JSON files
@@ -163,10 +179,10 @@ def run():
     print('Deleting source HTML and JSON files...')
     if not os.path.exists(html_archive):
         print("ERROR: missing archive file %s" % html_archive)
-        sys.exit(2)
+        exit(2, err)
     elif os.path.getsize(html_archive) == 0:
         print("ERROR: empty archive file %s" % html_archive)
-        sys.exit(2)
+        exit(2, err)
     else:
         shutil.rmtree(html_dir)
         shutil.rmtree(parse_dir)
@@ -174,7 +190,7 @@ def run():
     ##############################################
     # send archives offset
     ##############################################
-    if args.sync:
+    if sync:
         print('Running rclone tool...')
         try:
             result = subprocess.run(
@@ -188,7 +204,7 @@ def run():
                 "ERROR: Failed to copy archive directory offset: retcode=%d, "
                 "err=%s" % (err.returncode, err.stderr)
             )
-            sys.exit(2)
+            exit(2, err)
 
     print('Done')
 
