@@ -105,7 +105,7 @@ def process_scraper(scraper):
         kwargs = dict(
             site=scraper['name'],
             date=arrow.now().format('YYYY_MM_DD'),
-            sync=True
+            sync=False
         )
         post_processing.run(kwargs)
 
