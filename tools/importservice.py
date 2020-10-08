@@ -35,9 +35,20 @@ def clean_folder(folder):
 
 
 def main():
+    # create IMPORT_DIR if not exists
+    if not os.path.exists(IMPORT_DIR):
+        print(f'Creating folder {IMPORT_DIR}...')
+        os.makedirs(IMPORT_DIR)
+
+    # create BACKUP_DIR if not exists
+    if not os.path.exists(BACKUP_DIR):
+        print(f'Creating folder {BACKUP_DIR}...')
+        os.makedirs(BACKUP_DIR)
+
     # execute RSYNC command to get files from scraping server
     print('Executing RSYNC...')
-    cmd = "rsync -avz -e 'ssh -i ~/.ssh/proxima.pem' root@51.161.115.138:/data/processing/import/* /data/processing/forums/import/"
+    cmd = ("rsync -avz -e 'ssh -i ~/.ssh/proxima.pem' root@51.161.115.138:/data/processing/import/*"
+           " /data/processing/forums/import/")
     try:
         subprocess.run(
             cmd,
@@ -90,6 +101,25 @@ def main():
     # remove import folder
     print("Cleaning import folder...")
     clean_folder(IMPORT_DIR)
+
+    # remove the files from the remote server
+    print("Removing the files from the remote server...")
+    cmd = "ssh -i ~/.ssh/proxima.pem root@51.161.115.138 'rm -f /data/processing/import/*'"
+    try:
+        subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+            shell=True
+        )
+    except subprocess.CalledProcessError as err:
+        print(
+            "ERROR: retcode=%d, "
+            "err=%s" % (err.returncode, err.stderr.decode('utf-8'))
+        )
+        sys.exit(2)
+
     print("Done")
 
 
