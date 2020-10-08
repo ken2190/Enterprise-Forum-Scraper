@@ -10,8 +10,8 @@ import subprocess
 import sys
 
 
-IMPORT_DIR = r"/data/processing/forums/import/"
-BACKUP_DIR = r"/data/processing/forums/backup/"
+IMPORT_DIR = "/data/processing/forums/import/"
+BACKUP_DIR = "/data/processing/forums/backup/"
 
 
 def copy_folder_files(src_folder, dst_folder):
