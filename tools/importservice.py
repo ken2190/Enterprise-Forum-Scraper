@@ -15,14 +15,25 @@ BACKUP_DIR = "/data/processing/forums/backup/"
 
 
 def copy_folder_files(src_folder, dst_folder):
+    """
+    Copies all non-empty files from the src_folder to dst_folder.
+    Removes empty files.
+    """
+
     for filename in os.listdir(src_folder):
         src_file = os.path.join(src_folder, filename)
         dst_file = os.path.join(dst_folder, filename)
 
-        shutil.copy(src_file, dst_file)
+        if os.path.isfile(src_file):
+            if os.path.getsize(src_file) == 0:
+                os.unlink(src_file)
+            else:
+                shutil.copy(src_file, dst_file)
 
 
 def clean_folder(folder):
+    """ Removes folder contents """
+
     for filename in os.listdir(folder):
         file_path = os.path.join(folder, filename)
         try:
@@ -98,28 +109,37 @@ def main():
                 )
                 sys.exit(2)
 
+    # remove the files from the remote server
+    print("Removing the files from the remote server...")
+    for filename in os.listdir(IMPORT_DIR):
+        filepath = os.path.join(IMPORT_DIR, filename)
+
+        if not os.path.isfile(filepath):
+            continue
+
+        print(f'  File {filename}...')
+        cmd = (f"ssh -i ~/.ssh/proxima.pem root@51.161.115.138 "
+               f"'rm -f /data/processing/import/{filename}'")
+        try:
+            subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                shell=True
+            )
+        except subprocess.CalledProcessError as err:
+            print(
+                "ERROR: failed to remove file %s, retcode=%d, "
+                "err=%s" % (filename, err.returncode, err.stderr.decode('utf-8'))
+            )
+            sys.exit(2)
+        else:
+            os.unlink(filepath)
+
     # remove import folder
     print("Cleaning import folder...")
     clean_folder(IMPORT_DIR)
-
-    # remove the files from the remote server
-    print("Removing the files from the remote server...")
-    cmd = "ssh -i ~/.ssh/proxima.pem root@51.161.115.138 'rm -f /data/processing/import/*'"
-    try:
-        subprocess.run(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-            shell=True
-        )
-    except subprocess.CalledProcessError as err:
-        print(
-            "ERROR: retcode=%d, "
-            "err=%s" % (err.returncode, err.stderr.decode('utf-8'))
-        )
-        sys.exit(2)
-
     print("Done")
 
 
