@@ -1,7 +1,5 @@
 # -- coding: utf-8 --
 import re
-import traceback
-import utils
 
 from .base_template import MarketPlaceTemplate
 
