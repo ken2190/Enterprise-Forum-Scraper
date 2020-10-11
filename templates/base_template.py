@@ -263,7 +263,7 @@ class BaseTemplate:
         # check if date is already a timestamp
         try:
             date = dateparser.parse(date).timestamp()
-            return str(date)            
+            return str(date)
         except:
             try:
                 date = float(date)
@@ -298,6 +298,7 @@ class MarketPlaceTemplate(BaseTemplate):
         self.thread_name_pattern = re.compile(
             r'(\w+)\.html$'
         )
+        self.files = self.get_filtered_files(kwargs.get('files'))
 
     def main(self):
         comments = []

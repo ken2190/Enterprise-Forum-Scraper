@@ -197,6 +197,7 @@ from templates.darkmoney_template import DarkMoneyParser
 from templates.xaker_template import XakerParser
 from templates.offensivecommunity_template import OffensiveCommunityParser
 from templates.darkfox_template import DarkFoxParser
+from templates.whitehousemarket_template import WhiteHouseMarketParser
 
 
 PARSER_MAP = {
@@ -398,4 +399,5 @@ PARSER_MAP = {
     'xaker': XakerParser,
     'offensive_community': OffensiveCommunityParser,
     'darkfox': DarkFoxParser,
+    'whitehousemarket': WhiteHouseMarketParser
 }
