@@ -145,6 +145,7 @@ class AltenensScrapper(SiteMapScrapper):
     def load_settings(self):
         settings = super().load_settings()
         settings.update({
-            'RETRY_HTTP_CODES': [403, 406, 408, 429, 500, 502, 503, 504, 522, 524]
+            'RETRY_HTTP_CODES': [403, 406, 408, 429, 500, 502, 503, 504, 522, 524],
+            'CLOSESPIDER_ERRORCOUNT': 1
         })
         return settings
