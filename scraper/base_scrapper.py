@@ -1533,6 +1533,11 @@ class SitemapSpider(BypassCloudfareSpider):
                 meta=meta
             )
 
+        # get next page
+        next_page = self.get_forum_next_page(response)
+        if is_first_page and next_page:
+            self.crawler.stats.inc_value("forum/forum_next_page_count")
+
         # Pagination
         if not lastmod_pool:
             self.crawler.stats.inc_value("forum/forum_no_threads_count")
@@ -1554,7 +1559,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 )
             )
             return
-        next_page = self.get_forum_next_page(response)
+
         if next_page:
             yield Request(
                 url=next_page,
@@ -1604,6 +1609,12 @@ class SitemapSpider(BypassCloudfareSpider):
             self.logger.info('No dates found in thread')
             return
 
+        # get next page
+        next_page = self.get_thread_next_page(response)
+        if next_page:
+            self.crawler.stats.inc_value("forum/thread_next_page_count")
+
+        # check if the thread contains new messages
         if self.start_date and max(post_dates) < self.start_date:
             if topic_id not in self.topics_scraped:
                 self.crawler.stats.inc_value("forum/thread_outdated_count")
@@ -1645,9 +1656,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 raise CloseSpider(reason="Kill count met, shut down.")
 
         # Thread pagination
-        next_page = self.get_thread_next_page(response)
         if next_page:
-
             yield Request(
                 url=next_page,
                 headers=self.headers,

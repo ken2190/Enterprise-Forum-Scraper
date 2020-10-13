@@ -1,8 +1,10 @@
+import logging
 import os
 from scraper import SCRAPER_MAP
-from helpers.stats import get_warnings
+from helpers.stats import get_error, get_warnings
 
 UPDATE_DB_PATH = '/Users/PathakUmesh/forums.db'
+LOGGER = logging.getLogger(__name__)
 
 
 class Scraper:
@@ -88,13 +90,15 @@ class Scraper:
 
             # FIXME warnings works for the altenens scraper only for now
             if template.lower() in ('altenens',):
+                err = get_error(stats)
                 warnings = get_warnings(stats)
-                if warnings:
-                    print('WARNINGS:')
+                if err:
+                    LOGGER.error(f'{err[0]}: {err[1]}')
+                elif warnings:
                     for warn in warnings:
-                        print(f' - {warn}')
+                        LOGGER.warning(f'{warn[0]}: {warn[1]}')
                 else:
-                    print('Finished successfully')
+                    LOGGER.info('Finished successfully')
 
         return stats
 
