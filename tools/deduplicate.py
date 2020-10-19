@@ -2,6 +2,7 @@ import re
 import os
 import sys
 import json
+from copy import deepcopy
 
 accumulator = []
 slash = False
@@ -62,6 +63,14 @@ def empty_accumulator():
     accumulator = []
 
 
+def remove_null(data):
+    temp = deepcopy(data['_source'])
+    for key, value in temp.items():
+        if not value:
+            data['_source'].pop(key)
+    return data
+
+
 def main():
     with open(INPUT_PATH, 'r') as ip:
         prev_pid = prev_cid = None
@@ -72,6 +81,7 @@ def main():
             except Exception:
                 print(f'Invalid json at line: {num}. Ignoring.')
                 continue
+            data = remove_null(data)
             try:
                 cid = data['_source']['cid']
             except Exception:
