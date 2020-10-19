@@ -4,6 +4,7 @@ import csv
 import json
 import traceback
 import argparse
+from copy import deepcopy
 
 POSH_FIELDS = [
     'first_name',
@@ -147,6 +148,7 @@ FIELD_MAPS = {
     'iran1': IRAN1_FIELDS,
     'iran2': IRAN2_FIELDS,
     'geekedin': GEEKEDIN_FIELDS,
+    'exactis': ''
 }
 
 
@@ -445,7 +447,7 @@ def process_vedantu(out_file, single_json):
             filtered_json.update(value)
         elif key in VEDANTU_FIELDS:
             filtered_json.update({key: value})
-    out_file.write(json.dumps(filtered_json, ensure_ascii=False)+'\n')
+    out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
 
 
 def process_geekedin(out_file, single_json):
@@ -463,6 +465,15 @@ def process_geekedin(out_file, single_json):
     out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
 
 
+def process_exactis(out_file, single_json):
+    json_response = json.loads(single_json)
+    data = deepcopy(json_response['_source'])
+    for key, value in data.items():
+        if not value or value == 'U':
+            json_response['_source'].pop(key)
+    out_file.write(json.dumps(json_response, ensure_ascii=False) + '\n')
+
+
 def iterate_all(iterable):
     if isinstance(iterable, dict):
         for key, value in iterable.items():
@@ -474,6 +485,7 @@ def iterate_all(iterable):
         for el in iterable:
             for ret in iterate_all(el):
                 yield ret
+
 
 def process_file(args):
     input_file = args.input
@@ -502,6 +514,8 @@ def process_file(args):
                         process_iran2(out_file, single_json)
                     elif args.type == 'geekedin':
                         process_geekedin(out_file, single_json)
+                    elif args.type == 'exactis':
+                        process_exactis(out_file, single_json)
                     else:
                         process_line(out_file, single_json, args.type)
                     print('Writing line number:', line_number)
