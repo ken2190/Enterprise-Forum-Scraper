@@ -1939,6 +1939,12 @@ class MarketPlaceSpider(SitemapSpider):
     def get_file_id(self, url):
         return url.rsplit('/', 1)[-1]
 
+    def get_product_next_page(response):
+        next_page_url = response.xpath(self.next_page_xpath).extract_first()
+        if next_page_url:
+            return self.get_market_url(next_page_url)
+        return
+
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
@@ -1976,10 +1982,8 @@ class MarketPlaceSpider(SitemapSpider):
                     }
                 )
             )
-
-        next_page_url = response.xpath(self.next_page_xpath).extract_first()
+        next_page_url = self.get_product_next_page(response)
         if next_page_url:
-            next_page_url = self.get_market_url(next_page_url)
             yield Request(
                 url=next_page_url,
                 headers=self.headers,

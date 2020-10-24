@@ -176,6 +176,7 @@ from scraper.digitalpoint import DigitalPointScrapper
 from scraper.boveda import BovedaScrapper
 from scraper.darkmoney import DarkMoneyScrapper
 from scraper.xaker import XakerScrapper
+from scraper.silk_road4 import SilkRoad4Scrapper
 
 
 SCRAPER_MAP = {
@@ -355,4 +356,5 @@ SCRAPER_MAP = {
     'boveda': BovedaScrapper,
     'darkmoney': DarkMoneyScrapper,
     'xaker': XakerScrapper,
+    'silk_road4': SilkRoad4Scrapper,
 }
