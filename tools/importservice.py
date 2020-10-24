@@ -90,24 +90,28 @@ def main():
     cmd = "elasticdump --input={} --output=http://localhost:9200/dv-f001 --noRefresh --limit=10000".split()
     log_file = "/var/log/elasticimport.log"
 
-    with open(log_file, 'a') as f:
+    with open(log_file, 'a', encoding='utf-8') as f:
         for filename in os.listdir(IMPORT_DIR):
-            f.write(filename + '\n')
+            print(f'  File {filename}...')
+            f.write('File: ' + filename + '\n')
             filepath = os.path.join(IMPORT_DIR, filename)
-            cmd[1] = cmd[1].format(filepath)
+            current_cmd = cmd.copy()
+            current_cmd[1] = current_cmd[1].format(filepath)
             try:
-                subprocess.run(
-                    cmd,
-                    stdout=f,
-                    stderr=subprocess.PIPE,
+                command_line_process = subprocess.run(
+                    current_cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
                     check=True
                 )
             except subprocess.CalledProcessError as err:
                 print(
                     "ERROR: elasticdump failed: retcode=%d, "
-                    "err=%s" % (err.returncode, err.stderr.decode('utf-8'))
+                    "err=%s" % (err.returncode, err.stdout.decode('utf-8'))
                 )
                 sys.exit(2)
+            else:
+                f.write(command_line_process.stdout.decode('utf-8') + '\n')
 
     # remove the files from the remote server
     print("Removing the files from the remote server...")
