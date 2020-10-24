@@ -199,6 +199,7 @@ from templates.offensivecommunity_template import OffensiveCommunityParser
 from templates.darkfox_template import DarkFoxParser
 from templates.whitehousemarket_template import WhiteHouseMarketParser
 from templates.monopoly_template import MonopolyParser
+from templates.silkroad4_template import SilkRoad4Parser
 
 
 PARSER_MAP = {
@@ -401,5 +402,6 @@ PARSER_MAP = {
     'offensive_community': OffensiveCommunityParser,
     'darkfox': DarkFoxParser,
     'whitehousemarket': WhiteHouseMarketParser,
-    'monopoly': MonopolyParser
+    'monopoly': MonopolyParser,
+    'silk_road4': SilkRoad4Parser
 }
