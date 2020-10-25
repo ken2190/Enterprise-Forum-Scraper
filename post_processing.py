@@ -109,7 +109,9 @@ def run(kwargs=None):
 
     # check if the parse dir contain at least one file
     if not os.listdir(parse_dir):
-        print(f"{parse_dir} is Empty")
+        err_msg = f"{parse_dir} is Empty"
+        print(err_msg)
+        exit(2, RuntimeError(err_msg))
 
     ##############################################
     # merge parsed files
