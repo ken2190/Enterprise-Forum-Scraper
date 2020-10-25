@@ -89,7 +89,7 @@ class Scraper:
             stats = scraper_obj.do_scrape()
 
             # FIXME warnings works for the altenens scraper only for now
-            if template.lower() in ('altenens',):
+            if template.lower() in ('altenens', 'sinister'):
                 err = get_error(stats)
                 warnings = get_warnings(stats)
                 if err:
