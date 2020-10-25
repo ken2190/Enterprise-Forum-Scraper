@@ -16,6 +16,8 @@ from scraper.base_scrapper import (
 USERNAME = "x239"
 PASSWORD = "Vr#Bhf987"
 
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36'
+
 class BHFIOSpider(SitemapSpider):
 
     name = 'bhfio_spider'
@@ -35,6 +37,7 @@ class BHFIOSpider(SitemapSpider):
     backup_code_url = f'{base_url}/login/two-step?provider=backup&remember=1&'\
                       f'_xfRedirect={base_url}/'
     account_css = r'a[href="/account/"]'
+    hcaptcha_site_key_xpath = "//div[@data-sitekey]/@data-sitekey"
 
     # Xpath stuffs
     forum_xpath = "//a[contains(@href,\"/forums\")]/@href"
@@ -68,9 +71,7 @@ class BHFIOSpider(SitemapSpider):
         self.headers.update(
             {
                 'referer': 'https://bhf.io/',
-                'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) '
-                              'AppleWebKit/537.36 (KHTML, like Gecko) '
-                              'Chrome/83.0.4103.106 Safari/537.36',
+                'user-agent': USER_AGENT,
             }
         )
 
@@ -114,18 +115,22 @@ class BHFIOSpider(SitemapSpider):
             dont_filter=True,
             headers=self.headers,
             callback=self.parse_login,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            }
         )
 
     def parse_login(self, response):
         self.synchronize_headers(response)
+
+        # Solve hcaptcha
+        captcha_response = self.solve_hcaptcha(response, user_agent=USER_AGENT)
+        self.logger.info('captcha_response')
+        self.logger.info(captcha_response)
         token = response.xpath(
             '//input[@name="_xfToken"]/@value').extract_first()
         params = {
             'login': USERNAME,
             'password': PASSWORD,
+            'g-recaptcha-response': captcha_response,
+            'h-captcha-response': captcha_response,
             "remember": '1',
             '_xfRedirect': self.base_url,
             '_xfToken': token
