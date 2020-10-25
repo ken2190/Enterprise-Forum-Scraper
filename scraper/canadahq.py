@@ -33,10 +33,10 @@ class CanadaHQSpider(MarketPlaceSpider):
     login_url = "https://canadahq.net/login"
 
     # Css stuffs
-    login_form_css = "form[action*=login]"
     captcha_url_css = "div>img[src*=captcha]::attr(src)"
 
     # Xpath stuffs
+    login_form_xpath= "//form[@method='post']"
     invalid_captcha_xpath = "//div[@class=\"alert alert-danger\"]/" \
                             "span/text()[contains(.,\"Invalid captcha\")]"
     market_url_xpath = '//div[@class="menu-content"]/ul/li/a/@href'
@@ -73,15 +73,13 @@ class CanadaHQSpider(MarketPlaceSpider):
             }
         )
 
-    def parse(self, response):
+    def start_requests(self):
         # Synchronize user agent for cloudfare middleware
-        self.synchronize_headers(response)
 
         yield Request(
             url=self.login_url,
             headers=self.headers,
             dont_filter=True,
-            meta=self.synchronize_meta(response),
             callback=self.parse_login
         )
 
@@ -89,17 +87,10 @@ class CanadaHQSpider(MarketPlaceSpider):
 
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
-
         # Load cookies
-        cookies = response.request.headers.get("Cookie").decode("utf-8")
+        cookies = response.request.headers.get("Cookie", '').decode("utf-8")
         if "XSRF-TOKEN" not in cookies:
-            yield Request(
-                url=self.login_url,
-                headers=self.headers,
-                dont_filter=True,
-                meta=self.synchronize_meta(response),
-                callback=self.parse_login
-            )
+            yield from self.start_requests()
             return
 
         # Load captcha url
@@ -115,14 +106,19 @@ class CanadaHQSpider(MarketPlaceSpider):
             "Captcha has been solved: %s" % captcha
         )
 
+        # token obtain
+        token = response.xpath('//input[@name="_token"]/@value').extract_first()
+        formdata = {
+            "username": USERNAME,
+            "password": PASSWORD,
+            "captcha": captcha[:5],
+            "_token": token
+        }
+        self.logger.info(f'Formdata is {formdata}')
         yield FormRequest.from_response(
             response,
-            formcss=self.login_form_css,
-            formdata={
-                "username": USERNAME,
-                "password": PASSWORD,
-                "captcha": captcha[:5]
-            },
+            formxpath=self.login_form_xpath,
+            formdata=formdata,
             headers=self.headers,
             meta=self.synchronize_meta(response),
             callback=self.parse_start,
@@ -132,7 +128,6 @@ class CanadaHQSpider(MarketPlaceSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-
         # Check valid captcha
         is_invalid_captcha = response.xpath(
             self.invalid_captcha_xpath).extract_first()
