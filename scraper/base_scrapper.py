@@ -1416,9 +1416,10 @@ class SitemapSpider(BypassCloudfareSpider):
         self.synchronize_headers(response)
 
         all_forums = set(response.xpath(self.forum_xpath).extract())
+        self.forums.update(all_forums)
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
+        self.crawler.stats.set_value("forum/forum_count", len(self.forums))
 
         for forum_url in all_forums:
             yield response.follow(
