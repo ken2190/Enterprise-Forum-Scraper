@@ -1,18 +1,20 @@
-import os
 import re
-import uuid
 
-from urllib.parse import unquote
-
-from scrapy import (
-    Request,
-    FormRequest
-)
+from scrapy import Request
 from scraper.base_scrapper import (
     MarketPlaceSpider,
     SiteMapScrapper
 )
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver import Firefox, FirefoxProfile
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
+from unicaps import CaptchaSolver, CaptchaSolvingService
+from unicaps.exceptions import UnicapsException
+from unicaps.common import CaptchaCharType, CaptchaAlphabet
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
@@ -21,7 +23,9 @@ USERNAME = "thecreator"
 PASSWORD = "Chq#Blast888"
 KEY = "aiJZHkxlNhTiQA8orj8y"
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
+PROXY_HOST = "127.0.0.1"
+PROXY_PORT = "8118"
+CAPTCHA_SOLVING_TRY_COUNT = 5
 
 
 class CanadaHQSpider(MarketPlaceSpider):
@@ -31,6 +35,7 @@ class CanadaHQSpider(MarketPlaceSpider):
     # Url stuffs
     base_url = "https://canadahq.net/"
     login_url = "https://canadahq.net/login"
+    home_url = "https://canadahq.net/home"
 
     # Css stuffs
     captcha_url_css = "div>img[src*=captcha]::attr(src)"
@@ -60,93 +65,153 @@ class CanadaHQSpider(MarketPlaceSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-    captcha_instruction = "Please ignore | and ^"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.headers.update(
-            {
-                "User-Agent": USER_AGENT
-            }
+    def setup_browser(self, proxy_host=PROXY_HOST):
+        # Init firefox options
+        firefox_options = Options()
+        firefox_options.headless = True
+
+        firefox_profile = FirefoxProfile()
+
+        # Set proxy
+        firefox_profile.set_preference("network.proxy.type", 1)
+        firefox_profile.set_preference("network.proxy.http", proxy_host)
+        firefox_profile.set_preference("network.proxy.http_port", int(PROXY_PORT))
+        firefox_profile.set_preference("network.proxy.ssl", proxy_host)
+        firefox_profile.set_preference("network.proxy.ssl_port", int(PROXY_PORT))
+
+        # Init web driver arguments
+        webdriver_kwargs = {
+            # "executable_path": "/usr/local/bin/geckodriver",
+            "firefox_profile": firefox_profile,
+            "options": firefox_options
+        }
+
+        # Load chrome driver
+        return Firefox(**webdriver_kwargs)
+
+    def log_in_using_browser(self):
+        # helper functions
+        def is_wrong_captcha(driver):
+            return driver.find_elements_by_xpath(
+                '//div[contains(@class, "alert-danger")]/span["Invalid captcha"]'
+            )
+
+        def is_logged_in(driver):
+            return driver.find_elements_by_xpath('//a[contains(@href, "/logout")]')
+
+        for _ in range(CAPTCHA_SOLVING_TRY_COUNT):
+            # open base URL
+            self.browser.get(self.base_url)
+
+            # wait for Login button to load
+            login_btn = WebDriverWait(self.browser, 30).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, '//button[text()="Login"]')
+                )
+            )
+
+            # wait for CAPTCHA image to load
+            captcha_img = self.browser.find_element_by_xpath(
+                '//img[contains(@src, "/captcha/")]')
+            WebDriverWait(self.browser, 30).until(
+                lambda d: d.execute_script('return arguments[0].complete', captcha_img)
+            )
+
+            try:
+                solved_captcha = self.solve_captcha(captcha_img.screenshot_as_png)
+            except UnicapsException as exc:
+                self.logger.error('Unable to solve CAPTCHA: %s', exc)
+                raise
+
+            captcha_text = str(solved_captcha.solution)
+            if len(captcha_text) > 5:
+                captcha_text = captcha_text.replace('l', '').replace('^', '').replace('|', '')
+
+            self.logger.info(
+                "Captcha has been solved: %s" % captcha_text
+            )
+
+            # input login data and submit
+            self.browser.find_element_by_id('username').send_keys(USERNAME)
+            self.browser.find_element_by_id('password').send_keys(PASSWORD)
+            self.browser.find_element_by_name('captcha').send_keys(captcha_text)
+            login_btn.click()
+
+            try:
+                login_result = WebDriverWait(self.browser, 60).until(
+                    lambda d: is_wrong_captcha(d) or is_logged_in(d)
+                )
+            except TimeoutException:
+                self.logger.error('Unable to log in the site (timeout)!')
+                return
+
+            if login_result[0].text == 'Invalid captcha':
+                self.logger.warning('Invalid captcha, retrying...')
+                solved_captcha.report_bad()
+                continue
+
+            solved_captcha.report_good()
+            break
+
+        if login_result[0].text == 'Invalid captcha':
+            self.logger.error('Unable to solve the CAPTCHA (after %s tries)',
+                              CAPTCHA_SOLVING_TRY_COUNT)
+            return {}
+
+        # get cookies
+        bypass_cookies = {
+            c.get("name"): c.get("value") for c in self.browser.get_cookies()
+        }
+        # set user-agent
+        self.headers['User-Agent'] = self.browser.execute_script('return navigator.userAgent;')
+
+        return bypass_cookies
+
+    def solve_captcha(self, image_data):
+        solver = CaptchaSolver(
+            CaptchaSolvingService.ANTI_CAPTCHA,
+            self.captcha_token
+        )
+
+        # solve image CAPTCHA
+        return solver.solve_image_captcha(
+            image=image_data,
+            char_type=CaptchaCharType.ALPHANUMERIC,
+            is_phrase=False,
+            is_case_sensitive=False,
+            is_math=False,
+            alphabet=CaptchaAlphabet.LATIN,
+            comment="Please ignore | and ^"
         )
 
     def start_requests(self):
-        # Synchronize user agent for cloudfare middleware
+        # init browser
+        self.browser = self.setup_browser()
+
+        try:
+            # log in using browser and get cookies
+            cookies = self.log_in_using_browser()
+        finally:
+            self.browser.quit()
 
         yield Request(
-            url=self.login_url,
+            url=self.home_url,
             headers=self.headers,
             dont_filter=True,
-            callback=self.parse_login
-        )
-
-    def parse_login(self, response):
-
-        # Synchronize user agent for cloudfare middleware
-        self.synchronize_headers(response)
-        # Load cookies
-        cookies = response.request.headers.get("Cookie", '').decode("utf-8")
-        if "XSRF-TOKEN" not in cookies:
-            yield from self.start_requests()
-            return
-
-        # Load captcha url
-        captcha_url = response.css(self.captcha_url_css).extract_first()
-        captcha = self.solve_captcha(
-            captcha_url,
-            response
-        )
-        if len(captcha) > 5:
-            captcha = captcha.replace('l', '').replace('^', '')
-
-        self.logger.info(
-            "Captcha has been solved: %s" % captcha
-        )
-
-        # token obtain
-        token = response.xpath('//input[@name="_token"]/@value').extract_first()
-        formdata = {
-            "username": USERNAME,
-            "password": PASSWORD,
-            "captcha": captcha[:5],
-            "_token": token
-        }
-        self.logger.info(f'Formdata is {formdata}')
-        yield FormRequest.from_response(
-            response,
-            formxpath=self.login_form_xpath,
-            formdata=formdata,
-            headers=self.headers,
-            meta=self.synchronize_meta(response),
             callback=self.parse_start,
-            dont_filter=True
+            cookies=cookies,
+            meta={'proxy': f'{PROXY_HOST}:{PROXY_PORT}'}
         )
-
-    def parse_start(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        # Check valid captcha
-        is_invalid_captcha = response.xpath(
-            self.invalid_captcha_xpath).extract_first()
-        if is_invalid_captcha:
-            self.logger.info(
-                "Invalid captcha."
-            )
-
-            yield Request(
-                url=self.login_url,
-                headers=self.headers,
-                dont_filter=True,
-                callback=self.parse_login,
-            )
-            return
-
-        yield from super().parse_start(response)
 
 
 class CanadaHQScrapper(SiteMapScrapper):
     spider_class = CanadaHQSpider
     site_name = 'canadahq.at'
+
+    def __init__(self, kwargs):
+        kwargs['get_users'] = True
+        super().__init__(kwargs)
