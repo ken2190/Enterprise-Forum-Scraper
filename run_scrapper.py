@@ -94,7 +94,9 @@ class Scraper:
                 warnings = get_warnings(stats)
                 if err:
                     LOGGER.error(f'{err[0]}: {err[1]}')
+                    stats['result/error'] = err[0]
                 elif warnings:
+                    stats['result/warnings'] = [w[0] for w in warnings]
                     for warn in warnings:
                         LOGGER.warning(f'{warn[0]}: {warn[1]}')
                 else:

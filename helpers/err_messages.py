@@ -27,5 +27,5 @@ WARNING_MESSAGES = {
     "W05": "No forum next pages",
     "W06": "No thread next pages",
     "W07": "Errors in the log",
-    "W08": "No new files",    
+    "W08": "No new files"
 }

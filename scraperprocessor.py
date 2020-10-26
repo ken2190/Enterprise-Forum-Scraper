@@ -5,11 +5,11 @@ import json
 import logging
 import os
 import requests
-import subprocess
 import sys
 
 import post_processing
 from forumparse import Parser
+from helpers.err_messages import ERROR_MESSAGES, WARNING_MESSAGES
 from run_scrapper import Scraper
 from settings import (
     API_TOKEN,
@@ -81,7 +81,16 @@ def process_scraper(scraper):
             'template': template,
             'output': scraper_output_dir
         }
-        Scraper(kwargs).do_scrape()
+        result = Scraper(kwargs).do_scrape()
+
+        # check if there was any error
+        err_code = result.get('result/error')
+        if err_code:
+            raise RuntimeError('[%s] %s' % (err_code, ERROR_MESSAGES[err_code]))
+
+        # check for "No new files"(W08) warning
+        if 'W08' in result.get('result/warnings', []):
+            raise RuntimeError(WARNING_MESSAGES['W08'])
 
         ############################
         # Run parser for template
