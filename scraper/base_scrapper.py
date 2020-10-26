@@ -1201,6 +1201,8 @@ class SitemapSpider(BypassCloudfareSpider):
         # Load proxy
         if response:
             proxy = self.load_proxies(response)
+        else:
+            proxy = None
 
         # Load user agent
         user_agent = self.headers.get("User-Agent")
