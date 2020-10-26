@@ -95,6 +95,49 @@ class SilkRoad4Spider(MarketPlaceSpider):
 
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+
+        # check 1st level of captcha
+        if 'you must complete a captcha' in response.text:
+            url = response.urljoin('auth.php')
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_first_captcha,
+                dont_filter=True,
+                meta=self.synchronize_meta(response)
+            )
+        else:
+            yield from self.parse_captcha(response)
+
+    def parse_first_captcha(self, response):
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load captcha url
+        captcha_url = response.xpath(
+            self.captcha_url_xpath).extract_first()
+        captcha_url = response.urljoin(captcha_url)
+        captcha = self.solve_captcha(
+            captcha_url,
+            response
+        )
+        self.logger.info(
+            "Captcha has been solved: %s" % captcha
+        )
+        auth_url = response.urljoin(f'auth.php?a={captcha}')
+
+        yield Request(
+            url=auth_url,
+            headers=self.headers,
+            callback=self.parse_captcha,
+            dont_filter=True,
+            meta=self.synchronize_meta(response)
+        )
+
+    def parse_captcha(self, response):
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
         # Load cookies
         cookies = response.request.headers.get("Cookie", '').decode("utf-8")
         if not cookies:
@@ -103,7 +146,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
         # Load captcha url
         captcha_url = response.xpath(
             self.captcha_url_xpath).extract_first()
-        captcha_url = f'{self.base_url}{captcha_url}'
+        captcha_url = response.urljoin(captcha_url)
         captcha = self.solve_captcha(
             captcha_url,
             response
