@@ -1940,7 +1940,7 @@ class MarketPlaceSpider(SitemapSpider):
     def get_file_id(self, url):
         return url.rsplit('/', 1)[-1]
 
-    def get_product_next_page(response):
+    def get_product_next_page(self, response):
         next_page_url = response.xpath(self.next_page_xpath).extract_first()
         if next_page_url:
             return self.get_market_url(next_page_url)
