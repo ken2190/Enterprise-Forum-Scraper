@@ -66,3 +66,5 @@ nohup.out
 
 *.save.*
 *.save
+
+geckodriver.log
