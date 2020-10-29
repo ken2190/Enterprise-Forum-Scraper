@@ -43,9 +43,9 @@ class XrpChatSpider(SitemapSpider):
                   '/a[contains(@href, "forum/")]/@href'
 
     thread_xpath = '//ol[contains(@class,"cForum")]/li'
-    thread_first_page_xpath = '//h4//a/@href'
-    thread_last_page_xpath = '//span[contains(@class,"Pagination_last")]//a/@href'
-    thread_date_xpath = '//ul//time[1]/@datetime'
+    thread_first_page_xpath = './/h4//a/@href'
+    thread_last_page_xpath = './/span[contains(@class,"Pagination_last")]//a/@href'
+    thread_date_xpath = './/ul//time[1]/@datetime'
 
     avatar_xpath = '//li[@class="cAuthorPane_photo"]/a/img/@src'
 

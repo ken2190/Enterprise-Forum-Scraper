@@ -32,9 +32,10 @@ class AntichatSpider(SitemapSpider):
     pagination_xpath = '//a[@class="text" and text()="Next >"]/@href'
 
     thread_xpath = '//li[contains(@class,"discussionListItem ")]'
-    thread_first_page_xpath = '//h3[@class="title"]/a/@href'
-    thread_last_page_xpath = '//span[@class="itemPageNav"]/a[last()]/@href'
-    thread_date_xpath = '//dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
+    thread_first_page_xpath = './/h3[@class="title"]'\
+                              '/a[contains(@href, "threads/")]/@href'
+    thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
+    thread_date_xpath = './/dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
                         '/@title|//dl[@class="lastPostInfo"]'\
                         '//abbr[@class="DateTime"]/text()'
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'

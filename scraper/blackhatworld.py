@@ -17,11 +17,10 @@ class BlackHatWorldSpider(SitemapSpider):
     forum_xpath = '//h3[@class="node-title"]/a/@href|'\
                   '//a[contains(@class,"subNodeLink--forum")]/@href'
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
-    thread_first_page_xpath = '//div[@class="structItem-title"]'\
-                              '/a[contains(@href,"threads/")]/@href'
-    thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
+    thread_first_page_xpath = './/div[@class="structItem-title"]/a/@href'
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
                              '/a[last()]/@href'
-    thread_date_xpath = '//time[contains(@class, "structItem-latestDate")]'\
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]'\
                         '/@datetime'
     pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
     thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
