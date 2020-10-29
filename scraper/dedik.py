@@ -24,11 +24,12 @@ class DedikSpider(SitemapSpider):
     pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
 
     thread_xpath = '//li[contains(@class, "ipsDataItem ")]'
-    thread_first_page_xpath = '//span[@class="ipsType_break ipsContained"]'\
+    thread_first_page_xpath = './/span[@class="ipsType_break ipsContained"]'\
                               '/a/@href'
-    thread_last_page_xpath = '//li[@class="ipsPagination_last"]/a/@href'
+    thread_last_page_xpath = './/li[@class="ipsPagination_page"][last()]'\
+                             '/a/@href'
 
-    thread_date_xpath = '//li[@class="ipsType_light"]/a/time/@datetime'
+    thread_date_xpath = './/li[@class="ipsType_light"]/a/time/@datetime'
     thread_page_xpath = '//li[contains(@class, "ipsPagination_active")]'\
                         '/a/text()'
     thread_pagination_xpath = '//li[@class="ipsPagination_prev"]'\
