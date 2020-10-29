@@ -47,7 +47,7 @@ class WhitehatSpider(SitemapSpider):
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"/threads/.*\.(\d+)/",
+        r"threads/.*\.(\d+)/",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
