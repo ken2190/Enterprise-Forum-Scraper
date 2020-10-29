@@ -204,7 +204,7 @@ class CanadaHQSpider(MarketPlaceSpider):
             dont_filter=True,
             callback=self.parse_start,
             cookies=cookies,
-            meta={'proxy': f'{PROXY_HOST}:{PROXY_PORT}'}
+            meta={'proxy': f'http://{PROXY_HOST}:{PROXY_PORT}'}
         )
 
 
