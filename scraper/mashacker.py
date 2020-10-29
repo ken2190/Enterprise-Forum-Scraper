@@ -24,14 +24,14 @@ class MasHackerSpider(SitemapSpider):
                   '/@href|//li[@class="subforum"]/a/@href'
 
     thread_xpath = '//li[contains(@class,"threadbit")]'
-    thread_first_page_xpath = '//h3[@class="threadtitle"]/a[@class="title"]/@href'
-    thread_last_page_xpath = '//dl[contains(@class,"pagination")]//dd//span[last()]/a/text()'
+    thread_first_page_xpath = './/h3[@class="threadtitle"]/a[@class="title"]/@href'
+    thread_last_page_xpath = './/dl[contains(@class,"pagination")]//dd//span[last()]/a/@href'
 
-    thread_date_xpath = '//div[contains(@class,"author")]//span/a[contains(@class,"username")][1]/@title' #split date later
+    thread_date_xpath = './/div[contains(@class,"author")]//span/a[contains(@class,"username")][1]/@title' #split date later
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
-    thread_page_xpath = '//span[@class="selected"]/a/text()'
+    thread_page_xpath = '//span[@class="selected"]/a/@href'
     post_date_xpath = '//span[@class="date"]/text()'
 
     avatar_xpath = '//a[@class="postuseravatar"]/img/@src'
@@ -67,7 +67,7 @@ class MasHackerSpider(SitemapSpider):
             headers=self.headers,
             meta=meta,
             cookies=cookies,
-            callback=self.parse_start
+            callback=self.parse
         )
 
     def parse_thread_date(self, thread_date):
@@ -76,26 +76,6 @@ class MasHackerSpider(SitemapSpider):
             return dateparser.parse(thread_date)
         else:
             return datetime.datetime.now()
-
-    def parse_start(self, response):
-
-        # Synchronize user agent for cloudfare middlewares
-        self.synchronize_headers(response)
-
-        # Load all forums
-        all_forums = response.xpath(self.forum_xpath).extract()
-
-        for forum_url in all_forums:
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
-
-            yield Request(
-                url=forum_url,
-                headers=self.headers,
-                callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
-            )
 
     def parse_thread(self, response):
 
