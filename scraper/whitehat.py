@@ -30,9 +30,9 @@ class WhitehatSpider(SitemapSpider):
     pagination_xpath = '//a[@class="text" and text()="Tiếp >"]/@href'
 
     thread_xpath = '//ol[@class="discussionListItems"]/li'
-    thread_first_page_xpath = '//h3[@class="title"]/a/@href'
-    thread_last_page_xpath = '//span[@class="itemPageNav"]/a[last()]/@href'
-    thread_date_xpath = '//dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
+    thread_first_page_xpath = './/h3[@class="title"]/a/@href'
+    thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
+    thread_date_xpath = './/dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
                         '/text()|//dl[@class="lastPostInfo"]'\
                         '//abbr[@class="DateTime"]/@data-datestring'
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
