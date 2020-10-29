@@ -35,12 +35,12 @@ class BinRevSpider(SitemapSpider):
     pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
 
     thread_xpath = '//li[contains(@class, "ipsDataItem ")]'
-    thread_first_page_xpath = '//div[@class="ipsType_break ipsContained"]'\
+    thread_first_page_xpath = './/div[@class="ipsType_break ipsContained"]'\
                               '/a/@href'
-    thread_last_page_xpath = '//li[@class="ipsPagination_page"][last()]'\
+    thread_last_page_xpath = './/li[@class="ipsPagination_page"][last()]'\
                              '/a/@href'
 
-    thread_date_xpath = '//li[@class="ipsType_light"]/a/time/@datetime'
+    thread_date_xpath = './/li[@class="ipsType_light"]/a/time/@datetime'
     thread_page_xpath = '//li[contains(@class, "ipsPagination_active")]'\
                         '/a/text()'
     thread_pagination_xpath = '//li[@class="ipsPagination_prev"]'\
@@ -63,8 +63,7 @@ class BinRevSpider(SitemapSpider):
     # Other settings
     download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
-    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
-    post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
+    use_proxy = True
 
     def start_requests(self):
         yield Request(
@@ -94,10 +93,10 @@ class BinRevSpider(SitemapSpider):
                 "password": PASSWORD,
             },
             meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "country": "CA"
-                    }
+                response,
+                default_meta={
+                    "country": "CA"
+                }
             ),
             dont_filter=True,
             headers=self.headers,
@@ -114,8 +113,7 @@ class BinRevSpider(SitemapSpider):
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
-            # if '25-hacking-movie-list' not in forum_url:
-            #     continue
+
             yield Request(
                 url=forum_url,
                 headers=self.headers,

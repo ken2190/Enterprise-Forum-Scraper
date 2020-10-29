@@ -90,14 +90,3 @@ class MasHackerScrapper(SiteMapScrapper):
 
     spider_class = MasHackerSpider
     site_name = 'mashacker.com'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
-        return spider_settings
