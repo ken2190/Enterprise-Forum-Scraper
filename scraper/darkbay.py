@@ -108,8 +108,8 @@ class DarkBaySpider(MarketPlaceSpider):
             yield from self.start_requests()
             return
         # Load captcha url
-        captcha_url = response.xpath(
-                self.captcha_url_xpath).extract_first()
+        captcha_url = response.xpath(self.captcha_url_xpath).extract_first()
+
         captcha = self.solve_captcha(
             captcha_url,
             response
