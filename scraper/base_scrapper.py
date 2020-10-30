@@ -253,7 +253,6 @@ class SiteMapScrapper:
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
         },
-        "RETRY_HTTP_CODES": [406, 429, 500],
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
