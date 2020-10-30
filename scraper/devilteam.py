@@ -1,9 +1,6 @@
-import os
-import re
-import scrapy
-import uuid
 
-from datetime import datetime
+import re
+import uuid
 
 from scrapy import (
     Request,
@@ -20,6 +17,7 @@ NO_OF_THREADS = 1
 
 USERNAME = "Cyrax_011"
 PASSWORD = "Night#India065"
+TRY_TO_LOG_IN_COUNT = 3
 
 
 class DevilTeamSpider(SitemapSpider):
@@ -27,7 +25,7 @@ class DevilTeamSpider(SitemapSpider):
     base_url = "https://devilteam.pl"
 
     # xpaths
-    login_form_xpath = '//form[@method="post"]'
+    login_form_xpath = '//form[@id="login"]'
     forum_xpath = '//a[contains(@class, "forumtitle")]/@href'
 
     pagination_xpath = '//li[@class="arrow next"]/a/@href'
@@ -62,35 +60,59 @@ class DevilTeamSpider(SitemapSpider):
     use_proxy = True
 
     def start_requests(self):
+        self._try_to_log_in_count = 0
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.parse_start
+            callback=self.parse_start,
+            meta={
+                "cookiejar": uuid.uuid1().hex,
+                "ip": self.ip_handler.get_good_ip()
+            }
         )
 
     def parse_start(self, response):
+        self._try_to_log_in_count += 1
+
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        creation_time = response.xpath(
-            '//input[@name="creation_time"]/@value').extract_first()
-        form_token = response.xpath(
-            '//input[@name="form_token"]/@value').extract_first()
-        sid = response.xpath(
-            '//input[@name="sid"]/@value').extract_first()
+        login_form = response.xpath(self.login_form_xpath)
+
+        def get_field_value(name):
+            return login_form.xpath(f'.//input[@name="{name}"]/@value').getall()[-1]
+
         formdata = {
             'username': USERNAME,
             'password': PASSWORD,
+            'redirect': get_field_value('redirect'),
+            'creation_time': get_field_value('creation_time'),
+            'form_token': get_field_value('form_token'),
+            'sid': get_field_value('sid'),
+            'login': get_field_value('login')
         }
-        self.logger.info(formdata)
+
         yield FormRequest.from_response(
             response,
             formxpath=self.login_form_xpath,
             formdata=formdata,
+            dont_click=True,
             meta=self.synchronize_meta(response),
             dont_filter=True,
             headers=self.headers
         )
+
+    def parse(self, response):
+        invalid_form_msg = 'The submitted form was invalid. Try submitting again.'
+        if response.css('div.error::text').get() == invalid_form_msg:
+            if self._try_to_log_in_count >= TRY_TO_LOG_IN_COUNT:
+                self.logger.error('Unable to log in!')
+                return
+
+            yield from self.parse_start(response)
+        else:
+            yield from super().parse(response)
 
     def parse_thread(self, response):
 
