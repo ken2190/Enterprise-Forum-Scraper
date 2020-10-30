@@ -1,20 +1,11 @@
 import re
-import os
 import uuid
 
-from datetime import datetime
-import dateparser
-
-from scrapy import (
-    Request,
-    FormRequest,
-    Selector
-)
+from scrapy import Request
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-
 
 REQUEST_DELAY = 0.7
 NO_OF_THREADS = 2
@@ -22,10 +13,10 @@ NO_OF_THREADS = 2
 
 class DarkMoneySpider(SitemapSpider):
 
-    name = "darkmoney.at"
+    name = "darkmoney.tw"
 
     # Url stuffs
-    base_url = "https://darkmoney.at/"
+    base_url = "https://darkmoney.tw/"
 
     # Xpath stuffs
     forum_xpath = '//tbody[contains(@id,"collapseobj_forum")]/tr/td[1]/div/a/@href'
@@ -61,83 +52,26 @@ class DarkMoneySpider(SitemapSpider):
     download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
-    cloudfare_delay = 5
-    handle_httpstatus_list = [503]
-
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-
-        if thread_date is None:
-            return datetime.today()
-
-        return dateparser.parse(thread_date)
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class post_datetime_format
-        """
-
-        if post_date is None:
-            return datetime.today()
-
-        return dateparser.parse(post_date)
 
     def start_requests(self):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
             meta={
-                "cookiejar": uuid.uuid1().hex
-            }
+                "cookiejar": uuid.uuid1().hex,
+                "ip": ip
+            },
+            cookies=cookies
         )
 
-    def parse(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        all_forums = response.xpath(self.forum_xpath).extract()
-        for forum_url in all_forums[1:]:
-
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url[1:]
-            yield Request(
-                url=forum_url,
-                headers=self.headers,
-                callback=self.parse_forum,
-                dont_filter=True,
-                meta=self.synchronize_meta(response)
-            )
-
-    def parse_forum(self, response):
-        # Check status 503
-        if response.status == 503:
-            request = response.request
-            request.dont_filter = True
-            request.meta = {
-                "cookiejar": uuid.uuid1().hex
-            }
-            yield request
-            return
-
-        yield from super().parse_forum(response)
-
     def parse_thread(self, response):
-        # Check status 503
-        if response.status == 503:
-            request = response.request
-            request.dont_filter = True
-            request.meta = {
-                "cookiejar": uuid.uuid1().hex,
-                "topic_id": response.meta.get("topic_id")
-            }
-            yield request
-            return
 
         # Save generic thread
         yield from super().parse_thread(response)
@@ -145,58 +79,25 @@ class DarkMoneySpider(SitemapSpider):
         # Save avatars
         yield from self.parse_avatars(response)
 
-    def parse_avatars(self, response):
-
-        # Synchronize headers user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Save avatar content
-        for avatar in response.xpath(self.avatar_xpath):
-            avatar_url = avatar.xpath('img/@src').extract_first()
-
-            # Standardize avatar url
-            if not avatar_url.lower().startswith("http"):
-                avatar_url = self.base_url + avatar_url
-
-            if 'image/svg' in avatar_url:
-                continue
-
-            match = self.avatar_name_pattern.findall(avatar_url)
-            if not match:
-                continue
-
-            file_name = os.path.join(
-                self.avatar_path,
-                f'{match[0]}.jpg'
+    def check_bypass_success(self, browser):
+        return bool(
+            browser.current_url.startswith(self.base_url) and
+            browser.find_elements_by_xpath(
+                '//tbody[contains(@id,"collapseobj_forum")]/tr/td[1]/div/a'
             )
-
-            if os.path.exists(file_name):
-                continue
-
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_name": file_name
-                    }
-                ),
-            )
+        )
 
 
 class DarkMoneyScrapper(SiteMapScrapper):
 
     spider_class = DarkMoneySpider
-    site_name = 'darkmoney.at'
+    site_name = 'darkmoney.tw'
 
     def load_settings(self):
         settings = super().load_settings()
         settings.update(
             {
-                "RETRY_HTTP_CODES": [406, 429, 500],
+                "RETRY_HTTP_CODES": [500, 502, 503, 504, 522, 524, 406, 408, 429],
             }
         )
         return settings
-
