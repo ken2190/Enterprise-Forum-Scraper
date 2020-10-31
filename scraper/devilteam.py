@@ -17,7 +17,7 @@ NO_OF_THREADS = 1
 
 USERNAME = "Cyrax_011"
 PASSWORD = "Night#India065"
-TRY_TO_LOG_IN_COUNT = 3
+MAX_TRY_TO_LOG_IN_COUNT = 3
 
 
 class DevilTeamSpider(SitemapSpider):
@@ -100,19 +100,26 @@ class DevilTeamSpider(SitemapSpider):
             dont_click=True,
             meta=self.synchronize_meta(response),
             dont_filter=True,
-            headers=self.headers
+            headers=self.headers,
+            callback=self.check_if_logged_in
         )
 
-    def parse(self, response):
+    def check_if_logged_in(self, response):
+        # check if logged in successfully
+        if response.xpath(self.forum_xpath):
+            # start forum scraping
+            yield from super().parse(response)
+            return
+
         invalid_form_msg = 'The submitted form was invalid. Try submitting again.'
         if response.css('div.error::text').get() == invalid_form_msg:
-            if self._try_to_log_in_count >= TRY_TO_LOG_IN_COUNT:
-                self.logger.error('Unable to log in!')
+            if self._try_to_log_in_count >= MAX_TRY_TO_LOG_IN_COUNT:
+                self.logger.error('Unable to log in! Exceeded maximum try count!')
                 return
 
             yield from self.parse_start(response)
         else:
-            yield from super().parse(response)
+            self.logger.error('Unable to log in to the forum!')
 
     def parse_thread(self, response):
 
