@@ -4,44 +4,39 @@ import re
 import socket
 import time
 import uuid
+from base64 import b64decode
+from copy import deepcopy
+from datetime import datetime
+from glob import glob
+from lxml.html import fromstring
+from random import choice
+from requests import Session
+from requests.exceptions import ConnectionError
+from urllib.parse import urljoin
 
 import dateparser
 import dateutil.parser as dparser
 import requests
 import scrapy
-
-from random import choice
-from glob import glob
-from requests import Session
-from lxml.html import fromstring
-from requests.exceptions import ConnectionError
-from scrapy.crawler import CrawlerProcess
-from scrapy.exceptions import CloseSpider
-from copy import deepcopy
-from datetime import datetime
-from urllib.parse import urljoin
-from middlewares.utils import IpHandler
-from anticaptchaofficial.recaptchav2proxyon import *
-from anticaptchaofficial.recaptchav2proxyless import *
+# from anticaptchaofficial.recaptchav2proxyon import *
+# from anticaptchaofficial.recaptchav2proxyless import *
 from anticaptchaofficial.hcaptchaproxyless import *
 from anticaptchaofficial.hcaptchaproxyon import *
 from anticaptchaofficial.imagecaptcha import *
-
+from scrapy import Request, Selector
+from scrapy.crawler import CrawlerProcess
+from scrapy.exceptions import CloseSpider
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
-from seleniumwire.webdriver import (
-    Chrome,
-    ChromeOptions,
+from seleniumwire.webdriver import Chrome, ChromeOptions
+from unicaps import CaptchaSolver, CaptchaSolvingService
+from unicaps.exceptions import (
+    ProxyError, SolutionWaitTimeout, UnableToSolveError, UnicapsException
 )
-from scrapy import (
-    Request,
-    Selector
-)
-from base64 import (
-    b64decode
-)
+from unicaps.proxy import ProxyServer
 
+from middlewares.utils import IpHandler
 
 # Vip Proxy
 #VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
@@ -1016,6 +1011,9 @@ class SitemapSpider(BypassCloudfareSpider):
         :param cookies_string: str => Cookie string as in browser header
         :return: dict => Cookies as dict type, using in scrapy request
         """
+        if not cookies_string:
+            return {}
+
         cookies_elements = [
             element.strip().split("=") for element in cookies_string.split(";")
         ]
@@ -1098,8 +1096,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 r"[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
             )
             if re.match(valid_ip_address_regex, address) is None:
-                from socket import gethostbyname
-                address = gethostbyname(address)
+                address = socket.gethostbyname(address)
 
             solver.set_proxy_address(address)
             solver.set_proxy_port(int(port))
@@ -1135,43 +1132,67 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Main method to solve all kind of captcha: recaptcha #
     
-    def solve_recaptcha(self, response, proxyless=False):
+    def solve_recaptcha(self, response, *, proxyless=False, max_try_count=3):
         """
         :param response: scrapy response => response that contains regular recaptcha
         :return: str => recaptcha solved token to submit login
         """
 
-        # Load proxy
-        proxy = self.load_proxies(response)
-        if proxy and not proxyless:
-            solver = recaptchaV2Proxyon()
+        solver = CaptchaSolver(
+            CaptchaSolvingService.ANTI_CAPTCHA,
+            self.captcha_token
+        )
 
-            user_pwd, host_port = proxy.split('@')
-            hostname, port = host_port.split(":")
-            host = socket.gethostbyname(hostname)
+        proxy = None
+        user_agent = None
+        cookies = None
+        if not proxyless:
+            # get proxy from the response
+            proxy = self.load_proxies(response)
 
-            solver.set_proxy_address(host)
-            solver.set_proxy_port(port)
-            solver.set_proxy_login(user_pwd.split(":")[0])
-            solver.set_proxy_password(user_pwd.split(":")[1])
-            solver.set_user_agent(response.request.headers['user-agent'].decode('utf-8'))
-        else:
-            solver = recaptchaV2Proxyless()
+            if proxy:
+                # get proxy details: user, password, host, port
+                user_pwd, host_port = proxy.split('@', maxsplit=1)
+                user, password = user_pwd.split(":", maxsplit=1)
+                hostname, port = host_port.split(":", maxsplit=1)
 
-        # Init site url and key
-        site_url = response.url
+                # get User-Agent
+                user_agent = response.request.headers['User-Agent'].decode('utf-8')
+                # Load cookies from request
+                cookies = self.load_cookies(
+                    response.request.headers.get("Cookie", b"").decode("utf-8")
+                )
+                cookies.update(
+                    self.load_cookies(response.headers.get("Set-Cookie", b"").decode("utf-8"))
+                )
+
+        # get page URL and site key
+        page_url = response.url
         site_key = response.xpath(self.recaptcha_site_key_xpath).extract_first()
 
-        solver.set_verbose(1)
-        solver.set_key(self.captcha_token)
-        solver.set_website_url(site_url)
-        solver.set_website_key(site_key)
+        try_count = 0
+        while True:
+            if proxy:
+                host = socket.gethostbyname(hostname)
+                proxy = ProxyServer(f'http://{user}:{password}@{host}:{port}')
 
-        g_response = solver.solve_and_return_solution()
-        if g_response != 0:
-            return g_response
-        else:
-            return ''
+            try_count += 1
+            try:
+                return solver.solve_recaptcha_v2(
+                    site_key,
+                    page_url,
+                    proxy=proxy,
+                    user_agent=user_agent,
+                    cookies=cookies
+                )
+            except (ProxyError, SolutionWaitTimeout, UnableToSolveError):
+                if try_count >= max_try_count:
+                    self.logger.error('Exceeded reCAPTCHA solving maximum try count!')
+                    raise
+                continue
+            except UnicapsException as err:
+                self.logger.warning('Error on reCAPTCHA solving: %s', err)
+                raise
 
     def solve_captcha(self, image_url, response, cookies={}, headers={}):
         solver = imagecaptcha()
