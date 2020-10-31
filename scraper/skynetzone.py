@@ -1,156 +1,128 @@
-import time
-import requests
-import os
-import json
 import re
-import scrapy
-from math import ceil
-import configparser
-from urllib.parse import urlencode
-from lxml.html import fromstring
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import SiteMapScrapper
+
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
+
+USERNAME = "Cyrax_011"
+PASSWORD = "Night#India065"
+MAX_TRY_TO_LOG_IN_COUNT = 3
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
+class SkyNetZoneSpider(SitemapSpider):
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
-             'AppleWebKit/537.36 (KHTML, like Gecko) '\
-             'Chrome/79.0.3945.117 Safari/537.36',
-
-
-class SkyNetZoneSpider(scrapy.Spider):
     name = 'skynetzone_spider'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = "https://skynetzone.pw"
-        self.topic_pattern = re.compile(r'threads/.*\.(\d+)/')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*/page-(\d+)')
-        self.start_url = "https://skynetzone.pw/"
-        self.output_path = kwargs.get("output_path")
-        self.avatar_path = kwargs.get("avatar_path")
-        self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'user-agent': USER_AGENT
-        }
+    # Url stuffs
+    base_url = 'https://skynetzone.pw'
+    login_url = f'{base_url}/login/login'
+
+    # Xpath stuffs
+    login_form_xpath = "//form[@action='/login/login']"
+
+    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
+                  '//a[contains(@class,"subNodeLink--forum")]/@href'
+    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+    thread_first_page_xpath = './/div[@class="structItem-title"]'\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]'\
+                        '/@datetime'
+    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+                              '/@href'
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+                        '/a/text()'
+    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+
+    avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
+
+    # Recaptcha stuffs
+    recaptcha_site_key_xpath = '//div[@data-sitekey]/@data-sitekey'
+
+    # Regex stuffs
+    topic_pattern = re.compile(r'threads/.*\.(\d+)/', re.IGNORECASE)
+    avatar_name_pattern = re.compile(r".*/(\S+\.\w+)", re.IGNORECASE)
+    pagination_pattern = re.compile(r'.*page-(\d+)', re.IGNORECASE)
+
+    # Other settings
+    use_proxy = True
+    download_delay = 0.3
+    download_thread = 10
 
     def start_requests(self):
+        self._try_to_log_in_count = 0
+
         yield Request(
-            url=self.start_url,
+            url=self.login_url,
+            dont_filter=True,
             headers=self.headers,
-            callback=self.parse
+            callback=self.parse_login,
         )
 
-    def parse(self, response):
-        forums = response.xpath(
-            '//h3[@class="node-title"]/a')
-        sub_forums = response.xpath(
-            '//a[contains(@class, "subNodeLink subNodeLink--forum")]')
-        forums.extend(sub_forums)
+    def parse_login(self, response):
+        self._try_to_log_in_count += 1
 
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
-            # if 'ischu-rabotu-predlagaju-svoi-uslugi.95' not in url:
-            #     continue
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+        self.synchronize_headers(response)
 
-    def parse_forum(self, response):
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[@data-preview-url]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
+        # Solve reCAPTCHA
+        solved_captcha = self.solve_recaptcha(response)  # , proxyless=True)
+        self.logger.debug(f'reCAPTCHA token: {solved_captcha.solution.token}')
 
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+        formdata = {
+            'login': USERNAME,
+            'password': PASSWORD,
+            'g-recaptcha-response': solved_captcha.solution.token
+        }
+
+        yield FormRequest.from_response(
+            response,
+            formxpath=self.login_form_xpath,
+            formdata=formdata,
+            dont_click=True,
+            meta=self.synchronize_meta(response),
+            dont_filter=True,
+            headers=self.headers,
+            callback=self.check_if_logged_in,
+            cb_kwargs=dict(solved_captcha=solved_captcha)
+        )
+
+    def check_if_logged_in(self, response, solved_captcha):
+        # check if logged in successfully
+        if response.xpath(self.forum_xpath):
+            # report a good CAPTCHA
+            solved_captcha.report_good()
+            # start forum scraping
+            yield from super().parse(response)
+            return
+
+        err_msg = response.css('div.blockMessage--error::text').get()
+        if err_msg:
+            if 'CAPTCHA' in err_msg:
+                # report a bad CAPTCHA
+                solved_captcha.report_bad()
+
+            if self._try_to_log_in_count >= MAX_TRY_TO_LOG_IN_COUNT:
+                self.logger.error('Unable to log in! Exceeded maximum try count!')
+                return
+
+            yield from self.parse_login(response)
+        else:
+            self.logger.error('Unable to log in to the forum!')
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath(
-            '//div[@class="message-avatar-wrapper"]/a/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if self.base_url not in avatar_url:
-                avatar_url = self.base_url + avatar_url
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
 
-        next_page = response.xpath(
-            '//a[@class="pageNav-jump pageNav-jump--next"]')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        file_name_only = file_name_only.rsplit('.', 1)[0]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar for {file_name_only} done..!")
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
 class SkyNetZoneScrapper(SiteMapScrapper):
@@ -159,12 +131,9 @@ class SkyNetZoneScrapper(SiteMapScrapper):
     site_name = 'skynetzone.pw'
 
     def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
-        return spider_settings
+        settings = super().load_settings()
+        settings.update({
+            'RETRY_HTTP_CODES': [403, 406, 408, 429, 500, 502, 503, 504, 522, 524],
+            # 'CLOSESPIDER_ERRORCOUNT': 1
+        })
+        return settings

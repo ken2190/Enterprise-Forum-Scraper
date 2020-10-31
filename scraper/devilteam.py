@@ -1,198 +1,136 @@
-import time
-import requests
-import os
-import json
+
 import re
-import scrapy
-from math import ceil
-import configparser
-from urllib.parse import urlencode
-from lxml.html import fromstring
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import SiteMapScrapper
+import uuid
+
+from scrapy import (
+    Request,
+    FormRequest
+)
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 
-USER = 'Cyrax_011'
-PASS = 'Night#India065'
+REQUEST_DELAY = 1
+NO_OF_THREADS = 1
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
-             'AppleWebKit/537.36 (KHTML, like Gecko) '\
-             'Chrome/79.0.3945.117 Safari/537.36',
+USERNAME = "Cyrax_011"
+PASSWORD = "Night#India065"
+MAX_TRY_TO_LOG_IN_COUNT = 3
 
 
-class DevilTeamSpider(scrapy.Spider):
+class DevilTeamSpider(SitemapSpider):
     name = 'devilteam_spider'
+    base_url = "https://devilteam.pl"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.base_url = "https://devilteam.pl"
-        self.login_url = 'https://devilteam.pl/ucp.php?mode=login'
-        self.topic_pattern = re.compile(r't=(\d+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.pagination_pattern = re.compile(r'start=(\d+)')
-        self.output_path = kwargs.get("output_path")
-        self.avatar_path = kwargs.get("avatar_path")
-        self.headers = {
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'user-agent': USER_AGENT,
-        }
+    # xpaths
+    login_form_xpath = '//form[@id="login"]'
+    forum_xpath = '//a[contains(@class, "forumtitle")]/@href'
+
+    pagination_xpath = '//li[@class="arrow next"]/a/@href'
+
+    thread_xpath = '//ul[@class="topiclist topics"]/li'
+    thread_first_page_xpath = './/a[contains(@class, "topictitle")]/@href'
+    thread_last_page_xpath = './/div[@class="pagination"]'\
+                             '/ul/li[last()]/a/@href'
+    thread_date_xpath = './/dd[@class="lastpost"]/span/time/@datetime'
+    thread_page_xpath = '//li[contains(@class, "ipsPagination_active")]'\
+                        '/a/text()'
+    thread_pagination_xpath = '//li[@class="arrow previous"]'\
+                              '/a[@rel="prev"]/@href'
+
+    post_date_xpath = '//p[@class="author"]//time/@datetime'
+
+    avatar_xpath = '//span[@class="avatar"]/img/@src'
+
+    # Regex stuffs
+    topic_pattern = re.compile(
+        r"&t=(\d+)",
+        re.IGNORECASE
+    )
+    avatar_name_pattern = re.compile(
+        r'.*/(\S+\.\w+)',
+        re.IGNORECASE
+    )
+
+    # Other settings
+    download_delay = REQUEST_DELAY
+    download_thread = NO_OF_THREADS
+    use_proxy = True
 
     def start_requests(self):
+        self._try_to_log_in_count = 0
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.proceed_for_login
+            callback=self.parse_start,
+            meta={
+                "cookiejar": uuid.uuid1().hex,
+                "ip": self.ip_handler.get_good_ip()
+            }
         )
 
-    def proceed_for_login(self, response):
-        creation_time = response.xpath(
-            '//input[@name="creation_time"]/@value').extract_first()
-        form_token = response.xpath(
-            '//input[@name="form_token"]/@value').extract_first()
-        sid = response.xpath(
-            '//input[@name="sid"]/@value').extract_first()
-        params = {
-            'username': USER,
-            'password': PASS,
-            'autologin': 'on',
-            'redirect': './index.php?',
-            'creation_time': creation_time,
-            'form_token': form_token,
-            'sid': sid,
-            'login': 'Login'
+    def parse_start(self, response):
+        self._try_to_log_in_count += 1
+
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        login_form = response.xpath(self.login_form_xpath)
+
+        def get_field_value(name):
+            return login_form.xpath(f'.//input[@name="{name}"]/@value').getall()[-1]
+
+        formdata = {
+            'username': USERNAME,
+            'password': PASSWORD,
+            'redirect': get_field_value('redirect'),
+            'creation_time': get_field_value('creation_time'),
+            'form_token': get_field_value('form_token'),
+            'sid': get_field_value('sid'),
+            'login': get_field_value('login')
         }
-        yield FormRequest(
-            url=self.login_url,
-            callback=self.parse,
-            formdata=params,
-            headers=self.headers,
+
+        yield FormRequest.from_response(
+            response,
+            formxpath=self.login_form_xpath,
+            formdata=formdata,
+            dont_click=True,
+            meta=self.synchronize_meta(response),
             dont_filter=True,
-            )
+            headers=self.headers,
+            callback=self.check_if_logged_in
+        )
 
-    def parse(self, response):
-        forums = response.xpath(
-            '//a[@class="forumtitle"]')
-        sub_forums = response.xpath(
-            '//div[@class="sub-forumlist"]//li'
-            '/a[contains(@href, "viewforum.php?f=")]')
-        forums.extend(sub_forums)
+    def check_if_logged_in(self, response):
+        # check if logged in successfully
+        if response.xpath(self.forum_xpath):
+            # start forum scraping
+            yield from super().parse(response)
+            return
 
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url.strip('.')
-            # if 'f=62' not in url:
-            #     continue
-            yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+        invalid_form_msg = 'The submitted form was invalid. Try submitting again.'
+        if response.css('div.error::text').get() == invalid_form_msg:
+            if self._try_to_log_in_count >= MAX_TRY_TO_LOG_IN_COUNT:
+                self.logger.error('Unable to log in! Exceeded maximum try count!')
+                return
 
-    def parse_forum(self, response):
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[@class="topictitle"]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url.strip('.')
-            topic_id = self.topic_pattern.findall(thread_url)
-            if not topic_id:
-                continue
-            file_name = '{}/{}-1.html'.format(self.output_path, topic_id[0])
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
-            )
-
-        next_page = response.xpath(
-            '//li[@class="arrow next"]/a')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url.strip('.')
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_forum
-            )
+            yield from self.parse_start(response)
+        else:
+            self.logger.error('Unable to log in to the forum!')
 
     def parse_thread(self, response):
-        topic_id = response.meta['topic_id']
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = int(int(pagination[0])/10 + 1) if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
 
-        avatars = response.xpath(
-            '//img[@class="avatar"]')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
-            if self.base_url not in avatar_url:
-                avatar_url = self.base_url + avatar_url.strip('.')
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
-                continue
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
-            if os.path.exists(file_name):
-                continue
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta={
-                    'file_name': file_name,
-                }
-            )
+        # Parse generic thread
+        yield from super().parse_thread(response)
 
-        next_page = response.xpath(
-            '//li[@class="arrow next"]/a')
-        if next_page:
-            next_page_url = next_page.xpath('@href').extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url.strip('.')
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta={'topic_id': topic_id}
-            )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('.', 1)[0]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar for {file_name_only} done..!")
+        # Parse generic avatar
+        yield from super().parse_avatars(response)
 
 
 class DevilTeamScrapper(SiteMapScrapper):
 
     spider_class = DevilTeamSpider
     site_name = 'devilteam.pl'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
-        return spider_settings
