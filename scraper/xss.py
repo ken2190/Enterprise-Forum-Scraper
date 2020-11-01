@@ -1,23 +1,18 @@
-import os
 import re
 import uuid
 
-from datetime import (
-    datetime,
-    timedelta
-)
-from scrapy import (
-    Request,
-    FormRequest
-)
-from scraper.base_scrapper import (
-    SitemapSpider,
-    SiteMapScrapper
-)
+from scrapy import Request, FormRequest
+
+from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+
 # USER = "thecreator"
 # PASS = "Night#Xss01"
-USER = "thecreator101@protonmail.com"
-PASS = "Night#Xss01"
+# USER = "thecreator101@protonmail.com"
+# PASS = "Night#Xss01"
+
+USER = "cyrax6626"
+PASS = "#@nightlion6626"
+
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
 
@@ -29,48 +24,39 @@ class XSSSpider(SitemapSpider):
     base_url = "https://xss.is"
     login_url = "https://xss.is/login/login"
 
-    # Regex stuffs
-    topic_pattern = re.compile(
-        r"threads/(\d+)/",
-        re.IGNORECASE
-    )
-    avatar_name_pattern = re.compile(
-        r".*/(\S+\.\w+)",
-        re.IGNORECASE
-    )
-    pagination_pattern = re.compile(
-        r".*page-(\d+)$",
-        re.IGNORECASE
-    )
+    # Selectors
+    login_form_xpath = "//form[@action='/login/login']"
+    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
+                  '//a[contains(@class,"subNodeLink--forum")]/@href'
+    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+    thread_first_page_xpath = './/div[@class="structItem-title"]'\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]'\
+                        '/@datetime'
+    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+                              '/@href'
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+                        '/a/text()'
+    post_date_xpath = '//div[contains(@class, "message-cell--main")]//a/time[@datetime]/@datetime'
+    avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
-    # Xpath stuffs
-    forum_xpath = "//h3[@class=\"node-title\"]/a/@href"
-    thread_xpath = "//div[contains(@class,\"structItem--thread\")]"
-    thread_first_page_xpath = "//div[contains(@class,\"structItem-title\")]/" \
-                              "a[contains(@href,\"threads/\")]/@href"
-    thread_last_page_xpath = "//span[contains(@class,\"structItem-pageJump\")]/" \
-                             "a[contains(@href,\"threads/\")][last()]/@href"
-    thread_date_xpath = "//time[contains(@class,\"structItem-latestDate\")]/@datetime"
-
-    pagination_xpath = "//a[contains(@class,\"pageNav-jump--next\")]/@href"
-    thread_pagination_xpath = "//div[contains(@class,\"pageNav \")]/a[contains(@class,\"prev\")]/@href"
-    thread_page_xpath = "//li[contains(@class,\"pageNav-page--current\")]/a/text()"
-    post_date_xpath = "//div[@class=\"message-attribution-main\"]/a/time/@datetime"
-    avatar_xpath = "//div[contains(@class,\"message-avatar\")]/div/a/img/@src"
-
-    #captcha success
+    # captcha success
     bypass_success_xpath = '//div[contains(@class,"xb")]'
+
+    # regexps
+    topic_pattern = re.compile(r"threads/(\d+)/", re.IGNORECASE)
+    avatar_name_pattern = re.compile(r".*/(\S+\.\w+)", re.IGNORECASE)
+    pagination_pattern = re.compile(r".*page-(\d+)$", re.IGNORECASE)
 
     # Other settings
     use_proxy = True
-    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
-    def parse(self, response):
 
-        # Synchronize cloudfare user agent
-        # self.synchronize_headers(response)
-
+    def start_requests(self):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.login_url,
@@ -78,55 +64,41 @@ class XSSSpider(SitemapSpider):
             fraud_check=True
         )
 
-        # Init request kwargs and meta
-        meta = {
-            "cookiejar": uuid.uuid1().hex,
-            "ip": ip
-        }
-
-        # Login stuffs
-        token = response.xpath(
-            "//input[@name=\"_xfToken\"]/@value"
-        ).extract_first()
-        params = {
-            "login": USER,
-            "password": PASS,
-            "remember": "1",
-            "_xfRedirect": "https://xss.is/",
-            "_xfToken": token
-        }
-        yield FormRequest(
+        yield Request(
             url=self.login_url,
-            callback=self.parse_start,
-            formdata=params,
             headers=self.headers,
-            # meta=self.synchronize_meta(response),
-            meta=meta,
+            meta={"cookiejar": uuid.uuid1().hex,
+                  "ip": ip},
             cookies=cookies,
-            dont_filter=True,
+            callback=self.parse_start
         )
 
     def parse_start(self, response):
-
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        all_forums = response.xpath(self.forum_xpath).extract()
-        for forum_url in all_forums:
+        yield FormRequest.from_response(
+            response,
+            formxpath=self.login_form_xpath,
+            formdata={"login": USER,
+                      "password": PASS},
+            headers=self.headers,
+            meta=self.synchronize_meta(response),
+            dont_filter=True,
+            callback=self.check_if_logged_in
+        )
 
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
+    def check_if_logged_in(self, response):
+        # check if logged in successfully
+        if response.xpath(self.forum_xpath):
+            # start forum scraping
+            yield from self.parse(response)
+            return
 
-            yield Request(
-                url=forum_url,
-                headers=self.headers,
-                callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
-            )
+        err_msg = response.css('div.blockMessage--error::text').get() or 'Unknown error'
+        self.logger.error('Unable to log in: %s', err_msg)
 
     def parse_thread(self, response):
-
         # Parse generic thread
         yield from super().parse_thread(response)
 
@@ -145,8 +117,7 @@ class XSSScrapper(SiteMapScrapper):
             {
                 'DOWNLOAD_DELAY': REQUEST_DELAY,
                 'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-                'HTTPERROR_ALLOWED_CODES': [403]
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
             }
         )
         return settings
