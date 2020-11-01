@@ -2,6 +2,7 @@ import re
 import uuid
 
 from scrapy import Request, FormRequest
+from scrapy.exceptions import CloseSpider
 
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
@@ -95,6 +96,11 @@ class XSSSpider(SitemapSpider):
             yield from self.parse(response)
             return
 
+        banned_xpath = ('//div[contains(@class, "blockMessage") and '
+                        'contains(text(), "You have been banned")]')
+        if response.xpath(banned_xpath) is not None:
+            raise CloseSpider(reason='account_is_banned')
+
         err_msg = response.css('div.blockMessage--error::text').get() or 'Unknown error'
         self.logger.error('Unable to log in: %s', err_msg)
 
@@ -117,7 +123,8 @@ class XSSScrapper(SiteMapScrapper):
             {
                 'DOWNLOAD_DELAY': REQUEST_DELAY,
                 'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
+                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+                'HTTPERROR_ALLOWED_CODES': [403]
             }
         )
         return settings
