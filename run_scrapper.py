@@ -89,7 +89,7 @@ class Scraper:
             stats = scraper_obj.do_scrape()
 
             # FIXME error/warnings feature is enabled for the selected scrapers only
-            scraper_list = ('altenens', 'darkmoney', 'devilteam', 'sinister')
+            scraper_list = ('altenens', 'darkmoney', 'devilteam', 'sinister', 'xss')
             if template.lower() in scraper_list:
                 err = get_error(stats)
                 warnings = get_warnings(stats)
