@@ -493,7 +493,7 @@ class BypassCloudfareSpider(scrapy.Spider):
 
         # Init web driver arguments
         webdriver_kwargs = {
-            "executable_path": "/usr/local/bin/chromedriver",
+            # "executable_path": "/usr/local/bin/chromedriver",
             "options": options
         }
 
@@ -1629,7 +1629,7 @@ class SitemapSpider(BypassCloudfareSpider):
             if topic_id not in self.topics_scraped:
                 self.crawler.stats.inc_value("forum/thread_no_messages_count")
 
-            self.logger.info('No dates found in thread')
+            self.logger.info('No dates found in thread: %s', response.url)
             return
 
         # get next page
