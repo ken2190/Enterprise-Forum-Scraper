@@ -25,9 +25,7 @@ def get_log_file(scraper):
     Opens a handle to the log file for the scraper and current date.
     Creates log directories if they do not exist.
     """
-    dirname = os.path.join(LOG_DIR, scraper['name'])
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
+
     log_filename = os.path.join(LOG_DIR, '{}.log'.format(scraper['name']))
     log_file = open(log_filename, 'a')
     return log_file
@@ -66,7 +64,9 @@ def spawn_scraper(scraper):
         handle = subprocess.Popen(
             [PYTHON_BIN, script, '-s', str(scraper['id'])],
             stdout=log_file,
-            stderr=log_file
+            stderr=log_file,
+            universal_newlines=True,
+            bufsize=1
         )
         update_scraper(scraper, {'pid': handle.pid})
     except Exception as exc:
