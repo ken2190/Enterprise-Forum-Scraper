@@ -14,6 +14,7 @@ from requests import Session
 from requests.exceptions import ConnectionError
 from urllib.parse import urljoin
 
+import cloudscraper
 import dateparser
 import dateutil.parser as dparser
 import requests
@@ -36,6 +37,7 @@ from unicaps.exceptions import (
 )
 from unicaps.proxy import ProxyServer
 
+from helheim import helheim
 from middlewares.utils import IpHandler
 
 # Vip Proxy
@@ -391,6 +393,8 @@ class BypassCloudfareSpider(scrapy.Spider):
     download_delay = 0.3
     download_thread = 10
     default_useragent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
+    # anticaptcha api #
+    captcha_token = "d7da71f33665a41fca21ecd11dc34015"
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -470,7 +474,90 @@ class BypassCloudfareSpider(scrapy.Spider):
         self.logger.info("Captcha solved correctly .")
         return bool(element)
 
-    def get_cloudflare_cookies(self, base_url=None, proxy=False, fraud_check=False):
+    def get_cloudflare_cookies(self, base_url=None, proxy=True, fraud_check=True):
+        # Load proxy
+        if self.use_vip_proxy:
+            proxy_username = VIP_PROXY_USERNAME
+            proxy_password = VIP_PROXY_PASSWORD
+            super_proxy = VIP_PROXY
+        else:
+            proxy_username = PROXY_USERNAME
+            proxy_password = PROXY_PASSWORD
+            super_proxy = PROXY
+
+        def injection(session, response):
+            if session.is_New_IUAM_Challenge(response) \
+            or session.is_New_Captcha_Challenge(response):
+                return helheim('52455eed-754b-4220-a070-c913698954b2', session, response)
+            else:
+                return response
+
+        cf_bypasser = cloudscraper.create_scraper(
+            browser={
+                # 'custom': self.default_useragent
+                'browser': 'chrome',
+                'mobile': False,
+                'platform': 'windows'
+            },
+            captcha={
+                'provider': 'anticaptcha',
+                'api_key': self.captcha_token
+            },
+            requestPostHook=injection,
+            debug=False
+        )
+
+        bypass_cookies = {}
+        try_num = 0
+        # Loop create cookies
+        while try_num < self.get_cookies_retry:
+            try_num += 1
+
+            # Fraud check - get good IP address
+            ip = self.ip_handler.get_good_ip()
+
+            # Init proxy
+            proxy = super_proxy % (
+                "%s-ip-%s" % (
+                    proxy_username,
+                    ip
+                ),
+                proxy_password
+            )
+            proxy_obj = ProxyServer(proxy)
+            proxy_obj.address = socket.gethostbyname(proxy_obj.address)
+
+            proxies = {
+                "http": proxy_obj.get_string(including_type=True),
+                "https": proxy_obj.get_string(including_type=True)
+            }
+
+            try:
+                response = cf_bypasser.get(base_url, proxies=proxies)
+            except Exception:
+                self.logger.exception('Try #%s to bypass CloudFlare failed', try_num)
+                continue
+
+            # get cookies
+            bypass_cookies = response.cookies.get_dict()
+
+            # update UA
+            self.headers['User-Agent'] = response.request.headers['User-Agent']
+
+            break
+        else:
+            raise CloseSpider(reason='access_is_blocked')
+
+        self.logger.info(
+            "Bypass cookies: %s and ip: %s" % (
+                bypass_cookies,
+                ip
+            )
+        )
+
+        return bypass_cookies, ip
+
+    def get_cloudflare_cookies_via_browser(self, base_url=None, proxy=False, fraud_check=False):
         # Load proxy
         if self.use_vip_proxy:
             proxy_username = VIP_PROXY_USERNAME
@@ -745,7 +832,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
     # Other settings
     get_cookies_delay = 2
-    get_cookies_retry = 2
+    get_cookies_retry = 5
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
