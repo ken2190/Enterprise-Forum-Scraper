@@ -1,34 +1,38 @@
-lxml
-requests[socks]==2.23.0
-sh
-scrapy
-selenium
-dateparser
-python-dateutil
-anticaptchaofficial
-cloudscraper
-js2py
-pandas
-polling
-selenium-wire
+CouchDB == 1.2
 aiohttp
-dateparser
-pymongo
-netaddr
-boto3
-elasticsearch
-cassandra-driver
-telethon
-python-dotenv
-arrow
-schedule
-python3-anticaptcha
-requests==2.23.0
-python-anticaptcha
 anticaptchaofficial
-js2py
-imagehash==4.1.0
-pillow==7.2.0
+anticaptchaofficial
+arrow
+boto3
+cassandra-driver
+cloudscraper >= 1.2.48
+cryptography >= 3.0
+dateparser
+dateparser
+elasticsearch
 faker
-CouchDB==1.2
-unicaps==0.3.0
+imagehash == 4.1.0
+js2py
+js2py
+lxml
+lzstring >= 1.0.4
+msgpack >= 1.0.0
+netaddr
+pandas
+pillow == 7.2.0
+polling
+pymongo
+python-anticaptcha
+python-dateutil
+python-dotenv
+python3-anticaptcha
+requests >= 2.24.0
+requests[socks] >= 2.24.0
+schedule
+scrapy >= 2.4.0
+selenium
+selenium-wire
+sh
+telethon
+unicaps == 0.3.0
+urllib3 >= 1.25.10

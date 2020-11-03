@@ -3,10 +3,7 @@ import re
 import sys
 import uuid
 
-from scrapy import (
-    Request,
-    FormRequest,
-)
+from scrapy import Request, FormRequest
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -29,7 +26,7 @@ class OgUsersSpider(SitemapSpider):
     login_url = "https://ogusers.com/member.php?action=login"
 
     # Css stuffs
-    login_form_css = "#quick_login>form"
+    login_form_xpath = "//form[@action='member.php']"
     forum_xpath = "//a[contains(@href, 'Forum-')]/@href"
 
     # Xpath stuffs
@@ -44,7 +41,7 @@ class OgUsersSpider(SitemapSpider):
     thread_date_xpath = "//span[contains(@class,'lastpost')]/a/span/@title|"\
                         "//span[contains(@class,'lastpost')]/a/text()"
 
-    thread_pagination_xpath = "//a[@class='pagination_previous']/@href"    
+    thread_pagination_xpath = "//a[@class='pagination_previous']/@href"
 
     thread_page_xpath = "//span[contains(@class,'pagination_current')]/text()"
 
@@ -72,7 +69,7 @@ class OgUsersSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = "%m-%d-%Y"
     handle_httpstatus_list = [403]
-    get_cookies_retry = 4
+    get_cookies_retry = 10
     fraudulent_threshold = 10
 
     def get_avatar_file(self, url):
@@ -85,7 +82,7 @@ class OgUsersSpider(SitemapSpider):
     def start_requests(self):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
-            base_url=self.login_url,
+            base_url=self.base_url,
             proxy=True,
             fraud_check=True
         )
@@ -97,23 +94,11 @@ class OgUsersSpider(SitemapSpider):
         }
 
         yield Request(
-            url=self.base_url,
+            url=self.login_url,
             headers=self.headers,
             meta=meta,
             cookies=cookies,
-            callback=self.parse_start
-        )
-
-    def parse(self, response):
-        # Synchronize user agent in cloudfare middleware
-        self.synchronize_headers(response)
-
-        yield Request(
-            url=self.login_url,
-            dont_filter=True,
-            headers=self.headers,
-            callback=self.parse_login,
-            meta=self.synchronize_meta(response)
+            callback=self.parse_login
         )
 
     def parse_login(self, response):
@@ -122,37 +107,16 @@ class OgUsersSpider(SitemapSpider):
 
         yield FormRequest.from_response(
             response,
-            formcss=self.login_form_css,
+            formxpath=self.login_form_xpath,
             formdata={
                 "username": USER,
-                "password": PASS,
-                "2facode": "",
-                "action": "do_login"
+                "password": PASS
             },
             headers=self.headers,
             dont_filter=True,
-            callback=self.parse_start,
+            # callback=self.parse_start,
             meta=self.synchronize_meta(response)
         )
-
-    def parse_start(self, response):
-
-        # Synchronize user agent in cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Load all forums
-        all_forums = response.xpath(self.forum_xpath).extract()
-        for forum in all_forums:
-
-            if self.base_url not in forum:
-                forum = self.base_url + forum
-
-            yield Request(
-                url=forum,
-                headers=self.headers,
-                callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
-            )
 
     def parse_thread(self, response):
 
