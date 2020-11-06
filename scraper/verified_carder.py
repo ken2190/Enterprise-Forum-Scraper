@@ -193,6 +193,7 @@ class VerifiedCarderScrapper(SiteMapScrapper):
 
     spider_class = VerifiedCarderSpider
     site_name = 'verifiedcarder.ws'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

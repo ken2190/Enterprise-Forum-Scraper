@@ -111,3 +111,4 @@ class GreysecScrapper(SiteMapScrapper):
 
     spider_class = GreysecSpider
     site_name = 'greysec.net'
+    site_type = 'forum'

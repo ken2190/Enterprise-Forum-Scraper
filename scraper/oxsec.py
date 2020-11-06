@@ -117,6 +117,7 @@ class Ox00SecScrapper(SiteMapScrapper):
 
     spider_class = Ox00SecSpider
     site_name = '0x00sec.org'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

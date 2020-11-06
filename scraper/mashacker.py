@@ -90,3 +90,4 @@ class MasHackerScrapper(SiteMapScrapper):
 
     spider_class = MasHackerSpider
     site_name = 'mashacker.com'
+    site_type = 'forum'

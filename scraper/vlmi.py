@@ -99,6 +99,7 @@ class VlmiScrapper(SiteMapScrapper):
 
     spider_class = VlmiSpider
     site_name = 'vlmi.biz'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

@@ -166,3 +166,4 @@ class CryptBBScrapper(SiteMapScrapper):
 
     spider_class = CryptBBSpider
     site_name = 'cryptbb_cryptbb2gezhohku'
+    site_type = 'forum'

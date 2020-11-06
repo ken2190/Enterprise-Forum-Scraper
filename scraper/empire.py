@@ -183,3 +183,4 @@ class EmpireSpider(MarketPlaceSpider):
 class EmpireScrapper(SiteMapScrapper):
     spider_class = EmpireSpider
     site_name = 'empire (uhjru3mxpre7fgrmhdyd3c7kaenkzov3bxaiezp5pnsoxoqehhszi5yd.onion)'
+    site_type = 'marketplace'

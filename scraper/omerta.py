@@ -236,6 +236,7 @@ class OmertaScrapper(SiteMapScrapper):
     no_of_threads = 12
     spider_class = OmertaSpider
     site_name = 'omerta.cc'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -182,6 +182,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
 class SilkRoad4Scrapper(SiteMapScrapper):
     spider_class = SilkRoad4Spider
     site_name = 'silkroad4 (silkroadxjzvoyxh.onion)'
+    site_type = 'forum'
 
     def __init__(self, kwargs):
         kwargs['get_users'] = True

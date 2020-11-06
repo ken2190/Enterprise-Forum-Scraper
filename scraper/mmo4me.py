@@ -123,6 +123,7 @@ class Mmo4meScrapper(SiteMapScrapper):
 
     spider_class = Mmo4meSpider
     site_name = 'mmo4me.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

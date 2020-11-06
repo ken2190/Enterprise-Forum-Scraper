@@ -167,6 +167,7 @@ class BruteScrapper(SiteMapScrapper):
 
     spider_class = BruteSpider
     site_name = 'brute.su'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

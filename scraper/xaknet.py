@@ -117,6 +117,7 @@ class XaknetScrapper(SiteMapScrapper):
 
     spider_class = XaknetSpider
     site_name = 'xaknet.org'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

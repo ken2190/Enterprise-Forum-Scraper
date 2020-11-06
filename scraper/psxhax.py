@@ -137,6 +137,7 @@ class PsxhaxScrapper(SiteMapScrapper):
 
     spider_class = PsxhaxSpider
     site_name = 'psxhax.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

@@ -101,6 +101,7 @@ class ScrapeBoxForumSpider(SitemapSpider):
 class ScrapeBoxForumScrapper(SiteMapScrapper):
 
     spider_class = ScrapeBoxForumSpider
+    site_type = 'forum'
 
 
 if __name__ == "__main__":

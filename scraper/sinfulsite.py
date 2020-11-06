@@ -111,3 +111,4 @@ class SinfulSiteScrapper(SiteMapScrapper):
 
     spider_class = SinfulSiteSpider
     site_name = 'sinfulsite.com'
+    site_type = 'forum'

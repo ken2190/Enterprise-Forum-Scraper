@@ -78,3 +78,4 @@ class HackTheBoxSpider(SitemapSpider):
 
 class HackTheBoxScrapper(SiteMapScrapper):
     spider_class = HackTheBoxSpider
+    site_type = 'forum'

@@ -275,3 +275,4 @@ class JstashBazarScrapper(SiteMapScrapper):
 
     spider_class = JstashBazarSpider
     site_name = 'jstash.bazar'
+    site_type = 'forum'

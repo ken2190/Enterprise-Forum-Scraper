@@ -114,6 +114,7 @@ class PhienbanmoiScrapper(SiteMapScrapper):
 
     spider_class = PhienbanmoiSpider
     site_name = 'phienbanmoi.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

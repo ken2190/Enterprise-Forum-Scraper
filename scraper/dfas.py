@@ -169,6 +169,7 @@ class DfasScrapper(SiteMapScrapper):
 
     spider_class = DfasSpider
     site_name = 'dfas (annxjgfo6xo4igamx5sbeiocimkdqrjux5ga27smny6vdx4dgzn2wcqd..onion)'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

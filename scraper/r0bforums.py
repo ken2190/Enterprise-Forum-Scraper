@@ -165,6 +165,7 @@ class R0bForumsScrapper(SiteMapScrapper):
 
     spider_class = R0bForumsSpider
     site_name = 'r0bforums.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

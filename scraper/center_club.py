@@ -120,6 +120,7 @@ class CenterClubScrapper(SiteMapScrapper):
 
     spider_class = CenterClubSpider
     site_name = 'center-club.us'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

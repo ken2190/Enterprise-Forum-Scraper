@@ -116,3 +116,4 @@ class VBIranScrapper(SiteMapScrapper):
 
     spider_class = VBIranSpider
     site_name = 'vbiran.ir'
+    site_type = 'forum'

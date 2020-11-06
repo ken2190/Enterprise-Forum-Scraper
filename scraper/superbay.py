@@ -111,6 +111,7 @@ class SuperBayScrapper(SiteMapScrapper):
 
     spider_class = SuperBaySpider
     site_name = 'superbay_suprbayoubiexnmp'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

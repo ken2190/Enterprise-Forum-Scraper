@@ -138,3 +138,4 @@ class DarkmarketSpider(MarketPlaceSpider):
 class DarkmarketScrapper(SiteMapScrapper):
     spider_class = DarkmarketSpider
     site_name = 'darkmarket (darkevuygggqkqhq.onion)'
+    site_type = 'marketplace'

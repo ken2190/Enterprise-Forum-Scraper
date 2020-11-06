@@ -150,6 +150,7 @@ class RUnionScrapper(SiteMapScrapper):
 
     spider_class = RUnionSpider
     site_name = 'runion_lwplxqzvmgu43uff'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

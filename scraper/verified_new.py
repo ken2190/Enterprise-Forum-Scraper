@@ -173,3 +173,4 @@ class VerifiedScrapper(SiteMapScrapper):
 
     spider_class = VerifiedSpider
     site_name = 'verified (verified2ebdpvms.onion)'
+    site_type = 'forum'

@@ -97,6 +97,7 @@ class OffensiveCommunitySpider(SitemapSpider):
 class OffensiveCommunityScrapper(SiteMapScrapper):
     spider_class = OffensiveCommunitySpider
     site_name = 'offensivecommunity.net'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

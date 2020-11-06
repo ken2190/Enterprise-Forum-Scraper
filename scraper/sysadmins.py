@@ -94,6 +94,7 @@ class SysAdminsScrapper(SiteMapScrapper):
 
     spider_class = SysAdminsSpider
     site_name = 'sysadmins.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

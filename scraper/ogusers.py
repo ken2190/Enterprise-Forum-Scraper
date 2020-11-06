@@ -249,6 +249,7 @@ class OgUsersScrapper(SiteMapScrapper):
 
     spider_class = OgUsersSpider
     site_name = 'ogusers.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -202,3 +202,4 @@ class BlackHackerScrapper(SiteMapScrapper):
 
     spider_class = BlackHackerSpider
     site_name = 'blackhacker.ru'
+    site_type = 'forum'

@@ -65,6 +65,7 @@ class XrpChatScrapper(SiteMapScrapper):
     no_of_threads = 16
     spider_class = XrpChatSpider
     site_name = 'xrpchat.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

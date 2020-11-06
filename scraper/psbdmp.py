@@ -86,3 +86,4 @@ class PsbdmpSpider(SitemapSpider):
 class PsbdmpScrapper(SiteMapScrapper):
     spider_class = PsbdmpSpider
     site_name = 'psbdmp.ws'
+    site_type = 'paste'

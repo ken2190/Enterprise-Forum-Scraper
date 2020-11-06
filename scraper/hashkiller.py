@@ -92,6 +92,7 @@ class HashKillerSpider(SitemapSpider):
 
 class HashKillerScrapper(SiteMapScrapper):
     spider_class = HashKillerSpider
+    site_type = 'forum'
 
 
 if __name__ == "__main__":

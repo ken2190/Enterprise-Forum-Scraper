@@ -118,6 +118,7 @@ class IfudScrapper(SiteMapScrapper):
 
     spider_class = IfudSpider
     site_name = 'ifud.ws'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

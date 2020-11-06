@@ -130,3 +130,4 @@ class AntiOnlineScrapper(SiteMapScrapper):
 
     spider_class = AntiOnlineSpider
     site_name = 'antionline.com'
+    site_type = 'forum'

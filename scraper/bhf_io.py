@@ -288,6 +288,8 @@ class BHFIOScrapper(SiteMapScrapper):
     request_delay = 0.8
     no_of_threads = 4
     site_name = 'bhf.io'
+    site_type = 'forum'
+
 
     def load_settings(self):
         spider_settings = super().load_settings()

@@ -164,6 +164,7 @@ class DarkFoxSpider(MarketPlaceSpider):
 class DarkFoxScrapper(SiteMapScrapper):
     spider_class = DarkFoxSpider
     site_name = 'darkfox (57d5j6hfzfpsfev6c7f5ltney5xahudevvttfmw4lrtkt42iqdrkxmqd)'
+    site_type = 'marketplace'
 
     def __init__(self, kwargs):
         kwargs['get_users'] = True

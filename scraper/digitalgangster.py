@@ -153,6 +153,7 @@ class DigitalGangsterScrapper(SiteMapScrapper):
 
     spider_class = DigitalGangsterSpider
     site_name = 'digitalgangster.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

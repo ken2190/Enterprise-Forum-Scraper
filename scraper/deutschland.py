@@ -77,6 +77,7 @@ class DeutschLandScrapper(SiteMapScrapper):
 
     spider_class = DeutschLandSpider
     site_name = 'deutschland_germanyruvvy2tcw'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -175,6 +175,7 @@ class RosaNegraScrapper(SiteMapScrapper):
 
     spider_class = RosaNegraSpider
     site_name = 'rosanegra_3pc3yapw2xmsfnfx'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

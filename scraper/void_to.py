@@ -224,6 +224,7 @@ class VoidToSpider(SitemapSpider):
 class VoidToScrapper(SiteMapScrapper):
 
     spider_class = VoidToSpider
+    site_type = 'forum'
 
 
 if __name__ == '__main__':

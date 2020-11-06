@@ -164,6 +164,7 @@ class OpencardScrapper(SiteMapScrapper):
 
     spider_class = OpencardSpider
     site_name = 'opencard.us'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

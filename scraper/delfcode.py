@@ -102,3 +102,4 @@ class DelfcodeScrapper(SiteMapScrapper):
 
     spider_class = DelfcodeSpider
     site_name = 'delfcode.ru'
+    site_type = 'forum'

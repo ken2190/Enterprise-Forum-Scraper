@@ -94,6 +94,7 @@ class BovedaScrapper(SiteMapScrapper):
 
     spider_class = BovedaSpider
     site_name = 'bvd41.cc'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

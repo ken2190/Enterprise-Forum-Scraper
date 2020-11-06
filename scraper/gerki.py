@@ -84,6 +84,7 @@ class GerkiScrapper(SiteMapScrapper):
 
     spider_class = GerkiSpider
     site_name = 'gerki.pw'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

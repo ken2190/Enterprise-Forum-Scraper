@@ -31,6 +31,8 @@ def get_text(tag):
 
 
 class JustPasteItScrapper:
+    site_type = 'paste'
+
     def __init__(self, kwargs):
         self.base_url = 'https://justpaste.it/{}'
         self.output_path = kwargs.get('output')

@@ -141,3 +141,4 @@ class CardVillaScrapper(SiteMapScrapper):
 
     spider_class = CardVillaSpider
     site_name = 'cardvilla.net'
+    site_type = 'forum'

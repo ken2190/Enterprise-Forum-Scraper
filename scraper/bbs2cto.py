@@ -122,3 +122,4 @@ class Bbs2ctoScrapper(SiteMapScrapper):
 
     spider_class = Bbs2ctoSpider
     site_name = 'bbs.2cto.com'
+    site_type = 'forum'

@@ -107,6 +107,7 @@ class DarkTimeScrapper(SiteMapScrapper):
 
     spider_class = DarkTimeSpider
     site_name = 'dark-time.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

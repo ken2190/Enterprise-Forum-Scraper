@@ -111,3 +111,4 @@ class HackingBoardScrapper(SiteMapScrapper):
 
     spider_class = HackingBoardSpider
     site_name = 'hackingboard.net'
+    site_type = 'forum'

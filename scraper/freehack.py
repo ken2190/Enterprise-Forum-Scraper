@@ -105,6 +105,7 @@ class FreeHackScrapper(SiteMapScrapper):
 
     spider_class = FreeHackSpider
     site_name = 'free-hack.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

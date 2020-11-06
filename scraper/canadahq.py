@@ -211,6 +211,7 @@ class CanadaHQSpider(MarketPlaceSpider):
 class CanadaHQScrapper(SiteMapScrapper):
     spider_class = CanadaHQSpider
     site_name = 'canadahq.at'
+    site_type = 'marketplace'
 
     def __init__(self, kwargs):
         kwargs['get_users'] = True

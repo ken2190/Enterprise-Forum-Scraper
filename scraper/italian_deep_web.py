@@ -180,3 +180,4 @@ class ItalianDeepWebScrapper(SiteMapScrapper):
 
     spider_class = ItalianDeepWebSpider
     site_name = 'italian_deep_web'
+    site_type = 'forum'

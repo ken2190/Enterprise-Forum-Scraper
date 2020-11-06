@@ -110,6 +110,7 @@ class ChfScrapper(SiteMapScrapper):
 
     spider_class = ChfSpider
     site_name = 'goldway.bz'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

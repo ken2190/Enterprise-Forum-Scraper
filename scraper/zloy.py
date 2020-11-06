@@ -142,6 +142,7 @@ class ZloyScrapper(SiteMapScrapper):
 
     spider_class = ZloySpider
     site_name = 'zloy.bz'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

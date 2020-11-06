@@ -199,3 +199,4 @@ class SoqorScrapper(SiteMapScrapper):
 
     spider_class = SoqorSpider
     site_name = 'forums.soqor.net'
+    site_type = 'forum'

@@ -144,6 +144,7 @@ class BreachForumsScrapper(SiteMapScrapper):
 
     spider_class = BreachForumsSpider
     site_name = 'breachforums.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

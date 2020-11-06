@@ -369,3 +369,4 @@ class KorovkaNewScrapper(SiteMapScrapper):
 
     spider_class = KorovkaSpider
     site_name = 'korovka (korovka32xc3t5cg.onion)'
+    site_type = 'forum'

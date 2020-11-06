@@ -92,6 +92,7 @@ class KuketzScrapper(SiteMapScrapper):
 
     spider_class = KuketzSpider
     site_name = 'forum.kuketz-blog.de'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

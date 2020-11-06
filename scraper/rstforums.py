@@ -56,4 +56,4 @@ class RSTForumsSpider(SitemapSpider):
 
 class RSTForumsScrapper(SiteMapScrapper):
     spider_class = RSTForumsSpider
-
+    site_type = 'forum'

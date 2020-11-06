@@ -155,3 +155,4 @@ class ApollonSpider(MarketPlaceSpider):
 class ApollonScrapper(SiteMapScrapper):
     spider_class = ApollonSpider
     site_name = 'apollon (apollionih4ocqyd.onion)'
+    site_type = 'marketplace'
