@@ -35,10 +35,10 @@ class CdotWsSpider(SitemapSpider):
                   '//h2[@class="forumtitle"]/a/@href|'\
                   '//li[@class="subforum"]/a/@href'
     thread_xpath = '//li[contains(@class, "threadbit ")]'
-    thread_first_page_xpath = '//a[contains(@id,"thread_title_")]/@href'
-    thread_last_page_xpath = '//dl[@class="pagination"]/dd'\
+    thread_first_page_xpath = './/a[contains(@id,"thread_title_")]/@href'
+    thread_last_page_xpath = './/dl[@class="pagination"]/dd'\
                              '/span[last()]/a/@href'
-    thread_date_xpath = '//dl[@class="threadlastpost td"]'\
+    thread_date_xpath = './/dl[@class="threadlastpost td"]'\
                         '//dd[last()]/text()[1]'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'

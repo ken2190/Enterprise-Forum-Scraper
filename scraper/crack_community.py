@@ -26,10 +26,10 @@ class CrackCommunitySpider(SitemapSpider):
 
     # Thread xpath #
     thread_xpath = "//li[contains(@id,\"thread\")]"
-    thread_first_page_xpath = "//h3[@class=\"title\"]/a/@href"
-    thread_last_page_xpath = "//span[@class=\"itemPageNav\"]/a[last()]/@href"
+    thread_first_page_xpath = ".//h3[@class=\"title\"]/a/@href"
+    thread_last_page_xpath = ".//span[@class=\"itemPageNav\"]/a[last()]/@href"
 
-    thread_date_xpath = "//a[@class=\"dateTime\"]/*/@title"
+    thread_date_xpath = ".//a[@class=\"dateTime\"]/*/@title"
     thread_pagination_xpath = "//div[@class=\"PageNav\"]/nav/a[contains(text(),\"Prev\")]/@href"
     thread_page_xpath = "//div[@class=\"PageNav\"]/nav/a[@class=\"currentPage \"]/text()"
 

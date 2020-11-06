@@ -25,10 +25,10 @@ class RUnionSpider(SitemapSpider):
     forum_xpath = '//div[@id="brdmain"]//div[@class="tclcon"]//a/@href'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_xpath = '//div[@class="blocktable"]//tr[contains(@class,"row")]'
-    thread_first_page_xpath = '//div[@class="tclcon"]/div/a/@href'
-    thread_last_page_xpath = '//div[@class="tclcon"]/div'\
+    thread_first_page_xpath = './/div[@class="tclcon"]/div/a/@href'
+    thread_last_page_xpath = './/div[@class="tclcon"]/div'\
                              '/span[@class="pagestext"]/a[last()]/@href'
-    thread_date_xpath = '//td[@class="tcr"]/a/text()'
+    thread_date_xpath = './/td[@class="tcr"]/a/text()'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//p[@class="pagelink conl"]/strong/text()'
     post_date_xpath = '//div[@id and contains(@class, "blockpost")]'\

@@ -34,12 +34,12 @@ class OgUsersSpider(SitemapSpider):
 
     thread_xpath = "//tr[contains(@class, 'thread_row')]"
 
-    thread_first_page_xpath = "//span[contains(@class,'subject')]/a[contains(@href,'Thread-')]/@href"
+    thread_first_page_xpath = ".//span[contains(@class,'subject')]/a[contains(@href,'Thread-')]/@href"
 
-    thread_last_page_xpath = "//tr[contains(@class, 'thread_row')]//td[2]//a/@href"
+    thread_last_page_xpath = ".//tr[contains(@class, 'thread_row')]//td[2]//a/@href"
 
-    thread_date_xpath = "//span[contains(@class,'lastpost')]/a/span/@title|"\
-                        "//span[contains(@class,'lastpost')]/a/text()"
+    thread_date_xpath = ".//span[contains(@class,'lastpost')]/a/span/@title|"\
+                        ".//span[contains(@class,'lastpost')]/a/text()"
 
     thread_pagination_xpath = "//a[@class='pagination_previous']/@href"
 

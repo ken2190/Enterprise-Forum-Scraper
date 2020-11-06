@@ -20,9 +20,9 @@ class SysAdminsSpider(SitemapSpider):
     # Xpaths
     forum_xpath = '//a[@class="forumlink"]/@href'
     thread_xpath = '//tr[td/span[@class="topictitle"]]'
-    thread_first_page_xpath = '//span[@class="topictitle"]/a/@href'
-    thread_last_page_xpath = '//span[@class="gensmall"]/a[last()]/@href'
-    thread_date_xpath = '//span[@class="postdetails" and a]/text()[1]'
+    thread_first_page_xpath = './/span[@class="topictitle"]/a/@href'
+    thread_last_page_xpath = './/span[@class="gensmall"]/a[last()]/@href'
+    thread_date_xpath = './/span[@class="postdetails" and a]/text()[1]'
     pagination_xpath = '//span[@class="navbig"]//a[text()="След."]/@href'
     thread_pagination_xpath = '//td[@class="navbig"]/a[text()="Пред."]/@href'
     thread_page_xpath = '//td[@class="navbig"]/b/text()'

@@ -30,10 +30,10 @@ class ProxyBaseSpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = '//td[2]//a[contains(@href,"http://proxy-base.com/f") and not(contains(@href,"html"))]/@href'
     thread_xpath = '//tbody[contains(@id,"threadbits")]/tr'
-    thread_first_page_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]/@href'
-    thread_last_page_xpath = '//td[4]//a[img]/@href'
+    thread_first_page_xpath = './/tr[td[contains(@id, "td_threadtitle_")]]/@href'
+    thread_last_page_xpath = './/td[4]//a[img]/@href'
 
-    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
+    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'

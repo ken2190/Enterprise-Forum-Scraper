@@ -43,9 +43,9 @@ class VoidToSpider(SitemapSpider):
 
     # Thread xpath #
     thread_xpath = '//tr[@class="inline_row"]'
-    thread_first_page_xpath = '//a[@class="topic-title"]/@href'
-    topic_last_page_xpath = '//a[@class="pagination_last"]/@href'
-    thread_date_xpath = '//span[@class="last-post-date"]/text()'
+    thread_first_page_xpath = './/a[@class="topic-title"]/@href'
+    topic_last_page_xpath = './/a[@class="pagination_last"]/@href'
+    thread_date_xpath = './/span[@class="last-post-date"]/text()'
     thread_pagination_xpath = '//span[@class="pagination_current"]/preceding-sibling::a[1]/@href'
     thread_page_xpath = '//span[@class="pagination_current"]/text()'
 

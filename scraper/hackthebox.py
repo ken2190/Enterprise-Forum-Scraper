@@ -19,9 +19,9 @@ class HackTheBoxSpider(SitemapSpider):
     forum_xpath = '//a[@class="Title"]/@href|//div[@class="Title"]/a/@href'
 
     thread_xpath = '//li[contains(@id, "Discussion_")]'
-    thread_first_page_xpath = '//div[@class="Title"]/a/@href'
-    thread_last_page_xpath = '//span[contains(@class,"LastDiscussionTitle")]/a/@href'
-    thread_date_xpath = '//time/@title'
+    thread_first_page_xpath = './/div[@class="Title"]/a/@href'
+    thread_last_page_xpath = './/span[contains(@class,"LastDiscussionTitle")]/a/@href'
+    thread_date_xpath = './/time/@title'
 
     thread_pagination_xpath = '//div[contains(@id,"PagerAfter")]//a[contains(@rel,"next")]/@href'
     thread_page_xpath = '//*[contains(@id,"PagerAfter")]/a[@aria-current]/text()'

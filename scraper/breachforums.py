@@ -24,11 +24,11 @@ class BreachForumsSpider(SitemapSpider):
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
     thread_xpath = '//tr[@class="inline_row"]'
-    thread_first_page_xpath = '//span[contains(@id,"tid_")]/a/@href'
-    thread_last_page_xpath = '//td[contains(@class,"forumdisplay_")]/div'\
+    thread_first_page_xpath = './/span[contains(@id,"tid_")]/a/@href'
+    thread_last_page_xpath = './/td[contains(@class,"forumdisplay_")]/div'\
                              '/span/span[contains(@class,"smalltext")]'\
                              '/a[last()]/@href'
-    thread_date_xpath = '//td[contains(@class,"forumdisplay")]'\
+    thread_date_xpath = './/td[contains(@class,"forumdisplay")]'\
                         '/span[@class="lastpost smalltext"]/text()[1]|'\
                         '//td[contains(@class,"forumdisplay")]'\
                         '/span[@class="lastpost smalltext"]/span/@title'

@@ -20,13 +20,13 @@ class CrackingSoulSpider(SitemapSpider):
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
     thread_xpath = '//tr[@class="inline_row"]'
-    thread_first_page_xpath = '//span[contains(@id,"tid_")]/a/@href'
-    thread_last_page_xpath = '//td[contains(@class,"forumdisplay_")]/div'\
+    thread_first_page_xpath = './/span[contains(@id,"tid_")]/a/@href'
+    thread_last_page_xpath = './/td[contains(@class,"forumdisplay_")]/div'\
                              '/div/div/span[contains(@class,"smalltext")]'\
                              '/a[last()]/@href'
-    thread_date_xpath = '//td[contains(@class,"forumdisplay")]'\
+    thread_date_xpath = './/td[contains(@class,"forumdisplay")]'\
                         '/div/span[@class="lastpost smalltext1"]/text()|'\
-                        '//td[contains(@class,"forumdisplay")]'\
+                        './/td[contains(@class,"forumdisplay")]'\
                         '/div/span[@class="lastpost smalltext1"]/span/@title'
     thread_pagination_xpath = '//div[@class="pagination"]'\
                               '//a[@class="pagination_previous"]/@href'

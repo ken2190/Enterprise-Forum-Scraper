@@ -19,10 +19,10 @@ class HackThisSiteSpider(SitemapSpider):
     # Xpaths
     forum_xpath = '//a[contains(@class, "forumtitle")]/@href'
     thread_xpath = '//ul[@class="topiclist topics"]/li'
-    thread_first_page_xpath = '//a[contains(@class, "topictitle")]/@href'
-    thread_last_page_xpath = '//strong[@class="pagination"]'\
+    thread_first_page_xpath = './/a[contains(@class, "topictitle")]/@href'
+    thread_last_page_xpath = './/strong[@class="pagination"]'\
                              '/span/a[last()]/@href'
-    thread_date_xpath = '//dd[@class="lastpost"]/span/text()[last()]'
+    thread_date_xpath = './/dd[@class="lastpost"]/span/text()[last()]'
     pagination_xpath = '//div[@class="pagination"]/span/strong'\
                        '/following-sibling::a[1]/@href'
     thread_pagination_xpath = '//div[@class="pagination"]/span/strong'\

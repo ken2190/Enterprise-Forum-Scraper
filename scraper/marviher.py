@@ -27,7 +27,7 @@ class MarviherSpider(SitemapSpider):
     thread_last_page_xpath = './/span[@class="ipsPagination_page"][last()]'\
                              '/a/@href'
 
-    thread_date_xpath = '//li[@class="ipsType_light"]/a/time/@datetime'
+    thread_date_xpath = './/li[@class="ipsType_light"]/a/time/@datetime'
     thread_page_xpath = '//li[contains(@class, "ipsPagination_active")]'\
                         '/a/text()'
     thread_pagination_xpath = '//li[@class="ipsPagination_prev"]'\

@@ -32,9 +32,9 @@ class NulledSpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = "//h4//a/@href"
     thread_xpath = "//tr[contains(@id,'trow')]"
-    thread_date_xpath = "//td[@class='col_f_post']/ul/li[contains(@class,'blend_links')]/a/text()"
-    thread_first_page_xpath = "//a[@itemprop='url' and contains(@id, 'tid-link-')]/@href"
-    thread_last_page_xpath = "//ul[contains(@class,'mini_pagination')]/li[last()]/a/@href"
+    thread_date_xpath = ".//td[@class='col_f_post']/ul/li[contains(@class,'blend_links')]/a/text()"
+    thread_first_page_xpath = ".//a[@itemprop='url' and contains(@id, 'tid-link-')]/@href"
+    thread_last_page_xpath = ".//ul[contains(@class,'mini_pagination')]/li[last()]/a/@href"
     pagination_xpath = "//li[@class='next']/a/@href"
     thread_pagination_xpath = "//li[@class='prev']/a/@href"
     thread_page_xpath = "//li[@class='page active']/text()"

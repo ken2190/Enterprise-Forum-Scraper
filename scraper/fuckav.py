@@ -42,10 +42,10 @@ class FuckavSpider(SitemapSpider):
     pagination_xpath = "//a[@rel=\"next\"]/@href"
 
     thread_xpath = "//tbody[contains(@id,\"threadbits_forum\")]/tr"
-    thread_first_page_xpath = "//a[contains(@id,\"thread_title\")]/@href"
-    thread_last_page_xpath = "//span/a[contains(@href,\"showthread\")][font[font]][last()]/@href|" \
-                             "//span[a[font]][last()][following-sibling::span]/a/@href"
-    thread_date_xpath = "//td[contains(@title,\"Ответов\")]/div/text()[1]"
+    thread_first_page_xpath = ".//a[contains(@id,\"thread_title\")]/@href"
+    thread_last_page_xpath = ".//span/a[contains(@href,\"showthread\")][font[font]][last()]/@href|" \
+                             ".//span[a[font]][last()][following-sibling::span]/a/@href"
+    thread_date_xpath = ".//td[contains(@title,\"Ответов\")]/div/text()[1]"
 
     thread_pagination_xpath = "//a[@rel=\"prev\"]/@href"
     thread_page_xpath = "//span/strong/font/font/text()"

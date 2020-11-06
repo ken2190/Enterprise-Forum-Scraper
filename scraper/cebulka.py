@@ -25,9 +25,9 @@ class CebulkaSpider(SitemapSpider):
     pagination_xpath = '//p[@class="paging"]/a[last()]/@href'
     thread_xpath = '//div[@class="main-content main-forum forum-noview"]'\
                    '/div[contains(@id, "topic")]'
-    thread_first_page_xpath = '//h3[@class="hn"]/a/@href'
-    thread_last_page_xpath = '//span[@class="item-nav"]/a[last()]/@href'
-    thread_date_xpath = '//li[@class="info-lastpost"]/strong/a/text()'
+    thread_first_page_xpath = './/h3[@class="hn"]/a/@href'
+    thread_last_page_xpath = './/span[@class="item-nav"]/a[last()]/@href'
+    thread_date_xpath = './/li[@class="info-lastpost"]/strong/a/text()'
     thread_pagination_xpath = '//a[text()="Poprzednia"]/@href'
     thread_page_xpath = '//p[@class="paging"]/strong/text()'
     post_date_xpath = '//span[@class="post-link"]/a/text()'

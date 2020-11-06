@@ -26,10 +26,10 @@ class TorigonSpider(SitemapSpider):
     # Xpaths
     forum_xpath = '//a[contains(@class, "forumtitle")]/@href'
     thread_xpath = '//ul[@class="topiclist topics"]/li'
-    thread_first_page_xpath = '//a[contains(@class, "topictitle")]/@href'
-    thread_last_page_xpath = '//div[@class="pagination"]'\
+    thread_first_page_xpath = './/a[contains(@class, "topictitle")]/@href'
+    thread_last_page_xpath = './/div[@class="pagination"]'\
                              '/ul/li[last()]/a/@href'
-    thread_date_xpath = '//dd[@class="lastpost"]/span/text()[last()]'
+    thread_date_xpath = './/dd[@class="lastpost"]/span/text()[last()]'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagination"]//'\

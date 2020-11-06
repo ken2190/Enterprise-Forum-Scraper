@@ -20,10 +20,10 @@ class SecurityLabSpider(SitemapSpider):
     # Xpaths
     forum_xpath = '//span[@class="forum-item-title"]/a/@href'
     thread_xpath = '//tr[td[@class="forum-column-title"]]'
-    thread_first_page_xpath = '//span[@class="forum-item-title"]/a/@href'
-    thread_last_page_xpath = '//span[@class="forum-item-pages"]'\
+    thread_first_page_xpath = './/span[@class="forum-item-title"]/a/@href'
+    thread_last_page_xpath = './/span[@class="forum-item-pages"]'\
                              '/noindex[last()]/a/@href'
-    thread_date_xpath = '//span[@class="forum-lastpost-date"]//a/text()[1]'
+    thread_date_xpath = './/span[@class="forum-lastpost-date"]//a/text()[1]'
     pagination_xpath = '//a[@class="forum-page-next"]/@href'
     thread_pagination_xpath = '//a[@class="forum-page-previous"]/@href'
     thread_page_xpath = '//span[@class="forum-page-current"]/text()'
