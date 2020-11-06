@@ -97,6 +97,7 @@ class Galaxy3Scrapper(SiteMapScrapper):
 
     spider_class = Galaxy3Spider
     site_name = 'galaxy3_lgalaxy3m2mn5iqtn'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

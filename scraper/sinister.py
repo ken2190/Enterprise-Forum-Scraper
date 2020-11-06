@@ -108,6 +108,7 @@ class SinisterScrapper(SiteMapScrapper):
 
     spider_class = SinisterSpider
     site_name = 'sinister.ly'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

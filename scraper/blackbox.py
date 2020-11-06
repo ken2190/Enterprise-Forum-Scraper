@@ -175,3 +175,4 @@ class BlackBoxScrapper(SiteMapScrapper):
 
     spider_class = BlackBoxsSpider
     site_name = 'blackboxs.biz'
+    site_type = 'forum'

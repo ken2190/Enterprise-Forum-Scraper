@@ -165,6 +165,8 @@ class LCPSpider(scrapy.Spider):
 
 
 class LCPScrapper():
+    site_type = 'forum'
+
     def __init__(self, kwargs):
         self.output_path = kwargs.get('output')
         self.proxy = kwargs.get('proxy') or None

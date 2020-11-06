@@ -114,6 +114,7 @@ class CrackForumScrapper(SiteMapScrapper):
 
     spider_class = CrackForumSpider
     site_name = 'crack-forum.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

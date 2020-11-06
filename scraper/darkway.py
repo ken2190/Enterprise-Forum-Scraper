@@ -170,6 +170,7 @@ class DarkWayScrapper(SiteMapScrapper):
 
     spider_class = DarkWaySpider
     site_name = 'darkway_kzx2d7tcvfm5j6yt2ii7ejkeal3d5oy5gsewwnw7hmywj3nordbg4syd'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

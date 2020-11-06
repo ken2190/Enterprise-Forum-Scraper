@@ -106,6 +106,7 @@ class Dark2WebScrapper(SiteMapScrapper):
 
     spider_class = Dark2WebSpider
     site_name = 'dark2web.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

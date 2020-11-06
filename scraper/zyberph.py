@@ -119,6 +119,7 @@ class ZyberphScrapper(SiteMapScrapper):
 
     spider_class = ZyberphSpider
     site_name = 'zyberph.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

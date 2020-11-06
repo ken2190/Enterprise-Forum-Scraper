@@ -192,6 +192,7 @@ class ProxyBaseScrapper(SiteMapScrapper):
 
     spider_class = ProxyBaseSpider
     site_name = 'proxybase.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

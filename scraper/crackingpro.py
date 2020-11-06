@@ -87,3 +87,4 @@ class CrackingProScrapper(SiteMapScrapper):
 
     spider_class = CrackingProSpider
     site_name = 'crackingpro.com'
+    site_type = 'forum'

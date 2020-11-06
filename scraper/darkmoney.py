@@ -92,6 +92,7 @@ class DarkMoneyScrapper(SiteMapScrapper):
 
     spider_class = DarkMoneySpider
     site_name = 'darkmoney.tw'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

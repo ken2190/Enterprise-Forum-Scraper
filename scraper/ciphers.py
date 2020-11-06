@@ -176,6 +176,7 @@ class CiphersScrapper(SiteMapScrapper):
 
     spider_class = CiphersSpider
     site_name = 'ciphers.pw'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

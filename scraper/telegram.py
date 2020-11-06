@@ -166,6 +166,7 @@ class TelegramChannelSpider(SitemapSpider):
 
 class TelegramChannelScrapper(SiteMapScrapper):
     spider_class = TelegramChannelSpider
+    site_type = 'telegram'
 
     def __init__(self, kwargs):
         super().__init__(kwargs)

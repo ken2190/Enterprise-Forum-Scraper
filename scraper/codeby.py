@@ -103,6 +103,7 @@ class CodebyScrapper(SiteMapScrapper):
 
     spider_class = CodebySpider
     site_name = 'codeby.net'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

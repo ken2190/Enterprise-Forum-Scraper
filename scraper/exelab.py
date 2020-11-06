@@ -120,3 +120,4 @@ class ExeLabScrapper(SiteMapScrapper):
 
     spider_class = ExeLabSpider
     site_name = 'exelab.ru'
+    site_type = 'forum'

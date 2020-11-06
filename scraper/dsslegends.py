@@ -149,6 +149,7 @@ class DssLegendsScrapper(SiteMapScrapper):
 
     spider_class = DssLegendsSpider
     site_name = 'dsslegends.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

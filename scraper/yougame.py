@@ -183,6 +183,7 @@ class YouGameScrapper(SiteMapScrapper):
 
     spider_class = YouGameSpider
     site_name = 'yougame.biz'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

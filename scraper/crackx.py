@@ -116,3 +116,4 @@ class CrackXScrapper(SiteMapScrapper):
 
     spider_class = CrackXSpider
     site_name = 'crackx.to'
+    site_type = 'forum'

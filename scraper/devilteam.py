@@ -134,3 +134,4 @@ class DevilTeamScrapper(SiteMapScrapper):
 
     spider_class = DevilTeamSpider
     site_name = 'devilteam.pl'
+    site_type = 'forum'

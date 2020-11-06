@@ -79,6 +79,7 @@ class PrtShipScrapper(SiteMapScrapper):
 
     spider_class = PrtShipSpider
     site_name = 'prtship.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

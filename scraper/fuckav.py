@@ -253,6 +253,7 @@ class FuckavSpider(SitemapSpider):
 class FuckavScrapper(SiteMapScrapper):
 
     spider_class = FuckavSpider
+    site_type = 'forum'
 
 
 if __name__ == "__main__":

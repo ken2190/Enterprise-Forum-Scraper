@@ -14,6 +14,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36
 
 class EnclaveSpider(scrapy.Spider):
     name = 'enclave_spider'
+    site_type = 'forum'
 
     def __init__(self, output_path, avatar_path):
         self.base_url = 'https://www.enclave.cc/index.php'

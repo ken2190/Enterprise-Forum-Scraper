@@ -162,6 +162,7 @@ class XakerScrapper(SiteMapScrapper):
 
     spider_class = XakerSpider
     site_name = 'xaker.name'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

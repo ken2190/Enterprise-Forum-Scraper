@@ -68,3 +68,4 @@ class ProcrdSpider(SitemapSpider):
 
 class ProcrdScrapper(SiteMapScrapper):
     spider_class = ProcrdSpider
+    site_type = 'forum'

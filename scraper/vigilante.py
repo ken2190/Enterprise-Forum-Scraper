@@ -92,3 +92,4 @@ class VigilanteScrapper(SiteMapScrapper):
 
     spider_class = VigilanteSpider
     site_name = 'vigilante.tech'
+    site_type = 'forum'

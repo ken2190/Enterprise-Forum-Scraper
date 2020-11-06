@@ -88,6 +88,7 @@ class ItshqipScrapper(SiteMapScrapper):
 
     spider_class = ItshqipSpider
     site_name = 'itshqip.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

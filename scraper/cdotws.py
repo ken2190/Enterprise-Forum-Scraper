@@ -204,3 +204,4 @@ class CdotWsScrapper(SiteMapScrapper):
 
     spider_class = CdotWsSpider
     site_name = 'cdotws.pw'
+    site_type = 'forum'

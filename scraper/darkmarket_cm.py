@@ -118,6 +118,7 @@ class DarkMarketCmScrapper(SiteMapScrapper):
 
     spider_class = DarkMarketCmSpider
     site_name = 'darkmarket.cm'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

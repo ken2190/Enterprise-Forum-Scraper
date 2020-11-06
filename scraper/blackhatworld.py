@@ -98,6 +98,7 @@ class BlackHatWorldScrapper(SiteMapScrapper):
 
     spider_class = BlackHatWorldSpider
     site_name = 'blackhatworld.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

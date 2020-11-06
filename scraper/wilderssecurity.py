@@ -96,6 +96,7 @@ class WildersSecurityScrapper(SiteMapScrapper):
 
     spider_class = WildersSecuritySpider
     site_name = 'wilderssecurity.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

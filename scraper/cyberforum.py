@@ -120,3 +120,4 @@ class CyberForumScrapper(SiteMapScrapper):
 
     spider_class = CyberForumSpider
     site_name = 'cyberforum.ru'
+    site_type = 'forum'

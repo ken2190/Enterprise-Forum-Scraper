@@ -135,6 +135,7 @@ class MfdScrapper(SiteMapScrapper):
 
     spider_class = MfdSpider
     site_name = 'forum.mfd.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

@@ -164,6 +164,7 @@ class HackThisSiteScrapper(SiteMapScrapper):
 
     spider_class = HackThisSiteSpider
     site_name = 'hackthissite.org'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -201,6 +201,7 @@ class TheHubScrapper(SiteMapScrapper):
 
     spider_class = TheHubSpider
     site_name = 'majestic_garden'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

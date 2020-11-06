@@ -196,6 +196,7 @@ class CrackingKingScrapper(SiteMapScrapper):
 
     spider_class = CrackingKingSpider
     site_name = 'crackingking.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

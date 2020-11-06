@@ -94,6 +94,7 @@ class WhitehatScrapper(SiteMapScrapper):
 
     spider_class = WhitehatSpider
     site_name = 'whitehat.vn'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

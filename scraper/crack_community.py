@@ -131,6 +131,7 @@ class CrackCommunityScrapper(SiteMapScrapper):
 
     spider_class = CrackCommunitySpider
     site_name = 'crackcommunity.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

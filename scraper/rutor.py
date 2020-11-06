@@ -100,6 +100,7 @@ class RutorScrapper(SiteMapScrapper):
 
     spider_class = RutorSpider
     site_name = 'rutor_rutorzzmfflzllk5'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

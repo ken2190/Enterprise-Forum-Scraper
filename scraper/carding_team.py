@@ -164,3 +164,4 @@ class CardingTeamScrapper(SiteMapScrapper):
 
     spider_class = CardingTeamSpider
     site_name = 'cardingteam.cc'
+    site_type = 'forum'

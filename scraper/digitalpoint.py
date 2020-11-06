@@ -146,6 +146,7 @@ class DigitalPointScrapper(SiteMapScrapper):
 
     spider_class = DigitalPointSpider
     site_name = 'DigitalPoint.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

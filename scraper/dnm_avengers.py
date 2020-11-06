@@ -95,6 +95,7 @@ class DNMAvengersScrapper(SiteMapScrapper):
 
     spider_class = DNMAvengersSpider
     site_name = 'DNM Avengers (avengersdutyk3xf.onion)'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

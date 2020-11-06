@@ -95,6 +95,7 @@ class ProvibSpider(SitemapSpider):
 
 class ProvibScrapper(SiteMapScrapper):
     spider_class = ProvibSpider
+    site_type = 'forum'
 
 
 if __name__ == "__main__":

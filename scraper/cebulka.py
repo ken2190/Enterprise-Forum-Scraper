@@ -158,6 +158,7 @@ class CebulkaScrapper(SiteMapScrapper):
 
     spider_class = CebulkaSpider
     site_name = 'cebulka (cebulka7uxchnbpvmqapg5pfos4ngaxglsktzvha7a5rigndghvadeyd.onion)'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

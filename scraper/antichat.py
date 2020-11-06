@@ -113,6 +113,7 @@ class AntichatScrapper(SiteMapScrapper):
 
     spider_class = AntichatSpider
     site_name = 'antichat.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -199,3 +199,4 @@ class CrdClubScrapper(SiteMapScrapper):
 
     spider_class = CrdClubSpider
     site_name = 'crdclub.su'
+    site_type = 'forum'

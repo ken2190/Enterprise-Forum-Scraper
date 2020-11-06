@@ -113,6 +113,7 @@ class CardingSiteScraper(SiteMapScrapper):
 
     spider_class = CardingSiteSpider
     site_name = 'cardingsite.cc'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

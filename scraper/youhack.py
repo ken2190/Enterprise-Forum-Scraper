@@ -229,6 +229,7 @@ class YouHackScrapper(SiteMapScrapper):
     request_delay = 0.2
     no_of_threads = 16
     site_name = 'youhack.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

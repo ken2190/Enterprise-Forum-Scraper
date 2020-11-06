@@ -88,3 +88,4 @@ class PhreakerSpider(SitemapSpider):
 
 class PhreakerScrapper(SiteMapScrapper):
     spider_class = PhreakerSpider
+    site_type = 'forum'

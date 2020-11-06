@@ -86,3 +86,4 @@ class MMMLCScrapper(SiteMapScrapper):
 
     spider_class = MMMLCSpider
     site_name = 'tor.vc'
+    site_type = 'forum'

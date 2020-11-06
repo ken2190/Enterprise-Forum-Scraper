@@ -202,6 +202,7 @@ class LolzScrapper(SiteMapScrapper):
 
     spider_class = LolzSpider
     site_name = 'lolzteam.net'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

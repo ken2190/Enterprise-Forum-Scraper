@@ -6,12 +6,38 @@ An import service tool
 
 import os
 import shutil
+import argparse
 import subprocess
 import sys
 
 
-IMPORT_DIR = "/data/processing/forums/import/"
-BACKUP_DIR = "/data/processing/forums/backup/"
+IMPORT_DIR = "/data/processing/{site_type}/import/"
+BACKUP_DIR = "/data/processing/{site_type}/backup/"
+ORIGIN_DIR = "/data/processing/import/{site_type}/"
+
+RSYNC_SERVER = "root@51.161.115.138"
+KEY_PATH = "~/.ssh/proxima.pem"
+
+CLEANUP_AFTER_IMPORT = True
+
+ELASTIC_IMPORT_INDEXES = {
+    'forum': 'dv-f001',
+    'marketplace': 'dv-f001',
+    'telegram': 'dv-f001',
+    'paste': 'dv-p001',
+    'nosql': 'dv-m001'
+}
+ELASTIC_OUT = 'http://localhost:9200/{elastic_index}'
+
+
+def parse_args():
+    """ Parses cmdline arguments """
+
+    parser = argparse.ArgumentParser(description='Import Service utility')
+    parser.add_argument(
+        '-type', help='A site type (forum|paste|nosql etc)', required=True)
+    args, _ = parser.parse_known_args()
+    return args
 
 
 def copy_folder_files(src_folder, dst_folder):
@@ -46,6 +72,21 @@ def clean_folder(folder):
 
 
 def main():
+    global IMPORT_DIR, BACKUP_DIR, ORIGIN_DIR
+
+    # Get site type
+    args = parse_args()
+    site_type = args.type
+    if not ELASTIC_IMPORT_INDEXES.get(site_type):
+        print(f"ERROR: Invalid site type: {site_type}. "
+              "Allowed values are forum, paste, nosql, marketplace, telegram")
+        return
+
+    IMPORT_DIR = IMPORT_DIR.format(site_type=site_type)
+    BACKUP_DIR = BACKUP_DIR.format(site_type=site_type)
+    ORIGIN_DIR = ORIGIN_DIR.format(site_type=site_type)
+    index = ELASTIC_IMPORT_INDEXES[site_type]
+
     # create IMPORT_DIR if not exists
     if not os.path.exists(IMPORT_DIR):
         print(f'Creating folder {IMPORT_DIR}...')
@@ -58,8 +99,8 @@ def main():
 
     # execute RSYNC command to get files from scraping server
     print('Executing RSYNC...')
-    cmd = ("rsync -avz -e 'ssh -i ~/.ssh/proxima.pem' root@51.161.115.138:/data/processing/import/*"
-           " /data/processing/forums/import/")
+    cmd = f"rsync -avz -e 'ssh -i {KEY_PATH}' "\
+          f"{RSYNC_SERVER}:{ORIGIN_DIR}* {IMPORT_DIR}"
     try:
         subprocess.run(
             cmd,
@@ -87,7 +128,11 @@ def main():
 
     # Import to elastic
     print("Importing to Elastic...")
-    cmd = "elasticdump --input={} --output=http://localhost:9200/dv-f001 --noRefresh --limit=10000".split()
+    cmd = "elasticdump "\
+          "--input={filepath} "\
+          f"--output={ELASTIC_OUT.format(elastic_index=index)} "\
+          f"--noRefresh "\
+          "--limit=10000".split()
     log_file = "/var/log/elasticimport.log"
 
     with open(log_file, 'a', encoding='utf-8') as f:
@@ -96,7 +141,7 @@ def main():
             f.write('File: ' + filename + '\n')
             filepath = os.path.join(IMPORT_DIR, filename)
             current_cmd = cmd.copy()
-            current_cmd[1] = current_cmd[1].format(filepath)
+            current_cmd[1] = current_cmd[1].format(filepath=filepath)
             try:
                 command_line_process = subprocess.run(
                     current_cmd,
@@ -113,6 +158,9 @@ def main():
             else:
                 f.write(command_line_process.stdout.decode('utf-8') + '\n')
 
+    if not CLEANUP_AFTER_IMPORT:
+        return
+
     # remove the files from the remote server
     print("Removing the files from the remote server...")
     for filename in os.listdir(IMPORT_DIR):
@@ -122,8 +170,8 @@ def main():
             continue
 
         print(f'  File {filename}...')
-        cmd = (f"ssh -i ~/.ssh/proxima.pem root@51.161.115.138 "
-               f"'rm -f /data/processing/import/{filename}'")
+        cmd = (f"ssh -i {KEY_PATH} {RSYNC_SERVER} "
+               f"'rm -f {ORIGIN_DIR}{filename}'")
         try:
             subprocess.run(
                 cmd,

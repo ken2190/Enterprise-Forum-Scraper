@@ -158,6 +158,7 @@ class EnvoySpider(SeleniumSpider):
 class EnvoyScrapper(SiteMapScrapper):
     spider_class = EnvoySpider
     site_name = 'envoy_envoys5appps3bin'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

@@ -139,3 +139,4 @@ class BinRevScrapper(SiteMapScrapper):
 
     spider_class = BinRevSpider
     site_name = 'binrev.com'
+    site_type = 'forum'

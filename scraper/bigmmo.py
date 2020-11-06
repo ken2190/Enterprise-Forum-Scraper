@@ -97,6 +97,7 @@ class BigmmoScrapper(SiteMapScrapper):
 
     spider_class = BigmmoSpider
     site_name = 'bigmmo.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

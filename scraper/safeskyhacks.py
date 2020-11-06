@@ -151,6 +151,7 @@ class SafeSkyHacksScrapper(SiteMapScrapper):
 
     spider_class = SafeSkyHacksSpider
     site_name = 'safeskyhacks.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

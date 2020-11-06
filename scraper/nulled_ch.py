@@ -189,3 +189,4 @@ class NulledChScrapper(SiteMapScrapper):
 
     spider_class = NulledChSpider
     site_name = 'nulled.ch'
+    site_type = 'forum'

@@ -95,6 +95,7 @@ class TotalBlackHatScrapper(SiteMapScrapper):
 
     spider_class = TotalBlackHatSpider
     site_name = 'totalblackhat.net'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

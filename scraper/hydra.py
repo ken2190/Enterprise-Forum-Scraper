@@ -147,3 +147,4 @@ class HydraSpider(MarketPlaceSpider):
 class HydraScrapper(SiteMapScrapper):
     spider_class = HydraSpider
     site_name = 'hydra_hydraruzxpnew4af'
+    site_type = 'marketplace'

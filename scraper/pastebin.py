@@ -59,3 +59,4 @@ class PasteBinScrapper(SiteMapScrapper):
 
     spider_class = PasteBinSpider
     site_name = 'pastebin.com'
+    site_type = 'paste'

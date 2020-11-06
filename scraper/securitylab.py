@@ -76,6 +76,7 @@ class SecurityLabScrapper(SiteMapScrapper):
 
     spider_class = SecurityLabSpider
     site_name = 'securitylab.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

@@ -87,3 +87,4 @@ class DedikScrapper(SiteMapScrapper):
 
     spider_class = DedikSpider
     site_name = 'dedik.cc'
+    site_type = 'forum'

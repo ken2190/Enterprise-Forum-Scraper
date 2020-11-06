@@ -131,6 +131,7 @@ class BitcoinTalkSpider(SitemapSpider):
 class BitCoinTalkScrapper(SiteMapScrapper):
 
     spider_class = BitcoinTalkSpider
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

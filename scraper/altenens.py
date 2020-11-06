@@ -141,6 +141,7 @@ class AltenensScrapper(SiteMapScrapper):
 
     spider_class = AltenensSpider
     site_name = 'altenen.is'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

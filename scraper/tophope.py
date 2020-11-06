@@ -114,6 +114,7 @@ class TopHopeScrapper(SiteMapScrapper):
 
     spider_class = TopHopeSpider
     site_name = 'tophope.ru'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

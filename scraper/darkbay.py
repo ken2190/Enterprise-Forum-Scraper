@@ -163,6 +163,7 @@ class DarkBaySpider(MarketPlaceSpider):
 class DarkbayScrapper(SiteMapScrapper):
     spider_class = DarkBaySpider
     site_name = 'darkbay (darkbayupenqdqvv.onion)'
+    site_type = 'marketplace'
 
     def __init__(self, kwargs):
         kwargs['get_users'] = True

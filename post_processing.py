@@ -20,6 +20,8 @@ from settings import (
     OFFSITE_DEST
 )
 
+from scraper import SCRAPER_MAP
+
 
 def parse_args():
     """ Parses cmdline arguments """
@@ -34,7 +36,7 @@ def parse_args():
     return args
 
 
-def check_input_dirs(html_dir, parse_dir, exit):
+def check_input_dirs(html_dir, parse_dir, site_type, exit):
     """ Checks input data """
 
     def is_dir_exists(path):
@@ -54,13 +56,14 @@ def check_input_dirs(html_dir, parse_dir, exit):
         print("WARNING: JSON combo directory does not exist: %s" % COMBO_DIR)
         os.makedirs(COMBO_DIR)
 
-    arch_original_dir = os.path.join(ARCHIVE_DIR, 'original')
+    arch_original_dir = os.path.join(ARCHIVE_DIR, site_type, 'original')
     if not is_dir_exists(arch_original_dir):
         print("WARNING: Archive directory does not exist: %s" % ARCHIVE_DIR)
         os.makedirs(arch_original_dir)
 
-    if not is_dir_exists(IMPORT_DIR):
-        err_msg = "ERROR: Import directory does not exist: %s" % IMPORT_DIR
+    import_dir = os.path.join(IMPORT_DIR, site_type)
+    if not is_dir_exists(import_dir):
+        err_msg = "ERROR: Import directory does not exist: %s" % import_dir
         print(err_msg)
         exit(2, RuntimeError(err_msg))
 
@@ -103,9 +106,20 @@ def run(kwargs=None):
     html_dir = os.path.join(OUTPUT_DIR, site)
     parse_dir = os.path.join(PARSE_DIR, site)
 
+    scraper = SCRAPER_MAP.get(site)
+    if not scraper:
+        err_msg = "ERROR: Invalid site name"
+        print(err_msg)
+        exit(2, RuntimeError(err_msg))
+
+    site_type = getattr(scraper, 'site_type', None)
+    if not site_type:
+        err_msg = f"ERROR: {site} has no site_type set"
+        print(err_msg)
+        exit(2, RuntimeError(err_msg))
     # check input dirs
     print('Checking paths...')
-    check_input_dirs(html_dir, parse_dir, exit)
+    check_input_dirs(html_dir, parse_dir, site_type, exit)
 
     # check if the parse dir contain at least one file
     if not os.listdir(parse_dir):
@@ -145,6 +159,7 @@ def run(kwargs=None):
     print('Archiving HTML files...')
     html_archive = os.path.join(
         ARCHIVE_DIR,
+        site_type,
         'original',
         f'{site}-html-{date}.tar.gz'
     )
@@ -157,6 +172,7 @@ def run(kwargs=None):
     print('Archiving the combined JSON file...')
     combined_json_archive = os.path.join(
         ARCHIVE_DIR,
+        site_type,
         f'{site}-{date}.tar.gz'
     )
     try:
@@ -169,8 +185,9 @@ def run(kwargs=None):
     # move combined JSON to import dir
     ##############################################
     print('Moving the combined JSON file to import folder...')
+    import_dir = os.path.join(IMPORT_DIR, site_type)
     try:
-        shutil.move(combined_json_file, IMPORT_DIR)
+        shutil.move(combined_json_file, import_dir)
     except OSError as err:
         print("ERROR: Failed to move JSON to import directory: %s" % err)
         exit(2, err)

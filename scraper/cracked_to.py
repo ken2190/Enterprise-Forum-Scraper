@@ -155,6 +155,7 @@ class CrackedToScrapper(SiteMapScrapper):
 
     spider_class = CrackedToSpider
     site_name = 'cracked.to'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

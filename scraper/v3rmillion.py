@@ -150,6 +150,7 @@ class V3RMillionScrapper(SiteMapScrapper):
 
     spider_class = V3RMillionSpider
     site_name = 'v3rmillion.net'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

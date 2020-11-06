@@ -149,3 +149,4 @@ class StormFrontScrapper(SiteMapScrapper):
 
     spider_class = StormFrontSpider
     site_name = 'stormfront.org'
+    site_type = 'forum'

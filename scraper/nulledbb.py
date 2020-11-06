@@ -88,6 +88,7 @@ class NulledBBScrapper(SiteMapScrapper):
     no_of_threads = 12
     spider_class = NulledBBSpider
     site_name = 'nulledbb.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

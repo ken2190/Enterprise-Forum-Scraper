@@ -86,6 +86,7 @@ class ChkNetScrapper(SiteMapScrapper):
 
     spider_class = ChkNetSpider
     site_name = 'chknet.cc'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

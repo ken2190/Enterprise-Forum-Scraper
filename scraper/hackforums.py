@@ -263,6 +263,7 @@ class HackForumsSpider(SitemapSpider):
 class HackForumsScrapper(SiteMapScrapper):
 
     spider_class = HackForumsSpider
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

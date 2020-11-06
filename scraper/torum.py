@@ -173,3 +173,4 @@ class TorumScrapper(SiteMapScrapper):
 
     spider_class = TorumSpider
     site_name = 'torum'
+    site_type = 'forum'

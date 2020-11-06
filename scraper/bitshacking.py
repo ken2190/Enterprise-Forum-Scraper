@@ -161,6 +161,7 @@ class BitsHackingScrapper(SiteMapScrapper):
 
     spider_class = BitsHackingSpider
     site_name = 'bitshacking.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

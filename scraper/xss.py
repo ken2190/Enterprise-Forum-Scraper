@@ -116,6 +116,7 @@ class XSSScrapper(SiteMapScrapper):
 
     spider_class = XSSSpider
     site_name = 'xss.is'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

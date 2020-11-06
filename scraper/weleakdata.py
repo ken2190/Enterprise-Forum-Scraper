@@ -214,6 +214,7 @@ class WeLeakDataScrapper(SiteMapScrapper):
 
     spider_class = WeLeakDataSpider
     site_name = 'weleakdata.com'
+    site_type = 'forum'
 
 
 if __name__ == '__main__':

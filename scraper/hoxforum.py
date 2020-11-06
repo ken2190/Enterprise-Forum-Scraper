@@ -103,6 +103,7 @@ class HoxForumSpider(SitemapSpider):
 
 class HoxForumScrapper(SiteMapScrapper):
     spider_class = HoxForumSpider
+    site_type = 'forum'
 
 
 if __name__ == "__main__":

@@ -160,6 +160,7 @@ class TorigonScrapper(SiteMapScrapper):
 
     spider_class = TorigonSpider
     site_name = 'torigon'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

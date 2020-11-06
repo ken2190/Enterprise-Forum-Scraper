@@ -152,6 +152,7 @@ class NulledToScrapper(SiteMapScrapper):
 
     spider_class = NulledSpider
     site_name = 'nulled.to'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

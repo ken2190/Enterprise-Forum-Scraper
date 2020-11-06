@@ -209,6 +209,7 @@ class RaidForumsScrapper(SiteMapScrapper):
 
     spider_class = RaidForumsSpider
     site_name = 'raidforums.com'
+    site_type = 'forum'
 
     def load_settings(self):
         spider_settings = super().load_settings()

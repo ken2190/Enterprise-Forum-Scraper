@@ -76,3 +76,4 @@ class CrackingSoulScrapper(SiteMapScrapper):
 
     spider_class = CrackingSoulSpider
     site_name = 'crackingsoul.com'
+    site_type = 'forum'

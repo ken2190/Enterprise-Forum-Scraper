@@ -167,6 +167,7 @@ class MajesticGardenScrapper(SiteMapScrapper):
 
     spider_class = MajesticGardenSpider
     site_name = 'majestic_garden'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

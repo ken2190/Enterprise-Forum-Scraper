@@ -118,6 +118,7 @@ class DedicatetScrapper(SiteMapScrapper):
 
     spider_class = DedicatetSpider
     site_name = 'dedicatet.com'
+    site_type = 'forum'
 
     def load_settings(self):
         settings = super().load_settings()

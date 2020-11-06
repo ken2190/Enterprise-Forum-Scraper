@@ -84,3 +84,4 @@ class RunTimeScrapper(SiteMapScrapper):
 
     spider_class = RunTimeSpider
     site_name = 'runtime.rip'
+    site_type = 'forum'
