@@ -29,12 +29,12 @@ class ZloySpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
     thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
-    thread_first_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div'\
+    thread_first_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
                               '/a[contains(@href, "showthread.php?")]/@href'
-    thread_last_page_xpath = '//td[contains(@id, "td_threadtitle_")]/div/span'\
+    thread_last_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div/span'\
                              '/a[contains(@href, "showthread.php?")]'\
                              '[last()]/@href'
-    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
+    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'

@@ -36,9 +36,9 @@ class OmertaSpider(SitemapSpider):
 
     thread_xpath = "//tbody[contains(@id,\"threadbits_forum\")]/tr[not(@valign)]"
 
-    thread_first_page_xpath = "//a[contains(@id,\"thread_title\")]/@href"
-    thread_last_page_xpath = "//td[contains(@id,\"td_threadtitle\")]/div/span[@class=\"smallfont\"]/a[last()]/@href"
-    thread_date_xpath = "//td[not(@nowrap)]/div/span[@class=\"time\"]/preceding-sibling::text()"
+    thread_first_page_xpath = ".//a[contains(@id,\"thread_title\")]/@href"
+    thread_last_page_xpath = ".//td[contains(@id,\"td_threadtitle\")]/div/span[@class=\"smallfont\"]/a[last()]/@href"
+    thread_date_xpath = ".//td[not(@nowrap)]/div/span[@class=\"time\"]/preceding-sibling::text()"
 
     thread_pagination_xpath = "//td[@class=\"pagenav_control\"]/a[@rel=\"prev\"]/@href"
     thread_page_xpath = "//span[contains(@title,\"Showing results\")]/strong/text()"

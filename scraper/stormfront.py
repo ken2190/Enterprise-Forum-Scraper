@@ -37,7 +37,7 @@ class StormFrontSpider(SitemapSpider):
     thread_last_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
                              '/span/a[contains(@href, "/forum/t")]'\
                              '[last()]/@href'
-    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
+    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'

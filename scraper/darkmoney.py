@@ -21,10 +21,10 @@ class DarkMoneySpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = '//tbody[contains(@id,"collapseobj_forum")]/tr/td[1]/div/a/@href'
     thread_xpath = '//tbody[contains(@id,"threadbits")]/tr'
-    thread_first_page_xpath = '//td[contains(@id,"td_threadtitle")]//a[contains(@id, "thread_title")]/@href'
-    thread_last_page_xpath = '//td[contains(@id,"td_threadtitle")]//span[contains(@class,"smallfont")]/a[last()]/@href'
+    thread_first_page_xpath = './/td[contains(@id,"td_threadtitle")]//a[contains(@id, "thread_title")]/@href'
+    thread_last_page_xpath = './/td[contains(@id,"td_threadtitle")]//span[contains(@class,"smallfont")]/a[last()]/@href'
 
-    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
+    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'

@@ -29,10 +29,10 @@ class DelfcodeSpider(SitemapSpider):
     forum_xpath = '//td[@class="forumNameTd"]/a[@class="forum"]/@href'
     pagination_xpath = '//a[@class="switchNext"]/@href'
     thread_xpath = '//tr[td[@class="threadNametd"]]'
-    thread_first_page_xpath = '//a[@class="threadLink"]/@href'
-    thread_last_page_xpath = '//span[@class="postpSwithces"]'\
+    thread_first_page_xpath = './/a[@class="threadLink"]/@href'
+    thread_last_page_xpath = './/span[@class="postpSwithces"]'\
                              '/a[@class="postPSwithcesLink"][last()]/@href'
-    thread_date_xpath = '//td[@class="threadLastPostTd"]/a/text()[1]'
+    thread_date_xpath = './/td[@class="threadLastPostTd"]/a/text()[1]'
     thread_pagination_xpath = '//a[@class="switchBack"]/@href'
     thread_page_xpath = '//li[@class="switchActive"]/text()'
     post_date_xpath = '//td[@class="postTdTop" and a[@class="postNumberLink"'\

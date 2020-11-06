@@ -29,9 +29,9 @@ class SoqorSpider(SitemapSpider):
     forum_xpath = '//a[@class="forum-title"]/@href|'\
                   '//a[@class="subforum-title"]/@href'
     thread_xpath = '//tr[contains(@class, "topic-item ")]'
-    thread_first_page_xpath = '//a[contains(@class,"topic-title ")]/@href'
-    topic_last_page_xpath = '//a[contains(@class,"pagenav-last-button")]/@href'
-    thread_date_xpath = '//span[@class="post-date"]/text()'
+    thread_first_page_xpath = './/a[contains(@class,"topic-title ")]/@href'
+    thread_last_page_xpath = './/a[contains(@class,"pagenav-last-button")]/@href'
+    thread_date_xpath = './/span[@class="post-date"]/text()'
     pagination_xpath = '//a[contains(@class, "pagenav-next-button") '\
                        'and not(contains(@class,"h-hide"))]/@href'
     thread_pagination_xpath = '//a[contains(@class,"pagenav-current-button")]'\

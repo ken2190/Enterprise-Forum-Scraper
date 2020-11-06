@@ -49,10 +49,10 @@ class RaidForumsSpider(SitemapSpider):
     thread_xpath = "//table[contains(@class,\"forum-display__thread-list\")]/" \
                    "tr[td[contains(@class,\"forumdisplay\")] and " \
                    "contains(@class,\"forum-display__thread\")]"
-    thread_date_xpath = "//span[contains(@class,\"smalltext\")]/text()[contains(.,\"at\")]|" \
-                        "//span[contains(@class,\"smalltext\")]/span[@title]/@title"
-    thread_first_page_xpath = "//span[@class=\" subject_new\" and contains(@id,\"tid\")]/a/@href"
-    thread_last_page_xpath = "//span[@class=\"smalltext\"]/text()[contains(.,\")\")]/preceding-sibling::a[1]/@href"
+    thread_date_xpath = ".//span[contains(@class,\"smalltext\")]/text()[contains(.,\"at\")]|" \
+                        ".//span[contains(@class,\"smalltext\")]/span[@title]/@title"
+    thread_first_page_xpath = ".//span[@class=\" subject_new\" and contains(@id,\"tid\")]/a/@href"
+    thread_last_page_xpath = ".//span[@class=\"smalltext\"]/text()[contains(.,\")\")]/preceding-sibling::a[1]/@href"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"

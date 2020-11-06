@@ -32,9 +32,9 @@ class ExeLabSpider(SitemapSpider):
     pagination_xpath = '//a[text()=">>"]/@href'
     thread_xpath = '//table[@class="forums"]//'\
                    'tr[@align="center" and td[@class="caption1"]]'
-    thread_first_page_xpath = '//td[@class="caption1"]'\
+    thread_first_page_xpath = './/td[@class="caption1"]'\
                               '/a[contains(@href, "vthread")]/@href'
-    thread_last_page_xpath = '//sup[@class="navCell"]'\
+    thread_last_page_xpath = './/sup[@class="navCell"]'\
                              '/a[contains(@href, "vthread")][last()]/@href'
     thread_date_xpath = './/td[6]/span[@class="txtSm"]/text()[1]'
     thread_pagination_xpath = '//a[text()="<<"]/@href'

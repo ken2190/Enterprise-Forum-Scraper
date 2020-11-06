@@ -29,10 +29,10 @@ class ChkNetSpider(SitemapSpider):
     # Xpaths
     forum_xpath = '//a[contains(@href, "viewforum.php")]/@href'
     thread_xpath = '//dl[contains(@class, "row-item")]'
-    thread_first_page_xpath = '//a[@class="topictitle"]/@href'
-    thread_last_page_xpath = '//div[@class="pagination"]'\
+    thread_first_page_xpath = './/a[@class="topictitle"]/@href'
+    thread_last_page_xpath = './/div[@class="pagination"]'\
                              '/ul/li[last()]/a/@href'
-    thread_date_xpath = '//dd[@class="lastpost"]/span/text()[last()]'
+    thread_date_xpath = './/dd[@class="lastpost"]/span/text()[last()]'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagination"]//'\

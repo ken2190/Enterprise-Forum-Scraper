@@ -28,10 +28,10 @@ class BitcoinTalkSpider(SitemapSpider):
     pagination_xpath = "//span[@class=\"prevnext\"][last()]/a/@href"
 
     thread_xpath = "//tr[td[contains(@class,\"windowbg\")][5]]"
-    thread_first_page_xpath = "//span[contains(@id,\"msg\")]/a/@href"
-    thread_last_page_xpath = "//small[@id]/a[not(contains(text(),\"All\"))][last()]/@href"
-    thread_date_xpath = "//td[contains(@class,\"lastpostcol\")]/span/text()[contains(.,\",\")]|" \
-                        "//td[contains(@class,\"lastpostcol\")]/span/b/text()"
+    thread_first_page_xpath = ".//span[contains(@id,\"msg\")]/a/@href"
+    thread_last_page_xpath = ".//small[@id]/a[not(contains(text(),\"All\"))][last()]/@href"
+    thread_date_xpath = ".//td[contains(@class,\"lastpostcol\")]/span/text()[contains(.,\",\")]|" \
+                        ".//td[contains(@class,\"lastpostcol\")]/span/b/text()"
 
     post_date_xpath = "//div[contains(@id,\"subject\")]/" \
                       "following-sibling::div[@class=\"smalltext\"]/" \

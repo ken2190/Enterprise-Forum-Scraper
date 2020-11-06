@@ -49,10 +49,10 @@ class ShadowCardersSpider(SitemapSpider):
     pagination_xpath = '//a[text()="Next >"]/@href'
 
     thread_xpath = '//li[contains(@id, "thread-")]'
-    thread_first_page_xpath = '//h3[@class="title"]/a/@href'
-    thread_last_page_xpath = '//span[@class="itemPageNav"]/a[last()]/@href'
-    thread_date_xpath = '//dd[@class="muted"]//abbr/@data-datestring|'\
-                        '//dd[@class="muted"]/a/span/@title'
+    thread_first_page_xpath = './/h3[@class="title"]/a/@href'
+    thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
+    thread_date_xpath = './/dd[@class="muted"]//abbr/@data-datestring|'\
+                        './/dd[@class="muted"]/a/span/@title'
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
     thread_pagination_xpath = '//nav/a[contains(text()," Prev")]/@href'
 

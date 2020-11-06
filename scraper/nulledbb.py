@@ -36,11 +36,11 @@ class NulledBBSpider(SitemapSpider):
 
     thread_xpath = '//div[contains(@class,"wrapper")]//div[contains(@class, "forumdisplay_")]'
     pagination_xpath = '//a[@class="pagination_next"]/@href'
-    thread_first_page_xpath = '//span[contains(@id, "tid_")]'\
+    thread_first_page_xpath = './/span[contains(@id, "tid_")]'\
                               '/a[contains(@href, "thread-")]/@href'
-    thread_last_page_xpath = '//a[contains(text(),"Last Post")]/@href'
-    thread_date_xpath = '//div[contains(@class,"threadlist-lastpost")]/span/*[last()]/span/@title|'\
-                        '//div[contains(@class,"threadlist-lastpost")]/span/*[last()]/text()'
+    thread_last_page_xpath = './/a[contains(text(),"Last Post")]/@href'
+    thread_date_xpath = './/div[contains(@class,"threadlist-lastpost")]/span/*[last()]/span/@title|'\
+                        './/div[contains(@class,"threadlist-lastpost")]/span/*[last()]/text()'
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 

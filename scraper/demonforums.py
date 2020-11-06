@@ -50,15 +50,15 @@ class DemonForumsSpider(SitemapSpider):
     forum_xpath = '//a[contains(@href, "Forum-")]/@href'
     thread_xpath = '//tr[contains(@class,"inline_row")]'
 
-    thread_first_page_xpath = '//span[contains(@class, "subject_")'\
+    thread_first_page_xpath = './/span[contains(@class, "subject_")'\
                               ' and contains(@id, "tid_")]/a'
 
-    thread_last_page_xpath = '//td[contains(@class,"lastpost")]//'\
+    thread_last_page_xpath = './/td[contains(@class,"lastpost")]//'\
                              'a[text()="Last Post"]/@href'
 
     # thread date later
-    thread_date_xpath = '//td[contains(@class,"last_post")]/span/span/@title|'\
-                        '//td[contains(@class,"last_post")]/span/a[last()]/'\
+    thread_date_xpath = './/td[contains(@class,"last_post")]/span/span/@title|'\
+                        './/td[contains(@class,"last_post")]/span/a[last()]/'\
                         'following-sibling::text()'
 
     pagination_xpath = '//a[contains(@class,"pagination_next")]/@href'

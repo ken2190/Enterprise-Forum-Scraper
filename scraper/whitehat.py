@@ -33,7 +33,7 @@ class WhitehatSpider(SitemapSpider):
     thread_first_page_xpath = './/h3[@class="title"]/a/@href'
     thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
     thread_date_xpath = './/dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
-                        '/text()|//dl[@class="lastPostInfo"]'\
+                        '/text()|.//dl[@class="lastPostInfo"]'\
                         '//abbr[@class="DateTime"]/@data-datestring'
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
     thread_pagination_xpath = '//nav/a[contains(text(),"< Trước")]/@href'

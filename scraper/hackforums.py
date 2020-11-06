@@ -39,10 +39,10 @@ class HackForumsSpider(SitemapSpider):
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
 
     thread_xpath = "//tr[@class=\"inline_row\"]"
-    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
-    thread_last_page_xpath = "//span[@class=\"smalltext\" and contains(text(),\"Pages:\")]/a[last()]/@href"
-    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]|" \
-                        "//span[@class=\"lastpost smalltext\"]/span[@title]/@title"
+    thread_first_page_xpath = ".//span[contains(@id,\"tid\")]/a/@href"
+    thread_last_page_xpath = ".//span[@class=\"smalltext\" and contains(text(),\"Pages:\")]/a[last()]/@href"
+    thread_date_xpath = ".//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]|" \
+                        ".//span[@class=\"lastpost smalltext\"]/span[@title]/@title"
     post_date_xpath = "//span[@class=\"post_date\"]/text()[contains(.,\"-\")]|" \
                       "//span[@class=\"post_date\"]/span/@title"
     avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"

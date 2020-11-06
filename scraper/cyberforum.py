@@ -30,10 +30,10 @@ class CyberForumSpider(SitemapSpider):
                   '//td/img[contains(@id,"forum_statusicon_")]'\
                   '/following-sibling::a[1]/@href'
     thread_xpath = '//tr[contains(@id, "vbpostrow_")]'
-    thread_first_page_xpath = '//a[contains(@id,"thread_title_")]/@href'
-    thread_last_page_xpath = '//td[contains(@id,"td_threadtitle_")]'\
+    thread_first_page_xpath = './/a[contains(@id,"thread_title_")]/@href'
+    thread_last_page_xpath = './/td[contains(@id,"td_threadtitle_")]'\
                              '/div/span/a[last()]/@href'
-    thread_date_xpath = '//span[@class="time"]/preceding-sibling::text()'
+    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'

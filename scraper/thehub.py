@@ -35,10 +35,10 @@ class TheHubSpider(SitemapSpider):
     pagination_xpath = '//div[@class="pagelinks floatleft"]'\
                        '/strong/following-sibling::a[1]/@href'
     thread_xpath = '//div[@id="messageindex"]//tr[td[contains(@class,"subject")]]'
-    thread_first_page_xpath = '//span[contains(@id,"msg_")]/a/@href'
-    thread_last_page_xpath = '//small[contains(@id,"pages")]'\
+    thread_first_page_xpath = './/span[contains(@id,"msg_")]/a/@href'
+    thread_last_page_xpath = './/small[contains(@id,"pages")]'\
                              '/a[not(text()="All")][last()]/@href'
-    thread_date_xpath = '//td[contains(@class, "lastpost")]/br'\
+    thread_date_xpath = './/td[contains(@class, "lastpost")]/br'\
                         '/preceding-sibling::text()[1]'
     thread_pagination_xpath = '//div[@class="pagelinks floatleft"]'\
                               '/strong/preceding-sibling::a[1]/@href'

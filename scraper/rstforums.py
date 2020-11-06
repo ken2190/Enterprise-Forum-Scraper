@@ -23,9 +23,9 @@ class RSTForumsSpider(SitemapSpider):
     pagination_xpath = "//li[@class='ipsPagination_next']/a/@href"
 
     thread_xpath = "//li[contains(@class,'ipsDataItem') and @data-rowid]"
-    thread_first_page_xpath = "//span[contains(@class,'ipsType_break')]/a/@href"
-    thread_last_page_xpath = "//span[contains(@class,'ipsPagination_mini')]/span[last()]/a/@href"
-    thread_date_xpath = "//li[@class='ipsType_light']/a/time/@datetime"
+    thread_first_page_xpath = ".//span[contains(@class,'ipsType_break')]/a/@href"
+    thread_last_page_xpath = ".//span[contains(@class,'ipsPagination_mini')]/span[last()]/a/@href"
+    thread_date_xpath = ".//li[@class='ipsType_light']/a/time/@datetime"
     thread_pagination_xpath = "//li[@class='ipsPagination_prev']/a/@href"
     thread_page_xpath = "//li[contains(@class,'ipsPagination_active')]/a/text()"
     post_date_xpath = "//div[contains(@class,'ipsType_reset')]/a/time/@datetime"

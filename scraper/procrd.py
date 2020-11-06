@@ -30,9 +30,9 @@ class ProcrdSpider(SitemapSpider):
     pagination_xpath = '//a[contains(@class, "pageNav-jump--next")]/@href'
 
     thread_xpath = '//div[re:test(@class, ".* ?structItem--thread ?")]'
-    thread_first_page_xpath = ('//div[@class="structItem-title"]'
+    thread_first_page_xpath = ('.//div[@class="structItem-title"]'
                                '/a[contains(@href, "/threads/")]/@href')
-    thread_last_page_xpath = '(//span[@class="structItem-pageJump"]/a)[last()]/@href'
+    thread_last_page_xpath = '(.//span[@class="structItem-pageJump"]/a)[last()]/@href'
     thread_date_xpath = './/div[contains(@class, "structItem-cell--latest")]/a/time/@datetime'
 
     thread_page_xpath = '//li[contains(@class,"pageNav-page--current")]/a/text()'

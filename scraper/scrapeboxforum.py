@@ -22,10 +22,10 @@ class ScrapeBoxForumSpider(SitemapSpider):
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
 
     thread_xpath = "//tr[@class=\"inline_row\"]"
-    thread_first_page_xpath = "//span[contains(@id,\"tid\")]/a/@href"
-    thread_last_page_xpath = "//span[contains(@id,\"tid\")]/following-sibling::span/a[last()]/@href"
-    thread_date_xpath = "//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]|" \
-                        "//span[@class=\"lastpost smalltext\"]/span[@title]/@title"
+    thread_first_page_xpath = ".//span[contains(@id,\"tid\")]/a/@href"
+    thread_last_page_xpath = ".//span[contains(@id,\"tid\")]/following-sibling::span/a[last()]/@href"
+    thread_date_xpath = ".//span[@class=\"lastpost smalltext\"]/text()[contains(.,\"-\")]|" \
+                        ".//span[@class=\"lastpost smalltext\"]/span[@title]/@title"
 
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"

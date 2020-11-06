@@ -16,9 +16,9 @@ class Bbs2ctoSpider(SitemapSpider):
     pagination_xpath = '//div[@class="pages"]'\
                        '/a[@class="pages_next"]/@href'
     thread_xpath = '//tbody[@id="threadlist"]/tr[@class="tr3"]'
-    thread_first_page_xpath = '//a[contains(@class,"subject_t")]/@href'
-    thread_last_page_xpath = '//span[@class="tpage"]/a[last()]/@href'
-    thread_date_xpath = '//td[@class="author"]/p/a/@title'
+    thread_first_page_xpath = './/a[contains(@class,"subject_t")]/@href'
+    thread_last_page_xpath = './/span[@class="tpage"]/a[last()]/@href'
+    thread_date_xpath = './/td[@class="author"]/p/a/@title'
     thread_pagination_xpath = '//div[@class="pages"]/b'\
                               '/preceding-sibling::a[1]/@href'
     thread_page_xpath = '//div[@class="pages"]/b/text()'

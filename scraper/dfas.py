@@ -29,10 +29,10 @@ class DfasSpider(SitemapSpider):
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_xpath = '//div[@class="inbox"]//tr[contains'\
                    '(@class, "roweven") or contains(@class, "rowodd")]'
-    thread_first_page_xpath = '//tr[contains(@class, "roweven") or '\
+    thread_first_page_xpath = './/tr[contains(@class, "roweven") or '\
                               'contains(@class, "rowodd")]'\
                               '//a[contains(@href,"viewtopic.php")]/@href'
-    thread_date_xpath = '//td[@class="tcr"]/a/text()'
+    thread_date_xpath = './/td[@class="tcr"]/a/text()'
     thread_pagination_xpath = '//a[@rel="next"]/@href'
     thread_page_xpath = '//p[@class="pagelink conl"]/strong/text()'
     post_date_xpath = '//div[contains(@class, "blockpost")]/h2/span/a/text()'

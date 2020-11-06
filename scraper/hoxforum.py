@@ -25,9 +25,9 @@ class HoxForumSpider(SitemapSpider):
     pagination_xpath = '//a[@class="pagination_next"]/@href'
 
     thread_xpath = '//div[contains(@class,"inline_row")]'
-    thread_first_page_xpath = '//span[contains(@id,"tid")]/a/@href'
-    thread_last_page_xpath = '//div[@class="smalltext"]/span[contains(@class, "smalltext")]/a[last()]/@href'
-    thread_date_xpath = '//div[@class="threadbit_lastpost smalltext"]/span/text()[last()]'
+    thread_first_page_xpath = './/span[contains(@id,"tid")]/a/@href'
+    thread_last_page_xpath = './/div[@class="smalltext"]/span[contains(@class, "smalltext")]/a[last()]/@href'
+    thread_date_xpath = './/div[@class="threadbit_lastpost smalltext"]/span/text()[last()]'
 
     thread_pagination_xpath = '//div[@class="pagination"]/a[@class="pagination_previous"]/@href'
     thread_page_xpath = '//span[@class="pagination_current"]/text()'

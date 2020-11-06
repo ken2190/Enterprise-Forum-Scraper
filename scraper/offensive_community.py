@@ -22,11 +22,11 @@ class OffensiveCommunitySpider(SitemapSpider):
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
     thread_xpath = '//table//tr[td[contains(@class,"forum")]]'
-    thread_first_page_xpath = '//td[contains(@class,"trow")]/div/span/a[contains(@class,"subject_new")]/@href'
+    thread_first_page_xpath = './/td[contains(@class,"trow")]/div/span/a[contains(@class,"subject_new")]/@href'
 
-    thread_last_page_xpath = '//td[contains(@class,"trow")]/div/span/span[@class="smalltext"]/a[last()]/@href'
+    thread_last_page_xpath = './/td[contains(@class,"trow")]/div/span/span[@class="smalltext"]/a[last()]/@href'
 
-    thread_date_xpath = '//span[contains(@class,"lastpost")]/span/@title'
+    thread_date_xpath = './/span[contains(@class,"lastpost")]/span/@title'
 
     thread_pagination_xpath = '//a[@class="pagination_previous"]/@href'
 

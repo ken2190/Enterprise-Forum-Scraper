@@ -19,13 +19,13 @@ class SinfulSiteSpider(SitemapSpider):
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="next"]/@href'
     thread_xpath = '//div[@class="layer forumdisplay" and not(@style)]'
-    thread_first_page_xpath = '//span[contains(@id,"tid_")]/a/@href'
-    thread_last_page_xpath = '//div[@class="description"]'\
+    thread_first_page_xpath = './/span[contains(@id,"tid_")]/a/@href'
+    thread_last_page_xpath = './/div[@class="description"]'\
                              '//span[@class="smalltext"]'\
                              '/a[last()]/@href'
-    thread_date_xpath = '//div[contains(@class,"latest")]'\
+    thread_date_xpath = './/div[contains(@class,"latest")]'\
                         '//span[@class="small"]/text()|'\
-                        '//div[contains(@class,"latest")]'\
+                        './/div[contains(@class,"latest")]'\
                         '//span[@class="small"]/span/@title'
     thread_pagination_xpath = '//div[@class="pagination"]'\
                               '//a[@class="previous"]/@href'

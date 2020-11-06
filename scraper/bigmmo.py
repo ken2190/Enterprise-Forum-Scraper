@@ -25,11 +25,11 @@ class BigmmoSpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = '//h3[@class="nodeTitle"]/a[contains(@href, "forums/")]/@href'
     thread_xpath = '//ol[@class="discussionListItems"]/li'
-    thread_first_page_xpath = '//h3[@class="title"]'\
+    thread_first_page_xpath = './/h3[@class="title"]'\
                               '/a[contains(@href,"threads/")]/@href'
-    thread_last_page_xpath = '//span[@class="itemPageNav"]'\
+    thread_last_page_xpath = './/span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
-    thread_date_xpath = '//dl[@class="lastPostInfo"]'\
+    thread_date_xpath = './/dl[@class="lastPostInfo"]'\
                         '//a[@class="dateTime"]/abbr/@data-datestring'
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'

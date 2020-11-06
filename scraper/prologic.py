@@ -23,10 +23,10 @@ class ProLogicSpider(SitemapSpider):
                   '//ol[contains(@id, "subforums_")]/li/a/@href'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_xpath = '//tr[contains(@id,"trow_")]'
-    thread_first_page_xpath = '//h4/a[contains(@href,"/topic/")]/@href'
-    thread_last_page_xpath = '//ul[@class="mini_pagination"]'\
+    thread_first_page_xpath = './/h4/a[contains(@href,"/topic/")]/@href'
+    thread_last_page_xpath = './/ul[@class="mini_pagination"]'\
                              '/li[last()]/a/@href'
-    thread_date_xpath = '//li[@class="desc lighter blend_links"]/a/text()'
+    thread_date_xpath = './/li[@class="desc lighter blend_links"]/a/text()'
     thread_pagination_xpath = '//div[@class="topic_controls"]'\
                               '//a[@rel="prev"]/@href'
     thread_page_xpath = '//li[@class="page active"]/text()'

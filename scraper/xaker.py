@@ -27,13 +27,14 @@ class XakerSpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = '//ol[@class="nodeList"]//h3/a/@href'
     thread_xpath = '//ol[@class="discussionListItems"]/li'
-    thread_first_page_xpath = '//h3[@class="title"]'\
+    thread_first_page_xpath = './/h3[@class="title"]'\
                               '/a[contains(@href,"threads/")]/@href'
-    thread_last_page_xpath = '//span[@class="itemPageNav"]'\
+    thread_last_page_xpath = './/span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
 
-    thread_date_xpath = '//abbr[contains(@class,"DateTime")]/@title|//'\
-                        'dl[@class="lastPostInfo"]//span[@class="DateTime"]/@title'
+    thread_date_xpath = './/abbr[contains(@class,"DateTime")]/@title|'\
+                        './/dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
+                        '/@title'
 
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
