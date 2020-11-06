@@ -70,42 +70,16 @@ class CenterClubSpider(SitemapSpider):
     )
 
     def start_requests(self, cookies=None, ip=None):
-        # Load cookies and ip
-        cookies, ip = self.get_cloudflare_cookies(
-            base_url=self.index_url,
-            proxy=True,
-            fraud_check=True
-        )
-
-        # Init request kwargs and meta
         meta = {
             "cookiejar": uuid.uuid1().hex,
-            "ip": ip
         }
 
         yield Request(
             url=self.base_url,
             headers=self.headers,
             meta=meta,
-            cookies=cookies,
-            callback=self.parse_start
+            callback=self.parse
         )
-
-    def parse_start(self, response):
-        # Synchronize cloudfare user agent
-        self.synchronize_headers(response)
-        all_forums = response.xpath(self.forum_xpath).extract()
-        for forum_url in all_forums:
-
-            # Standardize url
-            if self.base_url not in forum_url:
-                forum_url = self.base_url + forum_url
-            yield Request(
-                url=forum_url,
-                headers=self.headers,
-                callback=self.parse_forum,
-                meta=self.synchronize_meta(response),
-            )
 
     def parse_thread(self, response):
 
