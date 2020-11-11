@@ -18,20 +18,23 @@ class OffensiveCommunitySpider(SitemapSpider):
     base_url = 'http://offensivecommunity.net/'
 
     # Xpaths
-    forum_xpath = '//div[@id="content"]/table/tbody/tr//strong/a/@href'
+    forum_xpath = '//a[contains(@href, "forumdisplay.php?fid=")]/@href'
     pagination_xpath = '//div[@class="pagination"]'\
                        '/a[@class="pagination_next"]/@href'
-    thread_xpath = '//table//tr[td[contains(@class,"forum")]]'
-    thread_first_page_xpath = './/td[contains(@class,"trow")]/div/span/a[contains(@class,"subject_new")]/@href'
+    thread_xpath = '//table/tr[td[contains(@class,"forum")]]'
+    thread_first_page_xpath = './/a[contains(@id,"tid_")]/@href'
 
-    thread_last_page_xpath = './/td[contains(@class,"trow")]/div/span/span[@class="smalltext"]/a[last()]/@href'
+    thread_last_page_xpath = './/td[contains(@class,"trow")]/div/span'\
+                             '/span[@class="smalltext"]/a[last()]/@href'
 
-    thread_date_xpath = './/span[contains(@class,"lastpost")]/span/@title'
+    thread_date_xpath = './/span[contains(@class,"lastpost")]/span/@title|'\
+                        './/span[contains(@class,"lastpost")]/text()[1]'
 
     thread_pagination_xpath = '//a[@class="pagination_previous"]/@href'
 
     thread_page_xpath = '//span[@class="pagination_current"]/text()'
-    post_date_xpath = '//td[@class="tcat"]//span/@title|//td[@class="tcat"]/div/text()'
+    post_date_xpath = '//td[@class="tcat"]//span/@title|'\
+                      '//td[@class="tcat"]/div/text()'
 
     avatar_xpath = '//td[contains(@class,"post_avatar")]//img/@src'
 
@@ -94,11 +97,8 @@ class OffensiveCommunitySpider(SitemapSpider):
 
         return dateparser.parse(post_date)
 
+
 class OffensiveCommunityScrapper(SiteMapScrapper):
     spider_class = OffensiveCommunitySpider
     site_name = 'offensivecommunity.net'
     site_type = 'forum'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        return spider_settings
