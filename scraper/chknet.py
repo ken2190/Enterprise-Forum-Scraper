@@ -24,11 +24,11 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
 
 class ChkNetSpider(SitemapSpider):
     name = 'chknet_spider'
-    base_url = 'https://forum.chknet.cc/'
+    base_url = 'https://chknet.is/'
 
     # Xpaths
     forum_xpath = '//a[contains(@href, "viewforum.php")]/@href'
-    thread_xpath = '//dl[contains(@class, "row-item")]'
+    thread_xpath = '//ul[@class="topiclist topics"]/li'
     thread_first_page_xpath = './/a[@class="topictitle"]/@href'
     thread_last_page_xpath = './/div[@class="pagination"]'\
                              '/ul/li[last()]/a/@href'
@@ -87,15 +87,3 @@ class ChkNetScrapper(SiteMapScrapper):
     spider_class = ChkNetSpider
     site_name = 'chknet.cc'
     site_type = 'forum'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
-        spider_settings['RETRY_HTTP_CODES'].append(504)
-        return spider_settings
