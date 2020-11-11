@@ -129,6 +129,10 @@ class BaseTemplate:
                     self.error_folder,
                     ex
                 )
+            except utils.NoAuthor as ex:
+                print(ex)
+                print('Aborting!!')
+                return
             except Exception:
                 traceback.print_exc()
                 continue
