@@ -130,7 +130,7 @@ class BaseTemplate:
                     self.error_folder,
                     ex
                 )
-            except utils.NoAuthor as ex:
+            except (utils.NoAuthor, utils.NoDate) as ex:
                 print(ex)
                 print('Aborting!!')
                 return
