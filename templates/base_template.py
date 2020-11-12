@@ -27,6 +27,7 @@ class BaseTemplate:
         self.comment_block_xpath = ''
         self.author_xpath = ''
         self.post_text_xpath = ''
+        self.protected_email_xpath = './/*[@class="__cf_email__"]/@data-cfemail'
         self.date_xpath = ''
         self.date_pattern = ''
         self.header_xpath = ''
@@ -250,6 +251,18 @@ class BaseTemplate:
         post_text = " ".join([
             post_text.strip() for post_text in post_text_block
         ])
+        protected_email = tag.xpath(self.protected_email_xpath)
+        if protected_email:
+            decoded_values = [
+                utils.get_decoded_email(e) for e in protected_email
+            ]
+            for decoded_value in decoded_values:
+                post_text = re.sub(
+                    r'\[email.*?protected\]',
+                    decoded_value,
+                    post_text,
+                    count=1
+                )
 
         return post_text.strip()
 
