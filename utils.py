@@ -5,6 +5,10 @@ from lxml.html import fromstring
 from lxml.etree import ParserError
 
 
+class NoAuthor(Exception):
+    pass
+
+
 def handle_error(template, error_folder, error_message):
     """
     If error occured while parsing the `template`,
@@ -44,6 +48,11 @@ def write_json(file_pointer, data):
     """
     writes `data` in file object `file_pointer`.
     """
+    if not data['_source'].get('author'):
+        msg = f'ERROR: Null Author Detected. pid={data["_source"]["pid"]};'
+        if data['_source'].get('cid'):
+            msg += f' cid={data["_source"]["cid"]};'
+        raise NoAuthor(msg)
     json_file = json.dumps(data, indent=4, ensure_ascii=False)
     file_pointer.write(json_file)
     file_pointer.write('\n')

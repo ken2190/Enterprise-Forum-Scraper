@@ -25,7 +25,7 @@ class AntiOnlineParser(BaseTemplate):
         self.date_xpath = './/span[@class="date"]//text()'
         self.title_xpath = '//span[contains(@class,"threadtitle")]//descendant::text()'
         self.post_text_xpath = './/div[contains(@class,"postbody")]//div[@class="content"]//descendant::text()[not(ancestor::div[@class="quote_container"])]'
-        self.comments_xpath = './/div[contains(@class,"posthead")]//span[@class="nodecontrols"]/a//text()'
+        self.comment_block_xpath = './/div[contains(@class,"posthead")]//span[@class="nodecontrols"]/a//text()'
         self.avatar_xpath = './/div[contains(@class,"userinfo")]//a[@class="postuseravatar"]//img/@src'
         self.avatar_ext = 'jpg'
 
