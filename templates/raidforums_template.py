@@ -13,7 +13,8 @@ class RaidForumsParser(BaseTemplate):
         self.avatar_name_pattern = re.compile(r'(\d+\.\w+)')
         self.comments_xpath = '//div[@id="posts"]/div[contains(@class,"post")]'
         self.header_xpath = '//div[@id="posts"]/div[contains(@class,"post")]'
-        self.date_xpath = 'div//span[@class="post_date"]/text()'
+        self.date_xpath = 'div//span[@class="post_date"]/text()|'\
+                          'div//span[@class="post_date"]/span/@title'
         self.author_xpath = 'div//div[contains(@class,"post__user-profile")]/a/@href'
         self.title_xpath = '//span[@class="thread-info__name rounded"]/text()'
         self.post_text_xpath = 'div//div[@class="post_body scaleimages"]//descendant::text()[not(ancestor::blockquote)]'

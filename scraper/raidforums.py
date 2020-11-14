@@ -54,7 +54,7 @@ class RaidForumsSpider(SitemapSpider):
     thread_first_page_xpath = ".//span[@class=\" subject_new\" and contains(@id,\"tid\")]/a/@href"
     thread_last_page_xpath = ".//span[@class=\"smalltext\"]/text()[contains(.,\")\")]/preceding-sibling::a[1]/@href"
     pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
-    thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
+    thread_pagination_xpath = '//section[@id="thread-navigation"]//a[@class="pagination_previous"]/@href'
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//span[@class=\"post_date\"]/text()[contains(.,\"at\")]|" \
                       "//span[@class=\"post_date\"]/span[@title]/@title"
