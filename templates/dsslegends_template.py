@@ -47,9 +47,7 @@ class DssLegendsParser(BaseTemplate):
         return sorted_files
 
     def get_date(self, tag):
-        date_block = tag.xpath('.//time//text()')[0].split('on')[-1]
-
-        date = date_block.strip() if date_block else ""
+        date = str(tag.xpath('.//time//@data-date-string')[0])
         try:
             date = dparser.parse(date).timestamp()
             return str(date)
