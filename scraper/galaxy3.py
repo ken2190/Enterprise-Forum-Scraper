@@ -15,8 +15,7 @@ PROXY = 'http://127.0.0.1:8118'
 
 class Galaxy3Spider(SitemapSpider):
     name = 'galaxy3_spider'
-    start_url = 'http://galaxy3m2mn5iqtn.onion/thewire/all'
-    base_url = 'http://galaxy3m2mn5iqtn.onion'
+    base_url = 'http://galaxy3bhpzxecbywoa2j4tg43muepnhfalars4cce3fcx46qlc6t3id.onion'
 
     # Xpaths
     pagination_xpath = '//li/a[contains(text(), "Next")]/@href'
@@ -32,7 +31,7 @@ class Galaxy3Spider(SitemapSpider):
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"onion/(\w+)/.*",
+        r"thread/(\d+)",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
@@ -54,35 +53,14 @@ class Galaxy3Spider(SitemapSpider):
 
     def start_requests(self):
         yield Request(
-            url=self.start_url,
-            callback=self.parse,
+            url=f'{self.base_url}/thewire/all',
+            callback=self.parse_forum,
             headers=self.headers,
             meta={
                 'proxy': PROXY
             },
             dont_filter=True
         )
-
-    def parse(self, response):
-        topic_id = self.get_topic_id(response.url)
-        response.meta.update({'topic_id': topic_id})
-        yield from self.parse_thread(response)
-
-    def get_topic_id(self, url=None):
-        """
-        :param url: str => thread url
-        :return: str => extracted topic id from thread url
-        """
-        topic_id = self.topic_pattern.findall(url)[0]
-
-        topic_id = str(
-            int.from_bytes(
-                url.encode('utf-8'),
-                byteorder='big'
-            ) % (10 ** 7)
-        )
-
-        return topic_id
 
     def parse_thread(self, response):
 
@@ -96,7 +74,7 @@ class Galaxy3Spider(SitemapSpider):
 class Galaxy3Scrapper(SiteMapScrapper):
 
     spider_class = Galaxy3Spider
-    site_name = 'galaxy3_lgalaxy3m2mn5iqtn'
+    site_name = 'galaxy3_galaxy3bhpzxecbywoa2j4tg43muepnhfalars4cce3fcx46qlc6t3id'
     site_type = 'forum'
 
     def load_settings(self):
