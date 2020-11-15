@@ -28,7 +28,7 @@ class DssLegendsParser(BaseTemplate):
         self.post_text_xpath = './/article[contains(@class,"selectToQuote")]/descendant::text()[not(ancestor::div[contains(@class,"bbCodeBlock--quote")])]'
         self.avatar_xpath = './/div[@class="message-avatar "]//img/@src'
         self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite")]/li[3]/a/text()'
-
+        self.date_xpath = './/time//@data-date-string'
         # main function
         self.main()
 
@@ -45,11 +45,3 @@ class DssLegendsParser(BaseTemplate):
                            self.pagination_pattern.search(x).group(1)))
 
         return sorted_files
-
-    def get_date(self, tag):
-        date = str(tag.xpath('.//time//@data-date-string')[0])
-        try:
-            date = dparser.parse(date).timestamp()
-            return str(date)
-        except Exception:
-            return ""

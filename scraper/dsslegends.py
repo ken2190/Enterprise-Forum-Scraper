@@ -89,18 +89,13 @@ class DssLegendsSpider(SitemapSpider):
             '_xfRedirect': '',
             '_xfToken': token
         }
-
         yield FormRequest(
             url="https://www.dsslegends.com/forums/index.php?login/login",
             callback=self.parse_start,
             formdata=params,
             headers=self.headers,
             dont_filter=True,
-
-            meta={
-                # "handle_httpstatus_list": [400],
-                #  "dont_merge_cookie" : False,
-                  "cookiejar": response.meta.get('cookiejar')},
+            meta=self.synchronize_meta(response),
             )
 
     def parse_thread_date(self, thread_date):
