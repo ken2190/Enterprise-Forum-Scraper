@@ -28,6 +28,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description='Post processing utility')
     parser.add_argument('-site', help='A site name', required=True)
+    parser.add_argument('-template', help='Template name for this site', required=True)
     parser.add_argument('-date', help='A datestamp', required=True)
     parser.add_argument('--sync', help='Sync with cloud', action='store_true',
                         default=False)
@@ -87,12 +88,14 @@ def run(kwargs=None):
     if kwargs:
         args = None
         site = kwargs['site']
+        template = kwargs['template']
         date = kwargs['date']
         sync = kwargs.get('sync', False)
     else:
         # parse cmdline arguments
         args = parse_args()
         site = args.site
+        template = args.template
         date = args.date
         sync = args.sync
 
@@ -106,9 +109,9 @@ def run(kwargs=None):
     html_dir = os.path.join(OUTPUT_DIR, site)
     parse_dir = os.path.join(PARSE_DIR, site)
 
-    scraper = SCRAPER_MAP.get(site)
+    scraper = SCRAPER_MAP.get(template)
     if not scraper:
-        err_msg = "ERROR: Invalid site name"
+        err_msg = "ERROR: Invalid site template"
         print(err_msg)
         exit(2, RuntimeError(err_msg))
 
