@@ -24,7 +24,7 @@ class DssLegendsParser(BaseTemplate):
         self.comments_xpath = '//article[contains(@class,"message--post")]'
         self.header_xpath = '//article[contains(@class,"message--post")]'
         self.title_xpath = '//h1[@class="p-title-value"]//text()'
-        self.author_xpath = './/div[@class="message-userDetails"]/h4/a//text()'
+        self.author_xpath = './/div[@class="message-userDetails"]/h4/a//text()|.//span[@class="username "]/text()'
         self.post_text_xpath = './/article[contains(@class,"selectToQuote")]/descendant::text()[not(ancestor::div[contains(@class,"bbCodeBlock--quote")])]'
         self.avatar_xpath = './/div[@class="message-avatar "]//img/@src'
         self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite")]/li[3]/a/text()'
@@ -53,3 +53,11 @@ class DssLegendsParser(BaseTemplate):
             return str(date)
         except Exception:
             return ""
+
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if author:
+            author = ''.join(author).strip()
+            return author
+        else:
+            return ''
