@@ -53,11 +53,3 @@ class DssLegendsParser(BaseTemplate):
             return str(date)
         except Exception:
             return ""
-
-    def get_author(self, tag):
-        author = tag.xpath(self.author_xpath)
-        if author:
-            author = ''.join(author).strip()
-            return author
-        else:
-            return ''

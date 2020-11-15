@@ -46,7 +46,7 @@ class DssLegendsSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//*[@class="message-inner"]//a/time[@datetime]/@datetime' # '//div/a/time[@datetime]/@datetime'
+    post_date_xpath = '//*[@class="message-inner"]//a/time[@datetime]/@datetime' #
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
@@ -89,15 +89,7 @@ class DssLegendsSpider(SitemapSpider):
             '_xfRedirect': '',
             '_xfToken': token
         }
-        # yield Request(
-        #     method="POST",
-        #     url=response.urljoin("index.php?login/login"),
-        #     callback=self.parse_start,
-        #     headers=self.headers,
-        #     meta={"cookiejar": response.meta['cookiejar'], "handle_httpstatus_list": [400]},
-        #     body=f"login={USER}&password={PASS}&remember=1&_xfRedirect=&_xfToken={token}".format(USER, PASS, token,),
-        #     dont_filter=True,
-        # )
+
         yield FormRequest(
             url="https://www.dsslegends.com/forums/index.php?login/login",
             callback=self.parse_start,
