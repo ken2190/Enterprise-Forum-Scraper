@@ -113,6 +113,7 @@ def process_scraper(scraper):
 
         kwargs = dict(
             site=scraper['name'],
+            template=template,
             date=arrow.now().format('YYYY_MM_DD'),
             sync=False
         )
