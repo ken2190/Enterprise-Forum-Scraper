@@ -22,8 +22,10 @@ class HashKillerSpider(SitemapSpider):
     pagination_xpath = "//a[contains(@class,\"pageNav-jump--next\")]/@href"
 
     thread_xpath = "//div[contains(@class,\"js-threadListItem\")]"
-    thread_first_page_xpath = ".//div[@class=\"structItem-title\"]/a/@href"
-    thread_last_page_xpath = ".//div[@class=\"structItem-minor\"]/span/a[last()]/@href"
+    thread_first_page_xpath = ".//div[@class=\"structItem-title\"]"\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = ".//div[@class=\"structItem-minor\"]/span/"\
+                             'a[contains(@href,"threads/")][last()]/@href'
     thread_date_xpath = ".//div[contains(@class,\"structItem-cell--latest\")]/a/time/@datetime"
 
     thread_pagination_xpath = "//a[contains(@class,\"pageNav-jump--prev\")]/@href"
@@ -37,7 +39,7 @@ class HashKillerSpider(SitemapSpider):
         re.IGNORECASE
     )
     topic_pattern = re.compile(
-        r".(\d+)/$",
+        r"threads/.*?\.(\d+)/",
         re.IGNORECASE
     )
     pagination_pattern = re.compile(
