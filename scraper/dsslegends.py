@@ -32,21 +32,29 @@ class DssLegendsSpider(SitemapSpider):
     base_url = "https://www.dsslegends.com"
 
     # Xpaths
-    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
-                  '//a[contains(@class,"subNodeLink--forum")]/@href'
+    forum_xpath = '//h3[@class="node-title"]/a/@href'\
+                  '|//a[contains(@class,"subNodeLink--forum")]/@href'\
+                  '|//div[contains(@class, "node--forum")]//*[@class="node-title"]//@href'
+
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+
     thread_first_page_xpath = '//div[@class="structItem-title"]'\
                               '/a[contains(@href,"threads/")]/@href'
+
     thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
                              '/a[last()]/@href'
-    thread_date_xpath = '//time[contains(@class, "structItem-latestDate")]'\
-                        '/@datetime'
+
+    thread_date_xpath = '//div[contains(@class, "--latest")]//time//@datetime' #'//time[contains(@class, "structItem-latestDate")]/@datetime'
+
     pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+
     thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
                               '/@href'
+
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+
+    post_date_xpath = '//*[@class="message-inner"]//a/time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
@@ -95,6 +103,7 @@ class DssLegendsSpider(SitemapSpider):
             formdata=params,
             headers=self.headers,
             dont_filter=True,
+            meta=self.synchronize_meta(response),
             )
 
     def parse_thread_date(self, thread_date):
