@@ -28,7 +28,7 @@ class DssLegendsParser(BaseTemplate):
         self.post_text_xpath = './/article[contains(@class,"selectToQuote")]/descendant::text()[not(ancestor::div[contains(@class,"bbCodeBlock--quote")])]'
         self.avatar_xpath = './/div[@class="message-avatar "]//img/@src'
         self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite")]/li[3]/a/text()'
-        self.date_xpath = './/time//@data-date-string'
+        self.date_xpath = './/time//@data-date-string|//div[contains(@class, "--latest")]//time//@data-date-string'
         # main function
         self.main()
 
