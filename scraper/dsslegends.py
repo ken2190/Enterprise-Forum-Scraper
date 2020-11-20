@@ -32,7 +32,9 @@ class DssLegendsSpider(SitemapSpider):
     base_url = "https://www.dsslegends.com"
 
     # Xpaths
-    forum_xpath = '//h3[@class="node-title"]/a[@data-shortcut="node-description"]/@href'
+    forum_xpath = '//h3[@class="node-title"]/a/@href'\
+                  '|//a[contains(@class,"subNodeLink--forum")]/@href'\
+                  '|//div[contains(@class, "node--forum")]//*[@class="node-title"]//@href'
 
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
 
