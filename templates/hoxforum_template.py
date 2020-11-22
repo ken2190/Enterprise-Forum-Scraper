@@ -21,7 +21,7 @@ class HoxForumParser(BaseTemplate):
         self.comments_xpath = '//div[contains(@class,"post classic")]'
         self.header_xpath = '//div[contains(@class,"post classic")]'
         self.date_xpath = 'div//span[@class="post_date"]/text()'
-        self.author_xpath = 'div//div[@class="author_information"]//span/a/text()'
+        self.author_xpath = 'div//div[@class="author_information"]//span[@class="largetext"]//text()'
         self.title_xpath = '//td[@class="thead"]/div/strong/text()'
         self.avatar_xpath = '//div[contains(@class, "author_avatar")]/a/img/@src'
         self.avatar_ext = 'jpg'
