@@ -38,13 +38,13 @@ class DssLegendsSpider(SitemapSpider):
 
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
 
-    thread_first_page_xpath = '//div[@class="structItem-title"]'\
+    thread_first_page_xpath = './/div[@class="structItem-title"]'\
                               '/a[contains(@href,"threads/")]/@href'
 
-    thread_last_page_xpath = '//span[@class="structItem-pageJump"]'\
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
                              '/a[last()]/@href'
 
-    thread_date_xpath = '//div[contains(@class, "--latest")]//time//@datetime' #'//time[contains(@class, "structItem-latestDate")]/@datetime'
+    thread_date_xpath = './/div[contains(@class, "--latest")]//time//@datetime' #'//time[contains(@class, "structItem-latestDate")]/@datetime'
 
     pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
 
