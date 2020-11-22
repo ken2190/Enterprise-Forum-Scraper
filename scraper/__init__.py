@@ -165,7 +165,7 @@ from scraper.darkmoney import DarkMoneyScrapper
 from scraper.xaker import XakerScrapper
 from scraper.silk_road4 import SilkRoad4Scrapper
 from scraper.darkfox import DarkFoxScrapper
-
+from scraper.breakingin import BreakinginScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -185,6 +185,7 @@ SCRAPER_MAP = {
     'blackhatworld': BlackHatWorldScrapper,
     'boveda': BovedaScrapper,
     'breachforums': BreachForumsScrapper,
+    'breakingin': BreakinginScrapper, 
     'brute': BruteScrapper,
     'canadahq': CanadaHQScrapper,
     'carderhub': CarderHubScrapper,

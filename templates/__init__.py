@@ -200,7 +200,7 @@ from templates.darkfox_template import DarkFoxParser
 from templates.whitehousemarket_template import WhiteHouseMarketParser
 from templates.monopoly_template import MonopolyParser
 from templates.silkroad4_template import SilkRoad4Parser
-
+from templates.breakingin_template import BreakinginParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -403,5 +403,6 @@ PARSER_MAP = {
     'darkfox': DarkFoxParser,
     'whitehousemarket': WhiteHouseMarketParser,
     'monopoly': MonopolyParser,
-    'silk_road4': SilkRoad4Parser
+    'silk_road4': SilkRoad4Parser,
+    'breakingin': BreakinginParser,
 }
