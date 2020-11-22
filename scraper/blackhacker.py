@@ -24,7 +24,7 @@ class BlackHackerSpider(SitemapSpider):
     name = "blackhacker"
 
     # Url stuffs
-    base_url = "http://blackhacker.ru/"
+    base_url = "https://blackhacker.ru/"
 
     # Xpath stuffs
 
