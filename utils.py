@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 import os
 import json
+import shutil
 from lxml.html import fromstring
 from lxml.etree import ParserError
 
@@ -29,6 +30,19 @@ def handle_error(template, error_folder, error_message):
     with open(file_path, 'a') as file_pointer:
         file_pointer.write(str(error_message))
 
+def handle_missing_header(template, missing_folder):
+    """
+    If no author and no date detected while parsing the `template`,
+    copy `template` to `missing_folder`
+    """
+    if not os.path.exists(missing_folder):
+        os.makedirs(missing_folder)
+
+    try:
+        shutil.copy(template, missing_folder)
+    except OSError as err:
+        print("ERROR: Failed to copy template to %s directory: %s" % (missing_folder, err))
+
 
 def get_html_response(template, pattern=None, encoding=None, mode='rb'):
     """
@@ -47,22 +61,25 @@ def get_html_response(template, pattern=None, encoding=None, mode='rb'):
             return
         return html_response
 
-
-def write_json(file_pointer, data):
+def check_header_data(data):
     """
-    writes `data` in file object `file_pointer`.
+    check if `data` has no `author` and no `date`.
     """
     if not data['_source'].get('author'):
         msg = f'ERROR: Null Author Detected. pid={data["_source"]["pid"]};'
         if data['_source'].get('cid'):
             msg += f' cid={data["_source"]["cid"]};'
         raise NoAuthor(msg)
-
-    if not data['_source'].get('date'):
+    elif not data['_source'].get('date'):
         msg = f'ERROR: Date not present. pid={data["_source"]["pid"]};'
         if data['_source'].get('cid'):
             msg += f' cid={data["_source"]["cid"]};'
         raise NoDate(msg)
+
+def write_json(file_pointer, data):
+    """
+    writes `data` in file object `file_pointer`.
+    """
     json_file = json.dumps(data, indent=4, ensure_ascii=False)
     file_pointer.write(json_file)
     file_pointer.write('\n')
@@ -96,6 +113,7 @@ def write_comments(file_pointer, comments, output_file):
             c['_source']['cid'] = str(int(comments[index-1]['_source']['cid']) + 1)
 
     for comment in comments:
+        check_header_data(comment)
         write_json(file_pointer, comment)
     file_pointer.close()
     print('\nJson written in {}'.format(output_file))

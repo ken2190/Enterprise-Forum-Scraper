@@ -18,6 +18,7 @@ class BaseTemplate:
         self.folder_path = kwargs.get('folder_path')
         self.distinct_files = set()
         self.error_folder = f"{self.output_folder}/Errors"
+        self.missing_header_folder = f"{self.output_folder}/Missing_Date&Author"      # path for backup template without Avatar, Date, Author
         self.thread_id = None
         self.comment_pattern = None
         self.encoding = None
@@ -104,6 +105,7 @@ class BaseTemplate:
                     if not data:
                         continue
 
+                    utils.check_header_data(data)
                     # write file
                     output_file = '{}/{}.json'.format(
                         str(self.output_folder),
@@ -117,13 +119,16 @@ class BaseTemplate:
                 comments.extend(self.extract_comments(html_response, pagination))
 
                 if final:
-                    utils.write_comments(file_pointer, comments, output_file)
-                    comments = []
-                    output_file = None
-                    final = None
+                    try:
+                        utils.write_comments(file_pointer, comments, output_file)
+                        comments = []
+                        output_file = None
+                        final = None
 
-                    if getattr(self, 'index', None):
-                        self.index = 1
+                        if getattr(self, 'index', None):
+                            self.index = 1
+                    except Exception:
+                        continue
             except BrokenPage as ex:
                 utils.handle_error(
                     pid,
@@ -132,8 +137,12 @@ class BaseTemplate:
                 )
             except (utils.NoAuthor, utils.NoDate) as ex:
                 print(ex)
-                print('Aborting!!')
-                return
+                print('----------------------------------------\n')
+                utils.handle_missing_header(
+                    template,
+                    self.missing_header_folder
+                )
+                continue
             except Exception:
                 traceback.print_exc()
                 continue
