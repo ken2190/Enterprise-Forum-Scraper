@@ -1,7 +1,6 @@
 import os
 import sys
 import re
-import sqlite3
 import dateutil.parser as dparser
 from scrapy.http import Request
 from scrapy.crawler import CrawlerProcess
