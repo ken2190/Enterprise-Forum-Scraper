@@ -16,7 +16,10 @@ ERROR_MESSAGES = {
     "E20": "No forums found",
     "E21": "No threads found",
     "E22": "No messages found",
-    "E23": "Thread extraction failed"
+    "E23": "Thread extraction failed",
+
+    # Captcha failed
+    "E30": "Can not bypass captcha"
 }
 
 WARNING_MESSAGES = {

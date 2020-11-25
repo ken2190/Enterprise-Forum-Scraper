@@ -84,11 +84,11 @@ class RaidForumsSpider(SitemapSpider):
                 callback=self.parse_forum
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, thread_meta={}, is_first_page=True):
 
         # Parse generic forums
         if not self.useronly:
-            yield from super().parse_forum(response)
+            yield from super().parse_forum(response, thread_meta={}, is_first_page=True)
 
         # Parse sub forums
         yield from self.parse(response)

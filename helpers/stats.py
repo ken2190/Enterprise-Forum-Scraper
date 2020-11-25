@@ -21,6 +21,7 @@ THREAD_NEXT_PAGE_COUNT = "forum/thread_next_page_count"
 AVATAR_COUNT = 'forum/avatar_count'
 AVATAR_SAVED_COUNT = 'forum/avatar_saved_count'
 
+CANNOT_BYPASS_CAPTCHA = 'cannot_bypass_captcha'
 
 def _err_msg(code):
     return code, ERROR_MESSAGES[code]
@@ -63,6 +64,9 @@ def get_error(stats):
     if thread_extraction_failed:
         return _err_msg("E23")
 
+    # check if bypass captcha failed
+    if stats[CANNOT_BYPASS_CAPTCHA] == 1:
+        return _err_msg("E30")
 
 def get_warnings(stats):
     """ Check stats and return list of warnings """

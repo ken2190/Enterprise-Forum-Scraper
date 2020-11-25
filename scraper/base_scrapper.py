@@ -253,7 +253,8 @@ class SiteMapScrapper:
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
-        "LOG_LEVEL": "DEBUG"
+        "LOG_LEVEL": "DEBUG",
+        'CLOSESPIDER_ERRORCOUNT': 1
     }
 
     time_format = "%Y-%m-%d"
@@ -783,6 +784,7 @@ class SitemapSpider(BypassCloudfareSpider):
     # Url stuffs
     base_url = None
     sitemap_url = None
+    temp_url = 'https://www.google.com'
     ip_url = "https://api.ipify.org?format=json"
 
     # anticaptcha api #
@@ -1214,6 +1216,7 @@ class SitemapSpider(BypassCloudfareSpider):
         if h_response != 0:
             return h_response
         else:
+            self.crawler.stats.set_value("cannot_bypass_captcha", 1)
             return ''
 
     # Main method to solve all kind of captcha: recaptcha #
@@ -1274,10 +1277,12 @@ class SitemapSpider(BypassCloudfareSpider):
             except (ProxyError, SolutionWaitTimeout, UnableToSolveError):
                 if try_count >= max_try_count:
                     self.logger.error('Exceeded reCAPTCHA solving maximum try count!')
+                    self.crawler.stats.set_value("cannot_bypass_captcha", 1)
                     raise
                 continue
             except UnicapsException as err:
                 self.logger.warning('Error on reCAPTCHA solving: %s', err)
+                self.crawler.stats.set_value("cannot_bypass_captcha", 1)
                 raise
 
     def solve_captcha(self, image_url, response, cookies={}, headers={}):
@@ -1342,6 +1347,7 @@ class SitemapSpider(BypassCloudfareSpider):
         if captcha_text != 0:
             return captcha_text.replace(' ', '')
         else:
+            self.crawler.stats.set_value("cannot_bypass_captcha", 1)
             return ''
 
     def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):

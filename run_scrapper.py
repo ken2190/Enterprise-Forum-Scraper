@@ -87,21 +87,38 @@ class Scraper:
         #         stats = scraper_obj.do_scrape()
         else:
             stats = scraper_obj.do_scrape()
+            print(stats)
+            err = get_error(stats)
+            warnings = get_warnings(stats)
+            print(err)
+            print(warnings)
 
             # FIXME error/warnings feature is enabled for the selected scrapers only
-            scraper_list = ('altenens', 'darkmoney', 'devilteam', 'sinister', 'xss')
-            if template.lower() in scraper_list:
-                err = get_error(stats)
-                warnings = get_warnings(stats)
-                if err:
-                    LOGGER.error(f'{err[0]}: {err[1]}')
-                    stats['result/error'] = err[0]
-                elif warnings:
-                    stats['result/warnings'] = [w[0] for w in warnings]
-                    for warn in warnings:
-                        LOGGER.warning(f'{warn[0]}: {warn[1]}')
-                else:
-                    LOGGER.info('Finished successfully')
+            # scraper_list = ('altenens', 'darkmoney', 'devilteam', 'sinister', 'xss')
+            # if template.lower() in scraper_list:
+            #     err = get_error(stats)
+            #     warnings = get_warnings(stats)
+            #     if err:
+            #         LOGGER.error(f'{err[0]}: {err[1]}')
+            #         stats['result/error'] = err[0]
+            #     elif warnings:
+            #         stats['result/warnings'] = [w[0] for w in warnings]
+            #         for warn in warnings:
+            #             LOGGER.warning(f'{warn[0]}: {warn[1]}')
+            #     else:
+            #         LOGGER.info('Finished successfully')
+
+            err = get_error(stats)
+            warnings = get_warnings(stats)
+            if err:
+                LOGGER.error(f'{err[0]}: {err[1]}')
+                stats['result/error'] = err[0]
+            elif warnings:
+                stats['result/warnings'] = [w[0] for w in warnings]
+                for warn in warnings:
+                    LOGGER.warning(f'{warn[0]}: {warn[1]}')
+            else:
+                LOGGER.info('Finished successfully')
 
         return stats
 
