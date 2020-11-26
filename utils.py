@@ -80,6 +80,7 @@ def write_json(file_pointer, data):
     """
     writes `data` in file object `file_pointer`.
     """
+    check_header_data(data)
     json_file = json.dumps(data, indent=4, ensure_ascii=False)
     file_pointer.write(json_file)
     file_pointer.write('\n')
@@ -113,7 +114,6 @@ def write_comments(file_pointer, comments, output_file):
             c['_source']['cid'] = str(int(comments[index-1]['_source']['cid']) + 1)
 
     for comment in comments:
-        check_header_data(comment)
         write_json(file_pointer, comment)
     file_pointer.close()
     print('\nJson written in {}'.format(output_file))

@@ -104,8 +104,6 @@ class BaseTemplate:
 
                     if not data:
                         continue
-
-                    utils.check_header_data(data)
                     # write file
                     output_file = '{}/{}.json'.format(
                         str(self.output_folder),
