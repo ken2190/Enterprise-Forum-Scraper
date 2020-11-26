@@ -61,7 +61,7 @@ def get_html_response(template, pattern=None, encoding=None, mode='rb'):
             return
         return html_response
 
-def check_header_data(data):
+def write_json(file_pointer, data):
     """
     check if `data` has no `author` and no `date`.
     """
@@ -75,12 +75,10 @@ def check_header_data(data):
         if data['_source'].get('cid'):
             msg += f' cid={data["_source"]["cid"]};'
         raise NoDate(msg)
-
-def write_json(file_pointer, data):
+        
     """
     writes `data` in file object `file_pointer`.
     """
-    check_header_data(data)
     json_file = json.dumps(data, indent=4, ensure_ascii=False)
     file_pointer.write(json_file)
     file_pointer.write('\n')
