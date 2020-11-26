@@ -66,6 +66,9 @@ class OffensiveCommunitySpider(SitemapSpider):
         self.synchronize_headers(response)
 
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
         for forum_url in all_forums:
 
             full_url = self.base_url + forum_url

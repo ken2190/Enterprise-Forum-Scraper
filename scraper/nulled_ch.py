@@ -159,6 +159,9 @@ class NulledChSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
         if not all_forums:
             self.logger.info(response.text)
         for forum_url in all_forums:

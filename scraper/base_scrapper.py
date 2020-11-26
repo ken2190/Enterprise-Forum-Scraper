@@ -1438,6 +1438,9 @@ class SitemapSpider(BypassCloudfareSpider):
         # Load forum
         all_forum = selector.xpath(self.forum_sitemap_xpath).extract()
 
+        # update stats
+        self.crawler.stats.set_value("forum/forum_count", len(all_forum))
+        
         for forum in all_forum:
             yield Request(
                 url=forum,
@@ -2188,6 +2191,10 @@ class SeleniumSpider(SitemapSpider):
     def parse_start(self):
         response = fromstring(self.browser.page_source)
         all_forums = response.xpath(self.forum_xpath)
+
+        # update stats
+        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
+
         for forum_url in all_forums:
 
             # Standardize url

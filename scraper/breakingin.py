@@ -80,6 +80,9 @@ class BreakinginSpider(SitemapSpider):
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
         for forum_url in all_forums:
             # Standardize forum url
             if self.base_url not in forum_url:
