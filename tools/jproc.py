@@ -68,7 +68,6 @@ def process_line(out_file, single_json, args):
             closg = single_json.find(r'"', unesc + 2)
             single_json = single_json[:closg] + r'\"' + single_json[closg+1:]
 
-    json_response = json.loads(single_json)
     out_fields = args.keep
     out_fields = [
         i.strip() for i in out_fields.split(',')] if out_fields else []
