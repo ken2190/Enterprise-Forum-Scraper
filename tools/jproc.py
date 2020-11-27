@@ -13,7 +13,7 @@ class Parser:
             '-o', '--output', help='Output File', required=True)
         self.parser.add_argument(
             '-k', '--keep',
-            help='list of fields/values to keep (comma separated). '
+            help='list of fields to keep (comma separated). '
                  'Everything else will be removed.',
             required=False)
         self.parser.add_argument(
@@ -33,20 +33,34 @@ class Parser:
         return self.parser.parse_args()
 
 
+def filter_json(data, parent_key, filter_fields):
+    """
+    Keep only specified property for nested json
+    """
+    if isinstance(data, list) or isinstance(data, dict):
+        for key in list(data.keys()):
+            path = str(parent_key + "/" + key)
+            if path.strip("/") not in filter_fields and not len([s for s in filter_fields if s.startswith(path.strip("/") + "/")]):
+                del data[key]
+            else:
+                if type(data[key]) == type(dict()):
+                    filter_json(data[key], parent_key + "/" + key, filter_fields)
+                elif type(data[key]) == type(list()):
+                    for val in data[key]:
+                        if type(val) == type(str()):
+                            pass
+                        elif type(val) == type(list()):
+                            pass
+                        else:
+                            filter_json(val, parent_key + "/" + key, filter_fields)
+
 def process_line(out_file, single_json, args):
+    json_response = json.loads(single_json)
     out_fields = args.keep
     out_fields = [
         i.strip() for i in out_fields.split(',')] if out_fields else []
-    nested_fields = dict()
-    for f in out_fields:
-        if '/' not in f:
-            continue
-        nested_key, nested_value = f.split('/')
-        if nested_key in nested_fields:
-            nested_fields[nested_key].append(nested_value)
-        else:
-            nested_fields[nested_key] = [nested_value]
-    json_response = json.loads(single_json)
+    filter_json(json_response, "", out_fields)
+
     address = 'city state zip'
     name = 'fn ln'
     final_data = dict()
@@ -55,17 +69,6 @@ def process_line(out_file, single_json, args):
     else:
         data = json_response.items()
     for key, value in data:
-        if not value:
-            continue
-        if key in nested_fields:
-            for nested_value in nested_fields[key]:
-                if not value.get(nested_value):
-                    continue
-                final_data.update({
-                    nested_value: value[nested_value]
-                })
-        if out_fields and key not in out_fields:
-            continue
         if key in ['email', 'e'] and args.domain:
             domain = value.split('@')[-1]
             final_data.update({'d': domain})
@@ -89,7 +92,26 @@ def process_line(out_file, single_json, args):
 
 
 def main():
-    args = Parser().get_args()
+    try:
+        args = Parser().get_args()
+    except SystemExit:
+        help_message = """
+            Usage: jproc.py [-h] -i INPUT -o OUTPUT [-k KEEP] [-d] [-am] [-nm] [-f]\n
+            Arguments:
+            -i  | --input  INPUT:         Input File
+            -o  | --output OUTPUT:          Output File
+
+            Optional:
+            -s  | --keep KEEP_LIST:         List of fields to keep (comma separated).
+            -d  | --domain:                 Add domain field from email
+            -am | --address_merge:          Merge Addresses
+            -nm | --name_merge              Merge Names
+            -f  | --format                  Insert formatting for elasticsearch
+
+            """
+        print(help_message)
+        raise
+
     input_file = args.input
     output_file = args.output
     with open(output_file, 'w') as out_file:
