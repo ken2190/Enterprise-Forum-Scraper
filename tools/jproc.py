@@ -55,19 +55,20 @@ def filter_json(data, parent_key, filter_fields):
                             filter_json(val, parent_key + "/" + key, filter_fields)
 
 def process_line(out_file, single_json, args):
-    while True:
-        try:
-            json_response = json.loads(single_json)
-            break
-        except Exception as e:
-            unexp = int(re.findall(r'\(char (\d+)\)', str(e))[0])
-            # position of unescaped '"' before that
-            unesc = single_json.rfind(r'"', 0, unexp)
-            single_json = single_json[:unesc] + r'\"' + single_json[unesc+1:]
-            # position of correspondig closing '"' (+2 for inserted '\')
-            closg = single_json.find(r'"', unesc + 2)
-            single_json = single_json[:closg] + r'\"' + single_json[closg+1:]
+    # while True:
+    #     try:
+    #         json_response = json.loads(single_json)
+    #         break
+    #     except Exception as e:
+    #         unexp = int(re.findall(r'\(char (\d+)\)', str(e))[0])
+    #         # position of unescaped '"' before that
+    #         unesc = single_json.rfind(r'"', 0, unexp)
+    #         single_json = single_json[:unesc] + r'\"' + single_json[unesc+1:]
+    #         # position of correspondig closing '"' (+2 for inserted '\')
+    #         closg = single_json.find(r'"', unesc + 2)
+    #         single_json = single_json[:closg] + r'\"' + single_json[closg+1:]
 
+    json_response = json.loads(single_json)
     out_fields = args.keep
     out_fields = [
         i.strip() for i in out_fields.split(',')] if out_fields else []
