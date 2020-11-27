@@ -33,20 +33,34 @@ class Parser:
         return self.parser.parse_args()
 
 
+def filter_json(data, parent_key, filter_fields):
+    """
+    Keep only specified property for nested json
+    """
+    if isinstance(data, list) or isinstance(data, dict):
+        for key in list(data.keys()):
+            path = str(parent_key + "/" + key)
+            if path.strip("/") not in filter_fields and not len([s for s in filter_fields if s.startswith(path.strip("/") + "/")]):
+                del data[key]
+            else:
+                if type(data[key]) == type(dict()):
+                    filter_json(data[key], parent_key + "/" + key, filter_fields)
+                elif type(data[key]) == type(list()):
+                    for val in data[key]:
+                        if type(val) == type(str()):
+                            pass
+                        elif type(val) == type(list()):
+                            pass
+                        else:
+                            filter_json(val, parent_key + "/" + key, filter_fields)
+
 def process_line(out_file, single_json, args):
+    json_response = json.loads(single_json)
     out_fields = args.keep
     out_fields = [
         i.strip() for i in out_fields.split(',')] if out_fields else []
-    nested_fields = dict()
-    for f in out_fields:
-        if '/' not in f:
-            continue
-        nested_key, nested_value = f.split('/')
-        if nested_key in nested_fields:
-            nested_fields[nested_key].append(nested_value)
-        else:
-            nested_fields[nested_key] = [nested_value]
-    json_response = json.loads(single_json)
+    filter_json(json_response, "", out_fields)
+
     address = 'city state zip'
     name = 'fn ln'
     final_data = dict()
@@ -55,17 +69,6 @@ def process_line(out_file, single_json, args):
     else:
         data = json_response.items()
     for key, value in data:
-        if not value:
-            continue
-        if key in nested_fields:
-            for nested_value in nested_fields[key]:
-                if not value.get(nested_value):
-                    continue
-                final_data.update({
-                    nested_value: value[nested_value]
-                })
-        if out_fields and key not in out_fields:
-            continue
         if key in ['email', 'e'] and args.domain:
             domain = value.split('@')[-1]
             final_data.update({'d': domain})
