@@ -69,10 +69,11 @@ def process_line(out_file, single_json, args):
     #         single_json = single_json[:closg] + r'\"' + single_json[closg+1:]
 
     json_response = json.loads(single_json)
-    out_fields = args.keep
-    out_fields = [
-        i.strip() for i in out_fields.split(',')] if out_fields else []
-    filter_json(json_response, "", out_fields)
+    if args.keep:
+        out_fields = args.keep
+        out_fields = [
+            i.strip() for i in out_fields.split(',')] if out_fields else []
+        filter_json(json_response, "", out_fields)
 
     address = 'city state zip'
     name = 'fn ln'
