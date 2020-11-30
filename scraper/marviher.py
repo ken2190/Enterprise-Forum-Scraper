@@ -37,6 +37,9 @@ class MarviherSpider(SitemapSpider):
 
     avatar_xpath = '//li[@class="cAuthorPane_photo"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//p[contains(@class, "ipsMessage ipsMessage_error")]'
+
     # Other settings
     use_proxy = True
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
@@ -81,6 +84,9 @@ class MarviherSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

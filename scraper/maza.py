@@ -171,7 +171,8 @@ class MazaSpider(SeleniumSpider):
         time.sleep(self.delay)
 
         if not self.is_logged_in():
-            self.logger.error('Failed to log in')
+            # Check if login failed
+            self.check_if_logged_in(response)
 
     def is_logged_in(self):
         return self.browser.find_elements_by_xpath('//a[text()="Log Out"]')

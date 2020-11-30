@@ -15,7 +15,7 @@ from scraper.base_scrapper import (
 REQUEST_DELAY = 0.3
 NO_OF_THREADS = 8
 
-USER = "Cyrax011"
+USER = "Cyrax0111"
 PASS = "4hr63yh38a61SDW0"
 
 
@@ -46,6 +46,9 @@ class MalvultSpider(SitemapSpider):
                       '//abbr[@class="DateTime"]/@data-datestring'
 
     avatar_xpath = '//div[@class="uix_avatarHolderInner"]/a/img/@src'
+
+    # Login Failed Message
+    login_failed_xpath = '//div[@class="errorPanel"]'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -96,6 +99,10 @@ class MalvultSpider(SitemapSpider):
 
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         # self.logger.info(response.text)
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()

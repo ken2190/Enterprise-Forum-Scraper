@@ -1260,33 +1260,35 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # get page URL and site key
         page_url = response.url
-        site_key = response.xpath(self.recaptcha_site_key_xpath).extract_first()
+        site_key = response.xpath(self.recaptcha_site_key_xpath).extract()
+        if len(site_key):
+            site_key = site_key[0]
 
-        try_count = 0
-        while True:
-            if proxy:
-                host = socket.gethostbyname(hostname)
-                proxy = ProxyServer(f'http://{user}:{password}@{host}:{port}')
+            try_count = 0
+            while True:
+                if proxy:
+                    host = socket.gethostbyname(hostname)
+                    proxy = ProxyServer(f'http://{user}:{password}@{host}:{port}')
 
-            try_count += 1
-            try:
-                return solver.solve_recaptcha_v2(
-                    site_key,
-                    page_url,
-                    proxy=proxy,
-                    user_agent=user_agent,
-                    cookies=cookies
-                )
-            except (ProxyError, SolutionWaitTimeout, UnableToSolveError):
-                if try_count >= max_try_count:
-                    self.logger.error('Exceeded reCAPTCHA solving maximum try count!')
+                try_count += 1
+                try:
+                    return solver.solve_recaptcha_v2(
+                        site_key,
+                        page_url,
+                        proxy=proxy,
+                        user_agent=user_agent,
+                        cookies=cookies
+                    )
+                except (ProxyError, SolutionWaitTimeout, UnableToSolveError):
+                    if try_count >= max_try_count:
+                        self.logger.error('Exceeded reCAPTCHA solving maximum try count!')
+                        self.crawler.stats.set_value("cannot_bypass_captcha", 1)
+                        raise
+                    continue
+                except UnicapsException as err:
+                    self.logger.warning('Error on reCAPTCHA solving: %s', err)
                     self.crawler.stats.set_value("cannot_bypass_captcha", 1)
                     raise
-                continue
-            except UnicapsException as err:
-                self.logger.warning('Error on reCAPTCHA solving: %s', err)
-                self.crawler.stats.set_value("cannot_bypass_captcha", 1)
-                raise
 
     def solve_captcha(self, image_url, response, cookies={}, headers={}):
         solver = imagecaptcha()
@@ -1535,7 +1537,8 @@ class SitemapSpider(BypassCloudfareSpider):
     def check_if_logged_in(self, response):
         # check if logged in successfully
         if self.login_failed_xpath:
-            if response.xpath(self.login_failed_xpath) is not None:
+            login_failed = response.xpath(self.login_failed_xpath).extract()
+            if len(login_failed):
                 raise CloseSpider(reason='login_is_failed')
 
     def parse(self, response):

@@ -42,6 +42,9 @@ class MajesticGardenSpider(SitemapSpider):
 
     avatar_xpath = '//li[@class="avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//p[@class="error"]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"topic=(\d+)",
@@ -124,6 +127,9 @@ class MajesticGardenSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

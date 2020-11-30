@@ -66,6 +66,9 @@ class NulledChSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[@class="error"]'
+
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
 
@@ -158,6 +161,10 @@ class NulledChSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

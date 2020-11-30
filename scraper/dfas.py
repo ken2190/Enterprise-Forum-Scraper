@@ -37,6 +37,9 @@ class DfasSpider(SitemapSpider):
     thread_page_xpath = '//p[@class="pagelink conl"]/strong/text()'
     post_date_xpath = '//div[contains(@class, "blockpost")]/h2/span/a/text()'
 
+    # Login Failed Message
+    login_failed_xpath = '//ul[contains(@class, "error-list")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"id=(\d+)",
@@ -146,6 +149,9 @@ class DfasSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

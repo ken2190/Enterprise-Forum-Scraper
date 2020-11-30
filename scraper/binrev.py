@@ -18,7 +18,7 @@ from scraper.base_scrapper import (
 REQUEST_DELAY = 1
 NO_OF_THREADS = 1
 
-USERNAME = "vrx9"
+USERNAME = "vrx91"
 PASSWORD = "4hr63yh38a"
 
 
@@ -59,6 +59,9 @@ class BinRevSpider(SitemapSpider):
         r'.*/(\S+\.\w+)',
         re.IGNORECASE
     )
+
+    # Login Failed Message
+    login_failed_xpath = '//p[contains(@class, "ipsMessage ipsMessage_error")]'
 
     # Other settings
     download_delay = REQUEST_DELAY
@@ -106,6 +109,9 @@ class BinRevSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
 
         all_forums = response.xpath(self.forum_xpath).extract()
 

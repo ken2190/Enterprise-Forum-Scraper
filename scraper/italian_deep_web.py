@@ -52,6 +52,9 @@ class ItalianDeepWebSpider(SitemapSpider):
         re.IGNORECASE
     )
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+    
     # Other settings
     use_proxy = True
     download_delay = REQUEST_DELAY

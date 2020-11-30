@@ -51,6 +51,9 @@ class HackForumsSpider(SitemapSpider):
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     hcaptcha_site_key_xpath = "//script[@data-sitekey]/@data-sitekey"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"tid=(\d+)",
@@ -244,6 +247,9 @@ class HackForumsSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 

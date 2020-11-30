@@ -18,7 +18,7 @@ from scraper.base_scrapper import (
 REQUEST_DELAY = 0.6
 NO_OF_THREADS = 10
 
-USER = 'Cyrax_011'
+USER = 'Cyrax_0111'
 PASS = 'S5eVZWqf!3wNdtb'
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36'
@@ -60,6 +60,9 @@ class CrdClubSpider(SitemapSpider):
     thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
     post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]/text()'
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
+
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(text(), "You have entered an invalid username or password")]'
 
     # Other settings
     download_delay = REQUEST_DELAY
@@ -107,6 +110,10 @@ class CrdClubSpider(SitemapSpider):
     def after_login(self, response):
         # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         yield Request(
             url=self.base_url,
             headers=self.headers,

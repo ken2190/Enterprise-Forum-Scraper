@@ -62,6 +62,9 @@ class OgUsersSpider(SitemapSpider):
 
     get_users = '--getusers' in sys.argv
 
+    # Login Failed Message
+    login_failed_xpath = '//div[@class="error"]'
+
     #captcha stuffs
     bypass_success_xpath = '//a[@class="guestnav" and text()="Login"]'
 

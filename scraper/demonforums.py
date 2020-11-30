@@ -72,6 +72,9 @@ class DemonForumsSpider(SitemapSpider):
                       '[@class="post_date"]/text()'
 
     avatar_xpath = '//div[@class="author_avatar"]//img/@src'
+    
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(text(), "You have entered an invalid username or password")]'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -189,6 +192,9 @@ class DemonForumsSpider(SitemapSpider):
         if response.status == 403:
             yield from self.parse_captcha(response)
             return
+        
+        # Check if login failed
+        self.check_if_logged_in(response)
 
         yield Request(
             url=self.base_url,

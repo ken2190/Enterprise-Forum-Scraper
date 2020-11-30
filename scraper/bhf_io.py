@@ -57,6 +57,9 @@ class BHFIOSpider(SitemapSpider):
 
     avatar_xpath = "//img[contains(@class,\"avatar\")]/@src"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+
     # Other settings
     use_proxy = True
     sitemap_datetime_format = "%b %d, %Y at %I:%M %p"
@@ -148,6 +151,10 @@ class BHFIOSpider(SitemapSpider):
     def parse_post_login(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         # Load backup code url
         yield Request(
             url=self.backup_code_url,

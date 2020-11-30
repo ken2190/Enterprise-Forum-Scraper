@@ -52,6 +52,9 @@ class CryptBBSpider(SitemapSpider):
         re.IGNORECASE
     )
 
+    # Login Failed Message
+    login_failed_xpath = '//li[contains(text(), "invalid username/password")]'
+
     # Other settings
     use_proxy = False
     download_delay = REQUEST_DELAY
@@ -140,6 +143,10 @@ class CryptBBSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

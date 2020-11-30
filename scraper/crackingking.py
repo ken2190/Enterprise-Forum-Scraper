@@ -53,6 +53,9 @@ class CrackingKingSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//tr[contains(text(), "You have failed to login within")]'
+
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
 
@@ -163,9 +166,9 @@ class CrackingKingSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        self.logger.info(response.text)
+        # Check if login failed
+        self.check_if_logged_in(response)
 
-        return
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

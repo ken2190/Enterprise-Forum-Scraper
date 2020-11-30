@@ -53,6 +53,9 @@ class FuckavSpider(SitemapSpider):
     avatar_xpath = "//div[@class=\"smallfont\"]/a/img/@src"
     captcha_xpath = "//img[@id=\"imagereg\"]/@src"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(text(), "incorrect username or password")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -225,6 +228,9 @@ class FuckavSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 
