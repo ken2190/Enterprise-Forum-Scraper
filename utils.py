@@ -72,16 +72,16 @@ def write_json(file_pointer, data):
     """
     check if `data` has no `author` and no `date`.
     """
+    msg = ""
     if not data['_source'].get('author'):
         msg = f'ERROR: Null Author Detected. pid={data["_source"]["pid"]};'
         if data['_source'].get('cid'):
             msg += f' cid={data["_source"]["cid"]};'
-        raise NoAuthor(msg)
     elif not data['_source'].get('date'):
         msg = f'ERROR: Date not present. pid={data["_source"]["pid"]};'
         if data['_source'].get('cid'):
             msg += f' cid={data["_source"]["cid"]};'
-        raise NoDate(msg)
+    return msg
 
 def write_comments(file_pointer, comments, output_file):
     if not output_file:

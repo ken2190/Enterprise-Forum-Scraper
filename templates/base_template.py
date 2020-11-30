@@ -111,36 +111,32 @@ class BaseTemplate:
                     )
                     file_pointer = open(output_file, 'w', encoding='utf-8')
 
-                    utils.write_json(file_pointer, data)
-
+                    error_msg = utils.write_json(file_pointer, data)
+                    if error_msg:
+                        print(error_msg)
+                        print('----------------------------------------\n')
+                        utils.handle_missing_header(
+                            template,
+                            self.missing_header_folder
+                        )
+                        continue
                 # extract comments
                 comments.extend(self.extract_comments(html_response, pagination))
 
-                if final:
-                    try:
-                        utils.write_comments(file_pointer, comments, output_file)
-                        comments = []
-                        output_file = None
-                        final = None
+                if final:   
+                    utils.write_comments(file_pointer, comments, output_file)   
+                    comments = []   
+                    output_file = None  
+                    final = None    
+                    if getattr(self, 'index', None):    
+                        self.index = 1
 
-                        if getattr(self, 'index', None):
-                            self.index = 1
-                    except Exception:
-                        continue
             except BrokenPage as ex:
                 utils.handle_error(
                     pid,
                     self.error_folder,
                     ex
                 )
-            except (utils.NoAuthor, utils.NoDate) as ex:
-                print(ex)
-                print('----------------------------------------\n')
-                utils.handle_missing_header(
-                    template,
-                    self.missing_header_folder
-                )
-                continue
             except Exception:
                 traceback.print_exc()
                 continue
