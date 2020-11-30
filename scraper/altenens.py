@@ -49,6 +49,9 @@ class AltenensSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+    
     # Other settings
     use_proxy = True
     handle_httpstatus_list = [403]

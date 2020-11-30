@@ -43,6 +43,8 @@ def get_error(stats):
         return _err_msg("E11")
     elif finish_reason == 'account_is_banned':
         return _err_msg("E12")
+    elif finish_reason == 'login_is_failed':
+        return _err_msg("E13")
 
     # check if forum count > 0
     if stats.get(FORUM_COUNT, 0) == 0:
@@ -65,7 +67,7 @@ def get_error(stats):
         return _err_msg("E23")
 
     # check if bypass captcha failed
-    if stats[CANNOT_BYPASS_CAPTCHA] == 1:
+    if stats.get(CANNOT_BYPASS_CAPTCHA, 0) > 1:
         return _err_msg("E30")
 
 def get_warnings(stats):

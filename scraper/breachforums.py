@@ -39,6 +39,9 @@ class BreachForumsSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+    
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",

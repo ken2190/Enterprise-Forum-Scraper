@@ -11,6 +11,7 @@ ERROR_MESSAGES = {
     "E10": "Site is down",
     "E11": "Access is blocked",
     "E12": "Account is banned",
+    "E13": "Login is Failed",
 
     # forum errors
     "E20": "No forums found",

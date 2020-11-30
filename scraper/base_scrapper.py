@@ -832,6 +832,9 @@ class SitemapSpider(BypassCloudfareSpider):
     recaptcha_site_key_xpath = None  # Xpath to get recaptcha site key #
     hcaptcha_site_key_xpath = None  # Xpath to get hcaptcha site key #
 
+    # Login Failed Message xpath
+    login_failed_xpath = None
+
     # Other settings
     get_cookies_delay = 2
     get_cookies_retry = 5
@@ -1529,9 +1532,18 @@ class SitemapSpider(BypassCloudfareSpider):
 
         yield Request(**request_arguments)
 
+    def check_if_logged_in(self, response):
+        # check if logged in successfully
+        if self.login_failed_xpath:
+            if response.xpath(self.login_failed_xpath) is not None:
+                raise CloseSpider(reason='login_is_failed')
+
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login success
+        self.check_if_logged_in(response)
 
         all_forums = set(response.xpath(self.forum_xpath).extract())
         self.forums.update(all_forums)
