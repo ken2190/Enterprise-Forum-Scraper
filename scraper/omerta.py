@@ -46,6 +46,9 @@ class OmertaSpider(SitemapSpider):
 
     password_protect_xpath = "//div[@class=\"panel\"]/div/div/p[contains(text(),\"password protected\")]"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(text(), "an invalid username or password")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -146,6 +149,9 @@ class OmertaSpider(SitemapSpider):
         # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
         time.sleep(2)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
 
         yield Request(
             url=self.base_url,

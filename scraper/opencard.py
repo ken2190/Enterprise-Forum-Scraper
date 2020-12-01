@@ -47,6 +47,9 @@ class OpencardSpider(SitemapSpider):
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@data-xf-init="re-captcha"]/@data-sitekey'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/.*\.(\d+)",
@@ -127,6 +130,9 @@ class OpencardSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

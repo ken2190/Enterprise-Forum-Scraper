@@ -34,6 +34,9 @@ class ProLogicSpider(SitemapSpider):
 
     avatar_xpath = '//li[@class="avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//p[contains(@class, "message error")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -117,6 +120,9 @@ class ProLogicSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # Check if login failed
+        self.check_if_logged_in(response)
 
         # update stats
         self.crawler.stats.set_value("forum/forum_count", len(all_forums))

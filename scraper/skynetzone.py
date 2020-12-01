@@ -43,6 +43,9 @@ class SkyNetZoneSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+    
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@data-sitekey]/@data-sitekey'
 

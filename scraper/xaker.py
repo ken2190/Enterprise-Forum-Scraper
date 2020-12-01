@@ -48,6 +48,9 @@ class XakerSpider(SitemapSpider):
 
     avatar_xpath = '//div[contains(@class,"avatarHolder")]//img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "errorPanel")]'
+
     # captcha stuffs
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
 
@@ -141,6 +144,9 @@ class XakerSpider(SitemapSpider):
         if response.status in [503, 403]:
             yield from self.parse_captcha(response)
             return
+
+        # Check if login failed
+        self.check_if_logged_in(response)
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()

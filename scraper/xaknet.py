@@ -14,7 +14,7 @@ from scraper.base_scrapper import (
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 2
 
-USER = 'vrx9'
+USER = 'vrx91'
 PASS = '4hr63yh38a'
 
 
@@ -43,6 +43,9 @@ class XaknetSpider(SitemapSpider):
     post_date_xpath = '//div/a/time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
+
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
 
     # Other settings
     use_proxy = True
@@ -98,6 +101,10 @@ class XaknetSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

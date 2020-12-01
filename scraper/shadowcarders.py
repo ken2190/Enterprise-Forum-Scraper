@@ -61,6 +61,9 @@ class ShadowCardersSpider(SitemapSpider):
 
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "errorPanel")]'
+    
     # Regex stuffs
     topic_pattern = re.compile(
         r".(\d+)/",
@@ -164,6 +167,9 @@ class ShadowCardersSpider(SitemapSpider):
 
         # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()

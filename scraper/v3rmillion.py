@@ -49,6 +49,9 @@ class V3RMillionSpider(SitemapSpider):
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//span[@class=\"post_date\"]/text()[1]"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # Avatar xpath #
     avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"
 
@@ -129,6 +132,9 @@ class V3RMillionSpider(SitemapSpider):
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 

@@ -41,6 +41,9 @@ class SinisterSpider(SitemapSpider):
                       '//span[@class="post_date postbit_date"]/span[@title]/@title'
     avatar_xpath = '//div[@class="author_avatar postbit_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r"avatar_(\d+\.\w+)",
