@@ -124,6 +124,8 @@ class BaseTemplate:
                                     self.missing_header_folder
                                 )
                                 self.missing_header_file_limit-=1
+                            else:
+                                break
                         continue
                 # extract comments
                 comments.extend(self.extract_comments(html_response, pagination))
