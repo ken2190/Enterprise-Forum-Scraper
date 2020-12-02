@@ -20,6 +20,7 @@ class BaseTemplate:
         self.error_folder = f"{self.output_folder}/Errors"
         self.missing_header_folder = f"{self.output_folder}/Missing_Date&Author"      # path for backup template without Avatar, Date, Author
         self.missing_header_file_limit = 50
+        self.checkonly = kwargs.get('checkonly')
         self.thread_id = None
         self.comment_pattern = None
         self.encoding = None
@@ -116,14 +117,13 @@ class BaseTemplate:
                     if error_msg:
                         print(error_msg)
                         print('----------------------------------------\n')
-                        utils.handle_missing_header(
-                            template,
-                            self.missing_header_folder
-                        )
-                        self.missing_header_file_limit-=1
-
-                        if self.missing_header_file_limit == 0:
-                            break
+                        if self.checkonly:
+                            if self.missing_header_file_limit > 0:
+                                utils.handle_missing_header(
+                                    template,
+                                    self.missing_header_folder
+                                )
+                                self.missing_header_file_limit-=1
                         continue
                 # extract comments
                 comments.extend(self.extract_comments(html_response, pagination))

@@ -124,6 +124,10 @@ main_parser_arguments = [
     {
         "args": ("-post", '--post'),
         "kwargs": {"help": 'Post processing', "action": 'store_true'}
+    },
+    {
+        "args": ("-c", '--checkonly'),
+        "kwargs": {"help": 'Limit missing author and date file', "action": 'store_true'}
     }
 ]
 
