@@ -125,6 +125,8 @@ class BaseTemplate:
                                 )
                                 self.missing_header_file_limit-=1
                             else:
+                                print("----------------------------------\n")
+                                print("Found 50 Files with missing header or date")
                                 break
                         continue
                 # extract comments
