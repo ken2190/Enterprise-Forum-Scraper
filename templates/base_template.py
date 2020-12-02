@@ -19,6 +19,7 @@ class BaseTemplate:
         self.distinct_files = set()
         self.error_folder = f"{self.output_folder}/Errors"
         self.missing_header_folder = f"{self.output_folder}/Missing_Date&Author"      # path for backup template without Avatar, Date, Author
+        self.missing_header_file_limit = 50
         self.thread_id = None
         self.comment_pattern = None
         self.encoding = None
@@ -119,6 +120,10 @@ class BaseTemplate:
                             template,
                             self.missing_header_folder
                         )
+                        self.missing_header_file_limit-=1
+
+                        if self.missing_header_file_limit == 0:
+                            break
                         continue
                 # extract comments
                 comments.extend(self.extract_comments(html_response, pagination))
