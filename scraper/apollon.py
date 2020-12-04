@@ -104,6 +104,7 @@ class ApollonSpider(MarketPlaceSpider):
             url=self.login_url,
             headers=self.headers,
             callback=self.parse_login,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,

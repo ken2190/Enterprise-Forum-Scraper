@@ -19,6 +19,18 @@ import dateparser
 import dateutil.parser as dparser
 import requests
 import scrapy
+from scrapy.spidermiddlewares.httperror import HttpError
+from twisted.internet.error import (
+    ConnectError,
+    ConnectionDone,
+    ConnectionLost,
+    ConnectionRefusedError,
+    DNSLookupError,
+    TCPTimedOutError,
+    TimeoutError,
+)
+from scrapy.core.downloader.handlers.http11 import TunnelError
+
 # from anticaptchaofficial.recaptchav2proxyon import *
 # from anticaptchaofficial.recaptchav2proxyless import *
 from anticaptchaofficial.hcaptchaproxyless import *
@@ -1417,6 +1429,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 url=self.sitemap_url,
                 headers=self.headers,
                 callback=self.parse_sitemap,
+                errback=self.check_site_error,
                 dont_filter=True,
                 meta=meta
             )
@@ -1424,6 +1437,7 @@ class SitemapSpider(BypassCloudfareSpider):
             yield Request(
                 url=self.base_url,
                 headers=self.headers,
+                errback=self.check_site_error,
                 dont_filter=True,
                 meta=meta
             )
@@ -1540,6 +1554,30 @@ class SitemapSpider(BypassCloudfareSpider):
             login_failed = response.xpath(self.login_failed_xpath).extract()
             if len(login_failed):
                 raise CloseSpider(reason='login_is_failed')
+
+    def check_site_error(self, failure):
+        # check if site has error
+        self.logger.error(repr(failure.value))
+
+        if failure.check(HttpError):
+            response = failure.value.response
+            self.logger.error('HttpError on %s', response.url)
+            raise CloseSpider(reason='site_is_down')
+
+        elif failure.check(DNSLookupError):
+            request = failure.request
+            self.logger.error('DNSLookupError on %s', request.url)
+            raise CloseSpider(reason='site_is_down')
+
+        elif failure.check(TimeoutError):
+            request = failure.request
+            self.logger.error('TimeoutError on %s', request.url)
+            raise CloseSpider(reason='site_is_down')
+
+        elif failure.check(TunnelError):
+            request = failure.request
+            self.logger.error('TunnelError on %s', request.url)
+            raise CloseSpider(reason='site_is_down')
 
     def parse(self, response):
         # Synchronize cloudfare user agent

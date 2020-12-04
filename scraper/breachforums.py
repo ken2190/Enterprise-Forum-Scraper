@@ -84,6 +84,7 @@ class BreachForumsSpider(SitemapSpider):
             url=login_url,
             formdata=form_data,
             callback=self.parse,
+            errback=self.check_site_error,
             dont_filter=True,
         )
 
