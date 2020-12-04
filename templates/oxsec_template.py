@@ -13,7 +13,7 @@ class ox00secParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//div[@class="topic-body crawler-post"]|//article[contains(@id,"post_")]'
         self.header_xpath = '//div[@class="topic-body crawler-post"]|//article[contains(@id,"post_")]'
-        self.date_xpath = './/time[@itemprop="datePublished"]/@datetime'
+        self.date_xpath = './/time[@itemprop="datePublished"]/@datetime|.//meta[@itemprop="datePublished"]/@content'
         self.author_xpath = './/span[@class="creator"]/a/descendant::text()'
         self.title_xpath = '//meta[@itemprop="headline"]/@content'
         self.post_text_xpath = './/div[@itemprop="articleBody"]/descendant::text()'
