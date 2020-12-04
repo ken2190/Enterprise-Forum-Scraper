@@ -23,12 +23,25 @@ class AntichatParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//ol[@class="messageList"]/li'
         self.header_xpath = '//ol[@class="messageList"]/li'
-        self.date_xpath = 'div//a[@class="datePermalink"]/span/text()'
+        self.date_xpath = 'div//a[@class="datePermalink"]/span/text()|div//a[@class="datePermalink"]/abbr/@data-datestring'
         self.date_pattern = '%d %b  %Y'
         self.author_xpath = 'div//div[@class="uix_userTextInner"]/a[@class="username"]//text()'
         self.title_xpath = '//div[@class="titleBar"]/h1/text()'
         self.post_text_xpath = 'div//blockquote[contains(@class,"messageText")]//text()'
         self.comment_block_xpath = 'div//div[@class="messageDetails"]/a/text()'
         self.avatar_xpath = 'div//div[@class="uix_avatarHolderInner"]/a/img/@src'
+        self.moderator_avartar_xpath = 'div//div[@class="uix_avatarHolderInner"]/a[contains(@href,"members/1/")]'
         # main function
         self.main()
+
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if author:
+            author = ''.join(author).strip()
+            return author
+        else:
+            moderator_avartar = tag.xpath(self.moderator_avartar_xpath)
+            if moderator_avartar:
+                return 'moderator'
+            else:
+                return ''
