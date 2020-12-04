@@ -223,6 +223,7 @@ class BaseTemplate:
                     'author': user,
                 }
                 if comment_date:
+                    comment_date = str(float(comment_date)*1000)
                     source.update({
                         'date': comment_date
                     })
