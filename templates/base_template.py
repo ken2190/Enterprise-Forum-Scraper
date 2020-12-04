@@ -292,7 +292,7 @@ class BaseTemplate:
 
         # check if date is already a timestamp
         try:
-            date = dateparser.parse(date).timestamp()*1000
+            date = dateparser.parse(date).timestamp()
             return str(date)
         except:
             try:
