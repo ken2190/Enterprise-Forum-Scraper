@@ -171,6 +171,7 @@ class BaseTemplate:
                 'message': post_text.strip(),
             }
             if date:
+                date = str(float(date)*1000)
                 source.update({
                    'date': date
                 })
@@ -299,7 +300,7 @@ class BaseTemplate:
                 return date
             except:
                 try:
-                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()*1000
+                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
                     return str(date)
                 except:
                     pass
