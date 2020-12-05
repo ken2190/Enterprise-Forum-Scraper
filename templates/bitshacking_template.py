@@ -22,7 +22,8 @@ class BitsHackingParser(BaseTemplate):
         self.comments_xpath = '//div[@class="message-inner"]'
         self.header_xpath = '//div[@class="message-inner"]'
         self.date_xpath = './/time/text()'
-        self.author_xpath = './/span[contains(@class,"username--style2")]/text()'
+        self.author_xpath = './/span[contains(@class,"username--style2")]/text()|'\
+            './/div[contains(@class, "message-userDetails")]//h4[contains(@class,"message-name")]//text()'
         self.title_xpath = '//h1[@class="p-title-value"]/text()'
         self.post_text_xpath =  './/article[contains(@class,"message-body js-selectToQuote")]/descendant::text()[not(ancestor::blockquote)]'
         self.comment_block_xpath = './/ul[@class="message-attribution-opposite message-attribution-opposite--list"]/li[last()]/a/text()'
