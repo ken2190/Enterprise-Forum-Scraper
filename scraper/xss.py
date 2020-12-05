@@ -11,8 +11,10 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 # USER = "thecreator101@protonmail.com"
 # PASS = "Night#Xss01"
 
-USER = "cyrax6626"
-PASS = "#@nightlion6626"
+# USER = "cyrax6626"
+# PASS = "#@nightlion6626"
+USER = "nunofragoso"
+PASS = "xss#123"
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
@@ -53,7 +55,8 @@ class XSSSpider(SitemapSpider):
     pagination_pattern = re.compile(r".*page-(\d+)$", re.IGNORECASE)
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
+    use_vip_proxy = True
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
 
