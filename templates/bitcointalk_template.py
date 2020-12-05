@@ -16,8 +16,8 @@ class BitCoinTalkParser(BaseTemplate):
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
-        self.comments_xpath = '//td[contains(@class,"windowbg") and not(@valign)]'
-        self.header_xpath = '//td[contains(@class,"windowbg") and not(@valign)]'
+        self.comments_xpath = '//tr[@class]//td[contains(@class,"windowbg") and not(@valign)]'
+        self.header_xpath = '//tr[@class]//td[contains(@class,"windowbg") and not(@valign)]'
         self.date_xpath = 'table//td[@valign="middle"]/div[@class="smalltext"]/text()'
         self.date_pattern = '%B %d, %Y, %I:%M:%S %p'
         self.author_xpath = 'table//td[@class="poster_info"]/b/a/text()'
