@@ -19,6 +19,8 @@ class BaseTemplate:
         self.distinct_files = set()
         self.error_folder = f"{self.output_folder}/Errors"
         self.missing_header_folder = f"{self.output_folder}/Missing_Date&Author"      # path for backup template without Avatar, Date, Author
+        self.missing_header_file_limit = 50
+        self.checkonly = kwargs.get('checkonly')
         self.thread_id = None
         self.comment_pattern = None
         self.encoding = None
@@ -115,10 +117,17 @@ class BaseTemplate:
                     if error_msg:
                         print(error_msg)
                         print('----------------------------------------\n')
-                        utils.handle_missing_header(
-                            template,
-                            self.missing_header_folder
-                        )
+                        if self.checkonly:
+                            if self.missing_header_file_limit > 0:
+                                utils.handle_missing_header(
+                                    template,
+                                    self.missing_header_folder
+                                )
+                                self.missing_header_file_limit-=1
+                            else:
+                                print("----------------------------------\n")
+                                print("Found 50 Files with missing header or date")
+                                break
                         continue
                 # extract comments
                 comments.extend(self.extract_comments(html_response, pagination))
@@ -162,6 +171,7 @@ class BaseTemplate:
                 'message': post_text.strip(),
             }
             if date:
+                date = str(float(date)*1000)
                 source.update({
                    'date': date
                 })
@@ -213,6 +223,7 @@ class BaseTemplate:
                     'author': user,
                 }
                 if comment_date:
+                    comment_date = str(float(comment_date)*1000)
                     source.update({
                         'date': comment_date
                     })
@@ -282,7 +293,7 @@ class BaseTemplate:
 
         # check if date is already a timestamp
         try:
-            date = dateparser.parse(date).timestamp()*1000
+            date = dateparser.parse(date).timestamp()
             return str(date)
         except:
             try:
@@ -290,7 +301,7 @@ class BaseTemplate:
                 return date
             except:
                 try:
-                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()*1000
+                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
                     return str(date)
                 except:
                     pass

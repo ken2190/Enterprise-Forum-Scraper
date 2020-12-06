@@ -40,8 +40,11 @@ class OdayParser(BaseTemplate):
             )
         if not author:
             author = tag.xpath(
-                'tr[1]//td/strong/span/a/text()'
+                'tr[1]//td/strong/span/a//text()'
             )
-
+        if not author:
+            author = tag.xpath(
+                'tr[1]//td/strong/span//s/text()'
+            )
         author = author[0].strip() if author else None
         return author

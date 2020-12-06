@@ -28,7 +28,7 @@ class Parser:
 
             Optional:
             -l | --list:               List available parsers (tempalte namess)
-
+            -c | --checkonly           Limit missing author and date file
             """
 
         parser_name = self.kwargs.get('template')
