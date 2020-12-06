@@ -65,6 +65,9 @@ def write_json(file_pointer, data):
     """
     writes `data` in file object `file_pointer`.
     """
+    if data["_source"].get('date'):
+        data["_source"]["date"] = str(float(data["_source"]["date"])*1000)
+    
     json_file = json.dumps(data, indent=4, ensure_ascii=False)
     file_pointer.write(json_file)
     file_pointer.write('\n')
