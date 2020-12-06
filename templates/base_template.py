@@ -55,7 +55,7 @@ class BaseTemplate:
         sorted_files = sorted(
             filtered_files,
             key=lambda x: (int(self.thread_name_pattern.search(x).group(1)),
-                           int(self.pagination_pattern.search(x).group(1))))
+                           int(self.pagination_pattern.search(x).group(1)) if self.pagination_pattern.search(x) else 0))
 
         return sorted_files
 
