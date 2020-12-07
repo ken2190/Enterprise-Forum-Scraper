@@ -94,7 +94,15 @@ class CrackingProParser(BaseTemplate):
             author = tag.xpath(
                 'aside//a[@class="ipsType_break"]/text()'
             )
-        author = author[0].strip() if author else None
+        if not author:
+            author = tag.xpath(
+                'aside//div[contains(@class, "lkComment_author")]/descendant::text()'
+            )
+        if not author:
+            author = tag.xpath(
+                './/h3[contains(@class, "cAuthorPane_author")]/strong/text()'
+            )
+        author = ' '.join(author).strip() if author else None
 
         return author
 
