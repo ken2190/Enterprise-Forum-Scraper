@@ -2,6 +2,7 @@
 import re
 # import locale
 import dateutil.parser as dparser
+import dateparser
 from datetime import date, timedelta
 
 from .base_template import BaseTemplate
@@ -23,8 +24,9 @@ class CyberForumParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
         self.header_xpath = '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
-        self.date_xpath = './/td[contains(@class,"alt2 smallfont")][1]//text()'
-        self.author_xpath = './/span[contains(@class,"bigusername")]//text()'
+        self.date_xpath_1 = './/td[contains(@class,"alt2 smallfont")][1]//text()'
+        self.date_xpath_2 = './/div[contains(@class,"smallfont shade")]/text()'
+        self.author_xpath = './/*[contains(@class,"bigusername")]//text()'
         self.title_xpath = '//h1/text()'
         self.post_text_xpath = './/div[contains(@id, "post_message")]//text()[not(ancestor::div[@class="quote_container"])]'
         self.comment_block_xpath = './/td[contains(@class,"alt2 smallfont")][2]//b/text()'
@@ -47,31 +49,29 @@ class CyberForumParser(BaseTemplate):
         return sorted_files
 
     def get_date(self, tag):
-        date_block = tag.xpath(self.date_xpath)[0]
+        date_block = tag.xpath(self.date_xpath_1)
+        date = date_block[0].strip() if date_block else None
 
         if not date:
-            return ""
+            date_block = tag.xpath(self.date_xpath_2)
+            date = date_block[0].strip() if date_block else None
 
-        Date = date_block.strip()
-
+        # check if date is already a timestamp
         try:
-            Date = dparser.parse(Date).timestamp()
-            return str(Date)
-        except Exception:
-            if not Date:
-                return ''
+            date = dateparser.parse(date).timestamp()
+            return str(date)
+        except:
+            try:
+                date = float(date)
+                return date
+            except:
+                try:
+                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+                    return str(date)
+                except:
+                    pass
 
-            Date = Date.split(',')
-
-            if ord(Date[0][-1]) == 1072:
-                day = date.today() - timedelta(days=1)
-            else:
-                day = date.today()
-
-            toparse = day.strftime("%B %d, %Y") + Date[-1]
-            Date = dparser.parse(toparse).timestamp()
-
-            return str(Date)
+        return ""
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(

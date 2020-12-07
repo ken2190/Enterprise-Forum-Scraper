@@ -120,6 +120,10 @@ class FuckavParser(BaseTemplate):
                 'tr//a[@class="bigusername"]/font/text()'
             )
 
+        if not author:
+            author = tag.xpath(
+                './/td[@class="pb_name"]/div[contains(@id, "postmenu_")]/descendant::text()'
+            )
         author = author[0].strip() if author else None
         return author
 
