@@ -46,6 +46,15 @@ class OmertaParser(BaseTemplate):
                 'tr//a[@class="bigusername"]/font/text()'
             )
 
+        if not author:
+            author = tag.xpath(
+                'tr//a[@class="bigusername"]/font//text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                './/td[@class="alt2"]/div[1]/text()'
+            )
         author = author[0].strip() if author else None
         return author
 

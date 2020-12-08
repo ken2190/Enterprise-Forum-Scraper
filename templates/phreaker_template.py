@@ -8,7 +8,7 @@ class PhreakerParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.parser_name = kwargs.get('parser_name')
+        self.parser_name = "phreaker.pro"
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
         )
@@ -20,7 +20,7 @@ class PhreakerParser(BaseTemplate):
         self.comments_xpath = '//div[@class="message-inner"]'
         self.header_xpath = '//div[@class="message-inner"]'
         self.date_xpath = 'div//div[@class="message-attribution-main"]/a/time/@data-time'
-        self.author_xpath = 'div//div[@class="message-userDetails"]/h4/a/text()'
+        self.author_xpath = 'div//div[@class="message-userDetails"]/h4/*/text()'
         self.title_xpath = '//h1[@class="p-title-value"]/text()'
         self.post_text_xpath = 'div//article/div[@class="bbWrapper"]/descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = 'div//div[@class="message-avatar-wrapper"]/a/img/@alt'
