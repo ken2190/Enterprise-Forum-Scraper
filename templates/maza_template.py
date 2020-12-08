@@ -18,10 +18,12 @@ class MazaParser(BaseTemplate):
         self.avatar_name_pattern = re.compile(r'u=(\d+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.mode = 'r'
-        self.comments_xpath = '//ol[@id="posts"]/li'
-        self.header_xpath = '//ol[@id="posts"]/li'
+        self.comments_xpath = '//li[contains(@class,"postcontainer")]'
+        self.header_xpath = '//li[contains(@class,"postcontainer")]'
         self.date_xpath =  './/span[@class="time"]/preceding-sibling::text()'
-        self.author_xpath = './/div[@class="username_container"]//a[contains(@href, "member.php")]/descendant::text()'
+        self.author_xpath = './/div[contains(@class,"username_container")]//strong//text()|'\
+                            './/div[contains(@class,"username_container")]//span[contains(@class, "username")]/descendant::text()|'\
+                            './/div[contains(@class,"username_container")]//span[1]/a/text()'
         self.title_xpath = '//span[@class="threadtitle"]/a/text()'
         self.post_text_xpath = './/blockquote[contains(@class,"postcontent restore")]/descendant::text()[not(ancestor::div[@class="bbcode_container"])]'
         self.avatar_xpath = './/a[@class="postuseravatar"]/@href'
@@ -46,6 +48,16 @@ class MazaParser(BaseTemplate):
             ))
 
         return sorted_files
+
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if author:
+            author = ''.join(author).strip()
+            return author
+        else:
+            author = tag.xpath('.//span[contains(@class, "usertitle")]/text()')
+            author = ''.join(author).strip()
+            return author
 
     def extract_comments(self, html_response, pagination):
         comments = list()
@@ -85,17 +97,6 @@ class MazaParser(BaseTemplate):
             })
 
         return comments
-
-    def get_author(self, tag):
-        author = tag.xpath(self.author_xpath)
-        if not author:
-            author = tag.xpath(
-                './/div[@class="username_container"]'
-                '/span[contains(@class,"username")]'
-                '/descendant::text()'
-            )
-
-        return author[0].strip() if author else None
 
     def get_comment_id(self, tag):
         comment_block = tag.xpath(self.comment_block_xpath)
