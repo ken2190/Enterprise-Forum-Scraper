@@ -51,5 +51,10 @@ class ProLogicParser(BaseTemplate):
                 'h3//span[@class="author vcard"]/descendant::text()'
             )
 
+        if not author:
+            author = tag.xpath(
+                'h3//div[@class="post_username"]/text()'
+            )
+
         author = ''.join(author).strip() if author else None
         return author
