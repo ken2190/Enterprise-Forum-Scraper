@@ -8,7 +8,7 @@ from .base_template import BaseTemplate
 class CardingSchoolParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(kwargs)
+        super().__init__(*args, **kwargs)
         self.parser_name = "carding.school"
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
