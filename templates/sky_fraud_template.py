@@ -51,6 +51,9 @@ class SkyFraudParser(BaseTemplate):
             author = tag.xpath(
                 'aside/div[@class="post-username"]/span/text()'
             )
-
+        if not author:
+            author = tag.xpath(
+                'table//a[@class="bigusername"]/span//text()'
+            )
         author = author[0].strip() if author else None
         return author
