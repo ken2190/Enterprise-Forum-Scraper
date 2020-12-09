@@ -10,12 +10,6 @@ class CardingSchoolParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(kwargs)
         self.parser_name = "carding.school"
-        self.thread_name_pattern = re.compile(
-            r'(\d+).*html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'\d+-(\d+)\.html'
-        )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//article[@id]'
