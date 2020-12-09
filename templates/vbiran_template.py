@@ -19,10 +19,9 @@ class VbiranParser(BaseTemplate):
         )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
-        self.comments_xpath = '//li[contains(@class,"postcontainer")]'
-        self.header_xpath = '//li[contains(@class,"postcontainer")]'
+        self.comments_xpath = '//li[contains(@id,"post_")]'
+        self.header_xpath = '//li[contains(@id,"post_")]'
         self.date_xpath = './/span[@class="date"]//text()'
-        self.author_xpath = './/a[contains(@class,"username")]//descendant::text()'
         self.title_xpath = '//span[contains(@class,"threadtitle")]//descendant::text()'
         self.post_text_xpath = './/div[contains(@class,"postbody")]//div[@class="content"]//descendant::text()[not(ancestor::div[@class="quote_container"])]'
         self.avatar_xpath = './/div[contains(@class,"userinfo")]//a[@class="postuseravatar"]//img/@src'
@@ -44,6 +43,17 @@ class VbiranParser(BaseTemplate):
                            self.pagination_pattern.search(x).group(1)))
 
         return sorted_files
+
+    def get_author(self, tag):
+        author = tag.xpath(
+            './/a[contains(@class,"username")]//text()'
+        )
+        if not author:
+            author = tag.xpath(
+                './/span[contains(@class,"username")]//descendant::text()'
+            )
+        author = author[0].strip() if author else None
+        return author
 
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)
