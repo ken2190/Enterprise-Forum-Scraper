@@ -14,8 +14,8 @@ class CrackedToParser(BaseTemplate):
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.comments_xpath = '//div[contains(@class, "post-box")]'
         self.header_xpath = '//div[contains(@class, "post-box")]'
-        self.date_xpath = './/span[@class="post_date"]//@title|'\
-            './/span[@class="post_date"]/descendant::text()'
+        self.date_xpath_1 = './/span[@class="post_date"]/text()'
+        self.date_xpath_2 = './/span[@class="post_date"]/span/@title'
         self.date_pattern = "%H:%M %p - %d %B, %Y"
         self.title_xpath = '//div[@class="thread-header"]/h1/text()'
         self.comment_block_xpath = './/span[contains(@class, "posturl")]//strong/a/text()|'\
@@ -52,10 +52,12 @@ class CrackedToParser(BaseTemplate):
         return post_text.strip()
 
     def get_date(self, tag):
-        date_block = tag.xpath(self.date_xpath)
-        date = ' '.join(date_block).replace("OP", '').strip() if date_block else None
+        date_block = tag.xpath(self.date_xpath_1)
+        date = date_block[0].strip() if date_block else None
+
         if not date:
-            return ""
+            date_block = tag.xpath(self.date_xpath_2)
+            date = date_block[0].strip() if date_block else None
 
         # check if date is already a timestamp
         try:
