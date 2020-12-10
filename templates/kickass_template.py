@@ -13,7 +13,7 @@ class KickAssParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         self.parser_name = "kickass"
         self.thread_name_pattern = re.compile(
-            r'(\d+).*html'
+            r'(\d+).*html$'
         )
         self.uid_pattern = re.compile(
             r'UID-(\d+)\.html'
@@ -33,6 +33,19 @@ class KickAssParser(BaseTemplate):
         # main function
         self.main()
 
+    def get_filtered_files(self, files):
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: (self.thread_name_pattern.search(x).group(1),
+                           x.split("-")[-1]))
+        return sorted_files
+        
     def extract_user_profile(self, html_response):
         data = dict()
         username = html_response.xpath(
@@ -90,7 +103,7 @@ class KickAssParser(BaseTemplate):
                 file_name_only = template.split('/')[-1]
                 uid_match = self.uid_pattern.findall(file_name_only)
                 if uid_match:
-                    self.process_user_profile(uid_match[0], html_response)
+                    # self.process_user_profile(uid_match[0], html_response)
                     continue
                 match = self.thread_name_pattern.findall(file_name_only)
                 if not match:
