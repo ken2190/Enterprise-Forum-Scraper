@@ -36,7 +36,7 @@ class KickAssParser(BaseTemplate):
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
+                lambda x: re.compile(r'^\d+(-|)\d+.html$').match(x.split('/')[-1]) is not None,
                 files
             )
         )
