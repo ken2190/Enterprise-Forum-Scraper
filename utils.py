@@ -61,7 +61,7 @@ def get_html_response(template, pattern=None, encoding=None, mode='rb'):
             return
         return html_response
 
-def write_json(file_pointer, data):
+def write_json(file_pointer, data, check=False):
     """
     writes `data` in file object `file_pointer`.
     """
@@ -75,16 +75,19 @@ def write_json(file_pointer, data):
     """
     check if `data` has no `author` and no `date`.
     """
-    msg = ""
-    if not data['_source'].get('author'):
-        msg = f'ERROR: Null Author Detected. pid={data["_source"]["pid"]};'
-        if data['_source'].get('cid'):
-            msg += f' cid={data["_source"]["cid"]};'
-    elif not data['_source'].get('date'):
-        msg = f'ERROR: Date not present. pid={data["_source"]["pid"]};'
-        if data['_source'].get('cid'):
-            msg += f' cid={data["_source"]["cid"]};'
-    return msg
+    if check:
+        msg = ""
+        if not data['_source'].get('author'):
+            msg = f'ERROR: Null Author Detected. pid={data["_source"]["pid"]};'
+            if data['_source'].get('cid'):
+                msg += f' cid={data["_source"]["cid"]};'
+        elif not data['_source'].get('date'):
+            msg = f'ERROR: Date not present. pid={data["_source"]["pid"]};'
+            if data['_source'].get('cid'):
+                msg += f' cid={data["_source"]["cid"]};'
+        return msg
+    else:
+        return ""
 
 def write_comments(file_pointer, comments, output_file):
     if not output_file:
