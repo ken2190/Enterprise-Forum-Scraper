@@ -105,12 +105,13 @@ class LCPCCParser(BaseTemplate):
         if not author:
             return ''
 
+        author = ' '.join(author)
         pattern = re.compile(r'\.\s*(.*),')
-        match = pattern.findall(author[0].strip())
+        match = pattern.findall(author.strip())
         if not match:
             return
 
-        return match[0]
+        return re.sub(r'\[.*?\]', '', match[0])
 
     def get_comment_id(self, tag):
         comment_block = tag.xpath(self.comment_block_xpath)

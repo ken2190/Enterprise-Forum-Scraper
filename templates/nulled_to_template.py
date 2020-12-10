@@ -18,7 +18,8 @@ class NulledToParser(BaseTemplate):
         self.comments_xpath = '//div[contains(@id, "post_id_")]/div[@class="post_wrap"]'
         self.header_xpath = '//div[contains(@id, "post_id_")]/div[@class="post_wrap"]'
         self.date_xpath = 'div/div[@class="post_date"]/abbr/@title'
-        self.author_xpath = 'div[@class="author_info clearfix"]//span[@class="author vcard"]/a/span/span/text()'
+        self.author_xpath = 'div[@class="author_info clearfix"]//span[@class="author vcard"]/a/span/span/text()|'\
+            'div[@class="author_info clearfix"]//span[@class="author vcard"]//text()'
         self.title_xpath = '//div[@class="maintitle clear clearfix"]/span/text()'
         self.post_text_xpath = 'div//section[@id="nulledPost"]/descendant::text()'
         self.avatar_xpath = 'div//li[@class="avatar"]/img/@src'
