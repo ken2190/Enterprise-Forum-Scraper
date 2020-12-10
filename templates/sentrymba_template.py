@@ -10,7 +10,7 @@ class SentryMBAParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         self.parser_name = "sentry.mba"
         self.thread_name_pattern = re.compile(
-            r'(\d+).*html'
+            r'(\d+).*html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
@@ -27,6 +27,19 @@ class SentryMBAParser(BaseTemplate):
         # main function
         self.main()
 
+    def get_filtered_files(self, files):
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: (self.thread_name_pattern.search(x).group(1),
+                           x.split("-")[-1]))
+        return sorted_files
+        
     def get_author(self, tag):
         author = tag.xpath(self.author_xpath)
         if not author:
