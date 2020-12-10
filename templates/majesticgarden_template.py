@@ -22,6 +22,8 @@ class MajesticGardenParser(BaseTemplate):
         self.main()
 
     def get_title(self, tag):
-        title = tag.xpath(self.title_xpath)[2].split("Topic: ")[1].split("(")[0]
+        title_blocks = tag.xpath(self.title_xpath)
+        title = ''.join(title_blocks)
+        title = title.split("Topic:")[1].strip().split("(")[0]
         title = title.strip().split(']')[-1] if title else None
         return title

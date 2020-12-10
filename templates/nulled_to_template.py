@@ -11,6 +11,9 @@ class NulledToParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser_name = "nulled.to"
+        self.thread_name_pattern = re.compile(
+            r'(\d+).*html$'
+        )
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.comments_xpath = '//div[contains(@id, "post_id_")]/div[@class="post_wrap"]'
         self.header_xpath = '//div[contains(@id, "post_id_")]/div[@class="post_wrap"]'
@@ -27,3 +30,16 @@ class NulledToParser(BaseTemplate):
 
         # main function
         self.main()
+
+    def get_filtered_files(self, files):
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: (self.thread_name_pattern.search(x).group(1),
+                           x.split("-")[-1]))
+        return sorted_files
