@@ -15,7 +15,8 @@ class MarviherParser(BaseTemplate):
         self.header_xpath = '//article[@id]'
         self.date_xpath = 'div//div[@class="ipsType_reset"]//time/@title'
         self.date_pattern = "%d.%m.%Y %H:%M"
-        self.author_xpath = 'aside/h3/strong/a/text()'
+        self.author_xpath = 'aside/h3/strong/a/text()|'\
+            'aside/h3/strong//text()'
         self.title_xpath = '//span[@class="ipsType_break ipsContained"]/span/text()'
         self.post_text_xpath = 'div//div[@data-role="commentContent"]/descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = 'aside//li[@class="cAuthorPane_photo"]//a/img/@src'

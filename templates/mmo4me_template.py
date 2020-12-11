@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 import re
 # import locale
+import dateparser
 
 from .base_template import BaseTemplate
 
@@ -22,8 +23,8 @@ class Mmo4meParser(BaseTemplate):
         self.comments_xpath = '//article[contains(@class,"message--post")]'
         self.header_xpath = '//article[contains(@class,"message--post")]'
         self.title_xpath = '//h1[@class="p-title-value"]//text()'
-        self.date_xpath = './/time//text()'
-        self.author_xpath = './/div[@class="message-userDetails"]/h4/a//text()'
+        self.date_xpath_1 = './/time/@datetime'
+        self.date_xpath_2 = './/div[@data-lb-caption-desc]/@data-lb-caption-desc'
         self.post_text_xpath = './/article[contains(@class,"selectToQuote")]/descendant::text()[not(ancestor::div[contains(@class,"bbCodeBlock--quote")])]'
         self.avatar_xpath = './/div[@class="message-avatar "]//img/@src'
         self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite")]/li[2]/a/text()'
@@ -45,3 +46,32 @@ class Mmo4meParser(BaseTemplate):
                            self.pagination_pattern.search(x).group(1)))
 
         return sorted_files
+
+    def get_author(self, tag):
+        author = tag.attrib['data-author']
+        return author.strip()
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath_1)
+        date = date_block[0].strip() if date_block else None
+
+        if not date:
+            date_block = tag.xpath(self.date_xpath_2)
+            date = date_block[0].split("·")[1].strip() if date_block else None
+
+        # check if date is already a timestamp
+        try:
+            date = dateparser.parse(date).timestamp()
+            return str(date)
+        except:
+            try:
+                date = float(date)
+                return date
+            except:
+                try:
+                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+                    return str(date)
+                except:
+                    pass
+
+        return ""

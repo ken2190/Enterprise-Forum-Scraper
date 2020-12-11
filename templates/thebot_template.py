@@ -20,7 +20,7 @@ class TheBOTParser(BaseTemplate):
         self.comments_xpath = '//div[@class="message-inner"]'
         self.header_xpath = '//div[@class="message-inner"]'
         self.date_xpath = './/div[@class="message-attribution-main"]/a/time/@data-time'
-        self.author_xpath = './/div[@class="message-userDetails"]/h4/a/text()'
+        self.author_xpath = './/div[@class="message-userDetails"]/h4/*/text()'
         self.title_xpath = '//h1[@class="p-title-value"]/text()'
         self.post_text_xpath = './/article/div[@class="bbWrapper"]/descendant::text()[not(ancestor::blockquote[contains(@class, "bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote")])]'
         self.avatar_xpath = './/div[@class="message-avatar-wrapper"]/a/img/@src'
@@ -51,7 +51,7 @@ class TheBOTParser(BaseTemplate):
         author = tag.xpath(self.author_xpath)
         if not author:
             author = tag.xpath(
-                './/div[@class="message-userDetails"]/h4/a/span/text()'
+                'div//div[@class="message-userDetails"]/h4/a/span/text()'
             )
 
         author = author[0].strip() if author else None

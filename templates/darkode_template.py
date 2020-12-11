@@ -23,10 +23,23 @@ class DarkodeParser(BaseTemplate):
         # main function
         self.main()
 
+    def get_filtered_files(self, files):
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: (int(self.thread_name_pattern.search(x).group(1))))
+
+        return sorted_files
+
     def extract_comments(self, html_response, pagination):
         comments = list()
         comment_blocks = html_response.xpath(
-          '//table[@class="forumline"]/tbody/tr'
+          '//table[@class="forumline"]/tbody/tr[not(contains(.,"Total Vote"))]'
         )
         for index, comment_block in enumerate(comment_blocks[3::3], 1):
             author_index = comment_blocks.index(comment_block) + 1
@@ -56,9 +69,15 @@ class DarkodeParser(BaseTemplate):
                 return
             # ---------------extract header data ------------
             header = html_response.xpath(
-                '//table[@class="forumline"]/tbody/tr'
+                '//table[@class="forumline"]/tbody/tr[not(contains(.,"Total Vote"))]'
             )
             if not header:
+                return
+
+            thread_header = header[1].xpath(
+                '//th[@class="thLeft" and contains(text(), "Author")]'
+            )
+            if not thread_header:
                 return
 
             title = self.get_title(html_response)
@@ -82,3 +101,17 @@ class DarkodeParser(BaseTemplate):
 
     def get_avatar(self, tag):
         pass
+
+    def get_author(self, tag):
+        author = tag.xpath(
+            'td//span[contains(@class,"postername")]//strong/text()'
+        )
+        if not author:
+            author = tag.xpath(
+                'td//span[contains(@class,"postername")]//strong//text()'
+            )
+
+        author = ''.join(author)
+
+        author = author.strip() if author else None
+        return author

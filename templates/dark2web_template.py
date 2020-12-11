@@ -20,7 +20,9 @@ class Dark2WebParser(BaseTemplate):
         self.post_text_xpath = 'div//div[@class="bbWrapper"]/descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = 'div//div[@class="message-avatar-wrapper"]/a/img/@src'
         self.comment_block_xpath = 'div//header[@class="message-attribution message-attribution--split"]//a/text()'
-        self.author_xpath = './/div[contains(@class, "nadavoi")]//a[contains(@class, "username")]//text()'
+        self.author_xpath = './/div[contains(@class, "nadavoi")]//a[contains(@class, "username")]//text()|'\
+            './/div[contains(@class, "message-userDetails-top")]//h4[contains(@class,"message-name")]//span/text()|'\
+            './/div[contains(@class, "message-userDetails-top")]//h4[contains(@class,"message-name")]//text()'
 
         # main function
         self.main()

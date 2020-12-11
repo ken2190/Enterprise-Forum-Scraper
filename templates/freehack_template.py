@@ -3,7 +3,7 @@ import re
 import traceback
 # import locale
 import utils
-import dateutil.parser as dparser
+import dateparser
 
 from .base_template import BaseTemplate
 
@@ -25,7 +25,8 @@ class FreeHackParser(BaseTemplate):
         self.comments_xpath = '//li[contains(@class,"postcontainer")]'
         self.header_xpath = '//li[contains(@class,"postcontainer")]'
         self.date_xpath = './/span[@class="date"]//text()'
-        self.author_xpath = './/a[contains(@class,"username")]//descendant::text()'
+        self.author_xpath = './/a[contains(@class,"username")]//descendant::text()|'\
+            './/div[contains(@class,"username_container")]//descendant::text()'
         self.title_xpath = '//span[contains(@class,"threadtitle")]//descendant::text()'
         self.post_text_xpath = './/div[contains(@class,"postbody")]//div[@class="content"]//descendant::text()[not(ancestor::div[@class="quote_container"])]'
         self.avatar_xpath = './/div[contains(@class,"userinfo")]//a[@class="postuseravatar"]//img/@src'
@@ -55,7 +56,7 @@ class FreeHackParser(BaseTemplate):
         date = date_block.strip() if date_block else ""
 
         try:
-            date = dparser.parse(date).timestamp()
+            date = dateparser.parse(date).timestamp()
             return str(date)
         except Exception:
             return ""

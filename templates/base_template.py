@@ -113,21 +113,20 @@ class BaseTemplate:
                     )
                     file_pointer = open(output_file, 'w', encoding='utf-8')
 
-                    error_msg = utils.write_json(file_pointer, data)
+                    error_msg = utils.write_json(file_pointer, data, self.checkonly)
                     if error_msg:
                         print(error_msg)
                         print('----------------------------------------\n')
-                        if self.checkonly:
-                            if self.missing_header_file_limit > 0:
-                                utils.handle_missing_header(
-                                    template,
-                                    self.missing_header_folder
-                                )
-                                self.missing_header_file_limit-=1
-                            else:
-                                print("----------------------------------\n")
-                                print("Found 50 Files with missing header or date")
-                                break
+                        if self.missing_header_file_limit > 0:
+                            utils.handle_missing_header(
+                                template,
+                                self.missing_header_folder
+                            )
+                            self.missing_header_file_limit-=1
+                        else:
+                            print("----------------------------------\n")
+                            print("Found 50 Files with missing header or date")
+                            break
                         continue
                 # extract comments
                 comments.extend(self.extract_comments(html_response, pagination))
@@ -171,7 +170,6 @@ class BaseTemplate:
                 'message': post_text.strip(),
             }
             if date:
-                date = str(float(date)*1000)
                 source.update({
                    'date': date
                 })
@@ -223,7 +221,6 @@ class BaseTemplate:
                     'author': user,
                 }
                 if comment_date:
-                    comment_date = str(float(comment_date)*1000)
                     source.update({
                         'date': comment_date
                     })

@@ -1,5 +1,6 @@
 # -- coding: utf-8 --
 import re
+import dateparser
 # import locale
 
 from .base_template import BaseTemplate
@@ -31,6 +32,31 @@ class RosanegraParser(BaseTemplate):
 
         # main function
         self.main()
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date = date_block[0].strip() if date_block else None
+
+        if not date:
+            return ""
+
+        # check if date is already a timestamp
+        try:
+            date = date[4:]
+            date = dateparser.parse(date).timestamp()
+            return str(date)
+        except:
+            try:
+                date = float(date)
+                return date
+            except:
+                try:
+                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+                    return str(date)
+                except:
+                    pass
+
+        return ""
 
     def get_filtered_files(self, files):
         filtered_files = list(

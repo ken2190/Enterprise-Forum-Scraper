@@ -27,7 +27,7 @@ class DevilteamParser(BaseTemplate):
         self.comments_xpath = '//div[@class="viewtopic_wrapper"]/div[contains(@class,"post")]'
         self.header_xpath = '//div[@class="viewtopic_wrapper"]/div[contains(@class,"post")]'
         self.date_xpath = './/p[@class="author"]/a/text()'
-        self.author_xpath = './/span[contains(@class,"username")]/text()'
+        self.author_xpath = './/span[contains(@class,"username")]/text()|.//span[contains(@class,"username")]//text()'
         self.post_text_xpath = './/div[@class="content"]/descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = './/img[@class="avatar"]/@src'
         self.title_xpath = '//h2[@class="topic-title"]/a/text()'

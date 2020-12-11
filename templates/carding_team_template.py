@@ -2,7 +2,7 @@
 import re
 # import locale
 import datetime
-import dateutil.parser as dparser
+import dateparser
 
 from .base_template import BaseTemplate
 
@@ -23,8 +23,8 @@ class CardingTeamParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//div[@class="newposts"]'
         self.header_xpath = '//div[@class="newposts"]'
-        self.date_xpath = 'div//span[@class="post_date2"]/text()'
-        self.author_xpath = 'div//strong/span[@class="largetext"]/a//text()'
+        self.date_xpath = 'div//span[@class="post_date2"]/descendant::text()'
+        self.author_xpath = 'div//strong/span[@class="largetext"]/descendant::text()'
         self.title_xpath = '//td[@class="thead"]/div/strong/text()'
         self.post_text_xpath = 'div//div[@class="post_body scaleimages"]/descendant::text()[not(ancestor::blockquote)]'
         self.comment_block_xpath = 'div//div[@class="float_right"]/strong/a/text()'
@@ -50,14 +50,15 @@ class CardingTeamParser(BaseTemplate):
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)
         date = date_block[0].strip() if date_block else ""
-        date = '2019 ' + date
         try:
+            date = str(datetime.datetime.now().year) + ' ' + date
             pattern = "%Y %A %d | %I:%M:%p"
             date = datetime.datetime.strptime(date, pattern).timestamp()
             return str(date)
         except Exception:
+            date = ' '.join(date_block)
             try:
-                date = dparser.parse(date).timestamp()
+                date = dateparser.parse(date).timestamp()
                 return str(date)
             except:
                 pass

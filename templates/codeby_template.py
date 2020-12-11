@@ -14,7 +14,7 @@ class CodebyParser(BaseTemplate):
         self.comments_xpath = '//article[contains(@class,"message--post")]'
         self.header_xpath = '//article[contains(@class,"message--post")]'
         self.title_xpath = '//h1[@class="p-title-value"]//text()'
-        self.author_xpath = './/span[contains(@class,"username")]//text()'
+        self.author_xpath = './/h4[contains(@class,"message-name")]//text()'
         self.post_text_xpath = './/article[contains(@class,"selectToQuote")]/descendant::text()[not(ancestor::div[contains(@class,"bbCodeBlock--quote")])]'
         self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite")]/li[2]/a/text()'
         self.avatar_xpath = './/div[@class="message-avatar "]//img/@src'

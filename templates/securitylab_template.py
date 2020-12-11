@@ -22,7 +22,7 @@ class SecurityLabParser(BaseTemplate):
         self.comments_xpath = '//table[contains(@class,"forum-post-table")]'
         self.header_xpath = '//table[contains(@class,"forum-post-table")]'
         self.date_xpath = './/div[contains(@class,"forum-post-date")]/span/text()'
-        self.author_xpath = './/div[contains(@class,"forum-user-name")]/span/text()'
+        self.author_xpath = './/div[contains(@class,"forum-user-name")]/*/text()'
         self.title_xpath = '//div[contains(@class,"forum-header-title")]//span//text()'
         self.post_text_xpath = './/div[contains(@class,"forum-post-text")]//text()[not(ancestor::table[@class="forum-quote"])]'
         self.avatar_xpath = './/img[contains(@class,"avatar")]/@src'
@@ -51,3 +51,11 @@ class SecurityLabParser(BaseTemplate):
         title = title.strip() if title else None
 
         return title
+
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if author:
+            author = ''.join(author).strip()
+            return author
+        else:
+            return 'Guest'
