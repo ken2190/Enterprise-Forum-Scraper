@@ -19,3 +19,23 @@ class AltenensParser(BaseTemplate):
 
         # main function
         self.main()
+
+    def get_author(self, tag):
+        author = tag.xpath(
+            'div//div[@class="message-userDetails"]/h4/a/text()'
+        )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/span/a/text()'
+            )
+
+        author = author[0].strip() if author else None
+        return author
