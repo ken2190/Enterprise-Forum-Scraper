@@ -201,6 +201,8 @@ from templates.whitehousemarket_template import WhiteHouseMarketParser
 from templates.monopoly_template import MonopolyParser
 from templates.silkroad4_template import SilkRoad4Parser
 from templates.breakingin_template import BreakinginParser
+from templates.cccmn_template import CccmnParser
+from templates.darkwebs_template import DarkwebsParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -405,4 +407,6 @@ PARSER_MAP = {
     'monopoly': MonopolyParser,
     'silk_road4': SilkRoad4Parser,
     'breakingin': BreakinginParser,
+    'ccc_mn': CccmnParser,
+    'darkwebs': DarkwebsParser,
 }
