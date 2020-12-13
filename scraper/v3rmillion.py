@@ -66,6 +66,9 @@ class V3RMillionSpider(SitemapSpider):
         re.IGNORECASE
     )
 
+    # Recaptcha stuffs
+    recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
+
     # Other settings
     use_proxy = True
     download_delay = REQUEST_DELAY
@@ -101,6 +104,11 @@ class V3RMillionSpider(SitemapSpider):
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
 
+        find_captcha = response.xpath(self.recaptcha_site_key_xpath)
+        captcha_response = ''
+        if find_captcha: 
+            captcha_response = self.solve_recaptcha(response).solution.token
+
         yield FormRequest.from_response(
             response=response,
             formcss=self.login_form_css,
@@ -108,7 +116,11 @@ class V3RMillionSpider(SitemapSpider):
                 "username": USER,
                 "password": PASS,
                 "code": "",
-                "_challenge": ""
+                "_challenge": "",
+                "submit": "Login",
+                "action": "do_login",
+                "url": "",
+                "g-recaptcha-response": captcha_response,
             },
             dont_filter=True,
             headers=self.headers,
@@ -121,6 +133,10 @@ class V3RMillionSpider(SitemapSpider):
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
 
+        find_captcha = response.xpath(self.recaptcha_site_key_xpath)
+        if find_captcha: 
+            yield from self.parse(response)
+            
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 
