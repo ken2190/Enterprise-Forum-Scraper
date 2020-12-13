@@ -8,8 +8,8 @@ class MajesticGardenParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         self.parser_name = "majestic garden"
         self.avatar_name_pattern = re.compile(r"attach=(\d+)")
-        self.comments_xpath = '//div[contains(@class,"windowbg")]'
-        self.header_xpath = '//div[contains(@class,"windowbg")]'
+        self.comments_xpath = '//div[@id="forumposts"]//div[contains(@class,"windowbg")]'
+        self.header_xpath = '//div[@id="forumposts"]//div[contains(@class,"windowbg")]'
         self.date_xpath = './/div[@class="postarea"]//div[@class="keyinfo"]//div[@class="smalltext"]/text()[2]'
         self.author_xpath = './/div[@class="poster"]/h4//text()'
         self.post_text_xpath = './/div[@class="post"]/div/text()'
@@ -27,3 +27,18 @@ class MajesticGardenParser(BaseTemplate):
         title = title.split("Topic:")[1].strip().split("(")[0]
         title = title.strip().split(']')[-1] if title else None
         return title
+
+    def get_author(self, tag):
+        author = tag.xpath(
+            './/div[contains(@class, "poster")]/h4//a/text()'
+        )
+        if not author:
+            author = tag.xpath(
+                './/div[contains(@class, "poster")]/h4/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                './/div[contains(@class, "poster")]/h4/text()'
+            )
+        author = author[0].strip() if author else None
+        return author
