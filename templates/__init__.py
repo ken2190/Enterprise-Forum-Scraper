@@ -203,6 +203,7 @@ from templates.silkroad4_template import SilkRoad4Parser
 from templates.breakingin_template import BreakinginParser
 from templates.cccmn_template import CccmnParser
 from templates.darkwebs_template import DarkwebsParser
+from templates.exploitzone_template import ExploitZoneParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -409,4 +410,5 @@ PARSER_MAP = {
     'breakingin': BreakinginParser,
     'ccc_mn': CccmnParser,
     'darkwebs': DarkwebsParser,
+    'exploitzone': ExploitZoneParser,
 }
