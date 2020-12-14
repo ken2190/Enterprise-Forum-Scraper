@@ -11,10 +11,10 @@ from scraper.base_scrapper import (
 
 # USER = 'Exabyte'
 # PASS = 'OG-new!pass'
-USER = 'sgqrpysbnt'
-PASS = 'Y8Kdh86Q2TancWz'
-REQUEST_DELAY = .6
-NO_OF_THREADS = 16
+USER = 'galvanized'
+PASS = 'Gal#Og0001-1'
+REQUEST_DELAY = 1
+NO_OF_THREADS = 3
 
 
 class OgUsersSpider(SitemapSpider):
