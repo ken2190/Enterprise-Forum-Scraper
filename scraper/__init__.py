@@ -167,6 +167,7 @@ from scraper.xaker import XakerScrapper
 from scraper.silk_road4 import SilkRoad4Scrapper
 from scraper.darkfox import DarkFoxScrapper
 from scraper.breakingin import BreakinginScrapper
+from scraper.mafia import MafiaScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -263,6 +264,7 @@ SCRAPER_MAP = {
     'lcpcc': LCPScrapper,
     'leakportal': LeakPortalScrapper,
     'lolzteam': LolzScrapper,
+    'mafia': MafiaScrapper,
     'majestic_garden': MajesticGardenScrapper,
     'malvult': MalvultScrapper,
     'marviher': MarviherScrapper,
