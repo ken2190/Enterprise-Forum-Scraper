@@ -2,6 +2,7 @@ from scraper.antichat import AntichatScrapper
 from scraper.breachforums import BreachForumsScrapper
 from scraper.exploit import ExploitScrapper
 from scraper.exploit_private import ExploitPrivateScrapper
+from scraper.exploit_zone import ExploitZoneScrapper
 from scraper.lolzteam import LolzScrapper
 from scraper.verified_new import VerifiedScrapper
 from scraper.bitcointalk import BitCoinTalkScrapper
@@ -166,6 +167,7 @@ from scraper.xaker import XakerScrapper
 from scraper.silk_road4 import SilkRoad4Scrapper
 from scraper.darkfox import DarkFoxScrapper
 from scraper.breakingin import BreakinginScrapper
+from scraper.mafia import MafiaScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -237,6 +239,7 @@ SCRAPER_MAP = {
     'exelab': ExeLabScrapper,
     'exploit': ExploitScrapper,
     'exploitprivate': ExploitPrivateScrapper,
+    'exploitzone': ExploitZoneScrapper,
     'fraudstercrew': FraudstercrewScrapper,
     'freehack': FreeHackScrapper,
     'fuckav': FuckavScrapper,
@@ -261,6 +264,7 @@ SCRAPER_MAP = {
     'lcpcc': LCPScrapper,
     'leakportal': LeakPortalScrapper,
     'lolzteam': LolzScrapper,
+    'mafia': MafiaScrapper,
     'majestic_garden': MajesticGardenScrapper,
     'malvult': MalvultScrapper,
     'marviher': MarviherScrapper,

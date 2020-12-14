@@ -94,11 +94,10 @@ class DemonForumsSpider(SitemapSpider):
         }
 
     def start_requests(self):
-        cookies, ip = self.get_cookies(
+        cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
-            proxy=self.use_proxy,
-            fraud_check=True,
-            check_captcha=True
+            proxy=True,
+            fraud_check=True
         )
 
         # Init request kwargs and meta

@@ -5,11 +5,11 @@ import utils
 from .base_template import BaseTemplate
 
 
-class BreakinginParser(BaseTemplate):
+class MafiaParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.parser_name = 'breakingin.to'
+        self.parser_name = 'mafia.ug'
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
         )
