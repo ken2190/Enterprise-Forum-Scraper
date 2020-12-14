@@ -17,7 +17,7 @@ from scrapy import (
 )
 
 REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
+NO_OF_THREADS = 5
 USERNAME = "thecreator"
 PASSWORD = "Night#Fuck000"
 MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
@@ -265,6 +265,19 @@ class FuckavScrapper(SiteMapScrapper):
     spider_class = FuckavSpider
     site_type = 'forum'
 
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                # "DOWNLOAD_DELAY": REQUEST_DELAY,
+                "CONCURRENT_REQUESTS": NO_OF_THREADS,
+                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": 1,
+                "AUTOTHROTTLE_MAX_DELAY": 3
+            }
+        )
+        return settings
 
 if __name__ == "__main__":
     pass

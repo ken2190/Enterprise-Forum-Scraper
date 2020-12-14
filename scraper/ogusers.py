@@ -14,7 +14,7 @@ from scraper.base_scrapper import (
 USER = 'sgqrpysbnt'
 PASS = 'Y8Kdh86Q2TancWz'
 REQUEST_DELAY = .6
-NO_OF_THREADS = 16
+NO_OF_THREADS = 5
 
 
 class OgUsersSpider(SitemapSpider):
@@ -255,9 +255,12 @@ class OgUsersScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                "DOWNLOAD_DELAY": REQUEST_DELAY,
+                # "DOWNLOAD_DELAY": REQUEST_DELAY,
                 "CONCURRENT_REQUESTS": NO_OF_THREADS,
                 "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": 1,
+                "AUTOTHROTTLE_MAX_DELAY": 3
             }
         )
         return settings
