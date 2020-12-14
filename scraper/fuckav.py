@@ -23,6 +23,8 @@ PASSWORD = "Night#Fuck000"
 MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
 USER_ID = ",42737,"
 
+PROXY = 'http://127.0.0.1:8118'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 class FuckavSpider(SitemapSpider):
 
@@ -77,6 +79,14 @@ class FuckavSpider(SitemapSpider):
     post_datetime_format = "%d-%m-%Y"
     download_delay = REQUEST_DELAY
     concurrent_requests = NO_OF_THREADS
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
 
     def parse_thread_date(self, thread_date):
         # Standardize thread date
