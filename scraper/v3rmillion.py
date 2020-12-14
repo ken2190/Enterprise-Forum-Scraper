@@ -20,6 +20,7 @@ NO_OF_THREADS = 2  # 5
 USER = "hackwithme123"
 PASS = "6VUZmjFzM2WtyjV"
 
+use_vip_proxy=True
 
 class V3RMillionSpider(SitemapSpider):
     name = "v3rmillion_spider"
@@ -70,7 +71,7 @@ class V3RMillionSpider(SitemapSpider):
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
 
     # Other settings
-    use_proxy = True
+    use_vip_proxy=True
     download_delay = REQUEST_DELAY
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
