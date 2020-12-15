@@ -84,7 +84,7 @@ class BaseScrapper:
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/71.0.3578.98 Safari/537.36'
+                          'Chrome/87.0.4280.88 Safari/537.36'
         }
         self.session = Session()
         if kwargs.get('proxy'):
@@ -245,6 +245,8 @@ class BaseTorScrapper(BaseScrapper):
 
 
 class SiteMapScrapper:
+    MIN_DOWNLOAD_DELAY = 1
+    MAX_DOWNLOAD_DELAY = 3
 
     settings = {
         "DOWNLOADER_MIDDLEWARES": {
@@ -253,7 +255,10 @@ class SiteMapScrapper:
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
-        "LOG_LEVEL": "DEBUG"
+        "LOG_LEVEL": "DEBUG",
+        "AUTOTHROTTLE_ENABLED": True,
+        "AUTOTHROTTLE_START_DELAY": MIN_DOWNLOAD_DELAY,
+        "AUTOTHROTTLE_MAX_DELAY": MAX_DOWNLOAD_DELAY
     }
 
     time_format = "%Y-%m-%d"

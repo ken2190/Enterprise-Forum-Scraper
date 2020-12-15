@@ -15,7 +15,8 @@ USER = 'galvanized'
 PASS = 'Gal#Og0001-1'
 REQUEST_DELAY = 1
 NO_OF_THREADS = 3
-
+MIN_DELAY = 1
+MAX_DELAY = 3
 
 class OgUsersSpider(SitemapSpider):
 
@@ -259,8 +260,8 @@ class OgUsersScrapper(SiteMapScrapper):
                 "CONCURRENT_REQUESTS": NO_OF_THREADS,
                 "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
                 "AUTOTHROTTLE_ENABLED": True,
-                "AUTOTHROTTLE_START_DELAY": 1,
-                "AUTOTHROTTLE_MAX_DELAY": 3
+                "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
+                "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
             }
         )
         return settings
