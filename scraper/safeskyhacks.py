@@ -8,10 +8,16 @@ from math import ceil
 import configparser
 from urllib.parse import urlencode
 from lxml.html import fromstring
+from datetime import (
+    datetime,
+    timedelta
+)
+import dateparser
 from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
-from scraper.base_scrapper import SiteMapScrapper
-
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 REQUEST_DELAY = 0.3
 NO_OF_THREADS = 10
@@ -21,21 +27,40 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
              'Chrome/79.0.3945.117 Safari/537.36',
 
 
-class SafeSkyHacksSpider(scrapy.Spider):
+class SafeSkyHacksSpider(SitemapSpider):
     name = 'safeskyhacks_spider'
+
+    start_url = "http://www.safeskyhacks.com"
+    base_url = "http://www.safeskyhacks.com/Forums/"
+
+    # # Xpath stuffs
+    forum_xpath = '//div[@class="datacontainer"]//h2[@class="forumtitle"]/a'\
+                  '/@href|//li[@class="subforum"]/a/@href'
+
+    thread_xpath = '//li[contains(@class,"threadbit")]'
+    thread_first_page_xpath = './/h3[@class="threadtitle"]/a[@class="title"]/@href'
+    thread_last_page_xpath = './/dl[contains(@class,"pagination")]//span[last()]/a/@href'
+
+    thread_date_xpath = './/dl[contains(@class,"threadlastpost")]//dd[last()]//text()'
+
+    pagination_xpath = '//a[@rel="next"]/@href'
+    thread_pagination_xpath = '//a[@rel="prev"]/@href'
+    thread_page_xpath = '//span[@class="selected"]/a/@href'
+    post_date_xpath = '//span[@class="date"]/text()'
+
+    avatar_xpath = '//a[@class="postuseravatar"]/img/@src'
+
+    topic_pattern = re.compile(r'showthread\.php\?(\d+)-')
+    avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+    pagination_pattern = re.compile(r'.*/page(\d+)')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.base_url = "http://www.safeskyhacks.com/Forums/"
-        self.topic_pattern = re.compile(r'showthread\.php\?(\d+)-')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*/page(\d+)')
-        self.start_url = "http://www.safeskyhacks.com/Forums/forum.php"
-        self.output_path = kwargs.get("output_path")
-        self.avatar_path = kwargs.get("avatar_path")
-        self.headers = {
-            'user-agent': USER_AGENT
-        }
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
 
     def start_requests(self):
         yield Request(
@@ -45,19 +70,21 @@ class SafeSkyHacksSpider(scrapy.Spider):
         )
 
     def parse(self, response):
-        forums = response.xpath(
-            '//div[@class="datacontainer"]//h2[@class="forumtitle"]/a')
-        sub_forums = response.xpath(
-            '//li[@class="subforum"]/a')
-        forums.extend(sub_forums)
 
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
+        for forum_url in all_forums:
+            # Standardize forum url
+            if self.base_url not in forum_url:
+                forum_url = response.urljoin(forum_url)
+
             yield Request(
-                url=url,
+                url=forum_url,
                 headers=self.headers,
+                meta=self.synchronize_meta(response),
                 callback=self.parse_forum
             )
 
@@ -139,13 +166,28 @@ class SafeSkyHacksSpider(scrapy.Spider):
                 meta={'topic_id': topic_id}
             )
 
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('.', 1)[0]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar for {file_name_only} done..!")
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
 
+        return datetime.strptime(
+            thread_date.strip()[:-1],
+            self.sitemap_datetime_format
+        )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        return datetime.strptime(
+            post_date.strip()[:-1],
+            self.post_datetime_format
+        )
 
 class SafeSkyHacksScrapper(SiteMapScrapper):
 
