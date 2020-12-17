@@ -51,6 +51,9 @@ class YougameParser(BaseTemplate):
             author = tag.xpath(
                 'div//div[@class="message-userDetails"]/h4/a/span/text()'
             )
-
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a/span//text()'
+            )
         author = author[0].strip() if author else None
         return author
