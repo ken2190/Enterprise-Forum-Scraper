@@ -129,7 +129,36 @@ class BaseTemplate:
                             break
                         continue
                 # extract comments
-                comments.extend(self.extract_comments(html_response, pagination))
+                extracted = self.extract_comments(html_response, pagination)
+                comments.extend(extracted)
+
+                # missing author and date check
+                if self.checkonly:
+                    error_msg = ""
+                    for row in extracted:
+                        if not row['_source'].get('author'):
+                            error_msg = f'ERROR: Null Author Detected. pid={row["_source"]["pid"]};'
+                            if row['_source'].get('cid'):
+                                error_msg += f' cid={row["_source"]["cid"]};'
+                        elif not row['_source'].get('date'):
+                            error_msg = f'ERROR: Date not present. pid={row["_source"]["pid"]};'
+                            if row['_source'].get('cid'):
+                                error_msg += f' cid={row["_source"]["cid"]};'
+                        if error_msg:
+                            break
+                    if error_msg:
+                        print(error_msg)
+                        print('----------------------------------------\n')
+                        if self.missing_header_file_limit > 0:
+                            utils.handle_missing_header(
+                                template,
+                                self.missing_header_folder
+                            )
+                            self.missing_header_file_limit-=1
+                        else:
+                            print("----------------------------------\n")
+                            print("Found 50 Files with missing header or date")
+                            break
 
                 if final:   
                     utils.write_comments(file_pointer, comments, output_file)   

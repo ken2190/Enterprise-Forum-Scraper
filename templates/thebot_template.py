@@ -51,7 +51,11 @@ class TheBOTParser(BaseTemplate):
         author = tag.xpath(self.author_xpath)
         if not author:
             author = tag.xpath(
-                'div//div[@class="message-userDetails"]/h4/a/span/text()'
+                'div//div[@class="message-userDetails"]/h4/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a//text()'
             )
 
         author = author[0].strip() if author else None
