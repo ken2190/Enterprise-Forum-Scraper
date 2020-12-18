@@ -61,19 +61,9 @@ class XSSSpider(SitemapSpider):
 
 
     def start_requests(self):
-        # Load cookies and ip
-        cookies, ip = self.get_cloudflare_cookies(
-            base_url=self.login_url,
-            proxy=True,
-            fraud_check=True
-        )
-
         yield Request(
             url=self.login_url,
             headers=self.headers,
-            meta={"cookiejar": uuid.uuid1().hex,
-                  "ip": ip},
-            cookies=cookies,
             callback=self.parse_start
         )
 
@@ -125,7 +115,6 @@ class XSSScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
                 'CONCURRENT_REQUESTS': NO_OF_THREADS,
                 'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
                 'HTTPERROR_ALLOWED_CODES': [403]

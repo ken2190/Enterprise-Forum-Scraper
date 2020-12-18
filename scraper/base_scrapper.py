@@ -513,7 +513,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             requestPostHook=injection,
             debug=False
         )
-
+    
         bypass_cookies = {}
         try_num = 0
         # Loop create cookies
@@ -540,6 +540,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             }
 
             try:
+                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')
                 response = cf_bypasser.get(base_url, proxies=proxies)
             except Exception:
                 self.logger.exception('Try #%s to bypass CloudFlare failed', try_num)
