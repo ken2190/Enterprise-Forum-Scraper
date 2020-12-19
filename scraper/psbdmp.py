@@ -13,14 +13,14 @@ from scraper.base_scrapper import PROXY_USERNAME, PROXY_PASSWORD, PROXY
 
 REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
-API_KEY = '1QhbWzJDoVPB1piPV10w'
+API_KEY = 'b15b2a61fe195e6b1cedab735cd13674'
 
 
 class PsbdmpSpider(SitemapSpider):
     name = 'psbdmp_spider'
     base_url = 'https://psbdmp.ws'
-    start_url = 'https://psbdmp.ws/api/dump/getbydate'
-    dump_url = f'https://psbdmp.ws/api/v2/dump/{API_KEY}/{{}}'
+    start_url = 'https://psbdmp.ws/api/v3/getbydate'
+    dump_url = f'https://psbdmp.ws/api/v3/dump/{{}}?key={API_KEY}'
 
     # Other settings
     use_proxy = True
@@ -45,12 +45,13 @@ class PsbdmpSpider(SitemapSpider):
                 self.start_url,
                 formdata=formdata,
                 dont_filter=True,
+                method='POST',
                 meta={'output_path': output_path}
             )
 
     def parse(self, response):
         json_data = json.loads(response.text)
-        for data in json_data['data']:
+        for data in json_data[0]:
             dump_id = data['id']
             dump_url = self.dump_url.format(dump_id)
             yield scrapy.Request(
@@ -71,11 +72,8 @@ class PsbdmpSpider(SitemapSpider):
         if os.path.exists(dump_file):
             print('{} already exists..!'.format(dump_file))
             return
-        json_data = json.loads(response.text)
-        if not json_data.get('error') == 0:
-            return
 
-        content = json_data['data']
+        content = response.text
         if not content:
             return
         with open(dump_file, 'w') as f:
