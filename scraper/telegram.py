@@ -121,7 +121,7 @@ class TelegramChannelSpider(SitemapSpider):
 
         # Init item
         item = {
-            "date": message.get("date").strftime(self.post_datetime_format)
+            "date": message.get("date").timestamp()*1000
         }
 
         # Update item
@@ -131,7 +131,9 @@ class TelegramChannelSpider(SitemapSpider):
                 if type(value) in [str, int]
             }
         )
-
+        item.update({
+            "author": message['_sender'].username
+        })
         yield from self.write_item(item)
 
     def write_item(self, item):
