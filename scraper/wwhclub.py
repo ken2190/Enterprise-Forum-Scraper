@@ -3,7 +3,7 @@ import requests
 import os
 import json
 import re
-import scrapy
+import uuid
 from math import ceil
 from copy import deepcopy
 from urllib.parse import urlencode
@@ -12,34 +12,56 @@ from scrapy.http import Request, FormRequest
 from lxml.html import fromstring
 from scrapy.crawler import CrawlerProcess
 
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 COOKIE = '__cfduid=dbdbeb0650da2e413f0f58b9b2c75eaf31565924481; xf_csrf=d03E_EFzdgY4WiWB; _ga=GA1.2.842163880.1565924490; _gid=GA1.2.1604312718.1565924490; cf_clearance=0592abbd070214348a2b168ab06759a20ea72575-1565924535-57600-150; xf_notice_dismiss=-1; xf_user=36079%2CIJmPwBbq9nBCBxAi2D2Txt-o0diiv1HZ6UURwi3L; xf_session=W_zYfW5H5uFGhT5Ui2cghdEH8Lyh_xwy; _gat_gtag_UA_139732498_1=1'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
 
 
-class WwhClubSpider(scrapy.Spider):
+class WwhClubSpider(SitemapSpider):
     name = 'wwhclub_spider'
 
-    def __init__(self, output_path, avatar_path):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.base_url = "https://wwh-club.net"
         self.topic_pattern = re.compile(r'threads/.*\.(\d+)/')
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.pagination_pattern = re.compile(r'.*page-(\d+)')
         self.start_url = 'https://wwh-club.net/index.php'
-        self.output_path = output_path
-        self.avatar_path = avatar_path
         self.headers = {
             'user-agent': USER_AGENT,
-            'cookie': COOKIE,
+            # 'cookie': COOKIE,
             'sec-fetch-mode': 'navigate',
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1'
         }
 
     def start_requests(self):
+        # Temporary action to start spider
         yield Request(
-            url=self.start_url,
+            url=self.temp_url,
             headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+    
+    def pass_cloudflare(self, response):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta={"cookiejar": uuid.uuid1().hex,
+                  "ip": ip},
+            cookies=cookies,
+            dont_filter=True,
             callback=self.parse
         )
 
@@ -58,7 +80,8 @@ class WwhClubSpider(scrapy.Spider):
             yield Request(
                 url=url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                dont_filter=True
             )
 
     def parse_forum(self, response):
@@ -79,7 +102,8 @@ class WwhClubSpider(scrapy.Spider):
                 url=thread_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id[0]}
+                meta={'topic_id': topic_id[0]},
+                dont_filter=True
             )
 
         next_page = response.xpath(
@@ -91,7 +115,8 @@ class WwhClubSpider(scrapy.Spider):
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
-                callback=self.parse_forum
+                callback=self.parse_forum,
+                dont_filter=True
             )
 
     def parse_thread(self, response):
@@ -124,7 +149,8 @@ class WwhClubSpider(scrapy.Spider):
                 callback=self.parse_avatar,
                 meta={
                     'file_name': file_name,
-                }
+                },
+                dont_filter=True
             )
 
         next_page = response.xpath(
@@ -137,7 +163,8 @@ class WwhClubSpider(scrapy.Spider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_thread,
-                meta={'topic_id': topic_id}
+                meta={'topic_id': topic_id},
+                dont_filter=True
             )
 
     def parse_avatar(self, response):
@@ -147,48 +174,10 @@ class WwhClubSpider(scrapy.Spider):
             f.write(response.body)
             print(f"Avatar {file_name_only} done..!")
 
-
-class WwhClubScrapper():
+class WwhClubScrapper(SiteMapScrapper):
+    spider_class = WwhClubSpider
     site_type = 'forum'
 
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 16
-        self.ensure_avatar_path()
 
-    def ensure_avatar_path(self, ):
-        self.avatar_path = f'{self.output_path}/avatars'
-        if not os.path.exists(self.avatar_path):
-            os.makedirs(self.avatar_path)
-
-    def do_scrape(self):
-        settings = {
-            "DOWNLOADER_MIDDLEWARES": {
-                'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,
-                'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings['DOWNLOADER_MIDDLEWARES'].update({
-                'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-            })
-            settings.update({
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(WwhClubSpider, self.output_path, self.avatar_path)
-        process.start()
+if __name__ == "__main__":
+    pass
