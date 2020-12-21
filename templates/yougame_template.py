@@ -22,8 +22,8 @@ class YougameParser(BaseTemplate):
         self.comments_xpath = '//article[contains(@class,"message--post")]'
         self.header_xpath = '//article[contains(@class,"message--post")]'
         self.title_xpath = '//h1[@class="p-title-value"]//text()'
-        self.date_xpath = './/time//text()'
-        self.author_xpath = './/div[@class="message-userDetails"]/h4/a//text()'
+        self.date_xpath = './/time/@datetime'
+        self.author_xpath = 'div//div[@class="message-userDetails"]/h4/*/text()'
         self.post_text_xpath = './/article[contains(@class,"selectToQuote")]/descendant::text()[not(ancestor::div[contains(@class,"bbCodeBlock--quote")])]'
         self.avatar_xpath = './/div[@class="message-avatar "]//img/@src'
         self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite")]/li[2]/a/text()'
@@ -44,3 +44,16 @@ class YougameParser(BaseTemplate):
                            self.pagination_pattern.search(x).group(1)))
 
         return sorted_files
+
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a/span//text()'
+            )
+        author = author[0].strip() if author else None
+        return author

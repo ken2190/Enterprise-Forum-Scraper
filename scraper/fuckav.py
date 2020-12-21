@@ -17,12 +17,17 @@ from scrapy import (
 )
 
 REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
+NO_OF_THREADS = 5
 USERNAME = "thecreator"
 PASSWORD = "Night#Fuck000"
 MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
 USER_ID = ",42737,"
 
+MIN_DELAY = 1
+MAX_DELAY = 3
+
+PROXY = 'http://127.0.0.1:8118'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 class FuckavSpider(SitemapSpider):
 
@@ -80,6 +85,14 @@ class FuckavSpider(SitemapSpider):
     post_datetime_format = "%d-%m-%Y"
     download_delay = REQUEST_DELAY
     concurrent_requests = NO_OF_THREADS
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
 
     def parse_thread_date(self, thread_date):
         # Standardize thread date
@@ -264,6 +277,19 @@ class FuckavScrapper(SiteMapScrapper):
     spider_class = FuckavSpider
     site_type = 'forum'
 
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                # "DOWNLOAD_DELAY": REQUEST_DELAY,
+                "CONCURRENT_REQUESTS": NO_OF_THREADS,
+                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
+                "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
+            }
+        )
+        return settings
 
 if __name__ == "__main__":
     pass

@@ -13,7 +13,8 @@ class MashackerParser(BaseTemplate):
         self.comments_xpath = '//li[contains(@class,"postcontainer")]'
         self.header_xpath = '//li[contains(@class,"postcontainer")]'
         self.author_xpath = './/div[contains(@class,"username_container")]//strong//text()|'\
-                            './/div[contains(@class,"username_container")]/span[1]/text()'
+                            './/div[contains(@class,"username_container")]/span[1]/text()|'\
+                            './/div[contains(@class,"username_container")]/span[1]/a/text()'
         self.title_xpath = '//span[contains(@class,"threadtitle")]//descendant::text()'
         self.post_text_xpath = './/div[contains(@class,"postbody")]//div[@class="content"]//descendant::text()[not(ancestor::div[@class="quote_container"])]'
         self.avatar_xpath = './/div[contains(@class,"userinfo")]//a[@class="postuseravatar"]//img/@src'
@@ -35,3 +36,13 @@ class MashackerParser(BaseTemplate):
         except Exception:
             return ""
         return ""
+
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if author:
+            author = ''.join(author).strip()
+            return author
+        else:
+            author = tag.xpath('.//span[contains(@class, "usertitle")]/text()')
+            author = ''.join(author).strip()
+            return author

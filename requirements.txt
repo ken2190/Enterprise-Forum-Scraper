@@ -1,7 +1,6 @@
 CouchDB == 1.2
 aiohttp
 anticaptchaofficial
-anticaptchaofficial
 arrow
 boto3
 cassandra-driver
@@ -26,7 +25,7 @@ python-anticaptcha
 python-dateutil
 python-dotenv
 python3-anticaptcha
-requests >= 2.24.0
+requests
 requests[socks] >= 2.24.0
 schedule
 scrapy >= 2.4.0
@@ -35,4 +34,4 @@ selenium-wire
 sh
 telethon
 unicaps == 0.3.0
-urllib3 >= 1.25.10
+urllib3

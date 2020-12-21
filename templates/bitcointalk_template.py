@@ -12,12 +12,12 @@ class BitCoinTalkParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         self.parser_name = "bitcointalk.com"
         self.thread_name_pattern = re.compile(
-            r'(\d+).*html'
+            r'(\d+).*html$'
         )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
-        self.comments_xpath = '//td[contains(@class,"windowbg") and not(@valign)]'
-        self.header_xpath = '//td[contains(@class,"windowbg") and not(@valign)]'
+        self.comments_xpath = '//tr[@class]//td[contains(@class,"windowbg") and not(@valign)]'
+        self.header_xpath = '//tr[@class]//td[contains(@class,"windowbg") and not(@valign)]'
         self.date_xpath = 'table//td[@valign="middle"]/div[@class="smalltext"]/text()'
         self.date_pattern = '%B %d, %Y, %I:%M:%S %p'
         self.author_xpath = 'table//td[@class="poster_info"]/b/a/text()'
@@ -28,6 +28,19 @@ class BitCoinTalkParser(BaseTemplate):
 
         # main function
         self.main()
+
+    def get_filtered_files(self, files):
+        filtered_files = list(
+            filter(
+                lambda x: self.thread_name_pattern.search(x) is not None,
+                files
+            )
+        )
+        sorted_files = sorted(
+            filtered_files,
+            key=lambda x: (self.thread_name_pattern.search(x).group(1),
+                           x.split("-")[-1]))
+        return sorted_files
 
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)

@@ -44,3 +44,28 @@ class HashKillerParser(BaseTemplate):
                            self.pagination_pattern.search(x).group(1)))
 
         return sorted_files
+
+    def get_author(self, tag):
+        author = tag.xpath(
+            'div//div[@class="message-userDetails"]/h4/a/text()'
+        )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/span/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/span/a/text()'
+            )
+
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/span/a//text()'
+            )
+
+        author = author[0].strip() if author else None
+        return author

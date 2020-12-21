@@ -8,6 +8,7 @@ from .base_template import BaseTemplate
 class YouHackParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.parser_name = "youhack.ru"
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'

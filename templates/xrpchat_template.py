@@ -12,7 +12,7 @@ class XrpChatParser(BaseTemplate):
         self.avatar_name_pattern = re.compile(r'(\w+.\w+)$')
         self.comments_xpath = '//article[contains(@id, "elComment_")]'
         self.header_xpath = '//article[contains(@id, "elComment_")]'
-        self.date_xpath = 'div//div[@class="ipsType_reset"]//time/@title'
+        self.date_xpath = 'div//*[contains(@class, "ipsType_reset")]//time/@datetime'
         self.author_xpath = './/h3[contains(@class,"cAuthorPane_author")]/a//text()'\
                             '|.//h3[contains(@class,"cAuthorPane_author")]/span[1]/text()'
         self.title_xpath = '//span[@class="ipsType_break ipsContained"]'\

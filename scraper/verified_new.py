@@ -25,7 +25,7 @@ REQUEST_DELAY = 4
 USERNAME = "xbyte"
 PASSWORD = "Night#Byte001"
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; rv:75.0) Gecko/20100101 Firefox/75.0"
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 PROXY = 'http://127.0.0.1:8118'
 

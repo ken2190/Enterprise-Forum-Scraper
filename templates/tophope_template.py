@@ -23,7 +23,7 @@ class TophopeParser(BaseTemplate):
         self.header_xpath = '//article[contains(@class,"message--post")]'
         self.title_xpath = '//h1[@class="p-title-value"]//text()'
         self.date_xpath = './/time/@data-time'
-        self.author_xpath = './/div[@class="message-userDetails"]/h4/a//text()'
+        self.author_xpath = './/div[@class="message-userDetails"]/h4/*/text()'
         self.post_text_xpath = './/article[contains(@class,"selectToQuote")]/descendant::text()[not(ancestor::div[contains(@class,"bbCodeBlock--quote")])]'
         self.avatar_xpath = './/div[@class="message-avatar "]//img/@src'
         self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite")]/li[2]/a/text()'
@@ -45,6 +45,16 @@ class TophopeParser(BaseTemplate):
 
         return sorted_files
 
+    def get_author(self, tag):
+        author = tag.xpath(self.author_xpath)
+        if not author:
+            author = tag.xpath(
+                'div//div[@class="message-userDetails"]/h4/a/span/text()'
+            )
+
+        author = author[0].strip() if author else None
+        return author
+        
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)
         if not date_block:

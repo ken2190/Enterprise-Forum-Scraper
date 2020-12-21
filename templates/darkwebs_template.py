@@ -1,12 +1,15 @@
+# -- coding: utf-8 --
 import re
+import utils
 
 from .base_template import BaseTemplate
 
 
-class AltenensParser(BaseTemplate):
+class DarkwebsParser(BaseTemplate):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.parser_name = "altenens.org"
+        self.parser_name = "darkwebs.cc"
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.comments_xpath = '//article[contains(@class,"message--post")]'
         self.author_xpath = './/div[@class="message-userDetails"]/h4/a//text()'

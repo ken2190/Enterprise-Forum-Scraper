@@ -1,31 +1,25 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
+import uuid
+
 from datetime import (
     datetime,
     timedelta
 )
-from scrapy.http import Request, FormRequest
+from scrapy import (
+    Request,
+    FormRequest
+)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
 
 
+class MafiaSpider(SitemapSpider):
+    name = "mafia_spider"
 
-USER = 'TraX'
-PASS = 'SLJKJY*5s7868yIYSiuy78^7s'
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
-
-
-class EnclaveSpider(SitemapSpider):
-    name = 'enclave_spider'
-    site_type = 'forum'
-    
     # Url stuffs
-    base_url = "https://www.enclave.cc/index.php"
+    base_url = "http://mafia.ug"
 
     # Xpath stuffs
     forum_xpath = '//div[@id="ipsLayout_mainArea"]//h4[contains(@class, "ipsDataItem_title ipsType_large")]/a/@href'
@@ -79,44 +73,20 @@ class EnclaveSpider(SitemapSpider):
             post_date.strip()[:-1],
             self.post_datetime_format
         )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.headers.update(
-            {
-                "User-Agent": USER_AGENT
-            }
-        )
-
     def start_requests(self):
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            'dont_filter': True
+        }
+        
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.process_for_login
+            callback=self.parse,
+            dont_filter=True,
+            meta=meta
         )
-
-    def process_for_login(self, response):
-        login_url = 'https://www.enclave.cc/index.php?/login/'
-        csrf = response.xpath(
-            '//input[@name="csrfKey"]/@value').extract_first()
-        ref = response.xpath(
-            '//input[@name="ref"]/@value').extract_first()
-        formdata = {
-            'csrfKey': csrf,
-            'ref': ref,
-            'auth': USER,
-            'password': PASS,
-            'remember_me': '1',
-            '_processLogin': 'usernamepassword',
-            '_processLogin': 'usernamepassword',
-        }
-        yield FormRequest(
-            url=login_url,
-            formdata=formdata,
-            headers=self.headers,
-            callback=self.parse
-            )
-
+        
     def parse(self, response):
 
         # Synchronize user agent for cloudfare middleware
@@ -152,18 +122,7 @@ class EnclaveSpider(SitemapSpider):
         # Save avatars
         yield from super().parse_avatars(response)
 
-class EnclaveScrapper(SiteMapScrapper):
-    spider_class = EnclaveSpider
+
+class MafiaScrapper(SiteMapScrapper):
+    spider_class = MafiaSpider
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            }
-        )
-        return settings
-
-if __name__ == "__main__":
-    pass

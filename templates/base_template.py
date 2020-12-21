@@ -19,6 +19,8 @@ class BaseTemplate:
         self.distinct_files = set()
         self.error_folder = f"{self.output_folder}/Errors"
         self.missing_header_folder = f"{self.output_folder}/Missing_Date&Author"      # path for backup template without Avatar, Date, Author
+        self.missing_header_file_limit = 50
+        self.checkonly = kwargs.get('checkonly')
         self.thread_id = None
         self.comment_pattern = None
         self.encoding = None
@@ -104,8 +106,6 @@ class BaseTemplate:
 
                     if not data:
                         continue
-
-                    utils.check_header_data(data)
                     # write file
                     output_file = '{}/{}.json'.format(
                         str(self.output_folder),
@@ -113,36 +113,67 @@ class BaseTemplate:
                     )
                     file_pointer = open(output_file, 'w', encoding='utf-8')
 
-                    utils.write_json(file_pointer, data)
-
-                # extract comments
-                comments.extend(self.extract_comments(html_response, pagination))
-
-                if final:
-                    try:
-                        utils.write_comments(file_pointer, comments, output_file)
-                        comments = []
-                        output_file = None
-                        final = None
-
-                        if getattr(self, 'index', None):
-                            self.index = 1
-                    except Exception:
+                    error_msg = utils.write_json(file_pointer, data, self.checkonly)
+                    if error_msg:
+                        print(error_msg)
+                        print('----------------------------------------\n')
+                        if self.missing_header_file_limit > 0:
+                            utils.handle_missing_header(
+                                template,
+                                self.missing_header_folder
+                            )
+                            self.missing_header_file_limit-=1
+                        else:
+                            print("----------------------------------\n")
+                            print("Found 50 Files with missing header or date")
+                            break
                         continue
+                # extract comments
+                extracted = self.extract_comments(html_response, pagination)
+                comments.extend(extracted)
+
+                # missing author and date check
+                if self.checkonly:
+                    error_msg = ""
+                    for row in extracted:
+                        if not row['_source'].get('author'):
+                            error_msg = f'ERROR: Null Author Detected. pid={row["_source"]["pid"]};'
+                            if row['_source'].get('cid'):
+                                error_msg += f' cid={row["_source"]["cid"]};'
+                        elif not row['_source'].get('date'):
+                            error_msg = f'ERROR: Date not present. pid={row["_source"]["pid"]};'
+                            if row['_source'].get('cid'):
+                                error_msg += f' cid={row["_source"]["cid"]};'
+                        if error_msg:
+                            break
+                    if error_msg:
+                        print(error_msg)
+                        print('----------------------------------------\n')
+                        if self.missing_header_file_limit > 0:
+                            utils.handle_missing_header(
+                                template,
+                                self.missing_header_folder
+                            )
+                            self.missing_header_file_limit-=1
+                        else:
+                            print("----------------------------------\n")
+                            print("Found 50 Files with missing header or date")
+                            break
+
+                if final:   
+                    utils.write_comments(file_pointer, comments, output_file)   
+                    comments = []   
+                    output_file = None  
+                    final = None    
+                    if getattr(self, 'index', None):    
+                        self.index = 1
+
             except BrokenPage as ex:
                 utils.handle_error(
                     pid,
                     self.error_folder,
                     ex
                 )
-            except (utils.NoAuthor, utils.NoDate) as ex:
-                print(ex)
-                print('----------------------------------------\n')
-                utils.handle_missing_header(
-                    template,
-                    self.missing_header_folder
-                )
-                continue
             except Exception:
                 traceback.print_exc()
                 continue

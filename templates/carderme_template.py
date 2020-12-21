@@ -2,7 +2,7 @@
 import re
 #import locale
 import datetime
-import dateutil.parser as dparser
+import dateparser
 
 from .base_template import BaseTemplate
 
@@ -27,7 +27,8 @@ class CarderMeParser(BaseTemplate):
         self.header_xpath = '//div[@id="posts"]//div[@id and @style]'
         self.date_xpath = 'div[@class="tcat"]/text()'
         self.date_pattern = "%m-%d-%Y, %I:%M %p"
-        self.author_xpath = 'table//a[@class="bigusername"]/span/text()'
+        self.author_xpath = 'table//a[@class="bigusername"]/span/descendant::text()|'\
+            'table//div[contains(@id, "postmenu_")]/text()'
         self.title_xpath = '//title/text()'
         self.post_text_xpath = 'table//td[@class="alt1 rightside"]/div[@id]'
         self.comment_block_xpath = 'div[@class="tcat"]/span/a/strong/text()'
@@ -44,7 +45,7 @@ class CarderMeParser(BaseTemplate):
             return str(date)
         except:
             try:
-                date = dparser.parse(date).timestamp()
+                date = dateparser.parse(date).timestamp()
                 return str(date)
             except:
                 pass

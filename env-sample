@@ -1,0 +1,24 @@
+# Base URL of Data Viper API
+DV_BASE_URL=https://api.dataviper.io
+
+# API Token for scraper user
+API_TOKEN=secretapitoken
+
+# Directory where html output files will be written
+OUTPUT_DIR=/data/processing/1/
+
+# Directory where parsed JSON files will be written
+PARSE_DIR=/data/processing/3/
+
+#final folder destination for processed json files
+IMPORT_DIR=/data/processing/import/
+
+#directory where files are compressed and set for offsite archive
+ARCHIVE_DIR=/data/processing/offsite/2020/
+OFFSITE_DEST=b2:/ViperStorage/forums/2020/
+
+
+IMPORT_DIR=/data/processing/import/
+
+#Log folder for scraper output
+LOG_DIR=/data/processing/logs/

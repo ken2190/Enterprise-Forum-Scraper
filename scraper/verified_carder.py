@@ -199,9 +199,12 @@ class VerifiedCarderScrapper(SiteMapScrapper):
         spider_settings = super().load_settings()
         spider_settings.update(
             {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
+                # 'DOWNLOAD_DELAY': REQUEST_DELAY,
                 'CONCURRENT_REQUESTS': NO_OF_THREADS,
                 'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": 1,
+                "AUTOTHROTTLE_MAX_DELAY": 3
             }
         )
         return spider_settings

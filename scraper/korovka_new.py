@@ -22,16 +22,16 @@ from scrapy.exceptions import CloseSpider
 from lxml.html import fromstring
 
 # Delay between each request
-REQUEST_DELAY = 2
+REQUEST_DELAY = 5
 
 # No of pages to be scraped from single account
 SCRAPE_PER_ACCOUNT = 20
 
 # Wait time(minutes) to login another account once scrape limit is reached
-ACCOUNT_DELAY = 15
+ACCOUNT_DELAY = 30
 
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; rv:75.0) Gecko/20100101 Firefox/75.0"
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 PROXY = 'http://127.0.0.1:8118'
 

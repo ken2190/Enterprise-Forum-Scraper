@@ -21,8 +21,33 @@ class ZloyParser(BaseTemplate):
         self.post_text_xpath = 'table//tr[@valign="top"]/td[@class="alt1" and @id]/div[@id]/descendant::text()[not(ancestor::div[@style="margin:20px; margin-top:5px; "])]'
         self.avatar_xpath = 'table//a[contains(@href, "member.php")]//img/@src'
         self.comment_block_xpath = 'table//td[2][@class="thead"]/a/strong/text()'
-        self.author_xpath = 'table//a[@class="bigusername"]//text()|table//div[contains(@id, "postmenu_")]//text()'
+        # self.author_xpath = 'table//a[@class="bigusername"]//text()|table//div[contains(@id, "postmenu_")]//text()'
         self.avatar_ext = 'jpg'
 
         # main function
         self.main()
+
+    def get_author(self, tag):
+        author = tag.xpath(
+            'table//a[@class="bigusername"]//text()'
+        )
+        if not author:
+            author = tag.xpath(
+                'table//div[contains(@id, "postmenu_")]/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                './/div[contains(@id, "postmenu_")]//tr[3]/td[contains(@class, "vbmenu_option")]/a/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'table//a[@class="bigusername"]/span/b/text()'
+            )
+        if not author:
+            author = tag.xpath(
+                'table//a[@class="bigusername"]/font/strike/text()'
+            )
+
+        author = author[0].replace("Найти ещё сообщения от ", '').strip() if author else None
+
+        return author

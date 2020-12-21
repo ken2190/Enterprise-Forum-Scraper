@@ -96,7 +96,7 @@ class BaseScrapper:
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                           'AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/71.0.3578.98 Safari/537.36'
+                          'Chrome/87.0.4280.88 Safari/537.36'
         }
         self.session = Session()
         if kwargs.get('proxy'):
@@ -257,6 +257,8 @@ class BaseTorScrapper(BaseScrapper):
 
 
 class SiteMapScrapper:
+    MIN_DOWNLOAD_DELAY = 1
+    MAX_DOWNLOAD_DELAY = 3
 
     settings = {
         "DOWNLOADER_MIDDLEWARES": {
@@ -266,7 +268,9 @@ class SiteMapScrapper:
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
         "LOG_LEVEL": "DEBUG",
-        'CLOSESPIDER_ERRORCOUNT': 1
+        "AUTOTHROTTLE_ENABLED": True,
+        "AUTOTHROTTLE_START_DELAY": MIN_DOWNLOAD_DELAY,
+        "AUTOTHROTTLE_MAX_DELAY": MAX_DOWNLOAD_DELAY
     }
 
     time_format = "%Y-%m-%d"
@@ -405,7 +409,9 @@ class BypassCloudfareSpider(scrapy.Spider):
     proxy = None
     download_delay = 0.3
     download_thread = 10
-    default_useragent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
+    # default_useragent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
+    default_useragent = "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0"
+
     # anticaptcha api #
     captcha_token = "d7da71f33665a41fca21ecd11dc34015"
 
@@ -519,7 +525,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             requestPostHook=injection,
             debug=False
         )
-
+    
         bypass_cookies = {}
         try_num = 0
         # Loop create cookies
@@ -546,6 +552,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             }
 
             try:
+                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')
                 response = cf_bypasser.get(base_url, proxies=proxies)
             except Exception:
                 self.logger.exception('Try #%s to bypass CloudFlare failed', try_num)
