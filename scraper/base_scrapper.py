@@ -245,8 +245,8 @@ class BaseTorScrapper(BaseScrapper):
 
 
 class SiteMapScrapper:
-    MIN_DOWNLOAD_DELAY = 1
-    MAX_DOWNLOAD_DELAY = 3
+    MIN_DELAY = 1
+    MAX_DELAY = 2
 
     settings = {
         "DOWNLOADER_MIDDLEWARES": {
@@ -257,8 +257,8 @@ class SiteMapScrapper:
         "LOG_STDOUT": True,
         "LOG_LEVEL": "DEBUG",
         "AUTOTHROTTLE_ENABLED": True,
-        "AUTOTHROTTLE_START_DELAY": MIN_DOWNLOAD_DELAY,
-        "AUTOTHROTTLE_MAX_DELAY": MAX_DOWNLOAD_DELAY
+        "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
+        "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
     }
 
     time_format = "%Y-%m-%d"

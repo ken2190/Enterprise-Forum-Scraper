@@ -15,9 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 USERNAME = "blastedone"
 PASSWORD = "Chq#Blast888"
 
@@ -69,8 +66,6 @@ class EmpireSpider(MarketPlaceSpider):
     )
 
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

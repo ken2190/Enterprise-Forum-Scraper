@@ -13,10 +13,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
-
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
              'AppleWebKit/537.36 (KHTML, like Gecko) '\
              'Chrome/79.0.3945.117 Safari/537.36',

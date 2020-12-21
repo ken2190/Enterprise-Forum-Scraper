@@ -15,9 +15,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.6
-NO_OF_THREADS = 10
-
 USER = 'Cyrax_011'
 PASS = 'S5eVZWqf!3wNdtb'
 
@@ -62,8 +59,6 @@ class CrdClubSpider(SitemapSpider):
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
 
     # Other settings
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
 

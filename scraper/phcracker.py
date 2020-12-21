@@ -12,9 +12,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 10
-
 USER = 'Cyrax_011'
 PASS = 'c2Yv9EP8MsgGHJr'
 
@@ -64,8 +61,6 @@ class PHCrackerSpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     get_cookies_delay = 10
     get_cookies_retry = 2
     use_proxy = True

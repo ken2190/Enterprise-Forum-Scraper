@@ -12,10 +12,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 1
-
-
 class YouGameSpider(SitemapSpider):
     name = 'yougame_spider'
 
@@ -49,8 +45,6 @@ class YouGameSpider(SitemapSpider):
     use_proxy = True
     fraudulent_threshold = 50
     handle_httpstatus_list = [503]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 

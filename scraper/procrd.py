@@ -14,10 +14,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class ProcrdSpider(SitemapSpider):
 
     name = "procrd"
@@ -53,8 +49,6 @@ class ProcrdSpider(SitemapSpider):
     )
 
     # Other settings
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = "%Y-%m-%dT%H:%M:%S%z"
 
     def parse_thread(self, response):

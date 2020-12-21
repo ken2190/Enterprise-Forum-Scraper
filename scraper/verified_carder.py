@@ -15,8 +15,6 @@ from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
 
 
@@ -199,9 +197,6 @@ class VerifiedCarderScrapper(SiteMapScrapper):
         spider_settings = super().load_settings()
         spider_settings.update(
             {
-                # 'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
                 "AUTOTHROTTLE_ENABLED": True,
                 "AUTOTHROTTLE_START_DELAY": 1,
                 "AUTOTHROTTLE_MAX_DELAY": 3

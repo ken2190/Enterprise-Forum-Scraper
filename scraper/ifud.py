@@ -18,10 +18,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.6
-NO_OF_THREADS = 6
-
-
 class IfudSpider(SitemapSpider):
     name = 'ifud_spider'
 
@@ -52,8 +48,6 @@ class IfudSpider(SitemapSpider):
     # Other settings
     use_proxy = True
     handle_httpstatus_list = [403]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 

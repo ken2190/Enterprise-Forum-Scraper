@@ -8,10 +8,6 @@ from scrapy.crawler import CrawlerProcess
 from scraper.base_scrapper import BypassCloudfareSpider
 
 
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 20
-
-
 class CrimeMarketSpider(BypassCloudfareSpider):
     name = 'crimemarket_spider'
 

@@ -11,10 +11,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 USER = 'Cyrax011'
 PASS = 'Night#PSxHAx000'
 
@@ -62,8 +58,6 @@ class PsxhaxSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
     post_datetime_format = '%b %d, %Y at %I:%M %p'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def parse_thread_date(self, thread_date):
         return super().parse_thread_date(thread_date.strip()[:-5])
@@ -138,14 +132,3 @@ class PsxhaxScrapper(SiteMapScrapper):
     spider_class = PsxhaxSpider
     site_name = 'psxhax.com'
     site_type = 'forum'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
-        return spider_settings

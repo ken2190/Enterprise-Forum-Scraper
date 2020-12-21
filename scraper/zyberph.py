@@ -8,10 +8,6 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 2
-
-
 class ZyberphSpider(SitemapSpider):
     name = 'zyberph_spider'
     base_url = 'http://www.zyberph.com/'
@@ -43,8 +39,6 @@ class ZyberphSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%a %b %d, %Y %I:%M %p'
     sitemap_datetime_format = '%a %b %d, %Y %I:%M %p'
 

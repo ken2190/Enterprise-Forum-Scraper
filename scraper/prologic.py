@@ -10,10 +10,6 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 USER = 'vrx9'
 PASS = 'Night#Pro000'
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class ProLogicSpider(SitemapSpider):
     name = 'prologic_spider'
     base_url = "https://prologic.su/"
@@ -45,8 +41,6 @@ class ProLogicSpider(SitemapSpider):
     )
 
     # Other settings
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d %b %Y'
     post_datetime_format = '%Y-%m-%dT%H:%M:%S'
 

@@ -6,10 +6,6 @@ from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class HackingBoardSpider(SitemapSpider):
     name = 'hackingboard_spider'
     base_url = "https://hackingboard.net/"
@@ -46,8 +42,6 @@ class HackingBoardSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d.%m.%Y, %H:%M'
     post_datetime_format = '%d.%m.%Y, %H:%M'
 

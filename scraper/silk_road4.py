@@ -12,9 +12,6 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
 USER = 'Cyrax22'
 PASS = 'S5eVZWqf!3wNdtb'
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 # recovery key: Your recovery key is HCjrcs23snxjRVR8kpR1c1J6wj2GHDUojQpRJ33OcH1AYMNQ3MVVBG3r5zSeftmaj4mFgGV3WKks6z85mvpprOs1XCtan5qxkta2h70mqxu3FJ47RxofBYegANeZoAsO
 
 
@@ -42,8 +39,6 @@ class SilkRoad4Spider(MarketPlaceSpider):
     )
 
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

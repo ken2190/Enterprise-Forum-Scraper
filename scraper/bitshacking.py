@@ -17,9 +17,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
 USER = 'Cyrax_011'
 PASS = 'Night#BitsHack000'
 
@@ -162,14 +159,3 @@ class BitsHackingScrapper(SiteMapScrapper):
     spider_class = BitsHackingSpider
     site_name = 'bitshacking.com'
     site_type = 'forum'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
-        return spider_settings

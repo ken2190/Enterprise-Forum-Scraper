@@ -19,8 +19,6 @@ from scraper.base_scrapper import (
 # username = 'cyrax101'
 USER = 'donotreplytothismailever@gmail.com'
 PASS = 'nightlion123'
-REQUEST_DELAY = .6
-NO_OF_THREADS = 16
 
 USER_AGENT = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
               '(KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36')
@@ -302,9 +300,6 @@ class ShadowCardersScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
                 "USER_AGENT": USER_AGENT
             }
         )

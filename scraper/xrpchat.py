@@ -61,8 +61,6 @@ class XrpChatSpider(SitemapSpider):
 
 class XrpChatScrapper(SiteMapScrapper):
 
-    request_delay = 0.1
-    no_of_threads = 16
     spider_class = XrpChatSpider
     site_name = 'xrpchat.com'
     site_type = 'forum'
@@ -71,9 +69,6 @@ class XrpChatScrapper(SiteMapScrapper):
         spider_settings = super().load_settings()
         spider_settings.update(
             {
-                'DOWNLOAD_DELAY': self.request_delay,
-                'CONCURRENT_REQUESTS': self.no_of_threads,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
                 'RETRY_HTTP_CODES': [403, 406, 429, 500, 503]
             }
         )

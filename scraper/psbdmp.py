@@ -11,7 +11,6 @@ from scraper.base_scrapper import (
 )
 from scraper.base_scrapper import PROXY_USERNAME, PROXY_PASSWORD, PROXY
 
-NO_OF_THREADS = 5
 MIN_DELAY=0.2
 MAX_DELAY=0.4
 API_KEY = 'b15b2a61fe195e6b1cedab735cd13674'
@@ -90,7 +89,6 @@ class PsbdmpScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
                 "AUTOTHROTTLE_ENABLED": True,
                 "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
                 "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY

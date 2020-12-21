@@ -12,10 +12,6 @@ from scrapy import (
     FormRequest
 )
 
-REQUEST_DELAY = 0.2
-NO_OF_THREADS = 10
-
-
 class SkyFraudSpider(SitemapSpider):
 
     name = "skyfraud_spider"
@@ -189,14 +185,3 @@ class SkyFraudScrapper(SiteMapScrapper):
     spider_class = SkyFraudSpider
     site_name = 'sky-fraud.ru'
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            }
-        )
-        return settings

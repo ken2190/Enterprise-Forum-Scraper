@@ -16,10 +16,6 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 USER = "nunofragoso"
 PASS = "xss#123"
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class XSSSpider(SitemapSpider):
     name = "xss_spider"
 
@@ -115,8 +111,6 @@ class XSSScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
                 'HTTPERROR_ALLOWED_CODES': [403]
             }
         )

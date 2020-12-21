@@ -18,10 +18,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = .6
-NO_OF_THREADS = 7
-
-
 class NulledSpider(SitemapSpider):
     name = 'nulled_spider'
 
@@ -158,9 +154,6 @@ class NulledToScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
                 'RETRY_HTTP_CODES': [403, 429, 500, 503, 504],
             }
         )

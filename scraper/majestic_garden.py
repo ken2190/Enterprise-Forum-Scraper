@@ -8,9 +8,6 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 USER = 'cyrax11'
 PASS = 'Night#Majestic'
 
@@ -60,8 +57,6 @@ class MajesticGardenSpider(SitemapSpider):
     use_proxy = False
     sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"
     post_datetime_format = "%B %d, %Y, %I:%M:%S %p »"
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

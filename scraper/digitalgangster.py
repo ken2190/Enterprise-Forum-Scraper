@@ -9,10 +9,6 @@ import dateparser
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class DigitalGangsterSpider(SitemapSpider):
     name = 'digitalgangster_spider'
     base_url = 'https://digitalgangster.com/7um'
@@ -44,8 +40,6 @@ class DigitalGangsterSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%Y-%m-%dT%H:%M:%S'
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
 

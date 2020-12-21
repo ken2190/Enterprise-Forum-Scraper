@@ -15,9 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 1
-
 USERNAME = "vrx9"
 PASSWORD = "4hr63yh38a"
 
@@ -61,8 +58,6 @@ class BinRevSpider(SitemapSpider):
     )
 
     # Other settings
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     use_proxy = True
 
     def start_requests(self):

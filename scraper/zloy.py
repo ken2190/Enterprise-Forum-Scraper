@@ -15,10 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.7
-NO_OF_THREADS = 2
-
-
 class ZloySpider(SitemapSpider):
 
     name = "zloy_spider"
@@ -60,8 +56,6 @@ class ZloySpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
     cloudfare_delay = 5

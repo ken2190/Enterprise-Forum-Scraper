@@ -226,18 +226,5 @@ class YouHackSpider(SitemapSpider):
 class YouHackScrapper(SiteMapScrapper):
 
     spider_class = YouHackSpider
-    request_delay = 0.2
-    no_of_threads = 16
     site_name = 'youhack.ru'
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': self.request_delay,
-                'CONCURRENT_REQUESTS': self.no_of_threads,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            }
-        )
-        return settings

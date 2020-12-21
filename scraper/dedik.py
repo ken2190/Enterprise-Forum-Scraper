@@ -8,10 +8,6 @@ from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class DedikSpider(SitemapSpider):
     name = 'dedik_spider'
     base_url = "http://dedik.cc/"
@@ -52,8 +48,6 @@ class DedikSpider(SitemapSpider):
     # Other settings
     use_proxy = True
     handle_httpstatus_list = [403]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
     post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 

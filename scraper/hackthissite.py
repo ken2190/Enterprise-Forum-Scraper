@@ -8,10 +8,6 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class HackThisSiteSpider(SitemapSpider):
     name = 'hackthissite_spider'
     base_url = 'https://hackthissite.org/forums'
@@ -44,8 +40,6 @@ class HackThisSiteSpider(SitemapSpider):
     )
 
     # Other settings
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = 'on %a %b %d, %Y %I:%M %p'
     sitemap_datetime_format = 'on %a %b %d, %Y %I:%M %p'
 

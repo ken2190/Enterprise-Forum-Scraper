@@ -21,9 +21,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 4
-NO_OF_THREADS = 1
-
 USERNAME = "Doz3r"
 PASSWORD = "DOCPVfmd"
 PASSWORD_HASH = "70322e243f1c161437160d1e0a46413629260311330e41181e741c1f25707f3e"
@@ -48,8 +45,6 @@ class JstashBazarSpider(SitemapSpider):
 
     # Other settings
     handle_httpstatus_list = [511]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d.%m.%Y'
     post_datetime_format = '%d.%m.%Y, %H:%M'
 

@@ -6,10 +6,6 @@ from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class VigilanteSpider(SitemapSpider):
     name = 'vigilante_spider'
     base_url = "https://vigilante.tech/"
@@ -57,8 +53,6 @@ class VigilanteSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def parse(self, response):
         # Synchronize cloudfare user agent

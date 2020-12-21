@@ -7,10 +7,6 @@ from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-
-REQUEST_DELAY = 0.8
-NO_OF_THREADS = 2
-
 USER = 'Cyrax_011'
 PASS = 'WLZukoZl'
 
@@ -48,8 +44,6 @@ class TorigonSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%a %b %d, %Y'
 
     def __init__(self, *args, **kwargs):

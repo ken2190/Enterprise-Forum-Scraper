@@ -8,10 +8,6 @@ from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class MMMLCSpider(SitemapSpider):
     name = 'mmmlc_spider'
     base_url = "https://tor.vc/"
@@ -51,8 +47,6 @@ class MMMLCSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
     post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 

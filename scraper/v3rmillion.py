@@ -15,8 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 2  # 5
 USER = "hackwithme123"
 PASS = "6VUZmjFzM2WtyjV"
 
@@ -72,7 +70,6 @@ class V3RMillionSpider(SitemapSpider):
 
     # Other settings
     use_vip_proxy=True
-    download_delay = REQUEST_DELAY
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
@@ -173,9 +170,6 @@ class V3RMillionScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
                 'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 408, 429],
                 'RETRY_TIMES': 3
             }

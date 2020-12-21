@@ -18,10 +18,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class CardVillaSpider(SitemapSpider):
     name = 'cardvilla_spider'
     base_url = 'https://cardvilla.net/'
@@ -55,8 +51,6 @@ class CardVillaSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'
 

@@ -22,9 +22,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.6
-NO_OF_THREADS = 2
-
 USER = 'Cyrax_011'
 PASS = 'c2Yv9EP8MsgGHJr'
 
@@ -76,8 +73,6 @@ class CardingTeamSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def start_requests(self):
         """

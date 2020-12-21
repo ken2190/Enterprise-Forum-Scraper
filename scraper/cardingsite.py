@@ -10,9 +10,6 @@ from scraper.base_scrapper import (
 from datetime import datetime
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 USER_AGENT = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
               '(KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36')
 
@@ -119,9 +116,6 @@ class CardingSiteScraper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
                 "USER_AGENT": USER_AGENT
             }
         )

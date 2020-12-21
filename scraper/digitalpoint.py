@@ -15,10 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
-
 class DigitalPointSpider(SitemapSpider):
     name = 'digitalpoint_spider'
 
@@ -60,8 +56,6 @@ class DigitalPointSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = "%d/%m/%y"
     post_datetime_format = "%d/%m/%y"
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def parse(self, response):
 

@@ -16,9 +16,6 @@ from unicaps import CaptchaSolver, CaptchaSolvingService
 from unicaps.exceptions import UnicapsException
 from unicaps.common import CaptchaCharType, CaptchaAlphabet
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 USERNAME = "thecreator"
 PASSWORD = "Chq#Blast888"
 KEY = "aiJZHkxlNhTiQA8orj8y"
@@ -66,8 +63,6 @@ class CanadaHQSpider(MarketPlaceSpider):
 
     # Other settings
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def setup_browser(self, proxy_host=PROXY_HOST):
         # Init firefox options

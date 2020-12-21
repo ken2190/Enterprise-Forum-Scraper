@@ -15,8 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = .8
-NO_OF_THREADS = 8
 USERNAME = "crhz"
 PASSWORD = "4hr63yh38a61SDW0"
 
@@ -77,8 +75,6 @@ class CrackingKingSpider(SitemapSpider):
     # Other settings
     use_proxy = True
     handle_httpstatus_list = [503]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'
 

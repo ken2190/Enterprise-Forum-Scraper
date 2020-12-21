@@ -18,10 +18,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 10
-
-
 class ExeLabSpider(SitemapSpider):
     name = 'exelab_spider'
 
@@ -58,8 +54,6 @@ class ExeLabSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d %B %Y'
     post_datetime_format = '%d %B %Y'
 

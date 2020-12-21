@@ -11,11 +11,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
-
 class BigmmoSpider(SitemapSpider):
     name = 'bigmmo_spider'
 
@@ -60,8 +55,6 @@ class BigmmoSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = "%d/%m/%y"
     post_datetime_format = "%d/%m/%y"
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def parse(self, response):
 

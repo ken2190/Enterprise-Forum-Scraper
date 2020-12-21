@@ -17,9 +17,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 1
-
 USERNAME = "vrx9"
 MD5PASS = "db587913e1544e2169f44a5b7976c9a1"
 PASSWORD = "Night#Vrx099"
@@ -56,8 +53,6 @@ class TorumSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d %b %Y'
     post_datetime_format = '%d %b %Y'
 
