@@ -11,8 +11,9 @@ from scraper.base_scrapper import (
 )
 from scraper.base_scrapper import PROXY_USERNAME, PROXY_PASSWORD, PROXY
 
-REQUEST_DELAY = 0.5
 NO_OF_THREADS = 5
+MIN_DELAY=0.2
+MAX_DELAY=0.4
 API_KEY = 'b15b2a61fe195e6b1cedab735cd13674'
 
 
@@ -25,7 +26,6 @@ class PsbdmpSpider(SitemapSpider):
     # Other settings
     use_proxy = True
     date_format = '%Y-%m-%d'
-    download_delay = REQUEST_DELAY
     download_thread = NO_OF_THREADS
 
     def start_requests(self,):
@@ -85,3 +85,15 @@ class PsbdmpScrapper(SiteMapScrapper):
     spider_class = PsbdmpSpider
     site_name = 'psbdmp.ws'
     site_type = 'paste'
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'CONCURRENT_REQUESTS': NO_OF_THREADS,
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
+                "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
+            }
+        )
+        return settings
