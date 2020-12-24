@@ -24,6 +24,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
 
     # xpath stuffs
     login_form_xpath = captcha_form_xpath = '//form[@method="POST"]'
+    lonin_user_xpath = "//input[@name='username']"
     captcha_url_xpath = '//img[contains(@src, "captchas")]/@src'
     market_url_xpath = '//a[contains(@href,"cat=")]/@href'
     product_url_xpath = '//a[contains(@href, "?listing=")]/@href'
@@ -132,39 +133,48 @@ class SilkRoad4Spider(MarketPlaceSpider):
     def parse_captcha(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+        
+        if not response.xpath(self.lonin_user_xpath).extract_first():
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_first_captcha,
+                dont_filter=True,
+                meta=self.synchronize_meta(response)
+            )
+        else:
+            # Load cookies
+            cookies = response.request.headers.get("Cookie", '').decode("utf-8")
+            if not cookies:
+                yield from self.start_requests()
+                return
+            # Load captcha url
+            captcha_url = response.xpath(
+                self.captcha_url_xpath).extract_first()
+            captcha_url = response.urljoin(captcha_url)
+            captcha = self.solve_captcha(
+                captcha_url,
+                response
+            )
+            self.logger.info(
+                "Captcha has been solved: %s" % captcha
+            )
 
-        # Load cookies
-        cookies = response.request.headers.get("Cookie", '').decode("utf-8")
-        if not cookies:
-            yield from self.start_requests()
-            return
-        # Load captcha url
-        captcha_url = response.xpath(
-            self.captcha_url_xpath).extract_first()
-        captcha_url = response.urljoin(captcha_url)
-        captcha = self.solve_captcha(
-            captcha_url,
-            response
-        )
-        self.logger.info(
-            "Captcha has been solved: %s" % captcha
-        )
+            formdata = {
+                'username': USER,
+                'password': PASS,
+                "captcha": captcha
+            }
 
-        formdata = {
-            'username': USER,
-            'password': PASS,
-            "captcha": captcha
-        }
-
-        yield FormRequest.from_response(
-            response=response,
-            formxpath=self.login_form_xpath,
-            formdata=formdata,
-            headers=self.headers,
-            dont_filter=True,
-            meta=self.synchronize_meta(response),
-            callback=self.parse_start
-        )
+            yield FormRequest.from_response(
+                response=response,
+                formxpath=self.login_form_xpath,
+                formdata=formdata,
+                headers=self.headers,
+                dont_filter=True,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_start
+            )
 
     def parse_start(self, response):
 
