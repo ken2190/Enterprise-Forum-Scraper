@@ -33,8 +33,15 @@ class DarkFoxSpider(MarketPlaceSpider):
     captcha_url_xpath_2 = '//img[@class="captcha is-centered"]/@src'
     market_url_xpath = '//input[@name="category[]"]/@value'
     product_url_xpath = '//div[@class="media-content"]/a[contains(@href, "/product/")]/@href'
+    product_comment_xpath = '//a[contains(@href, "/feedback")]/@href'
+    comment_post_date_xpath = '//div[contains(@class, "columns m-b-none")]/div[last()]/text()'
+    comment_pagination_xpath = '//a[contains(@class, "pagination-next")]/@href'
+    comment_current_page_xpath = '//a[contains(@class, "pagination-link is-current")]/text()'
+
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//h3[contains(., "Vendor:")]/a/@href'
+    user_description_xpath = '//div[@class="tabs"]//a[contains(@href, "/about")]/@href'
+    user_pgp_xpath = '//div[@class="tabs"]//a[contains(@href, "/pgp")]/@href'
     avatar_xpath = '//img[@class="avatar"]/@src'
 
     # Regex stuffs

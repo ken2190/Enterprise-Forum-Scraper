@@ -135,6 +135,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
         self.synchronize_headers(response)
         
         if not response.xpath(self.lonin_user_xpath).extract_first():
+            url = response.urljoin('auth.php')
             yield Request(
                 url=url,
                 headers=self.headers,
