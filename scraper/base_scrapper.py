@@ -269,6 +269,7 @@ class SiteMapScrapper:
         self.output_path = kwargs.get("output")
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
+        self.end_date = kwargs.get("end_date")
         self.firstrun = kwargs.get("firstrun")
         self.kill = kwargs.get("kill")
         self.get_users = kwargs.get("get_users")
@@ -297,6 +298,20 @@ class SiteMapScrapper:
                     )
                 )
 
+        if self.end_date:
+            try:
+                self.end_date = datetime.strptime(
+                    self.end_date,
+                    self.time_format
+                )
+            except Exception as err:
+                raise ValueError(
+                    "Wrong date format. Correct format is: %s. Detail: %s" % (
+                        self.time_format,
+                        err
+                    )
+                )
+
     def load_settings(self):
         return deepcopy(self.settings)
 
@@ -306,6 +321,7 @@ class SiteMapScrapper:
             "useronly": getattr(self, "useronly", None),
             "avatar_path": getattr(self, "avatar_path", None),
             "start_date": getattr(self, "start_date", None),
+            "end_date": getattr(self, "end_date", None),
             "user_path": getattr(self, "user_path", None),
             "firstrun": getattr(self, "firstrun", None),
             "kill": getattr(self, "kill", None),
@@ -851,6 +867,7 @@ class SitemapSpider(BypassCloudfareSpider):
         self.avatar_path = kwargs.get("avatar_path")
         self.user_path = kwargs.get("user_path")
         self.start_date = kwargs.get("start_date")
+        self.end_date = kwargs.get("end_date")
         self.kill = kwargs.get("kill")
         self.get_users = kwargs.get("get_users")
         self.topic_pages_saved = 0

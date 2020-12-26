@@ -27,7 +27,9 @@ class PsbdmpSpider(SitemapSpider):
     date_format = '%Y-%m-%d'
 
     def start_requests(self,):
-        while self.start_date < datetime.datetime.now():
+        if not self.end_date:
+            self.end_date = datetime.datetime.now()
+        while self.start_date < self.end_date:
             _from = self.start_date.strftime(self.date_format)
             self.start_date = self.start_date + datetime.timedelta(days=1)
             _to = self.start_date.strftime(self.date_format)
