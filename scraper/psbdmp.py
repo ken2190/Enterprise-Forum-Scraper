@@ -23,7 +23,7 @@ class PsbdmpSpider(SitemapSpider):
     dump_url = f'https://psbdmp.ws/api/v3/dump/{{}}?key={API_KEY}'
 
     # Other settings
-    use_proxy = True
+    use_proxy = False
     date_format = '%Y-%m-%d'
 
     def start_requests(self,):
