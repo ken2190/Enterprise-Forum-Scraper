@@ -2114,6 +2114,7 @@ class MarketPlaceSpider(SitemapSpider):
                 headers=self.headers,
                 callback=self.parse_products,
                 meta=self.synchronize_meta(response),
+                dont_filter=True
             )
 
     def parse_products(self, response):
@@ -2132,6 +2133,7 @@ class MarketPlaceSpider(SitemapSpider):
                 url=product_url,
                 headers=self.headers,
                 callback=self.parse_product,
+                dont_filter=True,
                 meta=self.synchronize_meta(
                     response,
                     default_meta={
@@ -2145,6 +2147,7 @@ class MarketPlaceSpider(SitemapSpider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_products,
+                dont_filter=True,
                 meta=self.synchronize_meta(response),
             )
 
@@ -2166,6 +2169,7 @@ class MarketPlaceSpider(SitemapSpider):
                     url=product_comment_url,
                     headers=self.headers,
                     callback=self.parse_product_comment,
+                    dont_filter=True,
                     meta=self.synchronize_meta(
                         response,
                         default_meta={
@@ -2188,6 +2192,7 @@ class MarketPlaceSpider(SitemapSpider):
             url=user_url,
             headers=self.headers,
             callback=self.parse_user,
+            dont_filter=True,
             meta=self.synchronize_meta(
                 response,
                 default_meta={
@@ -2249,6 +2254,7 @@ class MarketPlaceSpider(SitemapSpider):
                 url=next_page,
                 headers=self.headers,
                 callback=self.parse_product_comment,
+                dont_filter=True,
                 meta=self.synchronize_meta(
                     response,
                     default_meta={
@@ -2305,6 +2311,7 @@ class MarketPlaceSpider(SitemapSpider):
                         url=user_description_url,
                         headers=self.headers,
                         callback=self.parse_user_description,
+                        dont_filter=True,
                         meta=self.synchronize_meta(
                             response,
                             default_meta={
@@ -2329,6 +2336,7 @@ class MarketPlaceSpider(SitemapSpider):
                         url=user_pgp_url,
                         headers=self.headers,
                         callback=self.parse_user_pgp,
+                        dont_filter=True,
                         meta=self.synchronize_meta(
                             response,
                             default_meta={
@@ -2354,6 +2362,7 @@ class MarketPlaceSpider(SitemapSpider):
             url=avatar_url,
             headers=self.headers,
             callback=self.parse_avatar,
+            dont_filter=True,
             meta=self.synchronize_meta(
                 response,
                 default_meta={

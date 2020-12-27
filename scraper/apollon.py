@@ -35,9 +35,16 @@ class ApollonSpider(MarketPlaceSpider):
     captcha_url_xpath = '//img[@name="capt_code"]/@src'
     market_url_xpath = '//ul[@id="side-menu"]/li/a/@href'
     product_url_xpath = '//a[contains(@href, "listing.php")]/@href'
+    product_comment_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=4")]/@href'
+    comment_post_date_xpath = '//div[contains(@class, "tab-pane fade in active")]//tbody/tr/td[last()]/small/text()'
+    comment_pagination_xpath = '//ul[contains(@class, "pagination pagination-sm")]/li[last()]/a/@href'
+    comment_current_page_xpath = '//ul[contains(@class, "pagination pagination-sm")]/li[contains(@class, "page-item active")]/a/text()'
+
     next_page_xpath = '//li[@class="page-item active"]'\
                       '/following-sibling::li[1]/a/@href'
     user_xpath = '//small/a[contains(@href, "user.php")]/@href'
+    user_description_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=1")]/@href'
+    user_pgp_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=6")]/@href'
     avatar_xpath = '//img[contains(@class, "img-responsive")]/@src'
     # Regex stuffs
     topic_pattern = re.compile(
@@ -60,7 +67,7 @@ class ApollonSpider(MarketPlaceSpider):
     #         'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
     #     }
     # }
-    use_proxy = True
+    use_proxy = False
     captcha_instruction = "Please ignore | and ^"
 
     def __init__(self, *args, **kwargs):
@@ -151,3 +158,7 @@ class ApollonScrapper(SiteMapScrapper):
     spider_class = ApollonSpider
     site_name = 'apollon (apollionih4ocqyd.onion)'
     site_type = 'marketplace'
+
+    def __init__(self, kwargs):
+        kwargs['get_users'] = True
+        super().__init__(kwargs)
