@@ -24,6 +24,8 @@ class PsbdmpSpider(SitemapSpider):
 
     # Other settings
     use_proxy = False
+    download_thread = NO_OF_THREADS
+    
     date_format = '%Y-%m-%d'
 
     def start_requests(self,):
