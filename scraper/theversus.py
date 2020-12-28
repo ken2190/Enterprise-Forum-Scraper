@@ -64,7 +64,7 @@ class TheVersusSpider(MarketPlaceSpider):
             'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
         }
     }
-    use_proxy = True
+    use_proxy = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -177,7 +177,7 @@ class TheVersusSpider(MarketPlaceSpider):
 
 class TheVersusScrapper(SiteMapScrapper):
     spider_class = TheVersusSpider
-    site_name = 'http://pqqmr3p3tppwqvvapi6fa7jowrehgd36ct6lzr26qqormaqvh6gt4jyd.onion'
+    site_name = 'TheVersus'
     site_type = 'marketplace'
 
     def __init__(self, kwargs):

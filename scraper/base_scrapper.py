@@ -2102,10 +2102,10 @@ class MarketPlaceSpider(SitemapSpider):
         return url
 
     def get_user_id(self, url):
-        return url.rsplit('/', 1)[-1]
+        return url.strip('/').rsplit('/', 1)[-1]
 
     def get_file_id(self, url):
-        return url.rsplit('/', 1)[-1]
+        return url.strip('/').rsplit('/', 1)[-1]
 
     def get_product_next_page(self, response):
         next_page_url = response.xpath(self.next_page_xpath).extract_first()
