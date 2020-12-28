@@ -2,6 +2,7 @@ import os
 import re
 import uuid
 import base64
+import time
 
 from urllib.parse import unquote
 
@@ -14,30 +15,38 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
+USERNAME='gordal418'
+PASSWORD="readytogo418"
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
-
-USERNAME = "gordal418"
-PASSWORD = "readytogo418"
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 PROXY = 'http://127.0.0.1:8118'
 
 
-class HydraSpider(MarketPlaceSpider):
+class TheVersusSpider(MarketPlaceSpider):
 
-    name = "hydramarket_spider"
+    name = "theversus_spider"
 
     # Url stuffs
-    base_url = "http://hydraruzxpnew4af.onion"
+    base_url = "http://pqqmr3p3tppwqvvapi6fa7jowrehgd36ct6lzr26qqormaqvh6gt4jyd.onion"
 
     # xpath stuffs
     login_form_xpath = '//form[contains(@action, "/login")]'
     captch_form_xpath = '//form[@method="post"]'
-    captcha_url_xpath = '//img[@alt="Captcha image"]/@src'
-    captchaData_xpath = '//input[@name="captchaData"]/@value'
-    market_url_xpath = '//div/a[@role and contains(@href, "/market/")]/@href'
-    product_url_xpath = '//div[@class="title over"]/a[contains(@href, "/product/")]/@href'
-    next_page_xpath = '//ul[@class="pagination"]/li[@class="pag_right"]/a/@href'
+    captcha_url_xpath = '//img[contains(@src, "/captcha")]/@src'
+    captchaData_xpath = '//input[@name="captcha"]/@value'
+    login_csrf_xpath = '//input[@name="CSRF"]/@value'
+
+    market_url_xpath = '//ul//a[@href="/listing"]/@href'
+    product_url_xpath = '//div[contains(@class, "listings__product")]//a[contains(@href, "/listing/")]/@href'
+    product_comment_xpath = '//a[contains(@href, "/feedback")]/@href'
+
+    next_page_xpath = '//div[@class="pagination__navigation"]/a[normalize-space(text())=">"]/@href'
+
+    user_xpath = '//div[contains(@class, "listing__vendor")]//a[contains(@href, "/user/")]/@href'
+    user_description_xpath = '//div[contains(@class, "user__navigation")]//a[contains(@href, "/feedbacks")]/@href'
+    user_pgp_xpath = '//div[contains(@class, "user__navigation")]//a[contains(@href, "/pgp")]/@href'
+    avatar_xpath = '//img[contains(@class, "/avatars")]/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -64,16 +73,6 @@ class HydraSpider(MarketPlaceSpider):
                 "User-Agent": USER_AGENT
             }
         )
-
-    def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
-
-        # Separate the metadata from the image data
-        head, data = image_url.split(',', 1)
-
-        # Decode the image data
-        plain_data = base64.b64decode(data)
-
-        return plain_data
 
     def synchronize_meta(self, response, default_meta={}):
         meta = {
@@ -106,10 +105,11 @@ class HydraSpider(MarketPlaceSpider):
         # Load cookies
 
         cookies = response.request.headers.get("Cookie")
+        print(cookies)
         if not cookies:
             yield from self.start_requests()
             return
-
+        
         # Load captcha url
         captcha_url = response.xpath(
                 self.captcha_url_xpath).extract_first()
@@ -122,10 +122,11 @@ class HydraSpider(MarketPlaceSpider):
             "Captcha has been solved: %s" % captcha
         )
 
+        captchaData = response.xpath(self.captchaData_xpath).extract_first()
         formdata = {
-            "captcha": captcha
+            "solution": captcha,
+            "captcha": captchaData
         }
-
         yield FormRequest.from_response(
             response=response,
             formxpath=self.captch_form_xpath,
@@ -148,26 +149,12 @@ class HydraSpider(MarketPlaceSpider):
             yield from self.start_requests()
             return
 
-        # Load captcha url
-        captcha_url = response.xpath(
-                self.captcha_url_xpath).extract_first()
-        captcha = self.solve_captcha(
-            captcha_url,
-            response
-        )
-        captcha = captcha.lower()
-        self.logger.info(
-            "Captcha has been solved: %s" % captcha
-        )
+        CSRF = response.xpath(self.login_csrf_xpath).extract_first()
         
-        captchaData = response.xpath(self.captchaData_xpath).extract_first()
         formdata = {
-            "_token":"",
-            "redirect": "1",
-            "captcha": captcha,
-            "login": USERNAME,
-            "password": PASSWORD,
-            "captchaData:": captchaData
+            "Username": USERNAME,
+            "Password": PASSWORD,
+            "CSRF:": CSRF
         }
 
         yield FormRequest.from_response(
@@ -188,7 +175,12 @@ class HydraSpider(MarketPlaceSpider):
         yield from super().parse_start(response)
 
 
-class HydraScrapper(SiteMapScrapper):
-    spider_class = HydraSpider
-    site_name = 'hydra_hydraruzxpnew4af'
+class TheVersusScrapper(SiteMapScrapper):
+    spider_class = TheVersusSpider
+    site_name = 'http://pqqmr3p3tppwqvvapi6fa7jowrehgd36ct6lzr26qqormaqvh6gt4jyd.onion'
     site_type = 'marketplace'
+
+    def __init__(self, kwargs):
+        kwargs['get_users'] = True
+        super().__init__(kwargs)
+
