@@ -1350,6 +1350,17 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Download content
         try:
+            # Standardize image url only if it is not complete url
+            if 'http://' not in image_url and 'https://' not in image_url:
+                temp_url = image_url
+                if self.base_url not in image_url:
+                    temp_url = response.urljoin(image_url)
+
+                if self.base_url not in temp_url:
+                    temp_url = self.base_url + image_url
+
+                image_url = temp_url
+            
             image_content = self.get_captcha_image_content(
                 image_url, cookies, headers, proxy)
         except Exception as err:
