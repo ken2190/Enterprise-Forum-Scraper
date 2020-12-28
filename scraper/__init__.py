@@ -168,10 +168,11 @@ from scraper.silk_road4 import SilkRoad4Scrapper
 from scraper.darkfox import DarkFoxScrapper
 from scraper.breakingin import BreakinginScrapper
 from scraper.mafia import MafiaScrapper
-from scraper.kilos import KilosScrapper
+# from scraper.kilos import KilosScrapper
 from scraper.mafia import MafiaScrapper
 from scraper.theversus import TheVersusScrapper
 from scraper.cannahome import CannaHomeScrapper
+from scraper.cannazone import CannaZoneScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -344,7 +345,8 @@ SCRAPER_MAP = {
     'youhack': YouHackScrapper,
     'zloy': ZloyScrapper,
     'zyberph': ZyberphScrapper,
-    'kilos': KilosScrapper,
+    # 'kilos': KilosScrapper,
     'theversus': TheVersusScrapper,
-    'cannahome': CannaHomeScrapper
+    'cannahome': CannaHomeScrapper,
+    'cannazone': CannaZoneScrapper
 }
