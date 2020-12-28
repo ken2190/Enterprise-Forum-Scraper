@@ -1,6 +1,9 @@
 import json
 import re
 import os
+from os import listdir
+from os.path import isfile, join
+
 import datetime
 import time
 import scrapy
@@ -53,17 +56,22 @@ class PsbdmpSpider(SitemapSpider):
 
     def parse(self, response):
         json_data = json.loads(response.text)
+        data = json_data[0]
+        output_path = response.meta['output_path']
+
+        onlyfiles = [f.split(".")[0] for f in listdir(output_path) if isfile(join(output_path, f))]
         for data in json_data[0]:
             dump_id = data['id']
             dump_url = self.dump_url.format(dump_id)
-            yield scrapy.Request(
-                dump_url,
-                callback=self.save_file,
-                meta={
-                    'dump_id': dump_id,
-                    'output_path': response.meta['output_path']
-                }
-            )
+            if dump_id not in onlyfiles:
+                yield scrapy.Request(
+                    dump_url,
+                    callback=self.save_file,
+                    meta={
+                        'dump_id': dump_id,
+                        'output_path': response.meta['output_path']
+                    }
+                )
 
     def save_file(self, response):
         output_path = response.meta['output_path']
