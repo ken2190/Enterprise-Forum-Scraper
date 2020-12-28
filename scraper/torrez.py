@@ -44,6 +44,7 @@ class TorrezSpider(MarketPlaceSpider):
     product_comment_xpath = '//li[contains(@class, "nav-item")]/a[contains(@href, "/feedback")]/@href'
     comment_pagination_xpath = '//ul[contains(@class, "pagination")]//a[@rel="next"]/@href'
     comment_current_page_xpath = '//li[contains(@class, "page-item active")]/span/text()'
+    comment_xpath = '//div[contains(@class, "d-inline")]'
 
     next_page_xpath = '//ul[contains(@class, "pagination")]//a[@rel="next"]/@href'
     user_xpath = '//div[contains(@class, "singleItemDetails")]//a[contains(@href, "/profile/")]/@href'
@@ -218,6 +219,9 @@ class TorrezSpider(MarketPlaceSpider):
         # Get topic id
         file_id = response.meta.get("file_id")
 
+        if not response.xpath(self.comment_xpath):
+            self.logger.info(f'No Feedback found: {file_id}')
+            return
         # get next page
         next_page = self.get_product_comment_next_page(response)
 
