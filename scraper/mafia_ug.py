@@ -15,8 +15,8 @@ from scraper.base_scrapper import (
 )
 
 
-class MafiaSpider(SitemapSpider):
-    name = "mafia_spider"
+class MafiaUgSpider(SitemapSpider):
+    name = "mafiaug_spider"
 
     # Url stuffs
     base_url = "http://mafia.ug"
@@ -123,6 +123,6 @@ class MafiaSpider(SitemapSpider):
         yield from super().parse_avatars(response)
 
 
-class MafiaScrapper(SiteMapScrapper):
-    spider_class = MafiaSpider
+class MafiaUgScrapper(SiteMapScrapper):
+    spider_class = MafiaUgSpider
     site_type = 'forum'

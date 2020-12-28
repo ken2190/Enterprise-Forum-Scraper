@@ -4,6 +4,7 @@ import re
 import socket
 import time
 import uuid
+import base64
 from base64 import b64decode
 from copy import deepcopy
 from datetime import datetime
@@ -1381,26 +1382,36 @@ class SitemapSpider(BypassCloudfareSpider):
             return ''
 
     def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
-        # Load session
-        session = requests.Session()
-        if proxy:
-            session.proxies = {
-                "http": proxy,
-                "https": proxy
-            }
 
-        # Set cookies to session
-        for name, value in cookies.items():
-            session.cookies.set(name, value)
+        if "data:image" in image_url:
+            # Separate the metadata from the image data
+            head, data = image_url.split(',', 1)
 
-        response = session.get(
-            image_url,
-            headers=headers
-        )
-        self.logger.info(
-            "Download captcha image content with headers %s" % response.request.headers
-        )
-        return response.content
+            # Decode the image data
+            plain_data = base64.b64decode(data)
+
+            return plain_data
+        else:
+            # Load session
+            session = requests.Session()
+            if proxy:
+                session.proxies = {
+                    "http": proxy,
+                    "https": proxy
+                }
+
+            # Set cookies to session
+            for name, value in cookies.items():
+                session.cookies.set(name, value)
+
+            response = session.get(
+                image_url,
+                headers=headers
+            )
+            self.logger.info(
+                "Download captcha image content with headers %s" % response.request.headers
+            )
+            return response.content
 
     def get_blockchain_domain(self, domain):
         # Get domain root only

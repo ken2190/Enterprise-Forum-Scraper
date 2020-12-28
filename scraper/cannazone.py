@@ -22,7 +22,7 @@ NO_OF_THREADS=5
 
 class CannaZoneSpider(MarketPlaceSpider):
 
-    name = "darkfox_spider"
+    name = "cannazone_spider"
 
     # Url stuffs
     base_url = "http://cannazonceujdye3.onion"
