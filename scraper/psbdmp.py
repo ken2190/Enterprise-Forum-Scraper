@@ -26,7 +26,7 @@ class PsbdmpSpider(SitemapSpider):
     dump_url = f'https://psbdmp.ws/api/v3/dump/{{}}?key={API_KEY}'
 
     # Other settings
-    use_proxy = False
+    use_proxy = True
     download_thread = NO_OF_THREADS
     
     date_format = '%Y-%m-%d'
