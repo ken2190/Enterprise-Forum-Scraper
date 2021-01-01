@@ -100,7 +100,7 @@ class CiphersSpider(SitemapSpider):
                 meta=self.synchronize_meta(response),
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, thread_meta={}, is_first_page=True):
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
 
