@@ -30,7 +30,8 @@ class CardingTeamSpider(SitemapSpider):
     name = 'cardingteam_spider'
 
     # Url stuffs
-    base_url = "https://cardingteam.cc/"
+    base_url = "https://cardingteam.net/"
+    login_url = f'{base_url}member.php?action=login'
     # sitemap_url = 'https://cardingteam.cc/sitemap-index.xml'
 
     # Sitemap Stuffs
@@ -96,7 +97,7 @@ class CardingTeamSpider(SitemapSpider):
             )
         else:
             yield Request(
-                url='https://cardingteam.cc/member.php?action=login',
+                url=self.login_url,
                 callback=self.proceed_for_login,
                 headers=self.headers,
                 dont_filter=True,
