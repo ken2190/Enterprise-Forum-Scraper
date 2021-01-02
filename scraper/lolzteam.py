@@ -17,7 +17,7 @@ class LolzSpider(SitemapSpider):
     base_url = "https://lolz.guru/"
 
     # Xpath stuffs
-    forum_xpath = '//*[@class="nodeTitle"]/a[contains(@href, "forums/")]/@href'
+    forum_xpath = '//li[@class="node category level_1"]//div[@class="nodeText"]//a[contains(@href, "forums/")]/@href'
     thread_xpath = '//div[@class="discussionListItem--Wrapper"]'
     thread_first_page_xpath = './/a[contains(@href,"threads/")]/@href'
     thread_last_page_xpath = './/nav/a[last()]/@href'
