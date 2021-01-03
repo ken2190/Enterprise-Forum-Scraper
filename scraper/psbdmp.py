@@ -37,7 +37,7 @@ class PsbdmpSpider(SitemapSpider):
         while self.start_date <= self.end_date:
             _from = self.start_date.strftime(self.date_format)
             self.start_date = self.start_date + datetime.timedelta(days=1)
-            _to = self.start_date.strftime(self.date_format)
+            _to = _from
             formdata = {
                 'from': _from,
                 'to': _to
