@@ -51,27 +51,33 @@ class PsbdmpSpider(SitemapSpider):
                 formdata=formdata,
                 dont_filter=True,
                 method='POST',
-                meta={'output_path': output_path}
+                meta={
+                    'output_path': output_path,
+                    'date': _from
+                }
             )
 
     def parse(self, response):
         json_data = json.loads(response.text)
         data = json_data[0]
         output_path = response.meta['output_path']
+        date = response.meta['date']
 
         onlyfiles = [f.split(".")[0] for f in listdir(output_path) if isfile(join(output_path, f))]
-        for data in json_data[0]:
-            dump_id = data['id']
+        data = [item for item in json_data[0] if item['id'] not in onlyfiles]
+        print(f'Paste count for {date}: {len(data)}')
+
+        for item in data:
+            dump_id = item['id']
             dump_url = self.dump_url.format(dump_id)
-            if dump_id not in onlyfiles:
-                yield scrapy.Request(
-                    dump_url,
-                    callback=self.save_file,
-                    meta={
-                        'dump_id': dump_id,
-                        'output_path': response.meta['output_path']
-                    }
-                )
+            yield scrapy.Request(
+                dump_url,
+                callback=self.save_file,
+                meta={
+                    'dump_id': dump_id,
+                    'output_path': response.meta['output_path']
+                }
+            )
 
     def save_file(self, response):
         output_path = response.meta['output_path']
