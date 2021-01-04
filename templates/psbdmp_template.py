@@ -52,7 +52,11 @@ class PsbdmpParser(BaseTemplate):
 
         with open(input_file_path, 'r') as fp:
             content = fp.read()
-            json_data = json.loads(content)
+            try:
+                json_data = json.loads(content)
+            except:
+                continue
+            
             data = {
                 '_source': {
                     'source': 'pastebin',
