@@ -89,7 +89,12 @@ class PsbdmpSpider(SitemapSpider):
             print('{} already exists..!'.format(dump_file))
             return
 
-        content = response.text
+        try:
+            json_data = json.loads(response.text)
+        except:
+            return
+        
+        content = json_data["content"]
         if not content:
             return
         with open(dump_file, 'w') as f:
