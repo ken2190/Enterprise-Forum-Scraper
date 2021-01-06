@@ -204,7 +204,7 @@ from templates.breakingin_template import BreakinginParser
 from templates.cccmn_template import CccmnParser
 from templates.darkwebs_template import DarkwebsParser
 from templates.exploitzone_template import ExploitZoneParser
-from templates.mafia_template import MafiaParser
+from templates.mafiaug_template import MafiaUgParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -412,5 +412,5 @@ PARSER_MAP = {
     'ccc_mn': CccmnParser,
     'darkwebs': DarkwebsParser,
     'exploitzone': ExploitZoneParser,
-    'mafia': MafiaParser,
+    'mafia_ug': MafiaUgParser,
 }

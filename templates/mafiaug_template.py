@@ -5,7 +5,7 @@ import utils
 from .base_template import BaseTemplate
 
 
-class MafiaParser(BaseTemplate):
+class MafiaUgParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,7 +22,7 @@ class MafiaParser(BaseTemplate):
         self.header_xpath = '//article[contains(@class,"cPost ipsBox")]'
         self.date_xpath = 'div//time/@datetime'
         self.author_xpath = 'aside//div[@class="name"]//strong/a//text()'
-        self.title_xpath = '//h1[@class="ipsType_pageTitle ipsContained_container"]/span/span/text()'
+        self.title_xpath = '//h1[contains(@class, "ipsType_pageTitle")]//text()'
         self.avatar_xpath = '//div[contains(@class, "cAuthorPane_photo")]/a/img/@src'
         self.avatar_ext = ''
         self.comment_block_xpath = 'div//span[@data-role="reactCountText"]/text()'
@@ -50,8 +50,14 @@ class MafiaParser(BaseTemplate):
                     post_text,
                     count=1
                 )
-        return post_text.strip()
+        return post_text.strip().encode('latin1', errors='ignore').decode('utf8', errors='ignore')
     
+    def get_title(self, tag):
+        title = tag.xpath(self.title_xpath)
+        title = "".join([t.strip() for t in title if t.strip()])
+
+        return title.strip().encode('latin1', errors='ignore').decode('utf8', errors='ignore')
+
     def get_author(self, tag):
         author = tag.xpath(
             'aside//a[@class="ipsType_break"]/span/span/text()'
