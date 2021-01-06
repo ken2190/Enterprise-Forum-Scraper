@@ -13,8 +13,8 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 # USER = "cyrax6626"
 # PASS = "#@nightlion6626"
-USER = "nunofragoso"
-PASS = "xss#123"
+USER = "ronnyboy18@protonmail.ch"
+PASS = "Xs_Rb118!"
 
 class XSSSpider(SitemapSpider):
     name = "xss_spider"
