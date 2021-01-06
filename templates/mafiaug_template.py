@@ -25,7 +25,8 @@ class MafiaUgParser(BaseTemplate):
         self.title_xpath = '//h1[contains(@class, "ipsType_pageTitle")]//text()'
         self.avatar_xpath = '//div[contains(@class, "cAuthorPane_photo")]/a/img/@src'
         self.avatar_ext = ''
-        self.comment_block_xpath = 'div//span[@data-role="reactCountText"]/text()'
+        self.index = 1
+        # self.comment_block_xpath = 'div//span[@data-role="reactCountText"]/text()'
         # main function
         self.main()
 
@@ -81,3 +82,41 @@ class MafiaUgParser(BaseTemplate):
         author = ' '.join(author).strip() if author else None
 
         return author
+
+    def extract_comments(self, html_response, pagination):
+        comments = list()
+        comment_blocks = html_response.xpath(self.comments_xpath)
+
+        comment_blocks = comment_blocks[1:]\
+            if pagination == 1 else comment_blocks
+
+        for comment_block in comment_blocks:
+            user = self.get_author(comment_block)
+            comment_text = self.get_post_text(comment_block)
+            comment_date = self.get_date(comment_block)
+            pid = self.thread_id
+            avatar = self.get_avatar(comment_block)
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                'message': comment_text.strip(),
+                'cid': str(self.index),
+                'author': user,
+            }
+            if comment_date:
+                source.update({
+                    'date': comment_date
+                })
+
+            if avatar:
+                source.update({
+                    'img': avatar
+                })
+
+            comments.append({
+                '_source': source,
+            })
+
+            self.index += 1
+
+        return comments
