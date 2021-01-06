@@ -24,7 +24,7 @@ ELASTIC_IMPORT_INDEXES = {
     'forum': 'dv-f001',
     'marketplace': 'dv-f001',
     'telegram': 'dv-f001',
-    'paste': 'dv-p001',
+    'paste': 'dv-paste01',
     'nosql': 'dv-m001'
 }
 ELASTIC_OUT = 'http://localhost:9200/{elastic_index}'
