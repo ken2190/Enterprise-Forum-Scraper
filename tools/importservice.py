@@ -21,7 +21,7 @@ KEY_PATH = "~/.ssh/id_rsa"
 CLEANUP_AFTER_IMPORT = True
 
 ELASTIC_IMPORT_INDEXES = {
-    'forum': 'dv-f001',
+    'forum': 'dv-f002',
     'marketplace': 'dv-f001',
     'telegram': 'dv-f001',
     'paste': 'dv-paste01',
