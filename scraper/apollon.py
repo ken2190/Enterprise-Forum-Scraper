@@ -32,20 +32,18 @@ class ApollonSpider(MarketPlaceSpider):
 
     # xpath stuffs
     login_form_xpath = captcha_form_xpath = '//form[@method="POST"]'
+    login_alert_xpath = '//div[contains(@class, "alert alert-danger")]/text()'
+
     captcha_url_xpath = '//img[@name="capt_code"]/@src'
     market_url_xpath = '//ul[@id="side-menu"]/li/a/@href'
     product_url_xpath = '//a[contains(@href, "listing.php")]/@href'
-    product_comment_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=4")]/@href'
-    comment_post_date_xpath = '//div[contains(@class, "tab-pane fade in active")]//tbody/tr/td[last()]/small/text()'
-    comment_pagination_xpath = '//ul[contains(@class, "pagination pagination-sm")]/li[last()]/a/@href'
-    comment_current_page_xpath = '//ul[contains(@class, "pagination pagination-sm")]/li[contains(@class, "page-item active")]/a/text()'
-
+    
     next_page_xpath = '//li[@class="page-item active"]'\
                       '/following-sibling::li[1]/a/@href'
     user_xpath = '//small/a[contains(@href, "user.php")]/@href'
     user_description_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=1")]/@href'
     user_pgp_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=6")]/@href'
-    avatar_xpath = '//img[contains(@class, "img-responsive")]/@src'
+    avatar_xpath = '//img[contains(@class, "img-rounded")]/@src'
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -152,6 +150,18 @@ class ApollonSpider(MarketPlaceSpider):
             meta=self.synchronize_meta(response),
             callback=self.parse_start
         )
+    
+    def parse_start(self, response):
+
+        if response.xpath(self.login_form_xpath):
+            login_alert = response.xpath(self.login_alert_xpath).extract_first()
+            if "username and/or password" in login_alert:
+                self.logger.info("Invalid Login")
+            else:
+                self.logger.info("Invalid Captcha")
+            return
+
+        yield from super().parse_start(response)
 
 
 class ApollonScrapper(SiteMapScrapper):

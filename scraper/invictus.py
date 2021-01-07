@@ -33,10 +33,6 @@ class InvictusSpider(MarketPlaceSpider):
     captcha_url_xpath_2 = '//img[@class="captcha is-centered"]/@src'
     market_url_xpath = '//input[@name="category[]"]/@value'
     product_url_xpath = '//div[@class="media-content"]/a[contains(@href, "/product/")]/@href'
-    product_comment_xpath = '//a[contains(@href, "/feedback")]/@href'
-    comment_post_date_xpath = '//div[contains(@class, "columns m-b-none")]/div[last()]/text()'
-    comment_pagination_xpath = '//a[contains(@class, "pagination-next")]/@href'
-    comment_current_page_xpath = '//a[contains(@class, "pagination-link is-current")]/text()'
 
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//h3[contains(., "Vendor:")]/a/@href'
@@ -149,8 +145,11 @@ class InvictusSpider(MarketPlaceSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        # Load cookies
+        if response.xpath(self.captcha_url_xpath_1):
+            self.logger.info("Invalid Captcha")
+            return
 
+        # Load cookies
         cookies = response.request.headers.get("Cookie")
         # Load captcha url
         captcha_url = response.xpath(
@@ -183,7 +182,7 @@ class InvictusSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath_1) or response.xpath(self.captcha_url_xpath_2):
+        if response.xpath(self.captcha_url_xpath_2):
             self.logger.info("Invalid Captcha")
             return
         yield from super().parse_start(response)

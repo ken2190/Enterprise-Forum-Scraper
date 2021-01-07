@@ -17,7 +17,7 @@ from scraper.base_scrapper import (
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
 
-USERNAME = "gordal418"
+USERNAME = "gordon415"
 PASSWORD = "readytogo418"
 
 PROXY = 'http://127.0.0.1:8118'
@@ -38,6 +38,8 @@ class HydraSpider(MarketPlaceSpider):
     market_url_xpath = '//div/a[@role and contains(@href, "/market/")]/@href'
     product_url_xpath = '//div[@class="title over"]/a[contains(@href, "/product/")]/@href'
     next_page_xpath = '//ul[@class="pagination"]/li[@class="pag_right"]/a/@href'
+
+    avatar_xpath = '//div[@class="product_img_big"]//img/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(

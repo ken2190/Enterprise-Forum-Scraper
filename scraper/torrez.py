@@ -41,15 +41,11 @@ class TorrezSpider(MarketPlaceSpider):
 
     market_url_xpath = '//ul[@class="sidebar"]/li[@class="position-relative"]/a/@href'
     product_url_xpath = '//table[contains(@class, "table-listings")]//td[contains(@class, "maxThumb")]/a/@href'
-    product_comment_xpath = '//li[contains(@class, "nav-item")]/a[contains(@href, "/feedback")]/@href'
-    comment_pagination_xpath = '//ul[contains(@class, "pagination")]//a[@rel="next"]/@href'
-    comment_current_page_xpath = '//li[contains(@class, "page-item active")]/span/text()'
-    comment_xpath = '//div[contains(@class, "d-inline")]'
 
     next_page_xpath = '//ul[contains(@class, "pagination")]//a[@rel="next"]/@href'
     user_xpath = '//div[contains(@class, "singleItemDetails")]//a[contains(@href, "/profile/")]/@href'
     user_pgp_xpath = '//li[contains(@class, "nav-item")]/a[contains(@href, "/pgp")]/@href'
-    avatar_xpath = '//div[contains(@class, "thumbnail singleItem")]/img/@src'
+    avatar_xpath = '//div[contains(@class, "thumbnail singleItem")]//img/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -211,53 +207,6 @@ class TorrezSpider(MarketPlaceSpider):
             meta=self.synchronize_meta(response),
             dont_filter=True
         )
-
-    def parse_product_comment(self, response):
-        # Synchronize headers user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Get topic id
-        file_id = response.meta.get("file_id")
-
-        if not response.xpath(self.comment_xpath):
-            self.logger.info(f'No Feedback found: {file_id}')
-            return
-        # get next page
-        next_page = self.get_product_comment_next_page(response)
-
-        # Save product comment content
-        current_page = self.get_product_comment_current_page(response)
-        with open(
-            file=os.path.join(
-                self.output_path,
-                "%s_comments_%s.html" % (
-                    file_id,
-                    current_page
-                )
-            ),
-            mode="w+",
-            encoding="utf-8"
-        ) as file:
-            file.write(response.text)
-        self.logger.info(
-            f'{file_id}_comments_{current_page} done..!'
-        )
-
-        # product comment pagination
-        if next_page:
-            yield Request(
-                url=next_page,
-                headers=self.headers,
-                callback=self.parse_product_comment,
-                dont_filter=True,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_id": file_id
-                    }
-                )
-            )
-
 
 class TorrezScrapper(SiteMapScrapper):
     spider_class = TorrezSpider

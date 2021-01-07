@@ -32,7 +32,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
                       '/preceding-sibling::input[@name="reqpage"][1]/@value'
     user_xpath = '//a[contains(text(), "View Listings")]'\
                  '/following-sibling::a[contains(@href, "profile=")][1]/@href'
-    avatar_xpath = '//center//img[contains(@src, "uploads/")]/@src'
+    avatar_xpath = '//div[@id="img"]/img/@src'
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",

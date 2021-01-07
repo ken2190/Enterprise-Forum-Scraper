@@ -18,7 +18,7 @@ from scraper.base_scrapper import (
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 PROXY = 'http://127.0.0.1:8118'
-NO_OF_THREADS=5
+NO_OF_THREADS=1
 
 class CannaZoneSpider(MarketPlaceSpider):
 
@@ -35,6 +35,7 @@ class CannaZoneSpider(MarketPlaceSpider):
 
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//div[contains(@class, "product-information-vendor")]//a[contains(@class, "vendor_rating")]/@href'
+    avatar_xpath = '//img[contains(@class, "img-responsive")]/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -47,6 +48,7 @@ class CannaZoneSpider(MarketPlaceSpider):
     )
 
     use_proxy = False
+    retry_http_codes = [406, 429, 500, 503]
     download_thread = NO_OF_THREADS
     
     def __init__(self, *args, **kwargs):
@@ -56,6 +58,9 @@ class CannaZoneSpider(MarketPlaceSpider):
                 "User-Agent": USER_AGENT
             }
         )
+
+    def get_file_id(self, url):
+        return url.split("/products/")[1].strip("/").replace("/", '-')
 
     def synchronize_meta(self, response, default_meta={}):
         meta = {

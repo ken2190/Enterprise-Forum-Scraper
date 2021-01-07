@@ -43,16 +43,10 @@ class DarkBaySpider(MarketPlaceSpider):
     market_url_xpath = ('//div[@class="list-group categories" or '
                        '@class="pl-3 subcategories"]/details/a/@href')
     product_url_xpath = '//a[contains(@href, "/product/")]/@href'
-    product_comment_xpath = '//ul[@id="productsmenu"]//a[contains(@href, "/feedback")]/@href'
-    comment_post_date_xpath = '//div[contains(@class, "columns m-b-none")]/div[last()]/text()'
-    comment_pagination_xpath = '//a[contains(@class, "pagination-next")]/@href'
-    comment_current_page_xpath = '//a[contains(@class, "pagination-link is-current")]/text()'
 
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//a[contains(@href, "/vendor/")]/@href'
-    user_description_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=1")]/@href'
-    user_pgp_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=6")]/@href'
-    avatar_xpath = '//img[contains(@class, "image-responsive")]/@src'
+    avatar_xpath = '//div[@class="slides"]//img[contains(@src, "/products/")]/@src'
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
