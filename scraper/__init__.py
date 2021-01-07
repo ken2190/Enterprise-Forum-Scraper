@@ -174,6 +174,7 @@ from scraper.cannazone import CannaZoneScrapper
 # from scraper.invictus import InvictusScrapper
 from scraper.torrez import TorrezScrapper
 from scraper.tor import TorScrapper
+from scraper.crdpro import CrdProScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -351,5 +352,6 @@ SCRAPER_MAP = {
     'cannazone': CannaZoneScrapper,
     # 'invictus': InvictusScrapper,
     'torrez': TorrezScrapper,
-    'tor': TorScrapper
+    'tor': TorScrapper,
+    'crdpro': CrdProScrapper,
 }
