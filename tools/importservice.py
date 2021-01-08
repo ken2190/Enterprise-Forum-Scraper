@@ -15,7 +15,7 @@ IMPORT_DIR = "/data/processing/import/{site_type}/"
 BACKUP_DIR = "/data/processing/{site_type}/backup/"
 ORIGIN_DIR = "/data/processing/import/{site_type}/"
 
-RSYNC_SERVER = "root@51.161.115.138"
+RSYNC_SERVER = "root@142.44.214.143"
 KEY_PATH = "~/.ssh/id_rsa"
 
 CLEANUP_AFTER_IMPORT = True
