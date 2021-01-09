@@ -175,6 +175,7 @@ from scraper.cannazone import CannaZoneScrapper
 from scraper.torrez import TorrezScrapper
 from scraper.tor import TorScrapper
 from scraper.crdpro import CrdProScrapper
+from scraper.raidforums_shoutbox import RaidforumsShoutboxScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -301,6 +302,7 @@ SCRAPER_MAP = {
     'psxhax': PsxhaxScrapper,
     'r0bforums': R0bForumsScrapper,
     'raidforums': RaidForumsScrapper,
+    'raidforums_shoutbox': RaidforumsShoutboxScrapper,
     'rosanegra': RosaNegraScrapper,
     'rstforums': RSTForumsScrapper,
     'runion': RUnionScrapper,
