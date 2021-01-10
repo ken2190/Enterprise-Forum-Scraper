@@ -38,7 +38,7 @@ class DarkFoxSpider(MarketPlaceSpider):
     user_xpath = '//h3[contains(., "Vendor:")]/a/@href'
     user_description_xpath = '//div[@class="tabs"]//a[contains(@href, "/about")]/@href'
     user_pgp_xpath = '//div[@class="tabs"]//a[contains(@href, "/pgp")]/@href'
-    avatar_xpath = '//img[@class="avatar"]/@src'
+    avatar_xpath = '//ul[@class="slides"]//img[contains(@class, "slide-main")]/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(

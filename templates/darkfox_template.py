@@ -7,10 +7,8 @@ class DarkFoxParser(MarketPlaceTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser_name = "darkfox"
-        self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
-        self.avatar_xpath = './/img[@class="slide-main"]/@src'
-        self.title_xpath = '//h1[contains(@class,"title")]/text()'
-        self.author_xpath = '//h3/a[contains(@href,"/user/")]/text()'
-        self.post_text_xpath = '//div[@class="pre-line"]/descendant::text()'
+        self.list_name_xpath = '//h1[contains(@class, "title")]//text()'
+        self.vendor_xpath = '//h3[contains(., "Vendor:")]/a/text()'
+        self.description_text_xpath = '//div[contains(@class, "box grey")]//text()'
         # main function
         self.main()
