@@ -2180,29 +2180,29 @@ class MarketPlaceSpider(SitemapSpider):
         if self.avatar_xpath:
             yield from self.parse_avatars(response)
 
-        if not self.user_xpath:
-            return
-        user_url = response.xpath(self.user_xpath).extract_first()
-        if not user_url:
-            return
-        user_url = self.get_user_url(user_url)
-        user_id = self.get_user_id(user_url)
-        file_name = '{}/{}.html'.format(self.user_path, user_id)
-        if os.path.exists(file_name):
-            return
-        yield Request(
-            url=user_url,
-            headers=self.headers,
-            callback=self.parse_user,
-            dont_filter=True,
-            meta=self.synchronize_meta(
-                response,
-                default_meta={
-                    'file_name': file_name,
-                    'user_id': user_id
-                }
-            )
-        )
+        # if not self.user_xpath:
+        #     return
+        # user_url = response.xpath(self.user_xpath).extract_first()
+        # if not user_url:
+        #     return
+        # user_url = self.get_user_url(user_url)
+        # user_id = self.get_user_id(user_url)
+        # file_name = '{}/{}.html'.format(self.user_path, user_id)
+        # if os.path.exists(file_name):
+        #     return
+        # yield Request(
+        #     url=user_url,
+        #     headers=self.headers,
+        #     callback=self.parse_user,
+        #     dont_filter=True,
+        #     meta=self.synchronize_meta(
+        #         response,
+        #         default_meta={
+        #             'file_name': file_name,
+        #             'user_id': user_id
+        #         }
+        #     )
+        # )
 
     def parse_user(self, response):
         # Synchronize cloudfare user agent
