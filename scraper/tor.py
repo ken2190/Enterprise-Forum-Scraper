@@ -27,8 +27,8 @@ class TorSpider(MarketPlaceSpider):
     name = "tor_spider"
 
     # Url stuffs
-    base_url = "http://rrlm2f22lpqgfhyydqkxxzv6snwo5qvc2krjt2q557l7z4te7fsvhbid.onion"
-    login_url = "http://rrlm2f22lpqgfhyydqkxxzv6snwo5qvc2krjt2q557l7z4te7fsvhbid.onion/sessions/new"
+    base_url = "http://tt2mopgckifmberr.onion"
+    login_url = "http://tt2mopgckifmberr.onion/sessions/new"
 
     # xpath stuffs
     login_form_xpath = '//form[@method="post"]'

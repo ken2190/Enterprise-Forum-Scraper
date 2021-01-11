@@ -30,7 +30,7 @@ class DarkFoxSpider(MarketPlaceSpider):
     # xpath stuffs
     captch_form_xpath = '//form[@method="post"]'
     captcha_url_xpath_1 = '//div[@class="imgWrap"]/@style'
-    captcha_url_xpath_2 = '//img[@class="captcha is-centered"]/@src'
+    captcha_url_xpath_2 = '//img[contains(@class, "captcha")]/@src'
     market_url_xpath = '//input[@name="category[]"]/@value'
     product_url_xpath = '//div[@class="media-content"]/a[contains(@href, "/product/")]/@href'
 
@@ -138,7 +138,7 @@ class DarkFoxSpider(MarketPlaceSpider):
             formxpath=self.captch_form_xpath,
             formdata=formdata,
             headers=self.headers,
-            callback=self.parse_captcha_2,
+            callback=self.parse_start,
             dont_filter=True,
             meta=self.synchronize_meta(response),
         )
