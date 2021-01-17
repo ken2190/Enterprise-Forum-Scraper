@@ -4,9 +4,6 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 from scrapy import Request
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
-REQUEST_DELAY = 1
-NO_OF_THREADS = 4
-
 
 class BlackHatWorldSpider(SitemapSpider):
     name = 'blackhatworld_spider'
@@ -34,8 +31,6 @@ class BlackHatWorldSpider(SitemapSpider):
     # Other settings
     use_proxy = True
     handle_httpstatus_list = [403]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -102,14 +97,3 @@ class BlackHatWorldScrapper(SiteMapScrapper):
     spider_class = BlackHatWorldSpider
     site_name = 'blackhatworld.com'
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            }
-        )
-        return settings

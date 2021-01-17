@@ -93,20 +93,6 @@ class DNMAvengersSpider(SitemapSpider):
 
 class DNMAvengersScrapper(SiteMapScrapper):
 
-    request_delay = 0.1
-    no_of_threads = 16
-
     spider_class = DNMAvengersSpider
     site_name = 'DNM Avengers (avengersdutyk3xf.onion)'
     site_type = 'forum'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': self.request_delay,
-                'CONCURRENT_REQUESTS': self.no_of_threads,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads
-            }
-        )
-        return spider_settings

@@ -12,10 +12,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
-
 class TotalBlackHatSpider(SitemapSpider):
     name = 'totalblackhat_spider'
 
@@ -58,8 +54,6 @@ class TotalBlackHatSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def parse(self, response):
 

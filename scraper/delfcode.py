@@ -16,10 +16,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 10
-
-
 class DelfcodeSpider(SitemapSpider):
     name = 'delfcode_spider'
 
@@ -53,8 +49,6 @@ class DelfcodeSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def parse_thread_date(self, thread_date):
         thread_date = thread_date.strip()

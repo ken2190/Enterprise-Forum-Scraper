@@ -11,20 +11,20 @@ import subprocess
 import sys
 
 
-IMPORT_DIR = "/data/processing/{site_type}/import/"
+IMPORT_DIR = "/data/processing/import/{site_type}/"
 BACKUP_DIR = "/data/processing/{site_type}/backup/"
 ORIGIN_DIR = "/data/processing/import/{site_type}/"
 
 RSYNC_SERVER = "root@51.161.115.138"
-KEY_PATH = "~/.ssh/proxima.pem"
+KEY_PATH = "~/.ssh/id_rsa"
 
 CLEANUP_AFTER_IMPORT = True
 
 ELASTIC_IMPORT_INDEXES = {
-    'forum': 'dv-f001',
+    'forum': 'dv-f002',
     'marketplace': 'dv-f001',
     'telegram': 'dv-f001',
-    'paste': 'dv-p001',
+    'paste': 'dv-paste01',
     'nosql': 'dv-m001'
 }
 ELASTIC_OUT = 'http://localhost:9200/{elastic_index}'

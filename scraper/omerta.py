@@ -241,22 +241,9 @@ class OmertaSpider(SitemapSpider):
 
 class OmertaScrapper(SiteMapScrapper):
 
-    request_delay = 0.3
-    no_of_threads = 12
     spider_class = OmertaSpider
     site_name = 'omerta.cc'
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': self.request_delay,
-                'CONCURRENT_REQUESTS': self.no_of_threads,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            }
-        )
-        return settings
 
 
 if __name__ == "__main__":

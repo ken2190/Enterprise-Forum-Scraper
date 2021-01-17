@@ -12,8 +12,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
 MAX_TRY_TO_LOG_IN_COUNT = 3
 
 USERNAME = "blastedone"
@@ -45,9 +43,10 @@ class DarkBaySpider(MarketPlaceSpider):
     market_url_xpath = ('//div[@class="list-group categories" or '
                        '@class="pl-3 subcategories"]/details/a/@href')
     product_url_xpath = '//a[contains(@href, "/product/")]/@href'
+
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//a[contains(@href, "/vendor/")]/@href'
-    avatar_xpath = '//img[contains(@class, "image-responsive")]/@src'
+    avatar_xpath = '//div[@class="slides"]//img[contains(@src, "/products/")]/@src'
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -55,8 +54,6 @@ class DarkBaySpider(MarketPlaceSpider):
     )
 
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     _base_url_index = 0
     _try_to_log_in_count = 0
 

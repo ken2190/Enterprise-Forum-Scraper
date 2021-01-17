@@ -17,10 +17,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class VBIranSpider(SitemapSpider):
     name = 'vbiran_spider'
     base_url = 'http://www.vbiran.ir/'
@@ -54,8 +50,6 @@ class VBIranSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%Y/%m/%d'
     post_datetime_format = '%Y/%m/%d'
 

@@ -363,14 +363,14 @@ class MarketPlaceTemplate(BaseTemplate):
         for index, template in enumerate(self.files):
             try:
                 html_response = utils.get_html_response(template)
-                pid = template.split('/')[-1].rsplit('.', 1)[0]
-                pid = str(
-                    int.from_bytes(
-                        pid.encode('utf-8'),
-                        byteorder='big'
-                    ) % (10 ** 7)
-                )
-                self.process_page(pid, html_response)
+                list_id = template.split('/')[-1].rsplit('.', 1)[0]
+                # list_id = str(
+                #     int.from_bytes(
+                #         list_id.encode('utf-8'),
+                #         byteorder='big'
+                #     ) % (10 ** 7)
+                # )
+                self.process_page(list_id, html_response)
             except BrokenPage as ex:
                 utils.handle_error(
                     pid,
@@ -381,10 +381,10 @@ class MarketPlaceTemplate(BaseTemplate):
                 traceback.print_exc()
                 continue
 
-    def process_page(self, pid, html_response):
+    def process_page(self, list_id, html_response):
         data = {
-            'forum': self.parser_name,
-            'pid': pid
+            'marketplace': self.parser_name,
+            'list_id': list_id
         }
 
         additional_data = self.extract_page_info(html_response)
@@ -398,10 +398,10 @@ class MarketPlaceTemplate(BaseTemplate):
 
         output_file = '{}/{}.json'.format(
             str(self.output_folder),
-            pid
+            list_id
         )
 
-        with open(output_file, 'w', encoding='utf-8') as file_pointer:
+        with open(output_file, 'w', encoding='utf-8', newline='\r\n') as file_pointer:
             utils.write_json(file_pointer, final_data)
             print('\nJson written in {}'.format(output_file))
             print('----------------------------------------\n')
@@ -425,16 +425,50 @@ class MarketPlaceTemplate(BaseTemplate):
     def extract_page_info(self, html_response):
         data = dict()
 
-        subject = self.get_title(html_response)
-        author = self.get_author(html_response)
-        post_text = self.get_post_text(html_response)
-        avatar = self.get_avatar(html_response)
+        list_name = self.get_list_name(html_response)
+        list_description = self.get_list_description(html_response)
+        vendor = self.get_vendor(html_response)
 
         data = {
-            'subject': subject,
-            'author': author,
-            'message': post_text,
-            'img': avatar
+            'list_name': list_name,
+            'vendor': vendor,
+            'description': list_description
         }
-
+        
         return data
+    
+    def get_list_name(self, html_response):
+        list_name = html_response.xpath(self.list_name_xpath)
+        list_name = "".join([t.strip() for t in list_name if t.strip()])
+
+        return list_name
+    
+    def get_vendor(self, html_response):
+        vendor = html_response.xpath(self.vendor_xpath)
+        if vendor:
+            vendor = ''.join(vendor).strip()
+            return vendor
+        else:
+            return ''
+
+    def get_list_description(self, html_response):
+        description_text_block = html_response.xpath(self.description_text_xpath)
+        if not description_text_block:
+            return ''
+        description_text = " ".join([
+            post_text.strip() for post_text in description_text_block
+        ])
+        protected_email = html_response.xpath(self.protected_email_xpath)
+        if protected_email:
+            decoded_values = [
+                utils.get_decoded_email(e) for e in protected_email
+            ]
+            for decoded_value in decoded_values:
+                description_text = re.sub(
+                    r'\[email.*?protected\]',
+                    decoded_value,
+                    description_text,
+                    count=1
+                )
+
+        return description_text.strip()

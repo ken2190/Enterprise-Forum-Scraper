@@ -6,10 +6,6 @@ from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class RunTimeSpider(SitemapSpider):
     name = 'runtime_spider'
     base_url = "https://runtime.rip/"
@@ -51,8 +47,6 @@ class RunTimeSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%m-%d-%Y, %I:%M %p'
     post_datetime_format = '%m-%d-%Y, %I:%M %p'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def parse(self, response):
         # Synchronize cloudfare user agent

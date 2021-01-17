@@ -10,10 +10,6 @@ from scraper.base_scrapper import (
 USER = 'Cyrax_011'
 PASS = 'Night#India065'
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class FraudstercrewSpider(SitemapSpider):
     name = 'fraudstercrew_spider'
     # Url stuffs
@@ -71,9 +67,6 @@ class FraudstercrewScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
                 'RETRY_HTTP_CODES': [403, 429, 500, 503, 504],
             }
         )

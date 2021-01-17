@@ -3,9 +3,6 @@ from scrapy.http import Request
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 PROXY = 'http://127.0.0.1:8118'
 
 
@@ -38,8 +35,6 @@ class DeutschLandSpider(SitemapSpider):
 
     # Other settings
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y'
 
@@ -83,9 +78,6 @@ class DeutschLandScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
                 "RETRY_HTTP_CODES": [406, 429, 500, 503],
             }
         )

@@ -10,10 +10,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
-
 class LolzSpider(SitemapSpider):
     name = 'lolz_spider'
 
@@ -21,7 +17,7 @@ class LolzSpider(SitemapSpider):
     base_url = "https://lolz.guru/"
 
     # Xpath stuffs
-    forum_xpath = '//*[@class="nodeTitle"]/a[contains(@href, "forums/")]/@href'
+    forum_xpath = '//li[@class="node category level_1"]//div[@class="nodeText"]//a[contains(@href, "forums/")]/@href'
     thread_xpath = '//div[@class="discussionListItem--Wrapper"]'
     thread_first_page_xpath = './/a[contains(@href,"threads/")]/@href'
     thread_last_page_xpath = './/nav/a[last()]/@href'
@@ -55,8 +51,6 @@ class LolzSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def get_forum_next_page(self, response):
         current_page = response.xpath(self.pagination_xpath).extract_first()

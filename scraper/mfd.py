@@ -12,10 +12,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.8
-NO_OF_THREADS = 4
-
-
 class MfdSpider(SitemapSpider):
     name = 'mfd_spider'
 
@@ -54,8 +50,6 @@ class MfdSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%d.%m.%Y'
     post_datetime_format = '%d.%m.%Y %H:%M'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def start_requests(self):
         yield Request(

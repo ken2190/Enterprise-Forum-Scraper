@@ -10,8 +10,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 3
 USERNAME = "seraleone"
 PASSWORD = "BcCeQGx5"
 
@@ -117,9 +115,6 @@ class SinisterScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
                 'RETRY_HTTP_CODES': [403, 406, 429, 500, 503]
             }
         )

@@ -13,8 +13,6 @@ from scraper.base_scrapper import (
 # PASS = 'OG-new!pass'
 USER = 'galvanized'
 PASS = 'Gal#Og0001-1'
-REQUEST_DELAY = 1
-NO_OF_THREADS = 3
 MIN_DELAY = 1
 MAX_DELAY = 3
 
@@ -267,9 +265,6 @@ class OgUsersScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                # "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
                 "AUTOTHROTTLE_ENABLED": True,
                 "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
                 "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY

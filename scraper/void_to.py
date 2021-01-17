@@ -15,8 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = .8
-NO_OF_THREADS = 8
 USERNAME = "night_cyrax"
 PASSWORD = "a63ffcb44e1a11eaa087b42e994a598f"
 
@@ -76,8 +74,6 @@ class VoidToSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%b %d, %Y'
     sitemap_datetime_format = '%b %d, %Y'
 

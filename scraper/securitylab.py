@@ -7,11 +7,6 @@ from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 3
-
-
 class SecurityLabSpider(SitemapSpider):
     name = 'securitylab_spider'
     base_url = 'https://www.securitylab.ru'
@@ -37,8 +32,6 @@ class SecurityLabSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y %H:%M:%S'
     sitemap_datetime_format = '%d.%m.%Y %H:%M:%S'
 

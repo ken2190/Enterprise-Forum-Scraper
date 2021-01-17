@@ -15,10 +15,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class BlackHackerSpider(SitemapSpider):
 
     name = "blackhacker"
@@ -60,8 +56,6 @@ class BlackHackerSpider(SitemapSpider):
     use_proxy = True
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y, %H:%M'
     sitemap_datetime_format = '%d.%m.%Y'
 

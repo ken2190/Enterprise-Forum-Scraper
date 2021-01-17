@@ -112,6 +112,7 @@ class Ox00SecSpider(SitemapSpider):
             self.logger.info(f"Avatar for {file_name_only} done..!")
 
 class Ox00SecScrapper(SiteMapScrapper):
+<<<<<<< HEAD
     request_delay = 0.1
     no_of_threads = 16
 
@@ -133,3 +134,9 @@ class Ox00SecScrapper(SiteMapScrapper):
 
 if __name__ == "__main__":
     pass
+=======
+
+    spider_class = Ox00SecSpider
+    site_name = '0x00sec.org'
+    site_type = 'forum'
+>>>>>>> df60255be9b7aafbba28c8972c29ac0bcc8bc0ae

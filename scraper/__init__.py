@@ -167,7 +167,15 @@ from scraper.xaker import XakerScrapper
 from scraper.silk_road4 import SilkRoad4Scrapper
 from scraper.darkfox import DarkFoxScrapper
 from scraper.breakingin import BreakinginScrapper
-from scraper.mafia import MafiaScrapper
+from scraper.mafia_ug import MafiaUgScrapper
+from scraper.theversus import TheVersusScrapper
+from scraper.cannahome import CannaHomeScrapper
+from scraper.cannazone import CannaZoneScrapper
+# from scraper.invictus import InvictusScrapper
+from scraper.torrez import TorrezScrapper
+from scraper.tor import TorScrapper
+from scraper.crdpro import CrdProScrapper
+from scraper.raidforums_shoutbox import RaidforumsShoutboxScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -264,7 +272,7 @@ SCRAPER_MAP = {
     'lcpcc': LCPScrapper,
     'leakportal': LeakPortalScrapper,
     'lolzteam': LolzScrapper,
-    'mafia': MafiaScrapper,
+    'mafia_ug': MafiaUgScrapper,
     'majestic_garden': MajesticGardenScrapper,
     'malvult': MalvultScrapper,
     'marviher': MarviherScrapper,
@@ -294,6 +302,7 @@ SCRAPER_MAP = {
     'psxhax': PsxhaxScrapper,
     'r0bforums': R0bForumsScrapper,
     'raidforums': RaidForumsScrapper,
+    'raidforums_shoutbox': RaidforumsShoutboxScrapper,
     'rosanegra': RosaNegraScrapper,
     'rstforums': RSTForumsScrapper,
     'runion': RUnionScrapper,
@@ -340,4 +349,11 @@ SCRAPER_MAP = {
     'youhack': YouHackScrapper,
     'zloy': ZloyScrapper,
     'zyberph': ZyberphScrapper,
+    'theversus': TheVersusScrapper,
+    'cannahome': CannaHomeScrapper,
+    'cannazone': CannaZoneScrapper,
+    # 'invictus': InvictusScrapper,
+    'torrez': TorrezScrapper,
+    'tor': TorScrapper,
+    'crdpro': CrdProScrapper,
 }

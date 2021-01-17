@@ -19,9 +19,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
 USER = "vrx9@protonmail.com"
 PASS = "Night#Bot000"
 
@@ -206,18 +203,6 @@ class TheBotScrapper(SiteMapScrapper):
     spider_class = TheBotSpider
     site_name = 'thebot.cc'
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS
-            }
-        )
-        return settings
-
 
 if __name__ == "__main__":
     pass

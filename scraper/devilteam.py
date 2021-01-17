@@ -12,10 +12,14 @@ from scraper.base_scrapper import (
 )
 
 
+<<<<<<< HEAD
 REQUEST_DELAY = 1
 NO_OF_THREADS = 1
 
 USERNAME = "Cyrax_0111"
+=======
+USERNAME = "Cyrax_011"
+>>>>>>> df60255be9b7aafbba28c8972c29ac0bcc8bc0ae
 PASSWORD = "Night#India065"
 MAX_TRY_TO_LOG_IN_COUNT = 3
 
@@ -58,8 +62,6 @@ class DevilTeamSpider(SitemapSpider):
     )
 
     # Other settings
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     use_proxy = True
 
     def start_requests(self):

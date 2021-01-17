@@ -8,9 +8,6 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 5
-
 USER = 'Cyrax_011'
 PASS = 'c2Yv9EP8MsgGHJr'
 
@@ -53,8 +50,6 @@ class DfasSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%Y-%m-%d %H:%M:%S'
     post_datetime_format = '%Y-%m-%d %H:%M:%S'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

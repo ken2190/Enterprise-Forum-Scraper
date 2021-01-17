@@ -13,9 +13,6 @@ from scraper.base_scrapper import (
 
 USER = 'blacklotus2000@protonmail.com'
 PASS = 'Night#Anti999'
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 
 class AntichatSpider(SitemapSpider):
     name = 'antichat_spider'
@@ -118,14 +115,3 @@ class AntichatScrapper(SiteMapScrapper):
     spider_class = AntichatSpider
     site_name = 'antichat.ru'
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                'DOWNLOAD_DELAY': REQUEST_DELAY,
-                'CONCURRENT_REQUESTS': NO_OF_THREADS,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
-            }
-        )
-        return settings

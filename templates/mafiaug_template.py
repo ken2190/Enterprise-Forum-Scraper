@@ -5,7 +5,7 @@ import utils
 from .base_template import BaseTemplate
 
 
-class MafiaParser(BaseTemplate):
+class MafiaUgParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,10 +22,11 @@ class MafiaParser(BaseTemplate):
         self.header_xpath = '//article[contains(@class,"cPost ipsBox")]'
         self.date_xpath = 'div//time/@datetime'
         self.author_xpath = 'aside//div[@class="name"]//strong/a//text()'
-        self.title_xpath = '//h1[@class="ipsType_pageTitle ipsContained_container"]/span/span/text()'
+        self.title_xpath = '//h1[contains(@class, "ipsType_pageTitle")]//text()'
         self.avatar_xpath = '//div[contains(@class, "cAuthorPane_photo")]/a/img/@src'
         self.avatar_ext = ''
-        self.comment_block_xpath = 'div//span[@data-role="reactCountText"]/text()'
+        self.index = 1
+        # self.comment_block_xpath = 'div//span[@data-role="reactCountText"]/text()'
         # main function
         self.main()
 
@@ -50,8 +51,14 @@ class MafiaParser(BaseTemplate):
                     post_text,
                     count=1
                 )
-        return post_text.strip()
+        return post_text.strip().encode('latin1', errors='ignore').decode('utf8', errors='ignore')
     
+    def get_title(self, tag):
+        title = tag.xpath(self.title_xpath)
+        title = "".join([t.strip() for t in title if t.strip()])
+
+        return title.strip().encode('latin1', errors='ignore').decode('utf8', errors='ignore')
+
     def get_author(self, tag):
         author = tag.xpath(
             'aside//a[@class="ipsType_break"]/span/span/text()'
@@ -75,3 +82,41 @@ class MafiaParser(BaseTemplate):
         author = ' '.join(author).strip() if author else None
 
         return author
+
+    def extract_comments(self, html_response, pagination):
+        comments = list()
+        comment_blocks = html_response.xpath(self.comments_xpath)
+
+        comment_blocks = comment_blocks[1:]\
+            if pagination == 1 else comment_blocks
+
+        for comment_block in comment_blocks:
+            user = self.get_author(comment_block)
+            comment_text = self.get_post_text(comment_block)
+            comment_date = self.get_date(comment_block)
+            pid = self.thread_id
+            avatar = self.get_avatar(comment_block)
+            source = {
+                'forum': self.parser_name,
+                'pid': pid,
+                'message': comment_text.strip(),
+                'cid': str(self.index),
+                'author': user,
+            }
+            if comment_date:
+                source.update({
+                    'date': comment_date
+                })
+
+            if avatar:
+                source.update({
+                    'img': avatar
+                })
+
+            comments.append({
+                '_source': source,
+            })
+
+            self.index += 1
+
+        return comments

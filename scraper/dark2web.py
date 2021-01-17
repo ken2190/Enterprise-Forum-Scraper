@@ -8,10 +8,6 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class Dark2WebSpider(SitemapSpider):
     name = 'dark2web_spider'
     base_url = 'https://dark2web.ru/'
@@ -48,8 +44,6 @@ class Dark2WebSpider(SitemapSpider):
     )
 
     # Other settings
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 

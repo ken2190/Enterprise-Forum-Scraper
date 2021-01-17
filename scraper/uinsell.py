@@ -14,11 +14,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-
-REQUEST_DELAY = 1
-NO_OF_THREADS = 3
-
-
 class UinsellSpider(SitemapSpider):
 
     name = "uinsell"
@@ -58,8 +53,6 @@ class UinsellSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
 

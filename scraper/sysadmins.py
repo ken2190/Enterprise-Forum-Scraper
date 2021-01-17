@@ -9,10 +9,6 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.7
-NO_OF_THREADS = 4
-
-
 class SysAdminsSpider(SitemapSpider):
     name = 'sysadmins_spider'
     base_url = 'https://sysadmins.ru/'
@@ -43,8 +39,6 @@ class SysAdminsSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%a %d %b, %Y %H:%M'
     sitemap_datetime_format = '%a %d %b, %Y %H:%M'
 

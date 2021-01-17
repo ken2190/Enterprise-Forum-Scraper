@@ -11,10 +11,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 16
-
-
 class BitcoinTalkSpider(SitemapSpider):
 
     name = "bitcointalk_spider"
@@ -135,17 +131,6 @@ class BitCoinTalkScrapper(SiteMapScrapper):
 
     spider_class = BitcoinTalkSpider
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
-            }
-        )
-        return settings
 
 
 if __name__ == "__main__":

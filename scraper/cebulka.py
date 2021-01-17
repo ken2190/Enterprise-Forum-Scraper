@@ -8,9 +8,6 @@ from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 1
-
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
 
 PROXY = 'http://127.0.0.1:8118'
@@ -52,8 +49,6 @@ class CebulkaSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = '%Y-%m-%d %p'
     post_datetime_format = '%Y-%m-%d %p'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

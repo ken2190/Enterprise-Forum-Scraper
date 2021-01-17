@@ -12,8 +12,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 10
 # USERNAME = "vrx9"
 # PASSWORD = "Night#Hack001"
 # USERNAME = "z234567890"
@@ -75,8 +73,6 @@ class HackForumsSpider(SitemapSpider):
     get_cookies_delay = 60
     get_cookies_retry = 4
     fraudulent_threshold = 50
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     use_proxy = True
     # proxy_countries = ['uk']
 
@@ -281,17 +277,6 @@ class HackForumsScrapper(SiteMapScrapper):
 
     spider_class = HackForumsSpider
     site_type = 'forum'
-
-    def load_settings(self):
-        settings = super().load_settings()
-        settings.update(
-            {
-                "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
-            }
-        )
-        return settings
 
 
 if __name__ == "__main__":

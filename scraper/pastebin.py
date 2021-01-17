@@ -7,15 +7,9 @@ from datetime import datetime
 from scraper.base_scrapper import SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
-
 class PasteBinSpider(scrapy.Spider):
     name = 'pastebin_spider'
     start_url = 'https://scrape.pastebin.com/api_scraping.php?limit=250'
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         today = datetime.now().strftime('%Y-%m-%d')

@@ -4,6 +4,7 @@ import re
 import socket
 import time
 import uuid
+import base64
 from base64 import b64decode
 from copy import deepcopy
 from datetime import datetime
@@ -257,20 +258,22 @@ class BaseTorScrapper(BaseScrapper):
 
 
 class SiteMapScrapper:
-    MIN_DOWNLOAD_DELAY = 1
-    MAX_DOWNLOAD_DELAY = 3
+    MIN_DELAY = 1
+    MAX_DELAY = 2
 
     settings = {
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
+            # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+            # 'flat.middlewares.TooManyRequestsRetryMiddleware': 543,
         },
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
         "LOG_STDOUT": True,
         "LOG_LEVEL": "DEBUG",
         "AUTOTHROTTLE_ENABLED": True,
-        "AUTOTHROTTLE_START_DELAY": MIN_DOWNLOAD_DELAY,
-        "AUTOTHROTTLE_MAX_DELAY": MAX_DOWNLOAD_DELAY
+        "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
+        "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
     }
 
     time_format = "%Y-%m-%d"
@@ -281,6 +284,7 @@ class SiteMapScrapper:
         self.output_path = kwargs.get("output")
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
+        self.end_date = kwargs.get("end_date")
         self.firstrun = kwargs.get("firstrun")
         self.kill = kwargs.get("kill")
         self.get_users = kwargs.get("get_users")
@@ -309,6 +313,20 @@ class SiteMapScrapper:
                     )
                 )
 
+        if self.end_date:
+            try:
+                self.end_date = datetime.strptime(
+                    self.end_date,
+                    self.time_format
+                )
+            except Exception as err:
+                raise ValueError(
+                    "Wrong date format. Correct format is: %s. Detail: %s" % (
+                        self.time_format,
+                        err
+                    )
+                )
+
     def load_settings(self):
         return deepcopy(self.settings)
 
@@ -318,6 +336,7 @@ class SiteMapScrapper:
             "useronly": getattr(self, "useronly", None),
             "avatar_path": getattr(self, "avatar_path", None),
             "start_date": getattr(self, "start_date", None),
+            "end_date": getattr(self, "end_date", None),
             "user_path": getattr(self, "user_path", None),
             "firstrun": getattr(self, "firstrun", None),
             "kill": getattr(self, "kill", None),
@@ -867,6 +886,7 @@ class SitemapSpider(BypassCloudfareSpider):
         self.avatar_path = kwargs.get("avatar_path")
         self.user_path = kwargs.get("user_path")
         self.start_date = kwargs.get("start_date")
+        self.end_date = kwargs.get("end_date")
         self.kill = kwargs.get("kill")
         self.get_users = kwargs.get("get_users")
         self.topic_pages_saved = 0
@@ -1354,6 +1374,17 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Download content
         try:
+            # Standardize image url only if it is not complete url
+            if 'http://' not in image_url and 'https://' not in image_url:
+                temp_url = image_url
+                if self.base_url not in image_url:
+                    temp_url = response.urljoin(image_url)
+
+                if self.base_url not in temp_url:
+                    temp_url = self.base_url + image_url
+
+                image_url = temp_url
+            
             image_content = self.get_captcha_image_content(
                 image_url, cookies, headers, proxy)
         except Exception as err:
@@ -1375,26 +1406,36 @@ class SitemapSpider(BypassCloudfareSpider):
             return ''
 
     def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
-        # Load session
-        session = requests.Session()
-        if proxy:
-            session.proxies = {
-                "http": proxy,
-                "https": proxy
-            }
 
-        # Set cookies to session
-        for name, value in cookies.items():
-            session.cookies.set(name, value)
+        if "data:image" in image_url:
+            # Separate the metadata from the image data
+            head, data = image_url.split(',', 1)
 
-        response = session.get(
-            image_url,
-            headers=headers
-        )
-        self.logger.info(
-            "Download captcha image content with headers %s" % response.request.headers
-        )
-        return response.content
+            # Decode the image data
+            plain_data = base64.b64decode(data)
+
+            return plain_data
+        else:
+            # Load session
+            session = requests.Session()
+            if proxy:
+                session.proxies = {
+                    "http": proxy,
+                    "https": proxy
+                }
+
+            # Set cookies to session
+            for name, value in cookies.items():
+                session.cookies.set(name, value)
+
+            response = session.get(
+                image_url,
+                headers=headers
+            )
+            self.logger.info(
+                "Download captcha image content with headers %s" % response.request.headers
+            )
+            return response.content
 
     def get_blockchain_domain(self, domain):
         # Get domain root only
@@ -2089,8 +2130,12 @@ class SitemapSpider(BypassCloudfareSpider):
 class MarketPlaceSpider(SitemapSpider):
     market_url_xpath = None
     product_url_xpath = None
+    avatar_xpath = None
+
     next_page_xpath = None
     user_xpath = None
+    user_description_xpath = None
+    user_pgp_xpath = None
 
     def get_market_url(self, url):
         if self.base_url not in url:
@@ -2098,6 +2143,16 @@ class MarketPlaceSpider(SitemapSpider):
         return url
 
     def get_product_url(self, url):
+        if self.base_url not in url:
+            url = self.base_url + url
+        return url
+
+    def get_user_description_url(self, url):
+        if self.base_url not in url:
+            url = self.base_url + url
+        return url
+    
+    def get_user_pgp_url(self, url):
         if self.base_url not in url:
             url = self.base_url + url
         return url
@@ -2113,10 +2168,10 @@ class MarketPlaceSpider(SitemapSpider):
         return url
 
     def get_user_id(self, url):
-        return url.rsplit('/', 1)[-1]
+        return url.strip('/').rsplit('/', 1)[-1]
 
     def get_file_id(self, url):
-        return url.rsplit('/', 1)[-1]
+        return url.strip('/').rsplit('/', 1)[-1]
 
     def get_product_next_page(self, response):
         next_page_url = response.xpath(self.next_page_xpath).extract_first()
@@ -2136,6 +2191,7 @@ class MarketPlaceSpider(SitemapSpider):
                 headers=self.headers,
                 callback=self.parse_products,
                 meta=self.synchronize_meta(response),
+                dont_filter=True
             )
 
     def parse_products(self, response):
@@ -2154,6 +2210,7 @@ class MarketPlaceSpider(SitemapSpider):
                 url=product_url,
                 headers=self.headers,
                 callback=self.parse_product,
+                dont_filter=True,
                 meta=self.synchronize_meta(
                     response,
                     default_meta={
@@ -2167,6 +2224,7 @@ class MarketPlaceSpider(SitemapSpider):
                 url=next_page_url,
                 headers=self.headers,
                 callback=self.parse_products,
+                dont_filter=True,
                 meta=self.synchronize_meta(response),
             )
 
@@ -2180,28 +2238,32 @@ class MarketPlaceSpider(SitemapSpider):
             f.write(response.text.encode('utf-8'))
             self.logger.info(f'Product: {file_id} done..!')
 
-        if not self.user_xpath:
-            return
-        user_url = response.xpath(self.user_xpath).extract_first()
-        if not user_url:
-            return
-        user_url = self.get_user_url(user_url)
-        user_id = self.get_user_id(user_url)
-        file_name = '{}/{}.html'.format(self.user_path, user_id)
-        if os.path.exists(file_name):
-            return
-        yield Request(
-            url=user_url,
-            headers=self.headers,
-            callback=self.parse_user,
-            meta=self.synchronize_meta(
-                response,
-                default_meta={
-                    'file_name': file_name,
-                    'user_id': user_id
-                }
-            )
-        )
+        if self.avatar_xpath:
+            yield from self.parse_avatars(response)
+
+        # if not self.user_xpath:
+        #     return
+        # user_url = response.xpath(self.user_xpath).extract_first()
+        # if not user_url:
+        #     return
+        # user_url = self.get_user_url(user_url)
+        # user_id = self.get_user_id(user_url)
+        # file_name = '{}/{}.html'.format(self.user_path, user_id)
+        # if os.path.exists(file_name):
+        #     return
+        # yield Request(
+        #     url=user_url,
+        #     headers=self.headers,
+        #     callback=self.parse_user,
+        #     dont_filter=True,
+        #     meta=self.synchronize_meta(
+        #         response,
+        #         default_meta={
+        #             'file_name': file_name,
+        #             'user_id': user_id
+        #         }
+        #     )
+        # )
 
     def parse_user(self, response):
         # Synchronize cloudfare user agent
@@ -2213,35 +2275,135 @@ class MarketPlaceSpider(SitemapSpider):
             f.write(response.text.encode('utf-8'))
             self.logger.info(f'User: {user_id} done..!')
 
-        avatar_url = response.xpath(self.avatar_xpath).extract_first()
-        if not avatar_url:
-            return
-        avatar_url = self.get_avatar_url(avatar_url)
-        ext = avatar_url.rsplit('.', 1)[-1]
-        if not ext:
-            ext = 'jpg'
-        file_name = '{}/{}.{}'.format(self.avatar_path, user_id, ext)
-        if os.path.exists(file_name):
-            return
-        yield Request(
-            url=avatar_url,
-            headers=self.headers,
-            callback=self.parse_avatar,
-            meta=self.synchronize_meta(
-                response,
-                default_meta={
-                    'file_name': file_name,
-                    'user_id': user_id
-                }
+        # User Description Scrape
+        if self.user_description_xpath:
+            user_description_url = response.xpath(self.user_description_xpath).extract_first()
+            if user_description_url:
+                user_description_url = self.get_user_description_url(user_description_url)
+                file_name = '{}/{}_description.html'.format(self.user_path, user_id)
+                if os.path.exists(file_name):
+                    self.logger.info(f'User: {user_id} description is already exist.')
+                else:
+                    yield Request(
+                        url=user_description_url,
+                        headers=self.headers,
+                        callback=self.parse_user_description,
+                        dont_filter=True,
+                        meta=self.synchronize_meta(
+                            response,
+                            default_meta={
+                                'file_name': file_name,
+                                'user_id': user_id
+                            }
+                        )
+                    )
+            else:
+                self.logger.info(f'User: {user_id} description page is not exist.')
+
+        # User PGP Scrape
+        if self.user_pgp_xpath:
+            user_pgp_url = response.xpath(self.user_pgp_xpath).extract_first()
+            if user_pgp_url:
+                user_pgp_url = self.get_user_pgp_url(user_pgp_url)
+                file_name = '{}/{}_pgp.html'.format(self.user_path, user_id)
+                if os.path.exists(file_name):
+                    self.logger.info(f'User: {user_id} PGP is already exist.')
+                else:
+                    yield Request(
+                        url=user_pgp_url,
+                        headers=self.headers,
+                        callback=self.parse_user_pgp,
+                        dont_filter=True,
+                        meta=self.synchronize_meta(
+                            response,
+                            default_meta={
+                                'file_name': file_name,
+                                'user_id': user_id
+                            }
+                        )
+                    )
+            else:
+                self.logger.info(f'User: {user_id} PGP page is not exist.')
+
+    def parse_user_description(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            self.logger.info(
+                f"Description for user {response.meta['user_id']} done..!")
+
+    def parse_user_pgp(self, response):
+        file_name = response.meta['file_name']
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            self.logger.info(
+                f"PGP for user {response.meta['user_id']} done..!")
+
+    def parse_avatars(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        file_id = response.meta['file_id']
+
+        # Save avatar content
+        all_avatars = set(response.xpath(self.avatar_xpath).extract())
+        index = 1
+        for avatar_url in all_avatars:
+            # Standardize avatar url only if its not complete url
+            slash = False
+            if 'http://' not in avatar_url and 'https://' not in avatar_url:
+                temp_url = avatar_url
+
+                if avatar_url.startswith('//'):
+                    slash = True
+                    temp_url = avatar_url[2:]
+
+                if not avatar_url.lower().startswith("http"):
+                    temp_url = response.urljoin(avatar_url)
+
+                if self.base_url not in temp_url and not slash:
+                    temp_url = self.base_url + avatar_url
+
+                avatar_url = temp_url
+
+            if 'image/svg' in avatar_url:
+                continue
+            
+            ext = avatar_url.rsplit('.', 1)[-1]
+            if "?" in ext:
+                ext = ext.split("?")[0]
+            if not ext:
+                ext = 'jpg'
+
+            file_name = '{}/{}_{}.{}'.format(self.avatar_path, file_id, index, ext)
+
+            if file_name is None:
+                continue
+
+            if os.path.exists(file_name):
+                continue
+
+            index = index + 1
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name,
+                        "file_id": file_id
+                    }
+                ),
             )
-        )
 
     def parse_avatar(self, response):
         file_name = response.meta['file_name']
         with open(file_name, 'wb') as f:
             f.write(response.body)
             self.logger.info(
-                f"Avatar for user {response.meta['user_id']} done..!")
+                f"Avatar for product {response.meta['file_id']} done..!")
 
 
 class SeleniumSpider(SitemapSpider):

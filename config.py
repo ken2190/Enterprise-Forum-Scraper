@@ -66,6 +66,10 @@ main_parser_arguments = [
         "kwargs": {"help": argparse.SUPPRESS, "required": False}
     },
     {
+        "args": ("-e", '--end_date'),
+        "kwargs": {"help": argparse.SUPPRESS, "required": False}
+    },
+    {
         "args": ("-b", '--banlist'),
         "kwargs": {"help": argparse.SUPPRESS, "action": 'store_true'}
     },

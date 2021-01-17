@@ -5,9 +5,6 @@ from scrapy.http import Request
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
              'AppleWebKit/537.36 (KHTML, like Gecko) '\
              'Chrome/81.0.4044.138 Safari/537.36'
@@ -51,8 +48,6 @@ class ChfSpider(SitemapSpider):
     # Other settings
     handle_httpstatus_list = [403]
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
     fraudulent_threshold = 60

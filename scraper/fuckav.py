@@ -16,8 +16,6 @@ from scrapy import (
     FormRequest
 )
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 5
 USERNAME = "thecreator"
 PASSWORD = "Night#Fuck000"
 MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
@@ -83,8 +81,6 @@ class FuckavSpider(SitemapSpider):
     use_proxy = True
     sitemap_datetime_format = "%d-%m-%Y"
     post_datetime_format = "%d-%m-%Y"
-    download_delay = REQUEST_DELAY
-    concurrent_requests = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -281,9 +277,6 @@ class FuckavScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                # "DOWNLOAD_DELAY": REQUEST_DELAY,
-                "CONCURRENT_REQUESTS": NO_OF_THREADS,
-                "CONCURRENT_REQUESTS_PER_DOMAIN": NO_OF_THREADS,
                 "AUTOTHROTTLE_ENABLED": True,
                 "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
                 "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY

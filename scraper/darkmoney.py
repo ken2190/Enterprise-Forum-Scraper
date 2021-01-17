@@ -7,10 +7,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.7
-NO_OF_THREADS = 2
-
-
 class DarkMoneySpider(SitemapSpider):
 
     name = "darkmoney.tw"
@@ -48,8 +44,6 @@ class DarkMoneySpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
 

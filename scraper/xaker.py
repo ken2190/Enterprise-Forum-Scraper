@@ -11,9 +11,6 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 5
-
 USER = "Cyrax011"
 PASS = "4hr63yh38a61SDW0"
 
@@ -74,8 +71,6 @@ class XakerSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
 
     def start_requests(self):

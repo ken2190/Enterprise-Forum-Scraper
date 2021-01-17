@@ -14,9 +14,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 USERNAME = "blastedone"
 PASSWORD = "Chq#Blast888"
 
@@ -35,13 +32,18 @@ class ApollonSpider(MarketPlaceSpider):
 
     # xpath stuffs
     login_form_xpath = captcha_form_xpath = '//form[@method="POST"]'
+    login_alert_xpath = '//div[contains(@class, "alert alert-danger")]/text()'
+
     captcha_url_xpath = '//img[@name="capt_code"]/@src'
     market_url_xpath = '//ul[@id="side-menu"]/li/a/@href'
     product_url_xpath = '//a[contains(@href, "listing.php")]/@href'
+    
     next_page_xpath = '//li[@class="page-item active"]'\
                       '/following-sibling::li[1]/a/@href'
     user_xpath = '//small/a[contains(@href, "user.php")]/@href'
-    avatar_xpath = '//img[contains(@class, "img-responsive")]/@src'
+    user_description_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=1")]/@href'
+    user_pgp_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=6")]/@href'
+    avatar_xpath = '//img[contains(@class, "img-rounded")]/@src'
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -63,9 +65,7 @@ class ApollonSpider(MarketPlaceSpider):
     #         'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
     #     }
     # }
-    use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
+    use_proxy = False
     captcha_instruction = "Please ignore | and ^"
 
     def __init__(self, *args, **kwargs):
@@ -151,9 +151,25 @@ class ApollonSpider(MarketPlaceSpider):
             meta=self.synchronize_meta(response),
             callback=self.parse_start
         )
+    
+    def parse_start(self, response):
+
+        if response.xpath(self.login_form_xpath):
+            login_alert = response.xpath(self.login_alert_xpath).extract_first()
+            if "username and/or password" in login_alert:
+                self.logger.info("Invalid Login")
+            else:
+                self.logger.info("Invalid Captcha")
+            return
+
+        yield from super().parse_start(response)
 
 
 class ApollonScrapper(SiteMapScrapper):
     spider_class = ApollonSpider
     site_name = 'apollon (apollionih4ocqyd.onion)'
     site_type = 'marketplace'
+
+    def __init__(self, kwargs):
+        kwargs['get_users'] = True
+        super().__init__(kwargs)

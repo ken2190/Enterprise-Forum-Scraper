@@ -11,10 +11,6 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 USER = 'Cyrax011'
 PASS = '4hr63yh38a61SDW0'
 
-
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 PROXY = 'http://127.0.0.1:8118'
 
 
@@ -57,8 +53,6 @@ class CryptBBSpider(SitemapSpider):
 
     # Other settings
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     retry_http_codes = [406, 429, 500, 503]
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'

@@ -8,10 +8,6 @@ from scrapy.crawler import CrawlerProcess
 from scraper.base_scrapper import BypassCloudfareSpider
 
 
-REQUEST_DELAY = 0.1
-NO_OF_THREADS = 20
-
-
 class CrimeMarketSpider(BypassCloudfareSpider):
     name = 'crimemarket_spider'
 
@@ -164,9 +160,6 @@ class CrimeMarketScrapper():
             "DOWNLOADER_MIDDLEWARES": {
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
             },
-            'DOWNLOAD_DELAY': REQUEST_DELAY,
-            'CONCURRENT_REQUESTS': NO_OF_THREADS,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': NO_OF_THREADS,
             'RETRY_HTTP_CODES': [403, 429, 500, 503],
             'RETRY_TIMES': 10,
             'LOG_ENABLED': True,

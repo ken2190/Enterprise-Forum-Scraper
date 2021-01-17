@@ -15,8 +15,8 @@ from scraper.base_scrapper import (
 )
 
 
-class MafiaSpider(SitemapSpider):
-    name = "mafia_spider"
+class MafiaUgSpider(SitemapSpider):
+    name = "mafiaug_spider"
 
     # Url stuffs
     base_url = "http://mafia.ug"
@@ -46,6 +46,8 @@ class MafiaSpider(SitemapSpider):
         r".*page/(\d+)",
         re.IGNORECASE
     )
+    
+    use_proxy = True
 
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
@@ -74,17 +76,26 @@ class MafiaSpider(SitemapSpider):
             self.post_datetime_format
         )
     def start_requests(self):
+        
+        cookies, ip = self.get_cookies(
+            base_url=self.base_url,
+            proxy=self.use_proxy,
+            fraud_check=True,
+        )
+
+        self.logger.info(f'COOKIES: {cookies}')
+
+        # Init request kwargs and meta
         meta = {
             "cookiejar": uuid.uuid1().hex,
-            'dont_filter': True
+            "ip": ip
         }
-        
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.parse,
-            dont_filter=True,
-            meta=meta
+            meta=meta,
+            cookies=cookies
         )
         
     def parse(self, response):
@@ -123,6 +134,6 @@ class MafiaSpider(SitemapSpider):
         yield from super().parse_avatars(response)
 
 
-class MafiaScrapper(SiteMapScrapper):
-    spider_class = MafiaSpider
+class MafiaUgScrapper(SiteMapScrapper):
+    spider_class = MafiaUgSpider
     site_type = 'forum'

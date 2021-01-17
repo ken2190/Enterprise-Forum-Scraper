@@ -16,10 +16,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 0.3
-NO_OF_THREADS = 10
-
-
 class StormFrontSpider(SitemapSpider):
 
     name = "stormfront"
@@ -61,8 +57,6 @@ class StormFrontSpider(SitemapSpider):
     use_proxy = True
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%m-%d-%Y, %I:%M %p'
     sitemap_datetime_format = '%m-%d-%Y'
 

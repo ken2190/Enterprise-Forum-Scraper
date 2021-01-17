@@ -16,10 +16,6 @@ from scraper.base_scrapper import (
 )
 
 
-REQUEST_DELAY = 1
-NO_OF_THREADS = 3
-
-
 class CrackForumSpider(SitemapSpider):
 
     name = "crackforum"
@@ -61,8 +57,6 @@ class CrackForumSpider(SitemapSpider):
 
     # Other settings
     use_proxy = True
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
     post_datetime_format = '%d.%m.%Y, %H:%M'
     sitemap_datetime_format = '%d.%m.%Y'
 

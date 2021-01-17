@@ -12,9 +12,6 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0
 USER = 'Cyrax22'
 PASS = 'S5eVZWqf!3wNdtb'
 
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 5
-
 # recovery key: Your recovery key is HCjrcs23snxjRVR8kpR1c1J6wj2GHDUojQpRJ33OcH1AYMNQ3MVVBG3r5zSeftmaj4mFgGV3WKks6z85mvpprOs1XCtan5qxkta2h70mqxu3FJ47RxofBYegANeZoAsO
 
 
@@ -27,6 +24,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
 
     # xpath stuffs
     login_form_xpath = captcha_form_xpath = '//form[@method="POST"]'
+    lonin_user_xpath = "//input[@name='username']"
     captcha_url_xpath = '//img[contains(@src, "captchas")]/@src'
     market_url_xpath = '//a[contains(@href,"cat=")]/@href'
     product_url_xpath = '//a[contains(@href, "?listing=")]/@href'
@@ -34,7 +32,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
                       '/preceding-sibling::input[@name="reqpage"][1]/@value'
     user_xpath = '//a[contains(text(), "View Listings")]'\
                  '/following-sibling::a[contains(@href, "profile=")][1]/@href'
-    avatar_xpath = '//center//img[contains(@src, "uploads/")]/@src'
+    avatar_xpath = '//div[@id="img"]/img/@src'
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -42,8 +40,6 @@ class SilkRoad4Spider(MarketPlaceSpider):
     )
 
     use_proxy = False
-    download_delay = REQUEST_DELAY
-    download_thread = NO_OF_THREADS
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -137,39 +133,49 @@ class SilkRoad4Spider(MarketPlaceSpider):
     def parse_captcha(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+        
+        if not response.xpath(self.lonin_user_xpath).extract_first():
+            url = response.urljoin('auth.php')
+            yield Request(
+                url=url,
+                headers=self.headers,
+                callback=self.parse_first_captcha,
+                dont_filter=True,
+                meta=self.synchronize_meta(response)
+            )
+        else:
+            # Load cookies
+            cookies = response.request.headers.get("Cookie", '').decode("utf-8")
+            if not cookies:
+                yield from self.start_requests()
+                return
+            # Load captcha url
+            captcha_url = response.xpath(
+                self.captcha_url_xpath).extract_first()
+            captcha_url = response.urljoin(captcha_url)
+            captcha = self.solve_captcha(
+                captcha_url,
+                response
+            )
+            self.logger.info(
+                "Captcha has been solved: %s" % captcha
+            )
 
-        # Load cookies
-        cookies = response.request.headers.get("Cookie", '').decode("utf-8")
-        if not cookies:
-            yield from self.start_requests()
-            return
-        # Load captcha url
-        captcha_url = response.xpath(
-            self.captcha_url_xpath).extract_first()
-        captcha_url = response.urljoin(captcha_url)
-        captcha = self.solve_captcha(
-            captcha_url,
-            response
-        )
-        self.logger.info(
-            "Captcha has been solved: %s" % captcha
-        )
+            formdata = {
+                'username': USER,
+                'password': PASS,
+                "captcha": captcha
+            }
 
-        formdata = {
-            'username': USER,
-            'password': PASS,
-            "captcha": captcha
-        }
-
-        yield FormRequest.from_response(
-            response=response,
-            formxpath=self.login_form_xpath,
-            formdata=formdata,
-            headers=self.headers,
-            dont_filter=True,
-            meta=self.synchronize_meta(response),
-            callback=self.parse_start
-        )
+            yield FormRequest.from_response(
+                response=response,
+                formxpath=self.login_form_xpath,
+                formdata=formdata,
+                headers=self.headers,
+                dont_filter=True,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_start
+            )
 
     def parse_start(self, response):
 
