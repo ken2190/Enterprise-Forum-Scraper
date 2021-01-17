@@ -43,7 +43,7 @@ class DNMAvengersSpider(SitemapSpider):
     avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
     pagination_pattern = re.compile(r'page-(\d+)')
 
-    use_proxy = False
+    use_proxy = "Tor"
 
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml'

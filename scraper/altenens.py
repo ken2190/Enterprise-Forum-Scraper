@@ -50,7 +50,7 @@ class AltenensSpider(SitemapSpider):
     login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
     
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     handle_httpstatus_list = [403]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"

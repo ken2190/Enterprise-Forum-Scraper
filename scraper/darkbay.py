@@ -53,7 +53,7 @@ class DarkBaySpider(MarketPlaceSpider):
         re.IGNORECASE
     )
 
-    use_proxy = False
+    use_proxy = "Tor"
     _base_url_index = 0
     _try_to_log_in_count = 0
 

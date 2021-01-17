@@ -58,7 +58,7 @@ class PsxhaxSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
     post_datetime_format = '%b %d, %Y at %I:%M %p'
 

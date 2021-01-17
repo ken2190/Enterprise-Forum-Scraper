@@ -73,7 +73,7 @@ class VoidToSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     post_datetime_format = '%b %d, %Y'
     sitemap_datetime_format = '%b %d, %Y'
 

@@ -15,14 +15,7 @@ from scraper.base_scrapper import (
 )
 
 
-<<<<<<< HEAD
-REQUEST_DELAY = 1
-NO_OF_THREADS = 1
-
-USERNAME = "vrx91"
-=======
 USERNAME = "vrx9"
->>>>>>> df60255be9b7aafbba28c8972c29ac0bcc8bc0ae
 PASSWORD = "4hr63yh38a"
 
 
@@ -68,7 +61,7 @@ class BinRevSpider(SitemapSpider):
     login_failed_xpath = '//p[contains(@class, "ipsMessage ipsMessage_error")]'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def start_requests(self):
         yield Request(

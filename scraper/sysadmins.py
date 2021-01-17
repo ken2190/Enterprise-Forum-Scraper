@@ -38,7 +38,7 @@ class SysAdminsSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     post_datetime_format = '%a %d %b, %Y %H:%M'
     sitemap_datetime_format = '%a %d %b, %Y %H:%M'
 

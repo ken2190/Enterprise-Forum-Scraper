@@ -46,7 +46,7 @@ class CardingSiteSpider(SitemapSpider):
     bypass_success_xpath = '//a[@href="/login/"]'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
 

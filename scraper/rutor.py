@@ -32,7 +32,7 @@ class RutorSpider(SitemapSpider):
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
     post_datetime_format = '%Y-%m-%dT%H:%M:%S'
 

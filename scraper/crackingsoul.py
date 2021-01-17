@@ -36,7 +36,7 @@ class CrackingSoulSpider(SitemapSpider):
     avatar_name_pattern = re.compile(r".avatar_(\d+\.\w+)")
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y'
 

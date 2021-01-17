@@ -70,7 +70,7 @@ class XakerSpider(SitemapSpider):
     bypass_success_xpath = '//ol[@class="nodeList"]//h3/a'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
 
     def start_requests(self):

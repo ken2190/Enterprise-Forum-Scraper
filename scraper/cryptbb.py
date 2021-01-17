@@ -52,7 +52,7 @@ class CryptBBSpider(SitemapSpider):
     login_failed_xpath = '//li[contains(text(), "invalid username/password")]'
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
     retry_http_codes = [406, 429, 500, 503]
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'

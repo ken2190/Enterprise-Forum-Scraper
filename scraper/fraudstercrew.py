@@ -51,7 +51,7 @@ class FraudstercrewSpider(SitemapSpider):
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def parse_thread(self, response):
         yield from super().parse_thread(response)

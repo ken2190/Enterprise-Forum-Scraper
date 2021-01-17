@@ -30,7 +30,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
 class DemonForumsSpider(SitemapSpider):
     name = 'demonforums_spider'
 
-    use_proxy = True
+    use_proxy = "On"
     proxy_countries = ['us', 'uk']
 
     handle_httpstatus_list = [403, 503]
@@ -131,7 +131,7 @@ class DemonForumsSpider(SitemapSpider):
                 "%s has been permanently banned. Rotating." % ip_ban_check
             )
 
-        if not self.use_proxy:
+        if self.use_proxy == 'Off':
             return
 
         if self.rotation_tries < 20:

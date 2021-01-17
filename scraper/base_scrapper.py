@@ -54,14 +54,19 @@ from helheim import helheim
 from middlewares.utils import IpHandler
 
 # Vip Proxy
-#VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
-#VIP_PROXY_PASSWORD = "5d2ad17825b0"
-#VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
-
 VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
 VIP_PROXY_PASSWORD = "q37j08ih0hci"
-
 VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+# Unblocker Proxy
+UNBLOCKER_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
+UNBLOCKER_PROXY_PASSWORD = "5d2ad17825b0"
+UNBLOCKER_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+# Luminati Proxy
+PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
+PROXY_PASSWORD = "8jywfhrmovdh"
+PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
 # Residential proxy
 # PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
@@ -71,13 +76,6 @@ VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 #PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
 #PROXY_PASSWORD = "5d2ad17825b0"
 #PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
-
-
-# Luminati Proxy
-PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
-PROXY_PASSWORD = "8jywfhrmovdh"
-PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
-
 
 ###############################################################################
 # Base Scraper
@@ -373,8 +371,7 @@ class SiteMapScrapper:
         crawler = process.create_crawler(self.spider_class)
 
         if self.load_spider_kwargs()['no_proxy']:
-            crawler.spidercls.use_proxy = False
-            crawler.spidercls.use_vip_proxy = False
+            crawler.spidercls.use_proxy = "Off"
 
         # Trigger running
         process.crawl(
@@ -423,8 +420,7 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
 
 class BypassCloudfareSpider(scrapy.Spider):
 
-    use_proxy = True
-    use_vip_proxy = False
+    use_proxy = "On"
     proxy = None
     download_delay = 0.3
     download_thread = 10
@@ -461,7 +457,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                         "middlewares.middlewares.DedicatedProxyMiddleware": 100,
                     }
                 )
-            elif cls.use_proxy:
+            elif cls.use_proxy != "Off":
                 downloader_middlewares.update(
                     {
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
@@ -514,11 +510,15 @@ class BypassCloudfareSpider(scrapy.Spider):
 
     def get_cloudflare_cookies(self, base_url=None, proxy=True, fraud_check=True):
         # Load proxy
-        if self.use_vip_proxy:
+        if self.use_proxy == 'VIP':
             proxy_username = VIP_PROXY_USERNAME
             proxy_password = VIP_PROXY_PASSWORD
             super_proxy = VIP_PROXY
-        else:
+        elif self.use_proxy == 'Unblocker':
+            proxy_username = UNBLOCKER_PROXY_USERNAME
+            proxy_password = UNBLOCKER_PROXY_PASSWORD
+            super_proxy = UNBLOCKER_PROXY
+        elif self.use_proxy == 'On':
             proxy_username = PROXY_USERNAME
             proxy_password = PROXY_PASSWORD
             super_proxy = PROXY
@@ -598,11 +598,15 @@ class BypassCloudfareSpider(scrapy.Spider):
 
     def get_cloudflare_cookies_via_browser(self, base_url=None, proxy=False, fraud_check=False):
         # Load proxy
-        if self.use_vip_proxy:
+        if self.use_proxy == 'VIP':
             proxy_username = VIP_PROXY_USERNAME
             proxy_password = VIP_PROXY_PASSWORD
             super_proxy = VIP_PROXY
-        else:
+        elif self.use_proxy == 'Unblocker':
+            proxy_username = UNBLOCKER_PROXY_USERNAME
+            proxy_password = UNBLOCKER_PROXY_PASSWORD
+            super_proxy = UNBLOCKER_PROXY
+        elif self.use_proxy == 'On':
             proxy_username = PROXY_USERNAME
             proxy_password = PROXY_PASSWORD
             super_proxy = PROXY
@@ -896,15 +900,13 @@ class SitemapSpider(BypassCloudfareSpider):
         self.avatars = set()
 
         if kwargs.get("no_proxy") is not None:
-            self.use_proxy = False
-            self.use_vip_proxy = False
+            self.use_proxy = "Off"
 
         if kwargs.get("proxy_countries") is not None:
             self.proxy_countries = kwargs["proxy_countries"]
 
         if kwargs.get("use_vip") is not None:
-            # self.use_proxy = False
-            self.use_vip_proxy = True
+            self.use_proxy = "VIP"
 
         # Load fraud check settings
 
@@ -912,7 +914,7 @@ class SitemapSpider(BypassCloudfareSpider):
             logger=self.logger,
             fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20),
-            use_vip_proxy=self.use_vip_proxy
+            use_proxy=use_proxy
         )
 
         # Handle headers
@@ -1992,11 +1994,15 @@ class SitemapSpider(BypassCloudfareSpider):
     def get_cookies(self, base_url=None, proxy=False, fraud_check=False, check_captcha=False):
 
         # Load proxy
-        if self.use_vip_proxy:
+        if self.use_proxy == 'VIP':
             proxy_username = VIP_PROXY_USERNAME
             proxy_password = VIP_PROXY_PASSWORD
             super_proxy = VIP_PROXY
-        else:
+        elif self.use_proxy == 'Unblocker':
+            proxy_username = UNBLOCKER_PROXY_USERNAME
+            proxy_password = UNBLOCKER_PROXY_PASSWORD
+            super_proxy = UNBLOCKER_PROXY
+        elif self.use_proxy == 'On':
             proxy_username = PROXY_USERNAME
             proxy_password = PROXY_PASSWORD
             super_proxy = PROXY

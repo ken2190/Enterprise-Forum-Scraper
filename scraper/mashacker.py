@@ -41,7 +41,7 @@ class MasHackerSpider(SitemapSpider):
     bypass_success_xpath = '//div[@class="datacontainer"]'
 
     # # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def start_requests(self):
         # Temporary action to start spider

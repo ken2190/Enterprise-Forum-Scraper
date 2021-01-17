@@ -69,7 +69,7 @@ class MazaSpider(SeleniumSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
     handle_httpstatus_list = [400, 502]
     skip_forums = ['000']
 

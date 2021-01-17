@@ -54,7 +54,7 @@ class StormFrontSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
     post_datetime_format = '%m-%d-%Y, %I:%M %p'

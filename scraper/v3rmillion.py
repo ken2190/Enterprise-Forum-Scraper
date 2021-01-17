@@ -18,7 +18,7 @@ from scraper.base_scrapper import (
 USER = "hackwithme123"
 PASS = "6VUZmjFzM2WtyjV"
 
-use_vip_proxy=True
+use_proxy = "VIP"
 
 class V3RMillionSpider(SitemapSpider):
     name = "v3rmillion_spider"
@@ -72,7 +72,7 @@ class V3RMillionSpider(SitemapSpider):
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
 
     # Other settings
-    use_vip_proxy=True
+    use_proxy = "VIP"
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 

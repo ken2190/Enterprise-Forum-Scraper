@@ -52,7 +52,7 @@ class BigmmoSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%d/%m/%y"
     post_datetime_format = "%d/%m/%y"
 

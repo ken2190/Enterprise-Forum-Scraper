@@ -43,7 +43,7 @@ class RSTForumsSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    use_proxy = True
+    use_proxy = "On"
 
     def parse_thread(self, response):
 

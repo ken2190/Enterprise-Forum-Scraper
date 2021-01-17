@@ -61,7 +61,7 @@ class BHFIOSpider(SitemapSpider):
     login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%b %d, %Y at %I:%M %p"
     post_datetime_format = "%b %d, %Y at %I:%M %p"
     download_delay = 0.3

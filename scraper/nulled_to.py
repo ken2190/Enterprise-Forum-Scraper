@@ -55,7 +55,7 @@ class NulledSpider(SitemapSpider):
     sitemap_datetime_format = "%d %b, %Y"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
-    use_proxy = True
+    use_proxy = "On"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

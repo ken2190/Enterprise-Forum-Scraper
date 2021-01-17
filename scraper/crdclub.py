@@ -15,14 +15,7 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-<<<<<<< HEAD
-REQUEST_DELAY = 0.6
-NO_OF_THREADS = 10
-
-USER = 'Cyrax_0111'
-=======
 USER = 'Cyrax_011'
->>>>>>> df60255be9b7aafbba28c8972c29ac0bcc8bc0ae
 PASS = 'S5eVZWqf!3wNdtb'
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36'

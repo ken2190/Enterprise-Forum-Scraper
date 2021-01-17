@@ -66,7 +66,7 @@ class PHCrackerSpider(SitemapSpider):
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
     get_cookies_delay = 10
     get_cookies_retry = 2
-    use_proxy = True
+    use_proxy = "On"
 
     def parse_thread_date(self, thread_date):
         """

@@ -1,12 +1,18 @@
 import cloudscraper
 import uuid
 import re
+import time
 from random import choice
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from scrapy.utils.response import response_status_message
 
 from scraper.base_scrapper import (
     VIP_PROXY_USERNAME,
     VIP_PROXY_PASSWORD,
     VIP_PROXY,
+    UNBLOCKER_PROXY_USERNAME,
+    UNBLOCKER_PROXY_PASSWORD,
+    UNBLOCKER_PROXY,
     PROXY_USERNAME,
     PROXY_PASSWORD,
     PROXY
@@ -21,19 +27,23 @@ class LuminatyProxyMiddleware(object):
 
     def __init__(self, crawler):
         self.logger = crawler.spider.logger
-        self.use_vip_proxy = getattr(
+        self.use_proxy = getattr(
             crawler.spider,
-            "use_vip_proxy",
+            "use_proxy",
             False
         )
-        if not self.use_vip_proxy:
-            self.username = PROXY_USERNAME
-            self.password = PROXY_PASSWORD
-            self.super_proxy_url = PROXY
-        else:
+        if self.use_proxy == 'VIP':
             self.username = VIP_PROXY_USERNAME
             self.password = VIP_PROXY_PASSWORD
             self.super_proxy_url = VIP_PROXY
+        else self.use_proxy == 'Unblocker':
+            self.username = UNBLOCKER_PROXY_USERNAME
+            self.password = UNBLOCKER_PROXY_PASSWORD
+            self.super_proxy_url = UNBLOCKER_PROXY
+        else:
+            self.username = PROXY_USERNAME
+            self.password = PROXY_PASSWORD
+            self.super_proxy_url = PROXY
 
     def process_request(self, request, spider):
 
@@ -178,26 +188,30 @@ class BypassCloudfareMiddleware(object):
         self.logger = crawler.spider.logger
 
         # Load spider settings
-        self.use_vip_proxy = getattr(crawler.spider, "use_vip_proxy", False) 
+        self.use_proxy = getattr(crawler.spider, "use_proxy", False) 
         self.allow_retry = getattr(crawler.spider, "cloudfare_allow_retry", 5)
         self.delay = getattr(crawler.spider, "cloudfare_delay", 5)
         self.solve_depth = getattr(crawler.spider, "cloudfare_solve_depth", 5)
         self.fraudulent_threshold = getattr(crawler.spider, "fraudulent_threshold", 50)
         self.ip_batch_size = getattr(crawler.spider, "ip_batch_size", 20)
         
-        if not self.use_vip_proxy:
-            self.username = PROXY_USERNAME
-            self.password = PROXY_PASSWORD
-            self.super_proxy_url = PROXY
-        else:
+        if self.use_proxy == 'VIP':
             self.username = VIP_PROXY_USERNAME
             self.password = VIP_PROXY_PASSWORD
             self.super_proxy_url = VIP_PROXY
+        else self.use_proxy == 'Unblocker':
+            self.username = UNBLOCKER_PROXY_USERNAME
+            self.password = UNBLOCKER_PROXY_PASSWORD
+            self.super_proxy_url = UNBLOCKER_PROXY
+        else:
+            self.username = PROXY_USERNAME
+            self.password = PROXY_PASSWORD
+            self.super_proxy_url = PROXY
 
         # Load ip handler
         from middlewares.utils import IpHandler
         self.ip_handler = IpHandler(
-            use_vip_proxy=self.use_vip_proxy,
+            use_proxy=self.use_proxy,
             logger=self.logger,
             fraudulent_threshold=self.fraudulent_threshold,
             ip_batch_size=self.ip_batch_size
@@ -361,3 +375,27 @@ class BypassCloudfareMiddleware(object):
         )
 
         return request
+
+class TooManyRequestsRetryMiddleware(RetryMiddleware):
+
+    def __init__(self, crawler):
+        super(TooManyRequestsRetryMiddleware, self).__init__(crawler.settings)
+        self.crawler = crawler
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    def process_response(self, request, response, spider):
+        if request.meta.get('dont_retry', False):
+            return response
+        elif response.status == 429:
+            self.crawler.engine.pause()
+            time.sleep(60) # If the rate limit is renewed in a minute, put 60 seconds, and so on.
+            self.crawler.engine.unpause()
+            reason = response_status_message(response.status)
+            return self._retry(request, reason, spider) or response
+        elif response.status in self.retry_http_codes:
+            reason = response_status_message(response.status)
+            return self._retry(request, reason, spider) or response
+        return response 

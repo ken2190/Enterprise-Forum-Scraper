@@ -42,7 +42,7 @@ class YouGameSpider(SitemapSpider):
     recaptcha_site_key_xpath = '//button[@class="g-recaptcha"]/@data-sitekey'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     fraudulent_threshold = 50
     handle_httpstatus_list = [503]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"

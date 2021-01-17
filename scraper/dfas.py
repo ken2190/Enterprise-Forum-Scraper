@@ -47,7 +47,7 @@ class DfasSpider(SitemapSpider):
         re.IGNORECASE
     )
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%Y-%m-%d %H:%M:%S'
     post_datetime_format = '%Y-%m-%d %H:%M:%S'
 

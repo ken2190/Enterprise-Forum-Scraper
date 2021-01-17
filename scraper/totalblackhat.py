@@ -51,7 +51,7 @@ class TotalBlackHatSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
 

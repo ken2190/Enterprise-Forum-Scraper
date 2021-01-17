@@ -112,31 +112,7 @@ class Ox00SecSpider(SitemapSpider):
             self.logger.info(f"Avatar for {file_name_only} done..!")
 
 class Ox00SecScrapper(SiteMapScrapper):
-<<<<<<< HEAD
-    request_delay = 0.1
-    no_of_threads = 16
 
     spider_class = Ox00SecSpider
     site_name = '0x00sec.org'
     site_type = 'forum'
-
-    def load_settings(self):
-        spider_settings = super().load_settings()
-        spider_settings.update(
-            {
-                'DOWNLOAD_DELAY': self.request_delay,
-                'CONCURRENT_REQUESTS': self.no_of_threads,
-                'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads
-            }
-        )
-        return spider_settings
-
-
-if __name__ == "__main__":
-    pass
-=======
-
-    spider_class = Ox00SecSpider
-    site_name = '0x00sec.org'
-    site_type = 'forum'
->>>>>>> df60255be9b7aafbba28c8972c29ac0bcc8bc0ae

@@ -47,7 +47,7 @@ class ChfSpider(SitemapSpider):
 
     # Other settings
     handle_httpstatus_list = [403]
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
     fraudulent_threshold = 60

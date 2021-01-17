@@ -48,7 +48,7 @@ class EnvoySpider(SeleniumSpider):
     avatar_xpath = ''
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
     handle_httpstatus_list = [502, 503]
 
     def __init__(self, *args, **kwargs):

@@ -44,7 +44,7 @@ class DarkmarketSpider(MarketPlaceSpider):
         re.IGNORECASE
     )
 
-    use_proxy = True
+    use_proxy = "On"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

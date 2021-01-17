@@ -49,7 +49,7 @@ class VBIranSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%Y/%m/%d'
     post_datetime_format = '%Y/%m/%d'
 

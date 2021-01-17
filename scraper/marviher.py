@@ -38,7 +38,7 @@ class MarviherSpider(SitemapSpider):
     login_failed_xpath = '//p[contains(@class, "ipsMessage ipsMessage_error")]'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
     post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 

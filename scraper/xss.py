@@ -51,8 +51,7 @@ class XSSSpider(SitemapSpider):
     pagination_pattern = re.compile(r".*page-(\d+)$", re.IGNORECASE)
 
     # Other settings
-    #use_proxy = False
-    use_vip_proxy = True
+    use_proxy = "VIP"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     # Login Failed Message

@@ -73,7 +73,7 @@ class HackForumsSpider(SitemapSpider):
     get_cookies_delay = 60
     get_cookies_retry = 4
     fraudulent_threshold = 50
-    use_proxy = True
+    use_proxy = "On"
     # proxy_countries = ['uk']
 
     def parse_captcha(self, response):

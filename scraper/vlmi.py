@@ -48,7 +48,7 @@ class VlmiSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def parse_thread_date(self, thread_date):
         thread_date = thread_date.strip()[:-5]

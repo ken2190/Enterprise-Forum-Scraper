@@ -48,7 +48,7 @@ class ProvibSpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
-    use_proxy = True
+    use_proxy = "On"
 
     def parse_post_date(self, post_date):
         return super().parse_post_date(post_date[:-5])
