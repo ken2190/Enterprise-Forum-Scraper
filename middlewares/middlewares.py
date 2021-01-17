@@ -36,7 +36,7 @@ class LuminatyProxyMiddleware(object):
             self.username = VIP_PROXY_USERNAME
             self.password = VIP_PROXY_PASSWORD
             self.super_proxy_url = VIP_PROXY
-        else self.use_proxy == 'Unblocker':
+        elif self.use_proxy == 'Unblocker':
             self.username = UNBLOCKER_PROXY_USERNAME
             self.password = UNBLOCKER_PROXY_PASSWORD
             self.super_proxy_url = UNBLOCKER_PROXY
@@ -199,7 +199,7 @@ class BypassCloudfareMiddleware(object):
             self.username = VIP_PROXY_USERNAME
             self.password = VIP_PROXY_PASSWORD
             self.super_proxy_url = VIP_PROXY
-        else self.use_proxy == 'Unblocker':
+        elif self.use_proxy == 'Unblocker':
             self.username = UNBLOCKER_PROXY_USERNAME
             self.password = UNBLOCKER_PROXY_PASSWORD
             self.super_proxy_url = UNBLOCKER_PROXY

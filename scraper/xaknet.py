@@ -11,14 +11,7 @@ from scraper.base_scrapper import (
 )
 
 
-<<<<<<< HEAD
-REQUEST_DELAY = 0.5
-NO_OF_THREADS = 2
-
-USER = 'vrx91'
-=======
 USER = 'vrx9'
->>>>>>> df60255be9b7aafbba28c8972c29ac0bcc8bc0ae
 PASS = '4hr63yh38a'
 
 

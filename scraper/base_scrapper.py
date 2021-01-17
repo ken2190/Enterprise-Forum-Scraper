@@ -914,7 +914,7 @@ class SitemapSpider(BypassCloudfareSpider):
             logger=self.logger,
             fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20),
-            use_proxy=use_proxy
+            use_proxy=self.use_proxy
         )
 
         # Handle headers
