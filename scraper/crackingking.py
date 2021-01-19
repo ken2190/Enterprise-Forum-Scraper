@@ -145,7 +145,7 @@ class CrackingKingSpider(SitemapSpider):
             "submit": "Login",
             "action": "do_login",
             "url": f'{self.base_url}index.php',
-            "g-recaptcha-response": self.solve_recaptcha(response)
+            "g-recaptcha-response": self.solve_recaptcha(response).solution.token
         }
 
         yield FormRequest.from_response(

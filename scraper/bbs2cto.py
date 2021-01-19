@@ -101,7 +101,11 @@ class Bbs2ctoSpider(SitemapSpider):
 
             if os.path.exists(file_name):
                 continue
-
+            
+            # update stats
+            self.avatars.add(avatar_url)
+            self.crawler.stats.set_value("forum/avatar_count", len(self.avatars))
+            
             yield Request(
                 url=avatar_url,
                 headers=self.headers,

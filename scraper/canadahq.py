@@ -65,7 +65,7 @@ class CanadaHQSpider(MarketPlaceSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
 
     def start_requests(self):
         yield Request(

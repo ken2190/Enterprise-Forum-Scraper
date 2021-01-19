@@ -31,7 +31,7 @@ def _warn_msg(code):
     return code, WARNING_MESSAGES[code]
 
 
-def get_error(stats):
+def get_error(stats, site_type):
     finish_reason = stats.get('finish_reason')
     if finish_reason == 'closespider_errorcount':
         return _err_msg("E00")
@@ -45,6 +45,8 @@ def get_error(stats):
         return _err_msg("E12")
     elif finish_reason == 'login_is_failed':
         return _err_msg("E13")
+    elif finish_reason == 'cannot_bypass_captcha':
+        return _err_msg("E30")
 
     # check if forum count > 0
     if stats.get(FORUM_COUNT, 0) == 0:

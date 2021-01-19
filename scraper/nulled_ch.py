@@ -139,7 +139,7 @@ class NulledChSpider(SitemapSpider):
             "submit": "Login",
             "action": "do_login",
             "url": "",
-            "g-recaptcha-response": self.solve_recaptcha(response),
+            "g-recaptcha-response": self.solve_recaptcha(response).solution.token,
             "my_post_key": my_post_key
         }
         self.logger.info(formdata)

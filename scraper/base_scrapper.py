@@ -457,7 +457,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                         "middlewares.middlewares.DedicatedProxyMiddleware": 100,
                     }
                 )
-            elif cls.use_proxy != "Off":
+            elif cls.use_proxy != "Off" and cls.use_proxy != "Tor":
                 downloader_middlewares.update(
                     {
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
@@ -1604,6 +1604,12 @@ class SitemapSpider(BypassCloudfareSpider):
             login_failed = response.xpath(self.login_failed_xpath).extract()
             if len(login_failed):
                 raise CloseSpider(reason='login_is_failed')
+    
+    def check_if_captcha_failed(self, response, xpath):
+        # check if captcha is passed.
+        captcha_failed = response.xpath(xpath).extract()
+        if len(captcha_failed):
+                raise CloseSpider(reason='cannot_bypass_captcha')
 
     def check_site_error(self, failure):
         # check if site has error

@@ -47,7 +47,7 @@ class CannaZoneSpider(MarketPlaceSpider):
         re.IGNORECASE
     )
 
-    use_proxy = False
+    use_proxy = "Tor"
     retry_http_codes = [406, 429, 500, 503]
     download_thread = NO_OF_THREADS
     

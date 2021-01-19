@@ -18,8 +18,6 @@ from scraper.base_scrapper import (
 USER = "hackwithme123"
 PASS = "6VUZmjFzM2WtyjV"
 
-use_proxy = "VIP"
-
 class V3RMillionSpider(SitemapSpider):
     name = "v3rmillion_spider"
 

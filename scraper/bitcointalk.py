@@ -93,30 +93,23 @@ class BitcoinTalkSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
 
-        yield Request(
-            url="https://bitcointalk.org/index.php?board=1.0",
-            headers=self.headers,
-            callback=self.parse_forum,
-            meta=self.synchronize_meta(response)
-        )
-
         # # Load all forums
-        # all_forums = response.xpath(self.forum_xpath).extract()
+        all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats
         self.crawler.stats.set_value("forum/forum_count", len(all_forums))
-        #
-        # for forum_url in all_forums:
-        #     # Standardize url
-        #     if self.base_url not in forum_url:
-        #         forum_url = self.base_url + forum_url
-        #
-        #     yield Request(
-        #         url=forum_url,
-        #         headers=self.headers,
-        #         callback=self.parse_forum,
-        #         meta=self.synchronize_meta(response)
-        #     )
+        
+        for forum_url in all_forums:
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
+        
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=self.synchronize_meta(response)
+            )
 
     def parse_thread(self, response):
 

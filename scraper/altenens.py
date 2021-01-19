@@ -49,6 +49,9 @@ class AltenensSpider(SitemapSpider):
     # Login Failed Message
     login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
     
+    # Recaptcha stuffs
+    recaptcha_site_key_xpath = '//div[@data-xf-init="re-captcha"]/@data-sitekey'
+
     # Other settings
     use_proxy = "On"
     handle_httpstatus_list = [403]
@@ -86,7 +89,7 @@ class AltenensSpider(SitemapSpider):
             '_xfToken': match[0],
             '_xfResponseType': 'json'
         }
-        token_url = 'https://altenen.is/login/?' + urlencode(params)
+        token_url = 'https://altenen.is/login/'
         yield Request(
             url=token_url,
             headers=self.headers,
@@ -98,26 +101,39 @@ class AltenensSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        # Load json data
-        json_response = json.loads(response.text)
-        html_response = fromstring(json_response['html']['content'])
-
+        captcha_response = self.solve_recaptcha(response, proxyless=True).solution.token
+        
         # Exact token
-        token = html_response.xpath(
-            '//input[@name="_xfToken"]/@value')[0]
+        token = response.xpath(
+            '//input[@name="_xfToken"]/@value').extract_first()
         params = {
             'login': USER,
             'password': PASS,
             "remember": '1',
             '_xfRedirect': '',
-            '_xfToken': token
+            '_xfToken': token,
+            'g-recaptcha-response': captcha_response
         }
+
         yield FormRequest(
-            url="https://altenen.is/login/login",
-            callback=self.parse,
+            url='https://altenen.is/login/',
+            callback=self.parse_post_login,
             formdata=params,
             headers=self.headers,
             dont_filter=True,
+
+        )
+
+    def parse_post_login(self, response):
+        # Synchronize user agent for cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Load backup code url
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            dont_filter=True,
+            callback=self.parse,
         )
 
     def parse_thread(self, response):

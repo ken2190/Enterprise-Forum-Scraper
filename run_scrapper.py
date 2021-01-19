@@ -87,8 +87,9 @@ class Scraper:
         #         stats = scraper_obj.do_scrape()
         else:
             stats = scraper_obj.do_scrape()
+            site_type = scraper_obj.site_type
             if stats:
-                err = get_error(stats)
+                err = get_error(stats, site_type)
                 warnings = get_warnings(stats)
 
                 if err:

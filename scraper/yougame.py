@@ -90,7 +90,7 @@ class YouGameSpider(SitemapSpider):
             return
 
         if response.xpath(self.captcha_form_xpath):
-            recaptcha_token = self.solve_recaptcha(response)
+            recaptcha_token = self.solve_recaptcha(response).solution.token
 
             yield FormRequest.from_response(
                 response,

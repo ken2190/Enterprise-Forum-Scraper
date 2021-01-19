@@ -156,7 +156,7 @@ class VoidToSpider(SitemapSpider):
                 "submit": "Login",
                 "action": "do_login",
                 "url": "",
-                "g-recaptcha-response": self.solve_recaptcha(response)
+                "g-recaptcha-response": self.solve_recaptcha(response).solution.token
             },
             meta=self.synchronize_meta(response),
             dont_filter=True,
