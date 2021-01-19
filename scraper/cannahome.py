@@ -35,15 +35,11 @@ class CannaHomeSpider(MarketPlaceSpider):
 
     market_url_xpath = '//div[contains(@class, "dropdown")]/a[contains(@href, "/listings/")]/@href'
     product_url_xpath = '//div[@class="listing"]//a[contains(@class, "name")]/@href'
-    product_comment_xpath = '//a[contains(@href, "/comments")]/@href'
-    comment_post_date_xpath = '//ul[contains(@class, "list-ratings")]//date/text()'
-    comment_pagination_xpath = '//div[contains(@class, "row panel")]//a[contains(@class, "btn arrow-right")]/@href'
-    comment_current_page_xpath = '//div[@class="pagination"]//span[@class="current"]/text()'
 
     next_page_xpath = '//div[contains(@class, "row panel")]//a[contains(@class, "btn arrow-right")]/@href'
 
     user_xpath = '//section[@id="main"]//div[contains(@class, "rows-20")]//a[contains(@href, "/v/")]/@href'
-    avatar_xpath = '//img[contains(@class, "/upload/")]/@src'
+    avatar_xpath = '//div[contains(@class, "product")]//a[contains(@href, "/upload/")]/@href'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -130,7 +126,7 @@ class CannaHomeSpider(MarketPlaceSpider):
     def parse_start(self, response):
 
         if response.xpath(self.login_form_xpath):
-            self.logger.info("Invalid Captcha")
+            self.logger.info("Invalid Captcha or Invalid Login")
             return
         yield from super().parse_start(response)
 

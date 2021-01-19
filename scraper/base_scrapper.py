@@ -252,6 +252,8 @@ class SiteMapScrapper:
     settings = {
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
+            # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+            # 'flat.middlewares.TooManyRequestsRetryMiddleware': 543,
         },
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
@@ -2067,10 +2069,7 @@ class SitemapSpider(BypassCloudfareSpider):
 class MarketPlaceSpider(SitemapSpider):
     market_url_xpath = None
     product_url_xpath = None
-    product_comment_xpath = None
-    comment_post_date_xpath = None
-    comment_pagination_xpath = None
-    comment_current_page_xpath = None
+    avatar_xpath = None
 
     next_page_xpath = None
     user_xpath = None
@@ -2083,11 +2082,6 @@ class MarketPlaceSpider(SitemapSpider):
         return url
 
     def get_product_url(self, url):
-        if self.base_url not in url:
-            url = self.base_url + url
-        return url
-
-    def get_product_comment_url(self, url):
         if self.base_url not in url:
             url = self.base_url + url
         return url
@@ -2183,132 +2177,32 @@ class MarketPlaceSpider(SitemapSpider):
             f.write(response.text.encode('utf-8'))
             self.logger.info(f'Product: {file_id} done..!')
 
-        if self.product_comment_xpath:
-            product_comment_url = response.xpath(self.product_comment_xpath).extract_first()
-            if product_comment_url:
-                product_comment_url = self.get_product_comment_url(product_comment_url)
-                yield Request(
-                    url=product_comment_url,
-                    headers=self.headers,
-                    callback=self.parse_product_comment,
-                    dont_filter=True,
-                    meta=self.synchronize_meta(
-                        response,
-                        default_meta={
-                            'file_id': file_id
-                        }
-                    )
-                )
+        if self.avatar_xpath:
+            yield from self.parse_avatars(response)
 
-        if not self.user_xpath:
-            return
-        user_url = response.xpath(self.user_xpath).extract_first()
-        if not user_url:
-            return
-        user_url = self.get_user_url(user_url)
-        user_id = self.get_user_id(user_url)
-        file_name = '{}/{}.html'.format(self.user_path, user_id)
-        if os.path.exists(file_name):
-            return
-        yield Request(
-            url=user_url,
-            headers=self.headers,
-            callback=self.parse_user,
-            dont_filter=True,
-            meta=self.synchronize_meta(
-                response,
-                default_meta={
-                    'file_name': file_name,
-                    'user_id': user_id
-                }
-            )
-        )
-
-    def parse_product_comment(self, response):
-        # Synchronize headers user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Get topic id
-        file_id = response.meta.get("file_id")
-
-        # Load all post date
-        post_dates = [
-            self.parse_post_date(post_date) for post_date in
-            response.xpath(self.comment_post_date_xpath).extract()
-            if post_date.strip() and self.parse_post_date(post_date)
-        ]
-        
-        if not post_dates:
-            self.logger.info('No dates found in product comments: %s', response.url)
-            return
-
-        # get next page
-        next_page = self.get_product_comment_next_page(response)
-
-        # check if the product comment contains new messages
-        if self.start_date and max(post_dates) < self.start_date:
-            self.logger.info(
-                "No more post to update."
-            )
-            return
-
-        # Save product comment content
-        current_page = self.get_product_comment_current_page(response)
-        with open(
-            file=os.path.join(
-                self.output_path,
-                "%s_comments_%s.html" % (
-                    file_id,
-                    current_page
-                )
-            ),
-            mode="w+",
-            encoding="utf-8"
-        ) as file:
-            file.write(response.text)
-        self.logger.info(
-            f'{file_id}_comments_{current_page} done..!'
-        )
-
-        # product comment pagination
-        if next_page:
-            yield Request(
-                url=next_page,
-                headers=self.headers,
-                callback=self.parse_product_comment,
-                dont_filter=True,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_id": file_id
-                    }
-                )
-            )
-
-    def get_product_comment_current_page(self, response):
-        current_page = response.xpath(
-                self.comment_current_page_xpath
-        ).extract_first() or "1"
-        return current_page
-
-    def get_product_comment_next_page(self, response):
-        next_page = response.xpath(self.comment_pagination_xpath).extract_first()
-        if not next_page:
-            return
-
-        next_page = next_page.strip()
-        # process url if its not complete
-        if 'http://' not in next_page and 'https://' not in next_page:
-            temp_url = next_page
-
-            if self.base_url not in next_page:
-                temp_url = response.urljoin(next_page)
-
-            if self.base_url not in temp_url:
-                temp_url = self.base_url + next_page
-
-            next_page = temp_url
-        return next_page
+        # if not self.user_xpath:
+        #     return
+        # user_url = response.xpath(self.user_xpath).extract_first()
+        # if not user_url:
+        #     return
+        # user_url = self.get_user_url(user_url)
+        # user_id = self.get_user_id(user_url)
+        # file_name = '{}/{}.html'.format(self.user_path, user_id)
+        # if os.path.exists(file_name):
+        #     return
+        # yield Request(
+        #     url=user_url,
+        #     headers=self.headers,
+        #     callback=self.parse_user,
+        #     dont_filter=True,
+        #     meta=self.synchronize_meta(
+        #         response,
+        #         default_meta={
+        #             'file_name': file_name,
+        #             'user_id': user_id
+        #         }
+        #     )
+        # )
 
     def parse_user(self, response):
         # Synchronize cloudfare user agent
@@ -2370,30 +2264,6 @@ class MarketPlaceSpider(SitemapSpider):
             else:
                 self.logger.info(f'User: {user_id} PGP page is not exist.')
 
-        avatar_url = response.xpath(self.avatar_xpath).extract_first()
-        if not avatar_url:
-            return
-        avatar_url = self.get_avatar_url(avatar_url)
-        ext = avatar_url.rsplit('.', 1)[-1]
-        if not ext:
-            ext = 'jpg'
-        file_name = '{}/{}.{}'.format(self.avatar_path, user_id, ext)
-        if os.path.exists(file_name):
-            return
-        yield Request(
-            url=avatar_url,
-            headers=self.headers,
-            callback=self.parse_avatar,
-            dont_filter=True,
-            meta=self.synchronize_meta(
-                response,
-                default_meta={
-                    'file_name': file_name,
-                    'user_id': user_id
-                }
-            )
-        )
-
     def parse_user_description(self, response):
         file_name = response.meta['file_name']
         with open(file_name, 'wb') as f:
@@ -2407,13 +2277,72 @@ class MarketPlaceSpider(SitemapSpider):
             f.write(response.body)
             self.logger.info(
                 f"PGP for user {response.meta['user_id']} done..!")
-                
+
+    def parse_avatars(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        file_id = response.meta['file_id']
+
+        # Save avatar content
+        all_avatars = set(response.xpath(self.avatar_xpath).extract())
+        index = 1
+        for avatar_url in all_avatars:
+            # Standardize avatar url only if its not complete url
+            slash = False
+            if 'http://' not in avatar_url and 'https://' not in avatar_url:
+                temp_url = avatar_url
+
+                if avatar_url.startswith('//'):
+                    slash = True
+                    temp_url = avatar_url[2:]
+
+                if not avatar_url.lower().startswith("http"):
+                    temp_url = response.urljoin(avatar_url)
+
+                if self.base_url not in temp_url and not slash:
+                    temp_url = self.base_url + avatar_url
+
+                avatar_url = temp_url
+
+            if 'image/svg' in avatar_url:
+                continue
+            
+            ext = avatar_url.rsplit('.', 1)[-1]
+            if "?" in ext:
+                ext = ext.split("?")[0]
+            if not ext:
+                ext = 'jpg'
+
+            file_name = '{}/{}_{}.{}'.format(self.avatar_path, file_id, index, ext)
+
+            if file_name is None:
+                continue
+
+            if os.path.exists(file_name):
+                continue
+
+            index = index + 1
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name,
+                        "file_id": file_id
+                    }
+                ),
+            )
+
     def parse_avatar(self, response):
         file_name = response.meta['file_name']
         with open(file_name, 'wb') as f:
             f.write(response.body)
             self.logger.info(
-                f"Avatar for user {response.meta['user_id']} done..!")
+                f"Avatar for product {response.meta['file_id']} done..!")
 
 
 class SeleniumSpider(SitemapSpider):

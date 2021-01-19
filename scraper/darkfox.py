@@ -30,19 +30,15 @@ class DarkFoxSpider(MarketPlaceSpider):
     # xpath stuffs
     captch_form_xpath = '//form[@method="post"]'
     captcha_url_xpath_1 = '//div[@class="imgWrap"]/@style'
-    captcha_url_xpath_2 = '//img[@class="captcha is-centered"]/@src'
+    captcha_url_xpath_2 = '//img[contains(@class, "captcha")]/@src'
     market_url_xpath = '//input[@name="category[]"]/@value'
     product_url_xpath = '//div[@class="media-content"]/a[contains(@href, "/product/")]/@href'
-    product_comment_xpath = '//a[contains(@href, "/feedback")]/@href'
-    comment_post_date_xpath = '//div[contains(@class, "columns m-b-none")]/div[last()]/text()'
-    comment_pagination_xpath = '//a[contains(@class, "pagination-next")]/@href'
-    comment_current_page_xpath = '//a[contains(@class, "pagination-link is-current")]/text()'
 
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//h3[contains(., "Vendor:")]/a/@href'
     user_description_xpath = '//div[@class="tabs"]//a[contains(@href, "/about")]/@href'
     user_pgp_xpath = '//div[@class="tabs"]//a[contains(@href, "/pgp")]/@href'
-    avatar_xpath = '//img[@class="avatar"]/@src'
+    avatar_xpath = '//ul[@class="slides"]//img[contains(@class, "slide-main")]/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -115,7 +111,6 @@ class DarkFoxSpider(MarketPlaceSpider):
         self.synchronize_headers(response)
 
         # Load cookies
-
         cookies = response.request.headers.get("Cookie")
         if not cookies:
             yield from self.start_requests()
@@ -143,7 +138,7 @@ class DarkFoxSpider(MarketPlaceSpider):
             formxpath=self.captch_form_xpath,
             formdata=formdata,
             headers=self.headers,
-            callback=self.parse_captcha_2,
+            callback=self.parse_start,
             dont_filter=True,
             meta=self.synchronize_meta(response),
         )
@@ -153,8 +148,11 @@ class DarkFoxSpider(MarketPlaceSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        # Load cookies
+        if response.xpath(self.captcha_url_xpath_1):
+            self.logger.info("Invalid Captcha")
+            return
 
+        # Load cookies
         cookies = response.request.headers.get("Cookie")
         # Load captcha url
         captcha_url = response.xpath(
@@ -187,7 +185,7 @@ class DarkFoxSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath_1) or response.xpath(self.captcha_url_xpath_2):
+        if response.xpath(self.captcha_url_xpath_2):
             self.logger.info("Invalid Captcha")
             return
         yield from super().parse_start(response)

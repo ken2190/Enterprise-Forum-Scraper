@@ -27,8 +27,8 @@ class TorSpider(MarketPlaceSpider):
     name = "tor_spider"
 
     # Url stuffs
-    base_url = "http://rrlm2f22lpqgfhyydqkxxzv6snwo5qvc2krjt2q557l7z4te7fsvhbid.onion"
-    login_url = "http://rrlm2f22lpqgfhyydqkxxzv6snwo5qvc2krjt2q557l7z4te7fsvhbid.onion/sessions/new"
+    base_url = "http://tt2mopgckifmberr.onion"
+    login_url = "http://tt2mopgckifmberr.onion/sessions/new"
 
     # xpath stuffs
     login_form_xpath = '//form[@method="post"]'
@@ -36,14 +36,10 @@ class TorSpider(MarketPlaceSpider):
     token_xpath = '//input[@name="authenticity_token"]/@value'
 
     product_url_xpath = '//tr[@class="product"]//a[contains(@href, "/products/")]/@href'
-    product_comment_xpath = '//a[contains(@href, "/feedbacks?")]/@href'
-    comment_post_date_xpath = '//table[contains(@class, "table-condensed")]//tr/td[last()]/text()'
-    comment_pagination_xpath = '//a[@rel="next"]/@href'
-    comment_current_page_xpath = '//ul[@class="pagination"]/li[contains(@class, "active")]/a/text()'
 
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//div[contains(@class, "media-body")]//a[contains(@href, "/profiles/")]/@href'
-    avatar_xpath = '//img[@class="thumbnail"]/@src'
+    avatar_xpath = '//div[@class="productimage"]//img/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(

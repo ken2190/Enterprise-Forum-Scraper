@@ -64,9 +64,8 @@ def check_input_dirs(html_dir, parse_dir, site_type, exit):
 
     import_dir = os.path.join(IMPORT_DIR, site_type)
     if not is_dir_exists(import_dir):
-        err_msg = "ERROR: Import directory does not exist: %s" % import_dir
-        print(err_msg)
-        exit(2, RuntimeError(err_msg))
+        err_msg = "Warning: Import directory does not exist: %s" % import_dir
+        os.makedirs(import_dir)
 
 
 def make_tarfile(output_filename, source):

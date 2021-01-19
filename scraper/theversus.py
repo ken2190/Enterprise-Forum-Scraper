@@ -39,14 +39,13 @@ class TheVersusSpider(MarketPlaceSpider):
 
     market_url_xpath = '//ul//a[@href="/listing"]/@href'
     product_url_xpath = '//div[contains(@class, "listings__product")]//a[contains(@href, "/listing/")]/@href'
-    product_comment_xpath = '//a[contains(@href, "/feedback")]/@href'
 
     next_page_xpath = '//div[@class="pagination__navigation"]/a[normalize-space(text())=">"]/@href'
 
     user_xpath = '//div[contains(@class, "listing__vendor")]//a[contains(@href, "/user/")]/@href'
     user_description_xpath = '//div[contains(@class, "user__navigation")]//a[contains(@href, "/feedbacks")]/@href'
     user_pgp_xpath = '//div[contains(@class, "user__navigation")]//a[contains(@href, "/pgp")]/@href'
-    avatar_xpath = '//img[contains(@class, "/avatars")]/@src'
+    avatar_xpath = '//img[contains(@class, "listing__gallery-img")]/@src'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -105,7 +104,7 @@ class TheVersusSpider(MarketPlaceSpider):
         # Load cookies
 
         cookies = response.request.headers.get("Cookie")
-        print(cookies)
+
         if not cookies:
             yield from self.start_requests()
             return
@@ -142,8 +141,11 @@ class TheVersusSpider(MarketPlaceSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        # Load cookies
+        if response.xpath(self.captcha_url_xpath):
+            self.logger.info("Invalid Captcha")
+            return
 
+        # Load cookies
         cookies = response.request.headers.get("Cookie")
         if not cookies:
             yield from self.start_requests()
@@ -169,7 +171,7 @@ class TheVersusSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath):
+        if response.xpath(self.login_form_xpath):
             self.logger.info("Invalid Captcha")
             return
         yield from super().parse_start(response)

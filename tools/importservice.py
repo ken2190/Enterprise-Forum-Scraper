@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-An import service tool
-"""
-
 import os
 import shutil
 import argparse

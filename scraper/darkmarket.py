@@ -129,6 +129,12 @@ class DarkmarketSpider(MarketPlaceSpider):
             callback=self.parse_start
         )
 
+    def parse_start(self, response):
+
+        if response.xpath(self.login_form_xpath):
+            self.logger.info("Invalid Captcha or Invalid Login")
+            return
+        yield from super().parse_start(response)
 
 class DarkmarketScrapper(SiteMapScrapper):
     spider_class = DarkmarketSpider

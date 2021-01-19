@@ -14,10 +14,10 @@ from scraper.base_scrapper import (
 )
 from scraper.base_scrapper import PROXY_USERNAME, PROXY_PASSWORD, PROXY
 
-MIN_DELAY=0.4
+MIN_DELAY=0.3
 MAX_DELAY=0.5
 API_KEY = 'b15b2a61fe195e6b1cedab735cd13674'
-NO_OF_THREADS = 12
+NO_OF_THREADS = 13
 
 class PsbdmpSpider(SitemapSpider):
     name = 'psbdmp_spider'
@@ -34,6 +34,7 @@ class PsbdmpSpider(SitemapSpider):
     def start_requests(self,):
         if not self.end_date:
             self.end_date = datetime.datetime.now()
+        self.start_date = self.start_date - datetime.timedelta(days=1)
         while self.start_date <= self.end_date:
             _from = self.start_date.strftime(self.date_format)
             self.start_date = self.start_date + datetime.timedelta(days=1)

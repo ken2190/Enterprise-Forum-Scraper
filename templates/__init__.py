@@ -204,7 +204,13 @@ from templates.breakingin_template import BreakinginParser
 from templates.cccmn_template import CccmnParser
 from templates.darkwebs_template import DarkwebsParser
 from templates.exploitzone_template import ExploitZoneParser
-from templates.mafia_template import MafiaParser
+from templates.mafiaug_template import MafiaUgParser
+from templates.cannahome_template import CannaHomeParser
+from templates.cannazone_template import CannaZoneParser
+from templates.theversus_template import TheVersusParser
+from templates.tor_template import TorParser
+from templates.torrez_template import TorrezParser
+from templates.crdpro_template import CrdProParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -412,5 +418,11 @@ PARSER_MAP = {
     'ccc_mn': CccmnParser,
     'darkwebs': DarkwebsParser,
     'exploitzone': ExploitZoneParser,
-    'mafia': MafiaParser,
+    'mafia_ug': MafiaUgParser,
+    'cannahome': CannaHomeParser,
+    'cannazone': CannaZoneParser,
+    'theversus': TheVersusParser,
+    'tor': TorParser,
+    'torrez': TorrezParser,
+    'crdpro': CrdProParser,
 }
