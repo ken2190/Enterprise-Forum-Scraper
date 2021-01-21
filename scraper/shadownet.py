@@ -87,11 +87,11 @@ class ShadownetScrapper:
             
         for filename in ftp_client.listdir(input_path):
             if stat.S_ISDIR(ftp_client.stat(os.path.join(input_path, filename)).st_mode):
-                self.download_logs(ftp_client, os.path.join(input_path, filename), os.path.join(local_dir, filename))
+                self.download_logs(ssh, os.path.join(input_path, filename), os.path.join(local_dir, filename))
             else:
                 if not os.path.isfile(os.path.join(local_dir, filename)):
                     ftp_client.get(os.path.join(input_path, filename), os.path.join(local_dir, filename))
-                    print(f'Download done to local: {os.path.join(input_path, filename)}')
+                    print(f'Download done : {os.path.join(input_path, filename)}')
 
     def process(self):
         SSHConfig={
@@ -108,14 +108,14 @@ class ShadownetScrapper:
 
         # Download Logs
         print("="*100)
-        # self.download_logs(ssh, input_path, output_path)
-        download_path = self.zip_download(ssh, input_path, output_path)
-        if download_path:
-            with ZipFile(download_path, 'r') as zipObj:
-                print("="*100)
-                print(f'Unzipping to {download_path.strip(".zip")}')
-                zipObj.extractall(download_path.strip(".zip"))
-                os.remove(download_path)
+        self.download_logs(ssh, input_path, output_path)
+        # download_path = self.zip_download(ssh, input_path, output_path)
+        # if download_path:
+        #     with ZipFile(download_path, 'r') as zipObj:
+        #         print("="*100)
+        #         print(f'Unzipping to {download_path.strip(".zip")}')
+        #         zipObj.extractall(download_path.strip(".zip"))
+        #         os.remove(download_path)
     
     def start(self):
         self.process()
