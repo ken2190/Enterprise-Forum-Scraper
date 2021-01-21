@@ -80,7 +80,7 @@ class ShadownetScrapper:
             exit(2, RuntimeError(err_msg))
         
         folder_name = input_path.split("/")[-1]
-        local_dir = os.path.join(output_path, folder_name)
+        local_dir = output_path
 
         if not self.is_dir_exists(local_dir):
             os.makedirs(local_dir)
