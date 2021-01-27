@@ -9,9 +9,9 @@ from zipfile import ZipFile
 import dateutil.parser as dparser
 from datetime import datetime
 
-USERNAME='windsky'
+USERNAME='root'
 KEY_FILE = os.path.expanduser('~/.ssh/id_rsa.pub')
-INPUT_PATH='/home/windsky'
+INPUT_PATH='/data/log/ejabberd'
 
 class ShadownetScrapper:
     def __init__(self, kwargs):
