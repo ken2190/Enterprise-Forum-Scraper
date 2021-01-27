@@ -156,7 +156,6 @@ class ShadownetScrapper:
             os.makedirs(local_dir)
         
         dir_list = sorted(ftp_client.listdir(input_path))
-        print(dir_list)
         for filename in dir_list:
             if stat.S_ISDIR(ftp_client.stat(os.path.join(input_path, filename)).st_mode):
                 _dir = filename.lstrip("log_")
