@@ -30,6 +30,10 @@ main_parser_arguments = [
         "kwargs": {"help": argparse.SUPPRESS, "required": False}
     },
     {
+        "args": ("-site", '--sitename'),
+        "kwargs": {"help": argparse.SUPPRESS, "required": False}
+    },
+    {
         "args": ("-usr", '--user'),
         "kwargs": {"help": argparse.SUPPRESS, "required": False}
     },

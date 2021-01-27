@@ -6,10 +6,42 @@ import paramiko
 import os
 import stat
 from zipfile import ZipFile
+import dateutil.parser as dparser
+from datetime import datetime
+
+USERNAME='windsky'
+KEY_FILE = os.path.expanduser('~/.ssh/id_rsa.pub')
+INPUT_PATH='/home/windsky'
 
 class ShadownetScrapper:
     def __init__(self, kwargs):
-        self.args = kwargs
+        self.host = kwargs['server']
+        self.username = USERNAME
+        self.key_file = KEY_FILE
+
+        self.input_path = INPUT_PATH
+        self.output_path = kwargs['output']
+        self.start_date = kwargs['start_date']
+        self.time_format = "%Y-%m-%d"
+        self.sitename = kwargs["sitename"]
+
+        if not self.sitename:
+            print("ERROR : No Sitename")
+            exit(1)
+
+        if self.start_date:
+            try:
+                self.start_date = datetime.strptime(
+                    self.start_date,
+                    self.time_format
+                )
+            except Exception as err:
+                raise ValueError(
+                    "Wrong date format. Correct format is: %s. Detail: %s" % (
+                        self.time_format,
+                        err
+                    )
+                )
 
     def getSSHClient(self, SSHConfig):
         print(f'Connecting {SSHConfig["host"]}...')
@@ -18,6 +50,21 @@ class ShadownetScrapper:
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
             ssh.connect(SSHConfig['host'], username=SSHConfig['username'], password=SSHConfig['password'])
+            ssh.get_transport().window_size = 10000000
+        except Exception as e:
+            print(f'ERROR Can not connect to {SSHConfig["host"]}.')
+            print(e)
+            return None
+        print(f'Connected to {SSHConfig["host"]}')
+        return ssh
+
+    def getSSHClient_key(self, SSHConfig):
+        print(f'Connecting {SSHConfig["host"]}...')
+        ssh = paramiko.SSHClient()
+
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            ssh.connect(SSHConfig['host'], username=SSHConfig['username'], key_filename=SSHConfig['key_file'])
             ssh.get_transport().window_size = 10000000
         except Exception as e:
             print(f'ERROR Can not connect to {SSHConfig["host"]}.')
@@ -70,16 +117,15 @@ class ShadownetScrapper:
 
         return os.path.join(output_path, filename)
 
-    def download_logs(self, ssh, input_path, output_path):
-        """ Download logs from server to local dir"""
+    def download_dir(self, ssh, input_path, output_path):
+        """Download Directory"""
         ftp_client = ssh.open_sftp()
 
         if not self.sftp_exists(ftp_client, input_path):
             err_msg = "ERROR : Input directory does not exist: %s" % input_path
             print(err_msg)
-            exit(2, RuntimeError(err_msg))
+            exit(1)
         
-        folder_name = input_path.split("/")[-1]
         local_dir = output_path
 
         if not self.is_dir_exists(local_dir):
@@ -92,30 +138,56 @@ class ShadownetScrapper:
                 if not os.path.isfile(os.path.join(local_dir, filename)):
                     ftp_client.get(os.path.join(input_path, filename), os.path.join(local_dir, filename))
                     print(f'Download done : {os.path.join(input_path, filename)}')
+                else:
+                    print(f'Already Exist : {os.path.join(input_path, filename)}')
+
+    def download_logs(self, ssh, input_path, output_path):
+        """ Download logs from server to local dir"""
+        ftp_client = ssh.open_sftp()
+
+        if not self.sftp_exists(ftp_client, input_path):
+            err_msg = "ERROR : Input directory does not exist: %s" % input_path
+            print(err_msg)
+            exit(1)
+        
+        local_dir = output_path
+
+        if not self.is_dir_exists(local_dir):
+            os.makedirs(local_dir)
+        
+        dir_list = sorted(ftp_client.listdir(input_path))
+        print(dir_list)
+        for filename in dir_list:
+            if stat.S_ISDIR(ftp_client.stat(os.path.join(input_path, filename)).st_mode):
+                _dir = filename.lstrip("log_")
+                try:
+                    ts = dparser.parse(_dir)
+                except ValueError:
+                    continue
+                
+                if self.start_date:
+                    if ts >= self.start_date:
+                        self.download_dir(ssh, os.path.join(input_path, filename), os.path.join(local_dir, filename))
+                else:
+                    self.download_dir(ssh, os.path.join(input_path, filename), os.path.join(local_dir, filename))
+            else:
+                continue
 
     def process(self):
         SSHConfig={
-            'host': self.args["server"],
-            'username': self.args["user"],
-            'password': self.args["password"],
+            'host': self.host,
+            'username': self.username,
+            'key_file': self.key_file
         }
-
-        input_path = self.args["input_path"]
-        output_path = self.args["output"]
+        
+        input_path = os.path.join(self.input_path, self.sitename)
 
         # Connect to server
-        ssh = self.getSSHClient(SSHConfig)
+        ssh = self.getSSHClient_key(SSHConfig)
 
         # Download Logs
         print("="*100)
-        self.download_logs(ssh, input_path, output_path)
-        # download_path = self.zip_download(ssh, input_path, output_path)
-        # if download_path:
-        #     with ZipFile(download_path, 'r') as zipObj:
-        #         print("="*100)
-        #         print(f'Unzipping to {download_path.strip(".zip")}')
-        #         zipObj.extractall(download_path.strip(".zip"))
-        #         os.remove(download_path)
+        self.download_logs(ssh, input_path, self.output_path)
     
     def start(self):
         self.process()
