@@ -52,6 +52,14 @@ class ShadownetParser(BaseTemplate):
                                 input_file_path, output_file_path, ts
                             )
 
+                        if 'registration' in i.name:
+                            output_file_path = os.path.join(
+                                self.output_folder, f'registration_{_dir}.json'
+                            )
+                            self.process_registration_file(
+                                input_file_path, output_file_path, ts
+                            )
+
                 print('----------------------------------------\n')
             except Exception:
                 traceback.print_exc()
@@ -60,41 +68,72 @@ class ShadownetParser(BaseTemplate):
     def process_sender_file(self, input_file_path, output_file_path, ts):
         with open(input_file_path, 'r') as fp:
             content = fp.read()
-            item = json.loads(content)
 
-            data = {
-                '_source': {
-                    'type': 'message',
-                    'site': self.parser_name,
-                    'message': item['message'],
-                    'sender': item['sender'],
-                    'recipient': item['recipient'],
-                    'ip': item['ip'],
-                    'date': dparser.parse(item['timestamp']).timestamp()
-                }
-            }
+            for line in content.split("\n"):
+                if line:
+                    item = json.loads(line)
 
-            with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
-                utils.write_json(file_pointer, data)
+                    data = {
+                        '_source': {
+                            'type': 'message',
+                            'site': self.parser_name,
+                            'message': item['message'],
+                            'sender': item['sender'],
+                            'recipient': item['recipient'],
+                            'ip': item['ip'],
+                            'date': dparser.parse(item['timestamp']).timestamp()
+                        }
+                    }
+
+                    with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
+                        utils.write_json(file_pointer, data)
         
             print(f'Json for  {input_file_path} written in {output_file_path}')
     
     def process_session_file(self, input_file_path, output_file_path, ts):
         with open(input_file_path, 'r') as fp:
             content = fp.read()
-            item = json.loads(content)
 
-            data = {
-                '_source': {
-                    'type': 'session',
-                    'site': self.parser_name,
-                    'site': item['user'],
-                    'ip': item['ip'],
-                    'date': dparser.parse(item['timestamp']).timestamp()
-                }
-            }
+            for line in content.split("\n"):
+                if line:
+                    item = json.loads(line)
 
-            with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
-                utils.write_json(file_pointer, data)
+                    data = {
+                        '_source': {
+                            'type': 'session',
+                            'site': self.parser_name,
+                            'user': item['user'],
+                            'ip': item['ip'],
+                            'date': dparser.parse(item['timestamp']).timestamp()
+                        }
+                    }
+
+                    with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
+                        utils.write_json(file_pointer, data)
+        
+            print(f'Json for  {input_file_path} written in {output_file_path}')
+
+    def process_registration_file(self, input_file_path, output_file_path, ts):
+        with open(input_file_path, 'r') as fp:
+            content = fp.read()
+
+            for line in content.split("\n"):
+                if line:
+                    item = json.loads(line)
+
+                    data = {
+                        '_source': {
+                            'type': 'session',
+                            'site': self.parser_name,
+                            'server': item['server'],
+                            'user': item['user'],
+                            'email': item['email'],
+                            'password': item['password'],
+                            'date': dparser.parse(item['timestamp']).timestamp()
+                        }
+                    }
+
+                    with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
+                        utils.write_json(file_pointer, data)
         
             print(f'Json for  {input_file_path} written in {output_file_path}')
