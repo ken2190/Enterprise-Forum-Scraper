@@ -513,7 +513,8 @@ class BypassCloudfareSpider(scrapy.Spider):
 
         def injection(session, response):
             if session.is_New_IUAM_Challenge(response) \
-            or session.is_New_Captcha_Challenge(response):
+            or session.is_New_Captcha_Challenge(response) \
+            or session.is_BFM_Challenge(response):
                 return helheim('52455eed-754b-4220-a070-c913698954b2', session, response)
             else:
                 return response
@@ -530,7 +531,8 @@ class BypassCloudfareSpider(scrapy.Spider):
                 'api_key': self.captcha_token
             },
             requestPostHook=injection,
-            debug=False
+            debug=False,
+            delay=5
         )
     
         bypass_cookies = {}

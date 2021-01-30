@@ -65,6 +65,9 @@ class Parser:
 
         self.kwargs['output_folder'] = output_folder
 
+        sitename = self.kwargs.get('sitename')
+        self.kwargs['sitename'] = sitename
+
         # ------------make folder if not exist -----------------
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
