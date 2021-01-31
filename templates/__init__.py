@@ -211,6 +211,7 @@ from templates.theversus_template import TheVersusParser
 from templates.tor_template import TorParser
 from templates.torrez_template import TorrezParser
 from templates.crdpro_template import CrdProParser
+from templates.shadownet_template import ShadownetParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -425,4 +426,5 @@ PARSER_MAP = {
     'tor': TorParser,
     'torrez': TorrezParser,
     'crdpro': CrdProParser,
+    'shadownet': ShadownetParser
 }

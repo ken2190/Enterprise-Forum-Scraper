@@ -176,6 +176,7 @@ from scraper.torrez import TorrezScrapper
 from scraper.tor import TorScrapper
 from scraper.crdpro import CrdProScrapper
 from scraper.raidforums_shoutbox import RaidforumsShoutboxScrapper
+from scraper.shadownet import ShadownetScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -356,4 +357,5 @@ SCRAPER_MAP = {
     'torrez': TorrezScrapper,
     'tor': TorScrapper,
     'crdpro': CrdProScrapper,
+    'shadownet': ShadownetScrapper,
 }
