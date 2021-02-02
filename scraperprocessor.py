@@ -62,6 +62,9 @@ def process_scraper(scraper):
     start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
     subfolder = scraper['name']
     template = scraper['template']
+    server = scraper['ip']
+    sitename = scraper['name']
+
     process_date = arrow.now().format('YYYY-MM-DD')
 
     # the output dirs for the scraper and parser
@@ -79,12 +82,10 @@ def process_scraper(scraper):
         kwargs = {
             'start_date': start_date,
             'template': template,
-            'output': scraper_output_dir
+            'output': scraper_output_dir,
+            'server': server,
+            'sitename': sitename
         }
-
-        if 'ip' in scraper:
-            kwargs['server'] = scraper['ip']
-            kwargs['sitename'] = scraper['name']
 
         result = Scraper(kwargs).do_scrape()
 
@@ -107,7 +108,8 @@ def process_scraper(scraper):
         kwargs = {
             'template': template,
             'output': parse_output_dir,
-            'input_path': scraper_output_dir
+            'input_path': scraper_output_dir,
+            'sitename': sitename
         }
         Parser(kwargs).start()
 
