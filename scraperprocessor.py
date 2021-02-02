@@ -81,6 +81,11 @@ def process_scraper(scraper):
             'template': template,
             'output': scraper_output_dir
         }
+
+        if 'ip' in scraper:
+            kwargs['server'] = scraper['ip']
+            kwargs['sitename'] = scraper['name']
+
         result = Scraper(kwargs).do_scrape()
 
         # check if there was any error
