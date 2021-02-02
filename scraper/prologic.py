@@ -119,7 +119,7 @@ class ProLogicSpider(SitemapSpider):
         self.check_if_logged_in(response)
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

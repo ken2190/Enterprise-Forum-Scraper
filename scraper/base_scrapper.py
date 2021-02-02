@@ -1510,7 +1510,7 @@ class SitemapSpider(BypassCloudfareSpider):
         all_forum = selector.xpath(self.forum_sitemap_xpath).extract()
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(all_forum))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forum))
         
         for forum in all_forum:
             yield Request(
@@ -1648,7 +1648,7 @@ class SitemapSpider(BypassCloudfareSpider):
         self.forums.update(all_forums)
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(self.forums))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(self.forums))
 
         for forum_url in all_forums:
             yield response.follow(
@@ -1673,7 +1673,7 @@ class SitemapSpider(BypassCloudfareSpider):
         for thread in threads:
             thread_url, thread_lastmod = self.extract_thread_stats(thread)
             if not thread_url:
-                self.crawler.stats.inc_value("forum/thread_no_url_count")
+                self.crawler.stats.inc_value("mainlist/detail_no_url_count")
                 self.logger.warning(
                     "Unable to find thread URL on the forum: %s",
                     response.url
@@ -1683,7 +1683,7 @@ class SitemapSpider(BypassCloudfareSpider):
             # Parse topic id
             topic_id = self.get_topic_id(thread_url)
             if not topic_id:
-                self.crawler.stats.inc_value("forum/thread_no_topic_id_count")
+                self.crawler.stats.inc_value("mainlist/detail_no_topic_id_count")
                 self.logger.warning(
                     "Unable to find topic ID of the thread: %s",
                     response.urljoin(thread_url)
@@ -1693,8 +1693,8 @@ class SitemapSpider(BypassCloudfareSpider):
             if thread_lastmod is None:
                 if topic_id not in self.topics:
                     self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("forum/thread_no_date_count")
-                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+                    self.crawler.stats.inc_value("mainlist/detail_no_date_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
                 if self.start_date:
                     self.logger.info(
@@ -1708,8 +1708,8 @@ class SitemapSpider(BypassCloudfareSpider):
             if self.start_date and thread_lastmod < self.start_date:
                 if topic_id not in self.topics:
                     self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("forum/thread_outdated_count")
-                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+                    self.crawler.stats.inc_value("mainlist/detail_outdated_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
                 self.logger.info(
                     "Thread %s last updated is %s before start date %s. Ignored." % (
@@ -1738,8 +1738,8 @@ class SitemapSpider(BypassCloudfareSpider):
                 # update stats
                 if topic_id not in self.topics:
                     self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("forum/thread_already_scraped_count")
-                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+                    self.crawler.stats.inc_value("mainlist/detail_already_scraped_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
                 continue
 
@@ -1754,7 +1754,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
             # update stats
             self.topics.add(topic_id)
-            self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+            self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
             yield Request(
                 url=thread_url,
@@ -1766,11 +1766,11 @@ class SitemapSpider(BypassCloudfareSpider):
         # get next page
         next_page = self.get_forum_next_page(response)
         if is_first_page and next_page:
-            self.crawler.stats.inc_value("forum/forum_next_page_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
 
         # Pagination
         if not lastmod_pool:
-            self.crawler.stats.inc_value("forum/forum_no_threads_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_no_detail_count")
             self.logger.info(
                 "Forum without thread, exit: %s",
                 response.url
@@ -1779,7 +1779,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # update stats
         if is_first_page:
-            self.crawler.stats.inc_value("forum/forum_processed_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
 
         if self.start_date and self.start_date > max(lastmod_pool):
             self.logger.info(
@@ -1834,7 +1834,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         if self.start_date and not post_dates:
             if topic_id not in self.topics_scraped:
-                self.crawler.stats.inc_value("forum/thread_no_messages_count")
+                self.crawler.stats.inc_value("mainlist/detail_no_messages_count")
 
             self.logger.info('No dates found in thread: %s', response.url)
             return
@@ -1842,12 +1842,12 @@ class SitemapSpider(BypassCloudfareSpider):
         # get next page
         next_page = self.get_thread_next_page(response)
         if next_page:
-            self.crawler.stats.inc_value("forum/thread_next_page_count")
+            self.crawler.stats.inc_value("mainlist/detail_next_page_count")
 
         # check if the thread contains new messages
         if self.start_date and max(post_dates) < self.start_date:
             if topic_id not in self.topics_scraped:
-                self.crawler.stats.inc_value("forum/thread_outdated_count")
+                self.crawler.stats.inc_value("mainlist/detail_outdated_count")
 
             self.logger.info(
                 "No more post to update."
@@ -1877,7 +1877,7 @@ class SitemapSpider(BypassCloudfareSpider):
             # Update stats
             self.topics_scraped.add(topic_id)
             self.crawler.stats.set_value(
-                "forum/thread_saved_count",
+                "mainlist/detail_saved_count",
                 len(self.topics_scraped)
             )
 
@@ -1964,7 +1964,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
             # update stats
             self.avatars.add(avatar_url)
-            self.crawler.stats.set_value("forum/avatar_count", len(self.avatars))
+            self.crawler.stats.set_value("mainlist/avatar_count", len(self.avatars))
 
             yield Request(
                 url=avatar_url,
@@ -1991,7 +1991,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 f"Avatar {avatar_name} done..!"
             )
 
-        self.crawler.stats.inc_value("forum/avatar_saved_count")
+        self.crawler.stats.inc_value("mainlist/avatar_saved_count")
 
     def solve_cookies_captcha(self, browser, proxy=None):
         return browser, True
@@ -2198,6 +2198,10 @@ class MarketPlaceSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         urls = response.xpath(self.market_url_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(urls))
+
         for url in urls:
             url = self.get_market_url(url)
             yield Request(
@@ -2214,10 +2218,25 @@ class MarketPlaceSpider(SitemapSpider):
 
         self.logger.info('next_page_url: {}'.format(response.url))
         products = response.xpath(self.product_url_xpath).extract()
+        
+        self.crawler.stats.set_value("mainlist/detail_count", len(products))
+
         for product_url in products:
             product_url = self.get_product_url(product_url)
+            if not product_url:
+                self.crawler.stats.inc_value("mainlist/detail_no_url_count")
+                self.logger.warning(
+                    "Unable to find product URL on the marketplace: %s",
+                    response.url
+                )
+                continue
+
             file_id = self.get_file_id(product_url)
             file_name = '{}/{}.html'.format(self.output_path, file_id)
+            
+            self.crawler.stats.inc_value("mainlist/detail_next_page_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
+
             if os.path.exists(file_name):
                 continue
             yield Request(
@@ -2234,6 +2253,8 @@ class MarketPlaceSpider(SitemapSpider):
             )
         next_page_url = self.get_product_next_page(response)
         if next_page_url:
+            self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
+            
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
@@ -2251,6 +2272,7 @@ class MarketPlaceSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             self.logger.info(f'Product: {file_id} done..!')
+            self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
         if self.avatar_xpath:
             yield from self.parse_avatars(response)
@@ -2397,6 +2419,8 @@ class MarketPlaceSpider(SitemapSpider):
 
             if os.path.exists(file_name):
                 continue
+            
+            self.crawler.stats.inc_value("mainlist/avatar_count")
 
             index = index + 1
             yield Request(
@@ -2419,6 +2443,7 @@ class MarketPlaceSpider(SitemapSpider):
             self.logger.info(
                 f"Avatar for product {response.meta['file_id']} done..!")
 
+        self.crawler.stats.inc_value("mainlist/avatar_saved_count")
 
 class SeleniumSpider(SitemapSpider):
     ban_text = ''
@@ -2429,7 +2454,7 @@ class SeleniumSpider(SitemapSpider):
         all_forums = response.xpath(self.forum_xpath)
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
 

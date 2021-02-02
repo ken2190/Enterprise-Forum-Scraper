@@ -47,6 +47,12 @@ class DarkBaySpider(MarketPlaceSpider):
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//a[contains(@href, "/vendor/")]/@href'
     avatar_xpath = '//div[@class="slides"]//img[contains(@src, "/products/")]/@src'
+
+    # Login Failed Message xpath
+    login_failed_xpath = '//*[contains(., "Password is not valid")] | ' \
+                        '//*[contains(., "username does not exist")]'
+    captcha_failed_xpath = '//*[contains(., "Invalid Captcha")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -112,25 +118,18 @@ class DarkBaySpider(MarketPlaceSpider):
             headers=self.headers,
             dont_filter=True,
             meta=self.synchronize_meta(response),
-            callback=self.check_if_logged_in,
-            cb_kwargs=dict(solved_captcha=solved_captcha)
+            callback=self.parse_start,
         )
 
-    def check_if_logged_in(self, response, solved_captcha):
-        if response.xpath(self.market_url_xpath):
-            solved_captcha.report_good()
-            yield from self.parse_start(response)
-        elif response.xpath('//p[@class="text-danger" and text()="Invalid Captcha"]'):
-            solved_captcha.report_bad()
-            if self._try_to_log_in_count >= MAX_TRY_TO_LOG_IN_COUNT:
-                raise CloseSpider(reason='access_is_blocked')
-            yield from self.start_requests()
-            return
-        else:
-            err_msg = response.xpath('//p[@class="text-danger"]/text()').get()
-            err_msg = err_msg or 'Unknown error'
-            self.logger.error(err_msg)
-            raise CloseSpider(reason='access_is_blocked')
+    def parse_start(self, response):
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath)
+
+        yield from super().parse_start(response)
 
     def solve_captcha(self, response):
         captcha_url = response.xpath(self.captcha_url_xpath).get()

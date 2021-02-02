@@ -38,6 +38,11 @@ class DarkmarketSpider(MarketPlaceSpider):
     next_page_xpath = '//a[@rel="next"]/@href'
     user_xpath = '//a[contains(@href, "/vendor/")]/@href'
     avatar_xpath = '//img[contains(@class, "image-responsive")]/@src'
+
+    # Login Failed Message xpath
+    login_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "username and/or password")]'
+    captcha_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "The Captcha code")]'
+    
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -86,6 +91,7 @@ class DarkmarketSpider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_login,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,

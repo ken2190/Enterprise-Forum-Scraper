@@ -3,23 +3,23 @@ Scrapy Statistics
 """
 from .err_messages import ERROR_MESSAGES, WARNING_MESSAGES
 
-FORUM_COUNT = 'forum/forum_count'
-FORUM_PROCESSED_COUNT = 'forum/forum_processed_count'
-FORUM_NO_THREADS_COUNT = 'forum/forum_no_threads_count'
-FORUM_NEXT_PAGE_COUNT = "forum/forum_next_page_count"
+MAINLIST_COUNT = 'mainlist/mainlist_count'
+MAINLIST_PROCESSED_COUNT = 'mainlist/mainlist_processed_count'
+MAINLIST_NO_DETAIL_COUNT = 'mainlist/mainlist_no_detail_count'
+MAINLIST_NEXT_PAGE_COUNT = "mainlist/mainlist_next_page_count"
 
-THREAD_COUNT = 'forum/thread_count'
-THREAD_ALREADY_SCRAPED_COUNT = 'forum/thread_already_scraped_count'
-THREAD_OUTDATED_COUNT = 'forum/thread_outdated_count'
-THREAD_SAVED_COUNT = 'forum/thread_saved_count'
-THREAD_NO_URL_COUNT = 'forum/thread_no_url_count'
-THREAD_NO_TOPIC_ID_COUNT = 'forum/thread_no_topic_id_count'
-THREAD_NO_DATE_COUNT = 'forum/thread_no_date_count'
-THREAD_NO_MESSAGES_COUNT = "forum/thread_no_messages_count"
-THREAD_NEXT_PAGE_COUNT = "forum/thread_next_page_count"
+DETAILS_COUNT = 'mainlist/detail_count'
+DETAILS_ALREADY_SCRAPED_COUNT = 'mainlist/detail_already_scraped_count'
+DETAILS_OUTDATED_COUNT = 'mainlist/detail_outdated_count'
+DETAILS_SAVED_COUNT = 'mainlist/detail_saved_count'
+DETAILS_NO_URL_COUNT = 'mainlist/detail_no_url_count'
+DETAILS_NO_TOPIC_ID_COUNT = 'mainlist/detail_no_topic_id_count'
+DETAILS_NO_DATE_COUNT = 'mainlist/detail_no_date_count'
+DETAILS_NO_MESSAGES_COUNT = "mainlist/detail_no_messages_count"
+DETAILS_NEXT_PAGE_COUNT = "mainlist/detail_next_page_count"
 
-AVATAR_COUNT = 'forum/avatar_count'
-AVATAR_SAVED_COUNT = 'forum/avatar_saved_count'
+AVATAR_COUNT = 'mainlist/avatar_count'
+AVATAR_SAVED_COUNT = 'mainlist/avatar_saved_count'
 
 CANNOT_BYPASS_CAPTCHA = 'cannot_bypass_captcha'
 
@@ -31,7 +31,7 @@ def _warn_msg(code):
     return code, WARNING_MESSAGES[code]
 
 
-def get_error(stats, site_type):
+def get_error(stats, site_type='forum'):
     finish_reason = stats.get('finish_reason')
     if finish_reason == 'closespider_errorcount':
         return _err_msg("E00")
@@ -49,21 +49,21 @@ def get_error(stats, site_type):
         return _err_msg("E30")
 
     # check if forum count > 0
-    if stats.get(FORUM_COUNT, 0) == 0:
+    if stats.get(MAINLIST_COUNT, 0) == 0:
         return _err_msg("E20")
 
     # check if thread count > 0
-    if stats.get(THREAD_COUNT, 0) == 0:
+    if stats.get(DETAILS_COUNT, 0) == 0:
         return _err_msg("E21")
 
     # check if message count > 0
-    if stats.get(THREAD_NO_MESSAGES_COUNT, 0) >= stats.get(THREAD_COUNT, 0):
+    if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) >= stats.get(DETAILS_COUNT, 0):
         return _err_msg("E22")
 
     thread_extraction_failed = (
-        stats.get(THREAD_NO_URL_COUNT, 0) > 0 or
-        stats.get(THREAD_NO_TOPIC_ID_COUNT, 0) > 0 or
-        stats.get(THREAD_NO_DATE_COUNT, 0) > 0
+        stats.get(DETAILS_NO_URL_COUNT, 0) > 0 or
+        stats.get(DETAILS_NO_TOPIC_ID_COUNT, 0) > 0 or
+        stats.get(DETAILS_NO_DATE_COUNT, 0) > 0
     )
     if thread_extraction_failed:
         return _err_msg("E23")
@@ -72,31 +72,31 @@ def get_error(stats, site_type):
     if stats.get(CANNOT_BYPASS_CAPTCHA, 0) > 1:
         return _err_msg("E30")
 
-def get_warnings(stats):
+def get_warnings(stats, site_type='forum'):
     """ Check stats and return list of warnings """
 
-    forum_cnt = stats.get(FORUM_COUNT, 0)
-    thread_cnt = stats.get(THREAD_COUNT, 0)
+    forum_cnt = stats.get(MAINLIST_COUNT, 0)
+    thread_cnt = stats.get(DETAILS_COUNT, 0)
     avatar_cnt = stats.get(AVATAR_COUNT, 0)
 
     warnings = []
 
     # check if all the forums were processed
     processed_forums_cnt = (
-        stats.get(FORUM_PROCESSED_COUNT, 0) + stats.get(FORUM_NO_THREADS_COUNT, 0)
+        stats.get(MAINLIST_PROCESSED_COUNT, 0) + stats.get(MAINLIST_NO_DETAIL_COUNT, 0)
     )
     if forum_cnt > processed_forums_cnt:
         warnings.append(_warn_msg("W01"))
 
     # check if all of the threads were processed
     processed_threads_cnt = (
-        stats.get(THREAD_ALREADY_SCRAPED_COUNT, 0) +
-        stats.get(THREAD_OUTDATED_COUNT, 0) +
-        stats.get(THREAD_SAVED_COUNT, 0) +
-        stats.get(THREAD_NO_URL_COUNT, 0) +
-        stats.get(THREAD_NO_TOPIC_ID_COUNT, 0) +
-        stats.get(THREAD_NO_DATE_COUNT, 0) +
-        stats.get(THREAD_NO_MESSAGES_COUNT, 0)
+        stats.get(DETAILS_ALREADY_SCRAPED_COUNT, 0) +
+        stats.get(DETAILS_OUTDATED_COUNT, 0) +
+        stats.get(DETAILS_SAVED_COUNT, 0) +
+        stats.get(DETAILS_NO_URL_COUNT, 0) +
+        stats.get(DETAILS_NO_TOPIC_ID_COUNT, 0) +
+        stats.get(DETAILS_NO_DATE_COUNT, 0) +
+        stats.get(DETAILS_NO_MESSAGES_COUNT, 0)
     )
     if thread_cnt > processed_threads_cnt:
         warnings.append(_warn_msg("W02"))
@@ -107,15 +107,15 @@ def get_warnings(stats):
         warnings.append(_warn_msg("W03"))
 
     # check if all the threads have messages
-    if stats.get(THREAD_NO_MESSAGES_COUNT, 0) > 0:
+    if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) > 0:
         warnings.append(_warn_msg("W04"))
 
     # check if at least one forum next page found
-    if stats.get(FORUM_NEXT_PAGE_COUNT, 0) == 0:
+    if stats.get(MAINLIST_NEXT_PAGE_COUNT, 0) == 0:
         warnings.append(_warn_msg("W05"))
 
     # check if at least one thread next page found
-    if stats.get(THREAD_NEXT_PAGE_COUNT, 0) == 0:
+    if stats.get(DETAILS_NEXT_PAGE_COUNT, 0) == 0:
         warnings.append(_warn_msg("W06"))
 
     # check for err messages in the log
@@ -123,7 +123,7 @@ def get_warnings(stats):
         warnings.append(_warn_msg("W07"))
 
     # check if no new files
-    saved_count = stats.get(THREAD_SAVED_COUNT, 0) + stats.get(AVATAR_SAVED_COUNT, 0)
+    saved_count = stats.get(DETAILS_SAVED_COUNT, 0) + stats.get(AVATAR_SAVED_COUNT, 0)
     if saved_count == 0:
         warnings.append(_warn_msg("W08"))
 

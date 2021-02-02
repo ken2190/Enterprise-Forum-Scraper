@@ -47,6 +47,10 @@ class TheVersusSpider(MarketPlaceSpider):
     user_pgp_xpath = '//div[contains(@class, "user__navigation")]//a[contains(@href, "/pgp")]/@href'
     avatar_xpath = '//img[contains(@class, "listing__gallery-img")]/@src'
 
+    # Login Failed Message xpath
+    login_failed_xpath = '//*[contains(., "Username or password wrong!")]'
+    captcha_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "The Captcha code")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -89,6 +93,7 @@ class TheVersusSpider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_captcha,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -141,9 +146,8 @@ class TheVersusSpider(MarketPlaceSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        if response.xpath(self.captcha_url_xpath):
-            self.logger.info("Invalid Captcha")
-            return
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_url_xpath)
 
         # Load cookies
         cookies = response.request.headers.get("Cookie")
@@ -171,9 +175,9 @@ class TheVersusSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.login_form_xpath):
-            self.logger.info("Invalid Captcha")
-            return
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         yield from super().parse_start(response)
 
 

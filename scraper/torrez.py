@@ -14,7 +14,7 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-USERNAME='gordal418'
+USERNAME='gordal4181'
 PASSWORD='readytogo418'
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
@@ -46,6 +46,9 @@ class TorrezSpider(MarketPlaceSpider):
     user_xpath = '//div[contains(@class, "singleItemDetails")]//a[contains(@href, "/profile/")]/@href'
     user_pgp_xpath = '//li[contains(@class, "nav-item")]/a[contains(@href, "/pgp")]/@href'
     avatar_xpath = '//div[contains(@class, "thumbnail singleItem")]//img/@src'
+
+    # Login Failed Message xpath
+    login_failed_xpath = '//*[contains(., "These credentials do not match our records")]'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -83,6 +86,7 @@ class TorrezSpider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_captcha_1,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -142,63 +146,52 @@ class TorrezSpider(MarketPlaceSpider):
 
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+        
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_url_xpath_1)
 
-        if response.xpath(self.captcha_url_xpath_1):
-            self.captcha_try = self.captcha_try - 1
-            if not self.captcha_try:
-                self.logger.info("Invalid Captcha")
-                return
-            else:   
-                self.logger.info("Invalid Captcha, Try again")
-                yield Request(
-                    url=self.base_url,
-                    headers=self.headers,
-                    callback=self.parse_captcha_1,
-                    dont_filter=True,
-                    meta={
-                        'proxy': PROXY
-                    }
-                )
-        else:
-            # Load cookies
-            cookies = response.request.headers.get("Cookie")
-            # Load captcha url
-            captcha_url = response.xpath(
-                    self.captcha_url_xpath_2).extract_first()
-            captcha = self.solve_captcha(
-                captcha_url,
-                response
-            )
-            captcha = captcha.lower()
-            self.logger.info(
-                "Captcha has been solved: %s" % captcha
-            )
+        # Load cookies
+        cookies = response.request.headers.get("Cookie")
+        # Load captcha url
+        captcha_url = response.xpath(
+                self.captcha_url_xpath_2).extract_first()
+        captcha = self.solve_captcha(
+            captcha_url,
+            response
+        )
+        captcha = captcha.lower()
+        self.logger.info(
+            "Captcha has been solved: %s" % captcha
+        )
 
-            token = response.xpath(self.captcha_token_xpath).extract_first()
-            formdata = {
-                "_token": token,
-                "captcha": captcha,
-                "name": USERNAME,
-                "password": PASSWORD
-            }
-            self.logger.debug(f'Form data: {formdata}')
+        token = response.xpath(self.captcha_token_xpath).extract_first()
+        formdata = {
+            "_token": token,
+            "captcha": captcha,
+            "name": USERNAME,
+            "password": PASSWORD
+        }
+        self.logger.debug(f'Form data: {formdata}')
 
-            yield FormRequest.from_response(
-                response=response,
-                formxpath=self.login_form_xpath,
-                formdata=formdata,
-                headers=self.headers,
-                callback=self.parse_start,
-                dont_filter=True,
-                meta=self.synchronize_meta(response),
-            )
+        yield FormRequest.from_response(
+            response=response,
+            formxpath=self.login_form_xpath,
+            formdata=formdata,
+            headers=self.headers,
+            callback=self.parse_start,
+            dont_filter=True,
+            meta=self.synchronize_meta(response),
+        )
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath_2):
-            self.logger.info("Invalid Captcha")
-            return
-        
+        # Check if login failed
+        self.check_if_logged_in(response)
+
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_url_xpath_2)
+
+        self.crawler.stats.set_value("mainlist/mainlist_count", 1)
         market_url = self.base_url + '/items/category/all-items'
         yield Request(
             url=market_url,

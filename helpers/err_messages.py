@@ -13,23 +13,23 @@ ERROR_MESSAGES = {
     "E12": "Account is banned",
     "E13": "Login is Failed",
 
-    # forum errors
-    "E20": "No forums found",
-    "E21": "No threads found",
+    # forum/productlist errors
+    "E20": "No Mainlist found",
+    "E21": "No Details found",
     "E22": "No messages found",
-    "E23": "Thread extraction failed",
+    "E23": "Details extraction failed",
 
     # Captcha failed
     "E30": "Can not bypass captcha"
 }
 
 WARNING_MESSAGES = {
-    "W01": "Skipped forums",
-    "W02": "Skipped threads",
+    "W01": "Skipped Mainlist",
+    "W02": "Skipped Details",
     "W03": "Skipped avatars",
-    "W04": "No messages thread",
-    "W05": "No forum next pages",
-    "W06": "No thread next pages",
+    "W04": "No messages Details",
+    "W05": "No Mainlist next pages",
+    "W06": "No Details next pages",
     "W07": "Errors in the log",
     "W08": "No new files"
 }

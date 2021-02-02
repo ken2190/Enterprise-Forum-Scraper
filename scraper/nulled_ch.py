@@ -163,7 +163,7 @@ class NulledChSpider(SitemapSpider):
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         if not all_forums:
             self.logger.info(response.text)
         for forum_url in all_forums:

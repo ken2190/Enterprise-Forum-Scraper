@@ -116,7 +116,7 @@ class LolzSpider(SitemapSpider):
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url
@@ -207,7 +207,7 @@ class LolzSpider(SitemapSpider):
                         f"Avatar {avatar_name} done..!"
                     )
 
-                self.crawler.stats.inc_value("forum/avatar_saved_count")
+                self.crawler.stats.inc_value("mainlist/avatar_saved_count")
                 continue
 
             if self.base_url not in avatar_url[0]:

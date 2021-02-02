@@ -41,6 +41,10 @@ class HydraSpider(MarketPlaceSpider):
 
     avatar_xpath = '//div[@class="product_img_big"]//img/@src'
 
+    # Login Failed Message xpath
+    login_failed_xpath = '//*[contains(., "Неверный логин или пароль")]'
+    captcha_failed_xpath = '//*[contains(., "Вы ввели неверный код с картинки")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -93,6 +97,7 @@ class HydraSpider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_captcha,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -184,9 +189,12 @@ class HydraSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath):
-            self.logger.info("Invalid Captcha")
-            return
+        # Check if login failed
+        self.check_if_logged_in(response)
+
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath)
+
         yield from super().parse_start(response)
 
 

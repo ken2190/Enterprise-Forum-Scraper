@@ -41,6 +41,9 @@ class TorSpider(MarketPlaceSpider):
     user_xpath = '//div[contains(@class, "media-body")]//a[contains(@href, "/profiles/")]/@href'
     avatar_xpath = '//div[@class="productimage"]//img/@src'
 
+    # Login Failed Message xpath
+    login_failed_xpath = '//*[contains(., "username or password could not be found")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -87,6 +90,7 @@ class TorSpider(MarketPlaceSpider):
             url=self.login_url,
             headers=self.headers,
             callback=self.parse_login,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -114,10 +118,18 @@ class TorSpider(MarketPlaceSpider):
             formxpath=self.login_form_xpath,
             formdata=formdata,
             headers=self.headers,
-            callback=self.parse_products,
+            callback=self.parse_start,
             dont_filter=True,
             meta=self.synchronize_meta(response),
         )
+    
+    def parse_start(self, response):
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
+        self.crawler.stats.set_value("mainlist/mainlist_count", 1)
+        yield from super().parse_products(response)
 
 class TorScrapper(SiteMapScrapper):
     spider_class = TorSpider

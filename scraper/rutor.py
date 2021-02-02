@@ -73,7 +73,7 @@ class RutorSpider(SitemapSpider):
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(all_forums))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url
