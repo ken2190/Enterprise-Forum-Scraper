@@ -62,7 +62,6 @@ def process_scraper(scraper):
     start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
     subfolder = scraper['name']
     template = scraper['template']
-    server = scraper['ip']
     sitename = scraper['name']
 
     process_date = arrow.now().format('YYYY-MM-DD')
@@ -83,7 +82,6 @@ def process_scraper(scraper):
             'start_date': start_date,
             'template': template,
             'output': scraper_output_dir,
-            'server': server,
             'sitename': sitename
         }
 
