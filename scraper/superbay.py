@@ -8,7 +8,7 @@ from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
 
 PROXY = 'http://127.0.0.1:8118'
 
@@ -54,14 +54,17 @@ class SuperBaySpider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.headers.update({
-            "user-agent": USER_AGENT
-        })
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
 
     def start_requests(self):
         yield Request(
             url=self.base_url,
             headers=self.headers,
+            dont_filter=True,
             meta={
                 'proxy': PROXY
             }

@@ -111,7 +111,7 @@ class ZloySpider(SitemapSpider):
                 meta=self.synchronize_meta(response)
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, is_first_page=True):
         # Check status 503
         if response.status == 503:
             request = response.request

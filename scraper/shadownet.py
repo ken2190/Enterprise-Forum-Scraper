@@ -15,7 +15,7 @@ INPUT_PATH='/data/log/ejabberd'
 
 class ShadownetScrapper:
     def __init__(self, kwargs):
-        self.host = kwargs['server']
+        self.host = kwargs['sitename']
         self.username = USERNAME
         self.key_file = KEY_FILE
 

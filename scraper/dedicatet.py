@@ -22,7 +22,7 @@ class DedicatetSpider(SitemapSpider):
     name = 'dedicatet_spider'
 
     # Url stuffs
-    base_url = "http://dedicatet.com"
+    base_url = "https://dedicatet.com"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
@@ -78,6 +78,7 @@ class DedicatetSpider(SitemapSpider):
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response),
+                dont_filter=True
             )
 
     def parse_thread_date(self, thread_date):
