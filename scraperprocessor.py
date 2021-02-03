@@ -134,7 +134,7 @@ def process_scraper(scraper):
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, {'status': 'Error', 'pid': None})
+        update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': e})
 
 
 def help():
