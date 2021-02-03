@@ -16,8 +16,8 @@ from scraper.base_scrapper import (
 # PASSWORD = "Night#Hack001"
 # USERNAME = "z234567890"
 # PASSWORD = "KL5uyxBQ8cEz4mW"
-USERNAME = "xbyte"
-PASSWORD = "Night#Byte001"
+USERNAME = "gordal418"
+PASSWORD = "Readytogo418#"
 
 
 class HackForumsSpider(SitemapSpider):
@@ -126,7 +126,7 @@ class HackForumsSpider(SitemapSpider):
         request_kwargs = {
             "url": self.base_url,
             "headers": self.headers,
-            "callback": self.parse_start,
+            "callback": self.parse_login,
             "dont_filter": True,
             "cookies": cookies,
             "meta": meta
