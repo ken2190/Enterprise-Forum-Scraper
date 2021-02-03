@@ -213,6 +213,7 @@ from templates.torrez_template import TorrezParser
 from templates.crdpro_template import CrdProParser
 from templates.shadownet_template import ShadownetParser
 from templates.hashes_template import HashesParser
+from templates.leakforums_template import LeakForumsParser
 
 
 PARSER_MAP = {
@@ -429,5 +430,6 @@ PARSER_MAP = {
     'torrez': TorrezParser,
     'crdpro': CrdProParser,
     'shadownet': ShadownetParser,
-    'hashes': HashesParser
+    'hashes': HashesParser,
+    'leakforums': LeakForumsParser
 }
