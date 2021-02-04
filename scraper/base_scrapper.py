@@ -1479,7 +1479,7 @@ class SitemapSpider(BypassCloudfareSpider):
             meta["ip"] = ip
 
         # Branch choices requests
-        if self.start_date and self.sitemap_url:
+        if self.sitemap_url:
             yield scrapy.Request(
                 url=self.sitemap_url,
                 headers=self.headers,
