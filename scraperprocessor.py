@@ -131,7 +131,7 @@ def process_scraper(scraper):
         ##############################
 
         # set the scraper's next start date to the current date and clear PID
-        update_scraper(scraper, {'status': 'Idle', 'nextStartDate': process_date, 'pid': None})
+        update_scraper(scraper, {'status': 'Idle', 'nextStartDate': process_date, 'pid': None, 'newScraper': False})
         logger.info('Done')
 
     except Exception as e:
