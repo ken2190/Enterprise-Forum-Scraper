@@ -50,7 +50,7 @@ class InvictusSpider(MarketPlaceSpider):
         re.IGNORECASE
     )
 
-    use_proxy = False
+    use_proxy = "Tor"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,6 +86,7 @@ class InvictusSpider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_captcha_1,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,

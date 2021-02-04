@@ -41,8 +41,11 @@ class XaknetSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -60,7 +63,15 @@ class XaknetSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-    def start_requests(self, cookies=None, ip=None):
+    def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.forum_url,
@@ -85,7 +96,14 @@ class XaknetSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

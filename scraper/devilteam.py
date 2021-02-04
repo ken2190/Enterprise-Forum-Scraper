@@ -41,6 +41,9 @@ class DevilTeamSpider(SitemapSpider):
 
     avatar_xpath = '//span[@class="avatar"]/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"&t=(\d+)",
@@ -52,7 +55,7 @@ class DevilTeamSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def start_requests(self):
         self._try_to_log_in_count = 0
@@ -96,25 +99,8 @@ class DevilTeamSpider(SitemapSpider):
             meta=self.synchronize_meta(response),
             dont_filter=True,
             headers=self.headers,
-            callback=self.check_if_logged_in
+            callback=self.parse
         )
-
-    def check_if_logged_in(self, response):
-        # check if logged in successfully
-        if response.xpath(self.forum_xpath):
-            # start forum scraping
-            yield from super().parse(response)
-            return
-
-        invalid_form_msg = 'The submitted form was invalid. Try submitting again.'
-        if response.css('div.error::text').get() == invalid_form_msg:
-            if self._try_to_log_in_count >= MAX_TRY_TO_LOG_IN_COUNT:
-                self.logger.error('Unable to log in! Exceeded maximum try count!')
-                return
-
-            yield from self.parse_start(response)
-        else:
-            self.logger.error('Unable to log in to the forum!')
 
     def parse_thread(self, response):
 

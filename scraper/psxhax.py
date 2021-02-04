@@ -44,6 +44,9 @@ class PsxhaxSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"(?<=\.)\d*?(?=\/)",
@@ -55,7 +58,7 @@ class PsxhaxSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%S'
     post_datetime_format = '%b %d, %Y at %I:%M %p'
 
@@ -92,6 +95,9 @@ class PsxhaxSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         yield Request(
             url=self.forum_url,
             headers=self.headers,
@@ -106,6 +112,9 @@ class PsxhaxSpider(SitemapSpider):
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
             # Standardize forum url
             if self.base_url not in forum_url:

@@ -48,7 +48,7 @@ class SoqorSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%m-%d-%Y, %I:%M %p'
     post_datetime_format = '%Y-%m-%dT%H:%M:%S'
 
@@ -107,6 +107,9 @@ class SoqorSpider(SitemapSpider):
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
+
         for forum_url in all_forums:
 
             # Standardize url
@@ -126,7 +129,7 @@ class SoqorSpider(SitemapSpider):
 
         # Check current page and last page
         current_page = response.xpath(self.thread_page_xpath).extract_first() or 1
-        last_page = response.xpath(self.topic_last_page_xpath).extract_first()
+        last_page = response.xpath(self.thread_last_page_xpath).extract_first()
 
         # Reverse scraping start here
         if int(current_page) == 1 and last_page:

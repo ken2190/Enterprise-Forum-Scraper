@@ -44,6 +44,9 @@ class MalvultSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="uix_avatarHolderInner"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[@class="errorPanel"]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/.*\.(\d+)",
@@ -55,7 +58,7 @@ class MalvultSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%b %d, %Y'
     post_datetime_format = '%b %d, %Y'
 
@@ -91,9 +94,16 @@ class MalvultSpider(SitemapSpider):
 
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         # self.logger.info(response.text)
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
 

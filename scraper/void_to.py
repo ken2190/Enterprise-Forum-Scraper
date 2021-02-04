@@ -73,7 +73,7 @@ class VoidToSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     post_datetime_format = '%b %d, %Y'
     sitemap_datetime_format = '%b %d, %Y'
 
@@ -156,7 +156,7 @@ class VoidToSpider(SitemapSpider):
                 "submit": "Login",
                 "action": "do_login",
                 "url": "",
-                "g-recaptcha-response": self.solve_recaptcha(response)
+                "g-recaptcha-response": self.solve_recaptcha(response).solution.token
             },
             meta=self.synchronize_meta(response),
             dont_filter=True,
@@ -169,6 +169,9 @@ class VoidToSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

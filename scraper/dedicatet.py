@@ -22,7 +22,7 @@ class DedicatetSpider(SitemapSpider):
     name = 'dedicatet_spider'
 
     # Url stuffs
-    base_url = "http://dedicatet.com"
+    base_url = "https://dedicatet.com"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
@@ -46,7 +46,7 @@ class DedicatetSpider(SitemapSpider):
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     handle_httpstatus_list = [403]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
@@ -65,6 +65,9 @@ class DedicatetSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url
@@ -75,6 +78,7 @@ class DedicatetSpider(SitemapSpider):
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response),
+                dont_filter=True
             )
 
     def parse_thread_date(self, thread_date):

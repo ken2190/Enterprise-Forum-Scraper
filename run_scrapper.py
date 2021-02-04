@@ -86,13 +86,15 @@ class Scraper:
         #         )
         #         stats = scraper_obj.do_scrape()
         else:
-            stats = scraper_obj.do_scrape()
+            if template != 'shadownet':
+                stats = scraper_obj.do_scrape()
+            else:
+                scraper_obj.start()
 
-            # FIXME error/warnings feature is enabled for the selected scrapers only
-            scraper_list = ('altenens', 'darkmoney', 'devilteam', 'sinister', 'xss')
-            if template.lower() in scraper_list:
+            if stats:
                 err = get_error(stats)
                 warnings = get_warnings(stats)
+
                 if err:
                     LOGGER.error(f'{err[0]}: {err[1]}')
                     stats['result/error'] = err[0]

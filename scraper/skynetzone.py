@@ -43,6 +43,9 @@ class SkyNetZoneSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+    
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@data-sitekey]/@data-sitekey'
 
@@ -52,7 +55,7 @@ class SkyNetZoneSpider(SitemapSpider):
     pagination_pattern = re.compile(r'.*page-(\d+)', re.IGNORECASE)
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     download_delay = 0.3
     download_thread = 10
 
@@ -72,7 +75,7 @@ class SkyNetZoneSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         # Solve reCAPTCHA
-        solved_captcha = self.solve_recaptcha(response)  # , proxyless=True)
+        solved_captcha = self.solve_recaptcha(response).solution.token  # , proxyless=True)
         self.logger.debug(f'reCAPTCHA token: {solved_captcha.solution.token}')
 
         formdata = {

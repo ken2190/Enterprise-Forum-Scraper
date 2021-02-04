@@ -34,7 +34,7 @@ class DeutschLandSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y'
 

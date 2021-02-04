@@ -43,16 +43,19 @@ def filter_json(data, parent_key, filter_fields):
             if path.strip("/") not in filter_fields and not len([s for s in filter_fields if s.startswith(path.strip("/") + "/")]):
                 del data[key]
             else:
-                if type(data[key]) == type(dict()):
-                    filter_json(data[key], parent_key + "/" + key, filter_fields)
-                elif type(data[key]) == type(list()):
-                    for val in data[key]:
-                        if type(val) == type(str()):
-                            pass
-                        elif type(val) == type(list()):
-                            pass
-                        else:
-                            filter_json(val, parent_key + "/" + key, filter_fields)
+                if not data[key]:
+                    del data[key]
+                else:
+                    if type(data[key]) == type(dict()):
+                        filter_json(data[key], parent_key + "/" + key, filter_fields)
+                    elif type(data[key]) == type(list()):
+                        for val in data[key]:
+                            if type(val) == type(str()):
+                                pass
+                            elif type(val) == type(list()):
+                                pass
+                            else:
+                                filter_json(val, parent_key + "/" + key, filter_fields)
 
 def process_line(out_file, single_json, args):
     # while True:

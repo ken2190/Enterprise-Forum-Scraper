@@ -35,3 +35,4 @@ sh
 telethon
 unicaps == 0.3.0
 urllib3
+paramiko

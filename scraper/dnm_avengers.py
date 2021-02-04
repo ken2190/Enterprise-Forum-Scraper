@@ -35,12 +35,15 @@ class DNMAvengersSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # regex stuffs
     topic_pattern = re.compile(r'thread-(\d+)')
     avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
     pagination_pattern = re.compile(r'page-(\d+)')
 
-    use_proxy = False
+    use_proxy = "Tor"
 
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml'

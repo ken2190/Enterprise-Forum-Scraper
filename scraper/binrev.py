@@ -57,8 +57,11 @@ class BinRevSpider(SitemapSpider):
         re.IGNORECASE
     )
 
+    # Login Failed Message
+    login_failed_xpath = '//p[contains(@class, "ipsMessage ipsMessage_error")]'
+
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def start_requests(self):
         yield Request(
@@ -102,7 +105,13 @@ class BinRevSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

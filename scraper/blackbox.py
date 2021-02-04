@@ -52,7 +52,7 @@ class BlackBoxsSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
     post_datetime_format = '%d.%m.%Y, %H:%M'
@@ -102,6 +102,9 @@ class BlackBoxsSpider(SitemapSpider):
         self.synchronize_headers(response)
         # print(response.text)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

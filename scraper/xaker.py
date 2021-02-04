@@ -45,6 +45,9 @@ class XakerSpider(SitemapSpider):
 
     avatar_xpath = '//div[contains(@class,"avatarHolder")]//img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "errorPanel")]'
+
     # captcha stuffs
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
 
@@ -67,10 +70,18 @@ class XakerSpider(SitemapSpider):
     bypass_success_xpath = '//ol[@class="nodeList"]//h3/a'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
 
-    def start_requests(self, cookies=None, ip=None):
+    def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
@@ -129,8 +140,14 @@ class XakerSpider(SitemapSpider):
             yield from self.parse_captcha(response)
             return
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
             print(forum_url)

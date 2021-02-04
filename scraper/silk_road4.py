@@ -33,13 +33,18 @@ class SilkRoad4Spider(MarketPlaceSpider):
     user_xpath = '//a[contains(text(), "View Listings")]'\
                  '/following-sibling::a[contains(@href, "profile=")][1]/@href'
     avatar_xpath = '//div[@id="img"]/img/@src'
+
+    # Login Failed Message xpath
+    login_failed_xpath = login_form_xpath
+    captcha_failed_xpath = captcha_url_xpath
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
         re.IGNORECASE
     )
 
-    use_proxy = False
+    use_proxy = "Tor"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -81,6 +86,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_login,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -179,9 +185,12 @@ class SilkRoad4Spider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath):
-            self.logger.info("Invalid Captcha")
-            return
+        # Check if login failed
+        self.check_if_logged_in(response)
+
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath)
+        
         yield from super().parse_start(response)
 
 

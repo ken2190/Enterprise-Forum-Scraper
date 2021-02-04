@@ -59,9 +59,13 @@ def process_scraper(scraper):
     """
     Processes the scraper by running the scraper template and then parsing the data.
     """
-    start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
+    start_date = None
+    if scraper['nextStartDate']:
+        start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
     subfolder = scraper['name']
     template = scraper['template']
+    sitename = scraper['name']
+
     process_date = arrow.now().format('YYYY-MM-DD')
 
     # the output dirs for the scraper and parser
@@ -79,8 +83,10 @@ def process_scraper(scraper):
         kwargs = {
             'start_date': start_date,
             'template': template,
-            'output': scraper_output_dir
+            'output': scraper_output_dir,
+            'sitename': sitename
         }
+
         result = Scraper(kwargs).do_scrape()
 
         # check if there was any error
@@ -102,7 +108,8 @@ def process_scraper(scraper):
         kwargs = {
             'template': template,
             'output': parse_output_dir,
-            'input_path': scraper_output_dir
+            'input_path': scraper_output_dir,
+            'sitename': sitename
         }
         Parser(kwargs).start()
 
@@ -124,12 +131,12 @@ def process_scraper(scraper):
         ##############################
 
         # set the scraper's next start date to the current date and clear PID
-        update_scraper(scraper, {'status': 'Idle', 'nextStartDate': process_date, 'pid': None})
+        update_scraper(scraper, {'status': 'Idle', 'nextStartDate': process_date, 'pid': None, 'newScraper': False})
         logger.info('Done')
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, {'status': 'Error', 'pid': None})
+        update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
 
 
 def help():

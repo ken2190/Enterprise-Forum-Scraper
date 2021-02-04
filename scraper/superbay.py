@@ -8,7 +8,7 @@ from datetime import datetime
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0'
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
 
 PROXY = 'http://127.0.0.1:8118'
 
@@ -48,20 +48,23 @@ class SuperBaySpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%b %d, %Y, %H:%M %p'
     post_datetime_format = '%b %d, %Y, %H:%M %p'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.headers.update({
-            "user-agent": USER_AGENT
-        })
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
 
     def start_requests(self):
         yield Request(
             url=self.base_url,
             headers=self.headers,
+            dont_filter=True,
             meta={
                 'proxy': PROXY
             }
@@ -83,6 +86,9 @@ class SuperBaySpider(SitemapSpider):
         self.synchronize_headers(response)
 
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

@@ -59,6 +59,9 @@ class ShadowCardersSpider(SitemapSpider):
 
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "errorPanel")]'
+    
     # Regex stuffs
     topic_pattern = re.compile(
         r".(\d+)/",
@@ -84,7 +87,7 @@ class ShadowCardersSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%b %d, %y"
     handle_httpstatus_list = [403]
 
@@ -124,8 +127,16 @@ class ShadowCardersSpider(SitemapSpider):
             return datetime.today()
 
         return dateparser.parse(post_date)
-
+    
     def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
@@ -133,13 +144,16 @@ class ShadowCardersSpider(SitemapSpider):
             fraud_check=True
         )
 
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex,
-                "ip": ip
-            },
+            meta=meta,
             cookies=cookies,
             callback=self.parse
         )
@@ -163,8 +177,14 @@ class ShadowCardersSpider(SitemapSpider):
         # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum in all_forums:
 
             if self.base_url not in forum:

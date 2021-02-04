@@ -9,13 +9,17 @@ import configparser
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 from scraper.base_scrapper import SiteMapScrapper
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
              'AppleWebKit/537.36 (KHTML, like Gecko) '\
              'Chrome/79.0.3945.117 Safari/537.36',
 
 
-class Ox00SecSpider(scrapy.Spider):
+class Ox00SecSpider(SitemapSpider):
     name = '0x00sec_spider'
 
     def __init__(self, *args, **kwargs):
@@ -24,8 +28,6 @@ class Ox00SecSpider(scrapy.Spider):
         self.base_url = 'https://0x00sec.org/'
         self.thread_url = 'https://0x00sec.org/t/{}/{}'
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.output_path = kwargs.get("output_path")
-        self.avatar_path = kwargs.get("avatar_path")
         self.start_page = 0
         self.headers = {
             'sec-fetch-mode': 'same-origin',
@@ -108,7 +110,6 @@ class Ox00SecSpider(scrapy.Spider):
         with open(file_name, 'wb') as f:
             f.write(response.body)
             self.logger.info(f"Avatar for {file_name_only} done..!")
-
 
 class Ox00SecScrapper(SiteMapScrapper):
 

@@ -63,6 +63,9 @@ class NulledChSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[@class="error"]'
+
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
 
@@ -77,7 +80,7 @@ class NulledChSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'
 
@@ -136,7 +139,7 @@ class NulledChSpider(SitemapSpider):
             "submit": "Login",
             "action": "do_login",
             "url": "",
-            "g-recaptcha-response": self.solve_recaptcha(response),
+            "g-recaptcha-response": self.solve_recaptcha(response).solution.token,
             "my_post_key": my_post_key
         }
         self.logger.info(formdata)
@@ -153,7 +156,14 @@ class NulledChSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         if not all_forums:
             self.logger.info(response.text)
         for forum_url in all_forums:

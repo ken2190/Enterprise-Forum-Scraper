@@ -39,6 +39,9 @@ class MajesticGardenSpider(SitemapSpider):
 
     avatar_xpath = '//li[@class="avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//p[@class="error"]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"topic=(\d+)",
@@ -54,7 +57,7 @@ class MajesticGardenSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
     sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"
     post_datetime_format = "%B %d, %Y, %I:%M:%S %p »"
 
@@ -119,7 +122,13 @@ class MajesticGardenSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

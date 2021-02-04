@@ -44,6 +44,9 @@ class PHCrackerSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/(\d+)/",
@@ -63,7 +66,7 @@ class PHCrackerSpider(SitemapSpider):
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
     get_cookies_delay = 10
     get_cookies_retry = 2
-    use_proxy = True
+    use_proxy = "On"
 
     def parse_thread_date(self, thread_date):
         """
@@ -130,8 +133,14 @@ class PHCrackerSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
 

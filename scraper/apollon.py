@@ -44,6 +44,11 @@ class ApollonSpider(MarketPlaceSpider):
     user_description_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=1")]/@href'
     user_pgp_xpath = '//ul[contains(@class, "nav nav-tabs")]//a[contains(@href, "tab=6")]/@href'
     avatar_xpath = '//img[contains(@class, "img-rounded")]/@src'
+
+    # Login Failed Message xpath
+    login_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "username and/or password")]'
+    captcha_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "The Captcha code")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -65,7 +70,7 @@ class ApollonSpider(MarketPlaceSpider):
     #         'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
     #     }
     # }
-    use_proxy = False
+    use_proxy = "Tor"
     captcha_instruction = "Please ignore | and ^"
 
     def __init__(self, *args, **kwargs):
@@ -104,6 +109,7 @@ class ApollonSpider(MarketPlaceSpider):
             url=self.login_url,
             headers=self.headers,
             callback=self.parse_login,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -153,13 +159,11 @@ class ApollonSpider(MarketPlaceSpider):
     
     def parse_start(self, response):
 
-        if response.xpath(self.login_form_xpath):
-            login_alert = response.xpath(self.login_alert_xpath).extract_first()
-            if "username and/or password" in login_alert:
-                self.logger.info("Invalid Login")
-            else:
-                self.logger.info("Invalid Captcha")
-            return
+        # Check if login failed
+        self.check_if_logged_in(response)
+
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath)
 
         yield from super().parse_start(response)
 

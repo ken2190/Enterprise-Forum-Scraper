@@ -56,6 +56,11 @@ class FuckavSpider(SitemapSpider):
     avatar_xpath = "//div[@class=\"smallfont\"]/a/img/@src"
     captcha_xpath = "//img[@id=\"imagereg\"]/@src"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(., "Вы ввели неправильное имя или пароль")] |' \
+        '//input[@name="vb_login_username"]'
+    captcha_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "The Captcha code")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -75,7 +80,7 @@ class FuckavSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%d-%m-%Y"
     post_datetime_format = "%d-%m-%Y"
 
@@ -128,7 +133,8 @@ class FuckavSpider(SitemapSpider):
             headers=self.headers,
             meta={
                 "cookiejar": uuid.uuid1().hex
-            }
+            },
+            errback=self.check_site_error
         )
 
     def parse(self, response):
@@ -234,8 +240,14 @@ class FuckavSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         # Loop forum
         for forum_url in all_forums:

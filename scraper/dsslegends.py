@@ -55,8 +55,11 @@ class DssLegendsSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     handle_httpstatus_list = [403]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
@@ -127,7 +130,14 @@ class DssLegendsSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url
