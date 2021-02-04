@@ -59,7 +59,9 @@ def process_scraper(scraper):
     """
     Processes the scraper by running the scraper template and then parsing the data.
     """
-    start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
+    start_date = None
+    if scraper['nextStartDate']:
+        start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
     subfolder = scraper['name']
     template = scraper['template']
     sitename = scraper['name']
