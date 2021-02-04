@@ -25,9 +25,9 @@ WARNING_MESSAGES = {
     "W05": "No Mainlist next pages",
     "W06": "No Details next pages",
     "W07": "Errors in the log",
-    "W08": "No new files"
+    "W08": "No new files",
 
-    # forum/productlist errors
+    # forum/productlist warnings
     "W10": "No Mainlist found",
     "W11": "No Details found",
     "W12": "No messages found",
