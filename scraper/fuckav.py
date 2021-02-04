@@ -57,7 +57,9 @@ class FuckavSpider(SitemapSpider):
     captcha_xpath = "//img[@id=\"imagereg\"]/@src"
 
     # Login Failed Message
-    login_failed_xpath = '//div[contains(text(), "incorrect username or password")]'
+    login_failed_xpath = '//div[contains(., "Вы ввели неправильное имя или пароль")] |' \
+        '//input[@name="vb_login_username"]'
+    captcha_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "The Captcha code")]'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -131,7 +133,8 @@ class FuckavSpider(SitemapSpider):
             headers=self.headers,
             meta={
                 "cookiejar": uuid.uuid1().hex
-            }
+            },
+            errback=self.check_site_error
         )
 
     def parse(self, response):
