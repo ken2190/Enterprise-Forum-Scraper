@@ -52,6 +52,7 @@ class OffensiveCommunitySpider(SitemapSpider):
     def start_requests(self):
         yield Request(
             url=self.base_url,
+            errback=self.check_site_error,
             headers=self.headers
         )
 

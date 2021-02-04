@@ -596,6 +596,9 @@ class BypassCloudfareSpider(scrapy.Spider):
             )
         )
 
+        if not bypass_cookies:
+            raise CloseSpider(reason='access_is_blocked')
+        
         return bypass_cookies, ip
 
     def get_cloudflare_cookies_via_browser(self, base_url=None, proxy=False, fraud_check=False):
