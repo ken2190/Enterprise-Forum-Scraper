@@ -86,6 +86,7 @@ class ProxyBaseSpider(SitemapSpider):
         yield Request(
             url=self.base_url,
             headers=self.headers,
+            errback=self.check_site_error,
             meta={
                 "cookiejar": uuid.uuid1().hex
             }
