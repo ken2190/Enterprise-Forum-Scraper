@@ -59,7 +59,9 @@ def process_scraper(scraper):
     """
     Processes the scraper by running the scraper template and then parsing the data.
     """
-    start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
+    start_date = None
+    if scraper['nextStartDate']:
+        start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
     subfolder = scraper['name']
     template = scraper['template']
     sitename = scraper['name']
@@ -129,12 +131,12 @@ def process_scraper(scraper):
         ##############################
 
         # set the scraper's next start date to the current date and clear PID
-        update_scraper(scraper, {'status': 'Idle', 'nextStartDate': process_date, 'pid': None})
+        update_scraper(scraper, {'status': 'Idle', 'nextStartDate': process_date, 'pid': None, 'newScraper': False})
         logger.info('Done')
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': e})
+        update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
 
 
 def help():
