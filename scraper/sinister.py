@@ -40,7 +40,7 @@ class SinisterSpider(SitemapSpider):
     avatar_xpath = '//div[@class="author_avatar postbit_avatar"]/a/img/@src'
 
     # Login Failed Message
-    login_failed_xpath = '//div[contains(@class, "error")]'
+    login_failed_xpath = '//div[contains(., "invalid username/password")]'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -82,6 +82,9 @@ class SinisterSpider(SitemapSpider):
 
     def parse_forum(self, response, thread_meta={}, is_first_page=True):
 
+        # Check if login success
+        self.check_if_logged_in(response)
+        
         # Load sub forums
         if is_first_page:
             yield from self.parse(response)
