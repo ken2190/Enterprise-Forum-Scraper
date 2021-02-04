@@ -69,7 +69,7 @@ class MazaSpider(SeleniumSpider):
     )
 
     # Other settings
-    use_proxy = False
+    use_proxy = "Tor"
     handle_httpstatus_list = [400, 502]
     skip_forums = ['000']
 
@@ -171,7 +171,8 @@ class MazaSpider(SeleniumSpider):
         time.sleep(self.delay)
 
         if not self.is_logged_in():
-            self.logger.error('Failed to log in')
+            # Check if login failed
+            self.check_if_logged_in(response)
 
     def is_logged_in(self):
         return self.browser.find_elements_by_xpath('//a[text()="Log Out"]')

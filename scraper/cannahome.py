@@ -28,7 +28,7 @@ class CannaHomeSpider(MarketPlaceSpider):
     name = "cannahome_spider"
 
     # Url stuffs
-    base_url = "http://cannabmgae3mkekotfzsyrx5lqg7lj7hgcn6t4rumqqs5vnvmuzsmfqd.onion"
+    base_url = "http://cannabmgae3mkekotfzsyrx5lqg7lj7hgcn6t4rumqqs5vnvmuzsmfqd1.onion"
 
     # xpath stuffs
     login_form_xpath = '//form[@id="login-form"]'
@@ -40,6 +40,9 @@ class CannaHomeSpider(MarketPlaceSpider):
 
     user_xpath = '//section[@id="main"]//div[contains(@class, "rows-20")]//a[contains(@href, "/v/")]/@href'
     avatar_xpath = '//div[contains(@class, "product")]//a[contains(@href, "/upload/")]/@href'
+
+    login_failed_xpath = '//div[@class="note" and contains(., "Incorrect username or password")]'
+    captcha_failed_xpath = '//p[contains(@class, "note") and contains(., "different captcha")]'
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -57,7 +60,7 @@ class CannaHomeSpider(MarketPlaceSpider):
             'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
         }
     }
-    use_proxy = False
+    use_proxy = "Tor"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,6 +86,7 @@ class CannaHomeSpider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_login,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -125,9 +129,12 @@ class CannaHomeSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.login_form_xpath):
-            self.logger.info("Invalid Captcha or Invalid Login")
-            return
+        # Check if login failed
+        self.check_if_logged_in(response)
+
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath)
+
         yield from super().parse_start(response)
 
 

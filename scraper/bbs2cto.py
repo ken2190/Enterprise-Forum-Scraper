@@ -37,7 +37,7 @@ class Bbs2ctoSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%Y-%m-%d %H:%M'
     post_datetime_format = '%Y-%m-%d %H:%M:%S'
 
@@ -45,6 +45,9 @@ class Bbs2ctoSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url
@@ -98,7 +101,11 @@ class Bbs2ctoSpider(SitemapSpider):
 
             if os.path.exists(file_name):
                 continue
-
+            
+            # update stats
+            self.avatars.add(avatar_url)
+            self.crawler.stats.set_value("mainlist/avatar_count", len(self.avatars))
+            
             yield Request(
                 url=avatar_url,
                 headers=self.headers,

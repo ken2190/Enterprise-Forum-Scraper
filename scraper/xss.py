@@ -51,12 +51,14 @@ class XSSSpider(SitemapSpider):
     pagination_pattern = re.compile(r".*page-(\d+)$", re.IGNORECASE)
 
     # Other settings
-    #use_proxy = False
-    use_vip_proxy = True
+    use_proxy = "VIP"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage")]'
 
     def start_requests(self):
+
         yield Request(
             url=self.login_url,
             headers=self.headers,
@@ -85,10 +87,7 @@ class XSSSpider(SitemapSpider):
             yield from self.parse(response)
             return
 
-        banned_xpath = ('//div[contains(@class, "blockMessage") and '
-                        'contains(text(), "You have been banned")]')
-        if response.xpath(banned_xpath) is not None:
-            raise CloseSpider(reason='account_is_banned')
+        super().check_if_logged_in(response)
 
         err_msg = response.css('div.blockMessage--error::text').get() or 'Unknown error'
         self.logger.error('Unable to log in: %s', err_msg)

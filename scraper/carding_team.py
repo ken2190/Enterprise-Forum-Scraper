@@ -62,6 +62,9 @@ class CardingTeamSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -73,7 +76,7 @@ class CardingTeamSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def start_requests(self):
         """
@@ -133,7 +136,13 @@ class CardingTeamSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

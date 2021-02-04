@@ -48,7 +48,7 @@ class VlmiSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def parse_thread_date(self, thread_date):
         thread_date = thread_date.strip()[:-5]
@@ -67,6 +67,9 @@ class VlmiSpider(SitemapSpider):
         # self.logger.info(response.text)
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
 

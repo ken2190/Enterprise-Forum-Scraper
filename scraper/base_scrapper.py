@@ -20,6 +20,18 @@ import dateparser
 import dateutil.parser as dparser
 import requests
 import scrapy
+from scrapy.spidermiddlewares.httperror import HttpError
+from twisted.internet.error import (
+    ConnectError,
+    ConnectionDone,
+    ConnectionLost,
+    ConnectionRefusedError,
+    DNSLookupError,
+    TCPTimedOutError,
+    TimeoutError,
+)
+from scrapy.core.downloader.handlers.http11 import TunnelError
+
 # from anticaptchaofficial.recaptchav2proxyon import *
 # from anticaptchaofficial.recaptchav2proxyless import *
 from anticaptchaofficial.hcaptchaproxyless import *
@@ -42,14 +54,19 @@ from helheim import helheim
 from middlewares.utils import IpHandler
 
 # Vip Proxy
-#VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
-#VIP_PROXY_PASSWORD = "5d2ad17825b0"
-#VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
-
 VIP_PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
 VIP_PROXY_PASSWORD = "q37j08ih0hci"
-
 VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+# Unblocker Proxy
+UNBLOCKER_PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
+UNBLOCKER_PROXY_PASSWORD = "5d2ad17825b0"
+UNBLOCKER_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+
+# Luminati Proxy
+PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
+PROXY_PASSWORD = "8jywfhrmovdh"
+PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
 # Residential proxy
 # PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
@@ -59,13 +76,6 @@ VIP_PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 #PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
 #PROXY_PASSWORD = "5d2ad17825b0"
 #PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
-
-
-# Luminati Proxy
-PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
-PROXY_PASSWORD = "8jywfhrmovdh"
-PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
-
 
 ###############################################################################
 # Base Scraper
@@ -361,8 +371,7 @@ class SiteMapScrapper:
         crawler = process.create_crawler(self.spider_class)
 
         if self.load_spider_kwargs()['no_proxy']:
-            crawler.spidercls.use_proxy = False
-            crawler.spidercls.use_vip_proxy = False
+            crawler.spidercls.use_proxy = "Off"
 
         # Trigger running
         process.crawl(
@@ -411,8 +420,7 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
 
 class BypassCloudfareSpider(scrapy.Spider):
 
-    use_proxy = True
-    use_vip_proxy = False
+    use_proxy = "On"
     proxy = None
     download_delay = 0.3
     download_thread = 10
@@ -449,7 +457,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                         "middlewares.middlewares.DedicatedProxyMiddleware": 100,
                     }
                 )
-            elif cls.use_proxy:
+            elif cls.use_proxy != "Off" and cls.use_proxy != "Tor":
                 downloader_middlewares.update(
                     {
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
@@ -502,11 +510,15 @@ class BypassCloudfareSpider(scrapy.Spider):
 
     def get_cloudflare_cookies(self, base_url=None, proxy=True, fraud_check=True):
         # Load proxy
-        if self.use_vip_proxy:
+        if self.use_proxy == 'VIP':
             proxy_username = VIP_PROXY_USERNAME
             proxy_password = VIP_PROXY_PASSWORD
             super_proxy = VIP_PROXY
-        else:
+        elif self.use_proxy == 'Unblocker':
+            proxy_username = UNBLOCKER_PROXY_USERNAME
+            proxy_password = UNBLOCKER_PROXY_PASSWORD
+            super_proxy = UNBLOCKER_PROXY
+        elif self.use_proxy == 'On':
             proxy_username = PROXY_USERNAME
             proxy_password = PROXY_PASSWORD
             super_proxy = PROXY
@@ -588,11 +600,15 @@ class BypassCloudfareSpider(scrapy.Spider):
 
     def get_cloudflare_cookies_via_browser(self, base_url=None, proxy=False, fraud_check=False):
         # Load proxy
-        if self.use_vip_proxy:
+        if self.use_proxy == 'VIP':
             proxy_username = VIP_PROXY_USERNAME
             proxy_password = VIP_PROXY_PASSWORD
             super_proxy = VIP_PROXY
-        else:
+        elif self.use_proxy == 'Unblocker':
+            proxy_username = UNBLOCKER_PROXY_USERNAME
+            proxy_password = UNBLOCKER_PROXY_PASSWORD
+            super_proxy = UNBLOCKER_PROXY
+        elif self.use_proxy == 'On':
             proxy_username = PROXY_USERNAME
             proxy_password = PROXY_PASSWORD
             super_proxy = PROXY
@@ -812,6 +828,7 @@ class SitemapSpider(BypassCloudfareSpider):
     # Url stuffs
     base_url = None
     sitemap_url = None
+    temp_url = 'https://www.google.com'
     ip_url = "https://api.ipify.org?format=json"
 
     # anticaptcha api #
@@ -859,6 +876,9 @@ class SitemapSpider(BypassCloudfareSpider):
     recaptcha_site_key_xpath = None  # Xpath to get recaptcha site key #
     hcaptcha_site_key_xpath = None  # Xpath to get hcaptcha site key #
 
+    # Login Failed Message xpath
+    login_failed_xpath = None
+
     # Other settings
     get_cookies_delay = 2
     get_cookies_retry = 5
@@ -882,15 +902,13 @@ class SitemapSpider(BypassCloudfareSpider):
         self.avatars = set()
 
         if kwargs.get("no_proxy") is not None:
-            self.use_proxy = False
-            self.use_vip_proxy = False
+            self.use_proxy = "Off"
 
         if kwargs.get("proxy_countries") is not None:
             self.proxy_countries = kwargs["proxy_countries"]
 
         if kwargs.get("use_vip") is not None:
-            # self.use_proxy = False
-            self.use_vip_proxy = True
+            self.use_proxy = "VIP"
 
         # Load fraud check settings
 
@@ -898,7 +916,7 @@ class SitemapSpider(BypassCloudfareSpider):
             logger=self.logger,
             fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20),
-            use_vip_proxy=self.use_vip_proxy
+            use_proxy=self.use_proxy
         )
 
         # Handle headers
@@ -1244,6 +1262,7 @@ class SitemapSpider(BypassCloudfareSpider):
         if h_response != 0:
             return h_response
         else:
+            self.crawler.stats.set_value("cannot_bypass_captcha", 1)
             return ''
 
     # Main method to solve all kind of captcha: recaptcha #
@@ -1284,31 +1303,35 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # get page URL and site key
         page_url = response.url
-        site_key = response.xpath(self.recaptcha_site_key_xpath).extract_first()
+        site_key = response.xpath(self.recaptcha_site_key_xpath).extract()
+        if len(site_key):
+            site_key = site_key[0]
 
-        try_count = 0
-        while True:
-            if proxy:
-                host = socket.gethostbyname(hostname)
-                proxy = ProxyServer(f'http://{user}:{password}@{host}:{port}')
+            try_count = 0
+            while True:
+                if proxy:
+                    host = socket.gethostbyname(hostname)
+                    proxy = ProxyServer(f'http://{user}:{password}@{host}:{port}')
 
-            try_count += 1
-            try:
-                return solver.solve_recaptcha_v2(
-                    site_key,
-                    page_url,
-                    proxy=proxy,
-                    user_agent=user_agent,
-                    cookies=cookies
-                )
-            except (ProxyError, SolutionWaitTimeout, UnableToSolveError):
-                if try_count >= max_try_count:
-                    self.logger.error('Exceeded reCAPTCHA solving maximum try count!')
+                try_count += 1
+                try:
+                    return solver.solve_recaptcha_v2(
+                        site_key,
+                        page_url,
+                        proxy=proxy,
+                        user_agent=user_agent,
+                        cookies=cookies
+                    )
+                except (ProxyError, SolutionWaitTimeout, UnableToSolveError):
+                    if try_count >= max_try_count:
+                        self.logger.error('Exceeded reCAPTCHA solving maximum try count!')
+                        self.crawler.stats.set_value("cannot_bypass_captcha", 1)
+                        raise
+                    continue
+                except UnicapsException as err:
+                    self.logger.warning('Error on reCAPTCHA solving: %s', err)
+                    self.crawler.stats.set_value("cannot_bypass_captcha", 1)
                     raise
-                continue
-            except UnicapsException as err:
-                self.logger.warning('Error on reCAPTCHA solving: %s', err)
-                raise
 
     def solve_captcha(self, image_url, response, cookies={}, headers={}):
         solver = imagecaptcha()
@@ -1383,6 +1406,7 @@ class SitemapSpider(BypassCloudfareSpider):
         if captcha_text != 0:
             return captcha_text.replace(' ', '')
         else:
+            self.crawler.stats.set_value("cannot_bypass_captcha", 1)
             return ''
 
     def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
@@ -1457,6 +1481,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 url=self.sitemap_url,
                 headers=self.headers,
                 callback=self.parse_sitemap,
+                errback=self.check_site_error,
                 dont_filter=True,
                 meta=meta
             )
@@ -1464,6 +1489,7 @@ class SitemapSpider(BypassCloudfareSpider):
             yield Request(
                 url=self.base_url,
                 headers=self.headers,
+                errback=self.check_site_error,
                 dont_filter=True,
                 meta=meta
             )
@@ -1483,6 +1509,9 @@ class SitemapSpider(BypassCloudfareSpider):
         # Load forum
         all_forum = selector.xpath(self.forum_sitemap_xpath).extract()
 
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forum))
+        
         for forum in all_forum:
             yield Request(
                 url=forum,
@@ -1571,15 +1600,55 @@ class SitemapSpider(BypassCloudfareSpider):
 
         yield Request(**request_arguments)
 
+    def check_if_logged_in(self, response):
+        # check if logged in successfully
+        if self.login_failed_xpath:
+            login_failed = response.xpath(self.login_failed_xpath).extract()
+            if len(login_failed):
+                raise CloseSpider(reason='login_is_failed')
+    
+    def check_if_captcha_failed(self, response, xpath):
+        # check if captcha is passed.
+        captcha_failed = response.xpath(xpath).extract()
+        if len(captcha_failed):
+                raise CloseSpider(reason='cannot_bypass_captcha')
+
+    def check_site_error(self, failure):
+        # check if site has error
+        self.logger.error(repr(failure.value))
+
+        if failure.check(HttpError):
+            response = failure.value.response
+            self.logger.error('HttpError on %s', response.url)
+            raise CloseSpider(reason='site_is_down')
+
+        elif failure.check(DNSLookupError):
+            request = failure.request
+            self.logger.error('DNSLookupError on %s', request.url)
+            raise CloseSpider(reason='site_is_down')
+
+        elif failure.check(TimeoutError):
+            request = failure.request
+            self.logger.error('TimeoutError on %s', request.url)
+            raise CloseSpider(reason='site_is_down')
+
+        elif failure.check(TunnelError):
+            request = failure.request
+            self.logger.error('TunnelError on %s', request.url)
+            raise CloseSpider(reason='site_is_down')
+
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+
+        # Check if login success
+        self.check_if_logged_in(response)
 
         all_forums = set(response.xpath(self.forum_xpath).extract())
         self.forums.update(all_forums)
 
         # update stats
-        self.crawler.stats.set_value("forum/forum_count", len(self.forums))
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(self.forums))
 
         for forum_url in all_forums:
             yield response.follow(
@@ -1604,7 +1673,7 @@ class SitemapSpider(BypassCloudfareSpider):
         for thread in threads:
             thread_url, thread_lastmod = self.extract_thread_stats(thread)
             if not thread_url:
-                self.crawler.stats.inc_value("forum/thread_no_url_count")
+                self.crawler.stats.inc_value("mainlist/detail_no_url_count")
                 self.logger.warning(
                     "Unable to find thread URL on the forum: %s",
                     response.url
@@ -1614,7 +1683,7 @@ class SitemapSpider(BypassCloudfareSpider):
             # Parse topic id
             topic_id = self.get_topic_id(thread_url)
             if not topic_id:
-                self.crawler.stats.inc_value("forum/thread_no_topic_id_count")
+                self.crawler.stats.inc_value("mainlist/detail_no_topic_id_count")
                 self.logger.warning(
                     "Unable to find topic ID of the thread: %s",
                     response.urljoin(thread_url)
@@ -1624,8 +1693,8 @@ class SitemapSpider(BypassCloudfareSpider):
             if thread_lastmod is None:
                 if topic_id not in self.topics:
                     self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("forum/thread_no_date_count")
-                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+                    self.crawler.stats.inc_value("mainlist/detail_no_date_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
                 if self.start_date:
                     self.logger.info(
@@ -1639,8 +1708,8 @@ class SitemapSpider(BypassCloudfareSpider):
             if self.start_date and thread_lastmod < self.start_date:
                 if topic_id not in self.topics:
                     self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("forum/thread_outdated_count")
-                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+                    self.crawler.stats.inc_value("mainlist/detail_outdated_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
                 self.logger.info(
                     "Thread %s last updated is %s before start date %s. Ignored." % (
@@ -1669,8 +1738,8 @@ class SitemapSpider(BypassCloudfareSpider):
                 # update stats
                 if topic_id not in self.topics:
                     self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("forum/thread_already_scraped_count")
-                    self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+                    self.crawler.stats.inc_value("mainlist/detail_already_scraped_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
                 continue
 
@@ -1685,7 +1754,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
             # update stats
             self.topics.add(topic_id)
-            self.crawler.stats.set_value("forum/thread_count", len(self.topics))
+            self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
             yield Request(
                 url=thread_url,
@@ -1697,11 +1766,11 @@ class SitemapSpider(BypassCloudfareSpider):
         # get next page
         next_page = self.get_forum_next_page(response)
         if is_first_page and next_page:
-            self.crawler.stats.inc_value("forum/forum_next_page_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
 
         # Pagination
         if not lastmod_pool:
-            self.crawler.stats.inc_value("forum/forum_no_threads_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_no_detail_count")
             self.logger.info(
                 "Forum without thread, exit: %s",
                 response.url
@@ -1710,7 +1779,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # update stats
         if is_first_page:
-            self.crawler.stats.inc_value("forum/forum_processed_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
 
         if self.start_date and self.start_date > max(lastmod_pool):
             self.logger.info(
@@ -1765,7 +1834,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         if self.start_date and not post_dates:
             if topic_id not in self.topics_scraped:
-                self.crawler.stats.inc_value("forum/thread_no_messages_count")
+                self.crawler.stats.inc_value("mainlist/detail_no_messages_count")
 
             self.logger.info('No dates found in thread: %s', response.url)
             return
@@ -1773,12 +1842,12 @@ class SitemapSpider(BypassCloudfareSpider):
         # get next page
         next_page = self.get_thread_next_page(response)
         if next_page:
-            self.crawler.stats.inc_value("forum/thread_next_page_count")
+            self.crawler.stats.inc_value("mainlist/detail_next_page_count")
 
         # check if the thread contains new messages
         if self.start_date and max(post_dates) < self.start_date:
             if topic_id not in self.topics_scraped:
-                self.crawler.stats.inc_value("forum/thread_outdated_count")
+                self.crawler.stats.inc_value("mainlist/detail_outdated_count")
 
             self.logger.info(
                 "No more post to update."
@@ -1808,7 +1877,7 @@ class SitemapSpider(BypassCloudfareSpider):
             # Update stats
             self.topics_scraped.add(topic_id)
             self.crawler.stats.set_value(
-                "forum/thread_saved_count",
+                "mainlist/detail_saved_count",
                 len(self.topics_scraped)
             )
 
@@ -1895,7 +1964,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
             # update stats
             self.avatars.add(avatar_url)
-            self.crawler.stats.set_value("forum/avatar_count", len(self.avatars))
+            self.crawler.stats.set_value("mainlist/avatar_count", len(self.avatars))
 
             yield Request(
                 url=avatar_url,
@@ -1922,7 +1991,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 f"Avatar {avatar_name} done..!"
             )
 
-        self.crawler.stats.inc_value("forum/avatar_saved_count")
+        self.crawler.stats.inc_value("mainlist/avatar_saved_count")
 
     def solve_cookies_captcha(self, browser, proxy=None):
         return browser, True
@@ -1933,11 +2002,15 @@ class SitemapSpider(BypassCloudfareSpider):
     def get_cookies(self, base_url=None, proxy=False, fraud_check=False, check_captcha=False):
 
         # Load proxy
-        if self.use_vip_proxy:
+        if self.use_proxy == 'VIP':
             proxy_username = VIP_PROXY_USERNAME
             proxy_password = VIP_PROXY_PASSWORD
             super_proxy = VIP_PROXY
-        else:
+        elif self.use_proxy == 'Unblocker':
+            proxy_username = UNBLOCKER_PROXY_USERNAME
+            proxy_password = UNBLOCKER_PROXY_PASSWORD
+            super_proxy = UNBLOCKER_PROXY
+        elif self.use_proxy == 'On':
             proxy_username = PROXY_USERNAME
             proxy_password = PROXY_PASSWORD
             super_proxy = PROXY
@@ -2126,6 +2199,10 @@ class MarketPlaceSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         urls = response.xpath(self.market_url_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(urls))
+
         for url in urls:
             url = self.get_market_url(url)
             yield Request(
@@ -2142,10 +2219,25 @@ class MarketPlaceSpider(SitemapSpider):
 
         self.logger.info('next_page_url: {}'.format(response.url))
         products = response.xpath(self.product_url_xpath).extract()
+        
+        self.crawler.stats.set_value("mainlist/detail_count", len(products))
+
         for product_url in products:
             product_url = self.get_product_url(product_url)
+            if not product_url:
+                self.crawler.stats.inc_value("mainlist/detail_no_url_count")
+                self.logger.warning(
+                    "Unable to find product URL on the marketplace: %s",
+                    response.url
+                )
+                continue
+
             file_id = self.get_file_id(product_url)
             file_name = '{}/{}.html'.format(self.output_path, file_id)
+            
+            self.crawler.stats.inc_value("mainlist/detail_next_page_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
+
             if os.path.exists(file_name):
                 continue
             yield Request(
@@ -2162,6 +2254,8 @@ class MarketPlaceSpider(SitemapSpider):
             )
         next_page_url = self.get_product_next_page(response)
         if next_page_url:
+            self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
+            
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
@@ -2179,6 +2273,7 @@ class MarketPlaceSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             self.logger.info(f'Product: {file_id} done..!')
+            self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
         if self.avatar_xpath:
             yield from self.parse_avatars(response)
@@ -2325,6 +2420,8 @@ class MarketPlaceSpider(SitemapSpider):
 
             if os.path.exists(file_name):
                 continue
+            
+            self.crawler.stats.inc_value("mainlist/avatar_count")
 
             index = index + 1
             yield Request(
@@ -2347,6 +2444,7 @@ class MarketPlaceSpider(SitemapSpider):
             self.logger.info(
                 f"Avatar for product {response.meta['file_id']} done..!")
 
+        self.crawler.stats.inc_value("mainlist/avatar_saved_count")
 
 class SeleniumSpider(SitemapSpider):
     ban_text = ''
@@ -2355,6 +2453,10 @@ class SeleniumSpider(SitemapSpider):
     def parse_start(self):
         response = fromstring(self.browser.page_source)
         all_forums = response.xpath(self.forum_xpath)
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
+
         for forum_url in all_forums:
 
             # Standardize url

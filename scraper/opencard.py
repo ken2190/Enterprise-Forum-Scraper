@@ -44,6 +44,9 @@ class OpencardSpider(SitemapSpider):
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@data-xf-init="re-captcha"]/@data-sitekey'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/.*\.(\d+)",
@@ -55,7 +58,7 @@ class OpencardSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
     def start_requests(self):
         yield Request(
@@ -122,7 +125,13 @@ class OpencardSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
 

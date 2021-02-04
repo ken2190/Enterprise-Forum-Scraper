@@ -63,7 +63,7 @@ class KorovkaSpider(SeleniumSpider):
     avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]/img/@src'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
     ban_text = 'date the ban'

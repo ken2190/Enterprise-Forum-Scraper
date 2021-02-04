@@ -32,6 +32,9 @@ class TorigonSpider(SitemapSpider):
                         'li[@class="active"]/span/text()'
     post_date_xpath = '//p[@class="author"]/descendant::text()'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"t=(\d+)",
@@ -43,7 +46,7 @@ class TorigonSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = '%a %b %d, %Y'
 
     def __init__(self, *args, **kwargs):
@@ -110,7 +113,13 @@ class TorigonSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

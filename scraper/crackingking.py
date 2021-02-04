@@ -51,6 +51,9 @@ class CrackingKingSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//tr[contains(text(), "You have failed to login within")]'
+
     # Recaptcha stuffs
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
 
@@ -73,7 +76,7 @@ class CrackingKingSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     handle_httpstatus_list = [503]
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'
@@ -142,7 +145,7 @@ class CrackingKingSpider(SitemapSpider):
             "submit": "Login",
             "action": "do_login",
             "url": f'{self.base_url}index.php',
-            "g-recaptcha-response": self.solve_recaptcha(response)
+            "g-recaptcha-response": self.solve_recaptcha(response).solution.token
         }
 
         yield FormRequest.from_response(
@@ -159,10 +162,13 @@ class CrackingKingSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        self.logger.info(response.text)
+        # Check if login failed
+        self.check_if_logged_in(response)
 
-        return
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

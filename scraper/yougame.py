@@ -42,7 +42,7 @@ class YouGameSpider(SitemapSpider):
     recaptcha_site_key_xpath = '//button[@class="g-recaptcha"]/@data-sitekey'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     fraudulent_threshold = 50
     handle_httpstatus_list = [503]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
@@ -68,6 +68,7 @@ class YouGameSpider(SitemapSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse,
+            errback=self.check_site_error,
             dont_filter=True,
             meta=meta
         )
@@ -90,7 +91,7 @@ class YouGameSpider(SitemapSpider):
             return
 
         if response.xpath(self.captcha_form_xpath):
-            recaptcha_token = self.solve_recaptcha(response)
+            recaptcha_token = self.solve_recaptcha(response).solution.token
 
             yield FormRequest.from_response(
                 response,
@@ -150,6 +151,9 @@ class YouGameSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

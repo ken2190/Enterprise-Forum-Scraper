@@ -37,6 +37,9 @@ class CannaZoneSpider(MarketPlaceSpider):
     user_xpath = '//div[contains(@class, "product-information-vendor")]//a[contains(@class, "vendor_rating")]/@href'
     avatar_xpath = '//img[contains(@class, "img-responsive")]/@src'
 
+    login_failed_xpath = '//div[@class="note" and contains(., "Incorrect username or password")]'
+    captcha_failed_xpath = '//span[contains(@class, "help-block") and contains(., "Captcha code is incorrect")]'
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -47,7 +50,7 @@ class CannaZoneSpider(MarketPlaceSpider):
         re.IGNORECASE
     )
 
-    use_proxy = False
+    use_proxy = "Tor"
     retry_http_codes = [406, 429, 500, 503]
     download_thread = NO_OF_THREADS
     
@@ -79,6 +82,7 @@ class CannaZoneSpider(MarketPlaceSpider):
             headers=self.headers,
             callback=self.parse_captcha,
             dont_filter=True,
+            errback=self.check_site_error,
             meta={
                 'proxy': PROXY,
             }
@@ -134,9 +138,8 @@ class CannaZoneSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath):
-            self.logger.info("Invalid Captcha")
-            return
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath)
 
         market_url = self.base_url + '/products'
         yield Request(

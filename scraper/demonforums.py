@@ -30,7 +30,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
 class DemonForumsSpider(SitemapSpider):
     name = 'demonforums_spider'
 
-    use_proxy = True
+    use_proxy = "On"
     proxy_countries = ['us', 'uk']
 
     handle_httpstatus_list = [403, 503]
@@ -69,6 +69,9 @@ class DemonForumsSpider(SitemapSpider):
                       '[@class="post_date"]/text()'
 
     avatar_xpath = '//div[@class="author_avatar"]//img/@src'
+    
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(text(), "You have entered an invalid username or password")]'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,7 +131,7 @@ class DemonForumsSpider(SitemapSpider):
                 "%s has been permanently banned. Rotating." % ip_ban_check
             )
 
-        if not self.use_proxy:
+        if self.use_proxy == 'Off':
             return
 
         if self.rotation_tries < 20:
@@ -177,6 +180,9 @@ class DemonForumsSpider(SitemapSpider):
         if response.status == 403:
             yield from self.parse_captcha(response)
             return
+        
+        # Check if login failed
+        self.check_if_logged_in(response)
 
         yield Request(
             url=self.base_url,
@@ -198,6 +204,9 @@ class DemonForumsSpider(SitemapSpider):
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
             # Standardize url

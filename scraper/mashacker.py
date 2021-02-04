@@ -41,9 +41,17 @@ class MasHackerSpider(SitemapSpider):
     bypass_success_xpath = '//div[@class="datacontainer"]'
 
     # # Other settings
-    use_proxy = True
+    use_proxy = "On"
 
-    def start_requests(self, cookies=None, ip=None):
+    def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,

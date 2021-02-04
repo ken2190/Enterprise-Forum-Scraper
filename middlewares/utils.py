@@ -16,18 +16,25 @@ class IpHandler(object):
             VIP_PROXY_USERNAME,
             VIP_PROXY_PASSWORD,
             VIP_PROXY,
+            UNBLOCKER_PROXY_USERNAME,
+            UNBLOCKER_PROXY_PASSWORD,
+            UNBLOCKER_PROXY,
             PROXY_USERNAME,
             PROXY_PASSWORD,
             PROXY
         )
-        self.use_vip_proxy = kwargs.get("use_vip_proxy")
+        self.use_proxy = kwargs.get("use_proxy")
         self.logger = kwargs.get("logger")
         self.fraudulent_threshold = kwargs.get("fraudulent_threshold", 50)
         self.ip_batch_size = kwargs.get("ip_batch_size", 20)
-        if self.use_vip_proxy:
+        if self.use_proxy == 'VIP':
             self.proxy_username = VIP_PROXY_USERNAME
             self.proxy_password = VIP_PROXY_PASSWORD
             self.proxy = VIP_PROXY
+        elif self.use_proxy == 'Unblocker':
+            self.proxy_username = UNBLOCKER_PROXY_USERNAME
+            self.proxy_password = UNBLOCKER_PROXY_PASSWORD
+            self.proxy = UNBLOCKER_PROXY
         else:
             self.proxy_username = PROXY_USERNAME
             self.proxy_password = PROXY_PASSWORD

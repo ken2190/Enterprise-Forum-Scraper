@@ -47,7 +47,7 @@ class MafiaUgSpider(SitemapSpider):
         re.IGNORECASE
     )
     
-    use_proxy = True
+    use_proxy = "On"
 
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"

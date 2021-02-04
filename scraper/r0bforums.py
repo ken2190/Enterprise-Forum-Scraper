@@ -48,7 +48,7 @@ class R0bForumsSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     handle_httpstatus_list = [503]
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'
@@ -134,6 +134,9 @@ class R0bForumsSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

@@ -40,6 +40,10 @@ class DarkFoxSpider(MarketPlaceSpider):
     user_pgp_xpath = '//div[@class="tabs"]//a[contains(@href, "/pgp")]/@href'
     avatar_xpath = '//ul[@class="slides"]//img[contains(@class, "slide-main")]/@src'
 
+    # Login Failed Message xpath
+    captcha_failed_xpath_1 = captcha_url_xpath_1
+    captcha_failed_xpath_2 = captcha_url_xpath_2
+
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -50,7 +54,7 @@ class DarkFoxSpider(MarketPlaceSpider):
         re.IGNORECASE
     )
 
-    use_proxy = False
+    use_proxy = "Tor"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,6 +90,7 @@ class DarkFoxSpider(MarketPlaceSpider):
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_captcha_1,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY,
@@ -148,9 +153,8 @@ class DarkFoxSpider(MarketPlaceSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        if response.xpath(self.captcha_url_xpath_1):
-            self.logger.info("Invalid Captcha")
-            return
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath_1)
 
         # Load cookies
         cookies = response.request.headers.get("Cookie")
@@ -185,9 +189,9 @@ class DarkFoxSpider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        if response.xpath(self.captcha_url_xpath_2):
-            self.logger.info("Invalid Captcha")
-            return
+        # Check if bypass captcha failed
+        self.check_if_captcha_failed(response, self.captcha_failed_xpath_2)
+        
         yield from super().parse_start(response)
 
 

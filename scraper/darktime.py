@@ -44,7 +44,7 @@ class DarkTimeSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -76,6 +76,9 @@ class DarkTimeSpider(SitemapSpider):
         self.synchronize_headers(response)
         # print(response.text)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

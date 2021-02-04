@@ -18,8 +18,6 @@ from scraper.base_scrapper import (
 USER = "hackwithme123"
 PASS = "6VUZmjFzM2WtyjV"
 
-use_vip_proxy=True
-
 class V3RMillionSpider(SitemapSpider):
     name = "v3rmillion_spider"
 
@@ -48,6 +46,9 @@ class V3RMillionSpider(SitemapSpider):
     thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
     post_date_xpath = "//span[@class=\"post_date\"]/text()[1]"
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(@class, "error")]'
+
     # Avatar xpath #
     avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"
 
@@ -69,11 +70,19 @@ class V3RMillionSpider(SitemapSpider):
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
 
     # Other settings
-    use_vip_proxy=True
+    use_proxy = "VIP"
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
     def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
@@ -131,12 +140,18 @@ class V3RMillionSpider(SitemapSpider):
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
 
+        # Check if login failed
+        self.check_if_logged_in(response)
+        
         find_captcha = response.xpath(self.recaptcha_site_key_xpath)
         if find_captcha: 
             yield from self.parse(response)
             
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
             if self.base_url not in forum_url:

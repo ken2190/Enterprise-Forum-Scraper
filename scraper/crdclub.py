@@ -58,6 +58,9 @@ class CrdClubSpider(SitemapSpider):
     post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]/text()'
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
 
+    # Login Failed Message
+    login_failed_xpath = '//div[contains(text(), "You have entered an invalid username or password")]'
+
     # Other settings
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
@@ -102,6 +105,10 @@ class CrdClubSpider(SitemapSpider):
     def after_login(self, response):
         # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
+
+        # Check if login failed
+        self.check_if_logged_in(response)
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
@@ -154,6 +161,9 @@ class CrdClubSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

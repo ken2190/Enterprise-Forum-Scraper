@@ -55,13 +55,21 @@ class ZloySpider(SitemapSpider):
     bypass_success_xpath = '//a[contains(@href, "forumdisplay.php?")]'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     post_datetime_format = '%d.%m.%Y'
     sitemap_datetime_format = '%d.%m.%Y'
     cloudfare_delay = 5
     handle_httpstatus_list = [503]
 
-    def start_requests(self, cookies=None, ip=None):
+    def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
@@ -87,6 +95,9 @@ class ZloySpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

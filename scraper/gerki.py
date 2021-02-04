@@ -35,7 +35,7 @@ class GerkiSpider(SitemapSpider):
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     handle_httpstatus_list = [403]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
@@ -54,6 +54,9 @@ class GerkiSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
 
             # Standardize url

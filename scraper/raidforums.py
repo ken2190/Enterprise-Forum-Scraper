@@ -67,6 +67,9 @@ class RaidForumsSpider(SitemapSpider):
 
         all_forums = response.xpath(self.forum_xpath).extract()
 
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
+
         for forum_url in all_forums:
             # Standardize url
             if self.base_url not in forum_url:
@@ -79,11 +82,11 @@ class RaidForumsSpider(SitemapSpider):
                 callback=self.parse_forum
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, thread_meta={}, is_first_page=True):
 
         # Parse generic forums
         if not self.useronly:
-            yield from super().parse_forum(response)
+            yield from super().parse_forum(response, thread_meta={}, is_first_page=True)
 
         # Parse sub forums
         yield from self.parse(response)

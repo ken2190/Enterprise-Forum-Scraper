@@ -61,11 +61,14 @@ class OgUsersSpider(SitemapSpider):
 
     get_users = '--getusers' in sys.argv
 
+    # Login Failed Message
+    login_failed_xpath = '//div[@class="error"]'
+
     #captcha stuffs
     bypass_success_xpath = '//a[@class="guestnav" and text()="Login"]'
 
     # Other settings
-    use_proxy = True
+    use_proxy = "On"
     sitemap_datetime_format = "%m-%d-%Y"
     handle_httpstatus_list = [403]
     get_cookies_retry = 10
@@ -79,6 +82,14 @@ class OgUsersSpider(SitemapSpider):
         return super().get_avatar_file(url)
 
     def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
