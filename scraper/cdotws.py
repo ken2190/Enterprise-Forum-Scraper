@@ -43,6 +43,8 @@ class CdotWsSpider(SitemapSpider):
     post_date_xpath = '//span[@class="date"]/text()[1]'
 
     avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
+    
+    login_failed_xpath = '//div[contains(., "invalid username or password")]'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -130,6 +132,10 @@ class CdotWsSpider(SitemapSpider):
     def parse_start(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+
+        # Check if logged in correctly
+        self.check_if_logged_in(response)
+        
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 
