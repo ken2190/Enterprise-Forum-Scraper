@@ -46,27 +46,7 @@ def get_error(stats, site_type='forum'):
     elif finish_reason == 'login_is_failed':
         return _err_msg("E13")
     elif finish_reason == 'cannot_bypass_captcha':
-        return _err_msg("E30")
-
-    # check if forum count > 0
-    if stats.get(MAINLIST_COUNT, 0) == 0:
-        return _warn_msg("W10")
-
-    # check if thread count > 0
-    if stats.get(DETAILS_COUNT, 0) == 0:
-        return _warn_msg("W11")
-
-    # check if message count > 0
-    if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) >= stats.get(DETAILS_COUNT, 0):
-        return _warn_msg("W12")
-
-    thread_extraction_failed = (
-        stats.get(DETAILS_NO_URL_COUNT, 0) > 0 or
-        stats.get(DETAILS_NO_TOPIC_ID_COUNT, 0) > 0 or
-        stats.get(DETAILS_NO_DATE_COUNT, 0) > 0
-    )
-    if thread_extraction_failed:
-        return _warn_msg("W13")
+        return _err_msg("E20")
 
     # check if bypass captcha failed
     if stats.get(CANNOT_BYPASS_CAPTCHA, 0) > 1:
@@ -81,6 +61,26 @@ def get_warnings(stats, site_type='forum'):
 
     warnings = []
 
+    # check if forum count > 0
+    if stats.get(MAINLIST_COUNT, 0) == 0:
+        warnings.append(_warn_msg("W10"))
+
+    # check if thread count > 0
+    if stats.get(DETAILS_COUNT, 0) == 0:
+        warnings.append(_warn_msg("W11"))
+
+    # check if message count > 0
+    if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) >= stats.get(DETAILS_COUNT, 0):
+        warnings.append(_warn_msg("W12"))
+
+    thread_extraction_failed = (
+        stats.get(DETAILS_NO_URL_COUNT, 0) > 0 or
+        stats.get(DETAILS_NO_TOPIC_ID_COUNT, 0) > 0 or
+        stats.get(DETAILS_NO_DATE_COUNT, 0) > 0
+    )
+    if thread_extraction_failed:
+        warnings.append(_warn_msg("W13"))
+        
     # check if all the forums were processed
     processed_forums_cnt = (
         stats.get(MAINLIST_PROCESSED_COUNT, 0) + stats.get(MAINLIST_NO_DETAIL_COUNT, 0)
