@@ -13,14 +13,8 @@ ERROR_MESSAGES = {
     "E12": "Account is banned",
     "E13": "Login is Failed",
 
-    # forum/productlist errors
-    "E20": "No Mainlist found",
-    "E21": "No Details found",
-    "E22": "No messages found",
-    "E23": "Details extraction failed",
-
     # Captcha failed
-    "E30": "Can not bypass captcha"
+    "E20": "Can not bypass captcha"
 }
 
 WARNING_MESSAGES = {
@@ -32,4 +26,10 @@ WARNING_MESSAGES = {
     "W06": "No Details next pages",
     "W07": "Errors in the log",
     "W08": "No new files"
+
+    # forum/productlist errors
+    "W10": "No Mainlist found",
+    "W11": "No Details found",
+    "W12": "No messages found",
+    "W13": "Details extraction failed",
 }

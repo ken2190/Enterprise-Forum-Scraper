@@ -50,15 +50,15 @@ def get_error(stats, site_type='forum'):
 
     # check if forum count > 0
     if stats.get(MAINLIST_COUNT, 0) == 0:
-        return _err_msg("E20")
+        return _err_msg("W10")
 
     # check if thread count > 0
     if stats.get(DETAILS_COUNT, 0) == 0:
-        return _err_msg("E21")
+        return _err_msg("W11")
 
     # check if message count > 0
     if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) >= stats.get(DETAILS_COUNT, 0):
-        return _err_msg("E22")
+        return _err_msg("W12")
 
     thread_extraction_failed = (
         stats.get(DETAILS_NO_URL_COUNT, 0) > 0 or
@@ -66,11 +66,11 @@ def get_error(stats, site_type='forum'):
         stats.get(DETAILS_NO_DATE_COUNT, 0) > 0
     )
     if thread_extraction_failed:
-        return _err_msg("E23")
+        return _err_msg("W13")
 
     # check if bypass captcha failed
     if stats.get(CANNOT_BYPASS_CAPTCHA, 0) > 1:
-        return _err_msg("E30")
+        return _err_msg("E20")
 
 def get_warnings(stats, site_type='forum'):
     """ Check stats and return list of warnings """
