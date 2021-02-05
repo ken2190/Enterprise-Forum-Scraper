@@ -44,6 +44,15 @@ class PrtShipSpider(SitemapSpider):
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
+    def start_requests(self):
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse,
+            errback=self.check_site_error,
+            dont_filter=True
+        )
+
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)

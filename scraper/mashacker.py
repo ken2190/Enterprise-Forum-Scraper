@@ -14,7 +14,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
 class MasHackerSpider(SitemapSpider):
     name = 'mashacker_spider'
 
-    base_url = "https://www.mashacker.com/"
+    base_url = "http://www.mashacker.com/"
 
     # # Xpath stuffs
     forum_xpath = '//div[@class="datacontainer"]//h2[@class="forumtitle"]/a'\

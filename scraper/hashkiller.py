@@ -51,12 +51,6 @@ class HashKillerSpider(SitemapSpider):
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
-    def parse_post_date(self, post_date):
-        return super().parse_post_date(post_date[:-5])
-
-    def parse_thread_date(self, thread_date):
-        return super().parse_thread_date(thread_date[:-5])
-
     def start_requests(self):
         yield Request(
             url="https://forum.hashkiller.io/index.php",

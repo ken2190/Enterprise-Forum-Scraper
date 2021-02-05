@@ -43,12 +43,16 @@ class Galaxy3Spider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.headers.update({
             "user-agent": USER_AGENT
         })
 
     def start_requests(self):
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", 1)
+
         yield Request(
             url=f'{self.base_url}/thewire/all',
             callback=self.parse_forum,

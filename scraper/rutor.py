@@ -10,7 +10,7 @@ PROXY = 'http://localhost:8118'
 
 class RutorSpider(SitemapSpider):
     name = 'rutor_spider'
-    base_url = 'http://rutorzzmfflzllk5.onion'
+    base_url = 'http://rutordeepkpafpudl22pbbhzm4llbgncunvgcc66kax55sc4mp4kxcid.onion'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href'

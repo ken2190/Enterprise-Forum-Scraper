@@ -42,7 +42,8 @@ class HydraSpider(MarketPlaceSpider):
     avatar_xpath = '//div[@class="product_img_big"]//img/@src'
 
     # Login Failed Message xpath
-    login_failed_xpath = '//*[contains(., "Неверный логин или пароль")]'
+    login_failed_xpath = '//*[contains(., "Неверный логин или пароль")] |' \
+                        '//*[contains(., "Вы забанены")]'
     captcha_failed_xpath = '//*[contains(., "Вы ввели неверный код с картинки")]'
 
     # Regex stuffs
@@ -61,7 +62,7 @@ class HydraSpider(MarketPlaceSpider):
             'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
         }
     }
-    use_proxy = "On"
+    use_proxy = "Tor"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
