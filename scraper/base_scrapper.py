@@ -1639,6 +1639,9 @@ class SitemapSpider(BypassCloudfareSpider):
             request = failure.request
             self.logger.error('TunnelError on %s', request.url)
             raise CloseSpider(reason='site_is_down')
+        
+        else:
+            raise CloseSpider(reason='site_is_down')
 
     def parse(self, response):
         # Synchronize cloudfare user agent
