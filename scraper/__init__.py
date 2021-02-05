@@ -179,6 +179,7 @@ from scraper.raidforums_shoutbox import RaidforumsShoutboxScrapper
 from scraper.shadownet import ShadownetScrapper
 from scraper.leakforums import LeakForumsScrapper
 from scraper.happyblog import HappyBlogScrapper
+from scraper.bitcoingarden import BitcoinGardenScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -361,5 +362,6 @@ SCRAPER_MAP = {
     'crdpro': CrdProScrapper,
     'shadownet': ShadownetScrapper,
     'leakforums': LeakForumsScrapper,
-    'happyblog': HappyBlogScrapper
+    'happyblog': HappyBlogScrapper,
+    'bitcoingarden': BitcoinGardenScrapper
 }
