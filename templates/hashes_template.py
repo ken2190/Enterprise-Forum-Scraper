@@ -63,7 +63,8 @@ class HashesParser(BaseTemplate):
                     data = {
                         '_source': {
                             'source': 'hashes.org',
-                            'type': hash_type,
+                            "type": 'hash',
+                            'hashtype': hash_type,
                             'hash': hash_value,
                             'salt': hash_salt,
                             'value': hash_plain
