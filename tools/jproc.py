@@ -28,7 +28,12 @@ class Parser:
         self.parser.add_argument(
             '-f', '--format',
             help='Insert formatting for elasticsearch', action='store_true')
-
+        self.parser.add_argument(
+            '-importdate', '--importdate',
+            help='Add importdate field')
+        self.parser.add_argument(
+            '-b', '--breach',
+            help='Add breach field')
     def get_args(self,):
         return self.parser.parse_args()
 
@@ -105,6 +110,10 @@ def process_line(out_file, single_json, args):
         filtered_json = {'_source': final_data}
     else:
         filtered_json = final_data
+    if args.importdate:
+        filtered_json['importdate'] = args.importdate
+    if args.breach:
+        filtered_json['breach'] = args.breach
     out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
 
 
@@ -119,12 +128,13 @@ def main():
             -o  | --output OUTPUT:          Output File
 
             Optional:
-            -s  | --keep KEEP_LIST:         List of fields to keep (comma separated).
-            -d  | --domain:                 Add domain field from email
-            -am | --address_merge:          Merge Addresses
-            -nm | --name_merge              Merge Names
-            -f  | --format                  Insert formatting for elasticsearch
-
+            -s           | --keep KEEP_LIST:         List of fields to keep (comma separated).
+            -d           | --domain:                 Add domain field from email
+            -am          | --address_merge:          Merge Addresses
+            -nm          | --name_merge              Merge Names
+            -f           | --format                  Insert formatting for elasticsearch
+            -importdate  | --importdate              Add importdate field
+            -b           | --breach                  Add breach field
             """
         print(help_message)
         raise

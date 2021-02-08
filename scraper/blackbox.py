@@ -19,35 +19,29 @@ class BlackBoxsSpider(SitemapSpider):
     name = "blackboxs_spider"
 
     # Url stuffs
-    base_url = "http://blackboxs.biz/"
+    base_url = "http://blackboxs.biz"
 
     # Xpath stuffs
 
     # Forum xpath #
-    forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
-    thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
-    thread_first_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
-                              '/a[contains(@href, "showthread.php?")]/@href'
-    thread_last_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div/span'\
-                             '/a[contains(@href, "showthread.php?")]'\
-                             '[last()]/@href'
-    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
-
-    pagination_xpath = '//a[@rel="next"]/@href'
-    thread_pagination_xpath = '//a[@rel="prev"]/@href'
-    thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
-    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]'\
-                      '/a[contains(@name,"post")]'\
-                      '/following-sibling::text()[1]'
-    avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
+    forum_xpath = '//h3[@class="node-title"]/a/@href'
+    pagination_xpath = '//a[contains(@class, "pageNav-jump--next") and text()="Next"]/@href'
+    thread_xpath = '//div[contains(@class, "structItem--thread")]'
+    thread_first_page_xpath = './/div[@class="structItem-title"]/a[last()]/@href'
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]/a[last()]/@href'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]/@datetime'
+    thread_page_xpath = '//nav//li[contains(@class,"pageNav-page--current")]/a/text()'
+    thread_pagination_xpath = '//nav//a[contains(text(),"Prev")]/@href'
+    post_date_xpath = '//article//time/@title'
+    avatar_xpath = '//article//a[contains(@class, "avatar")]/img/@src'
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r"t=(\d+)",
+        r"threads/.*\.(\d+)",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
-        r"u=(\d+)",
+        r".*/(\S+\.\w+)",
         re.IGNORECASE
     )
 
@@ -55,47 +49,8 @@ class BlackBoxsSpider(SitemapSpider):
     use_proxy = "On"
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
-    post_datetime_format = '%d.%m.%Y, %H:%M'
-    sitemap_datetime_format = '%d.%m.%Y'
-
-    def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        thread_date = thread_date.strip()
-        if "днес" in thread_date.lower():
-            return datetime.today()
-        elif "вчера" in thread_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                thread_date,
-                self.sitemap_datetime_format
-            )
-
-    def parse_post_date(self, post_date):
-        """
-        :param post_date: str => post date as string
-        :return: datetime => post date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
-        # Standardize thread_date
-        post_date = post_date.strip()
-        if not post_date:
-            return
-
-        if "днес" in post_date.lower():
-            return datetime.today()
-        elif "вчера" in post_date.lower():
-            return datetime.today() - timedelta(days=1)
-        else:
-            return datetime.strptime(
-                post_date,
-                self.post_datetime_format
-            )
+    sitemap_datetime_format = '%b %d, %Y'
+    post_datetime_format = '%b %d, %Y'
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -124,48 +79,6 @@ class BlackBoxsSpider(SitemapSpider):
 
         # Save avatars
         yield from self.parse_avatars(response)
-
-    def parse_avatars(self, response):
-
-        # Synchronize headers user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Save avatar content
-        for avatar in response.xpath(self.avatar_xpath):
-            avatar_url = avatar.xpath('img/@src').extract_first()
-
-            # Standardize avatar url
-            if not avatar_url.lower().startswith("http"):
-                avatar_url = self.base_url + avatar_url
-
-            if 'image/svg' in avatar_url:
-                continue
-
-            user_url = avatar.xpath('@href').extract_first()
-            match = self.avatar_name_pattern.findall(user_url)
-            if not match:
-                continue
-
-            file_name = os.path.join(
-                self.avatar_path,
-                f'{match[0]}.jpg'
-            )
-
-            if os.path.exists(file_name):
-                continue
-
-            yield Request(
-                url=avatar_url,
-                headers=self.headers,
-                callback=self.parse_avatar,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "file_name": file_name
-                    }
-                ),
-            )
-
 
 class BlackBoxScrapper(SiteMapScrapper):
 

@@ -9,7 +9,7 @@ ERROR_MESSAGES = {
 
     # site access errors
     "E10": "Site is down",
-    "E11": "Access is blocked",
+    "E11": "Access is blocked (Cloudflare)",
     "E12": "Account is banned",
     "E13": "Login is Failed",
 

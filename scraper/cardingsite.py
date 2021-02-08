@@ -21,12 +21,12 @@ class CardingSiteSpider(SitemapSpider):
     base_url = "https://cardingsite.cc/"
 
     # Xpath stuffs
-    forum_xpath = '//div[@id="nodeList"]//h3[@class="node-title"]/a/@href'
+    forum_xpath = '//h3[@class="node-title"]/a/@href'
     pagination_xpath = '//a[contains(@class, "pageNav-jump--next") and text()="Next"]/@href'
-    thread_xpath = '//div[@class="structItem-wrapper"]'
+    thread_xpath = '//div[contains(@class, "structItem--thread")]'
     thread_first_page_xpath = './/div[@class="structItem-title"]/a[last()]/@href'
     thread_last_page_xpath = './/span[@class="structItem-pageJump"]/a[last()]/@href'
-    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]/@title'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]/@datetime'
     thread_page_xpath = '//nav//li[contains(@class,"pageNav-page--current")]/a/text()'
     thread_pagination_xpath = '//nav//a[contains(text(),"Prev")]/@href'
     post_date_xpath = '//article//time/@title'
@@ -55,13 +55,6 @@ class CardingSiteSpider(SitemapSpider):
         self.headers = {
             "User-Agent": USER_AGENT
         }
-
-    def parse_thread_date(self, thread_date):
-        thread_date = thread_date.split(' at')[0].strip()
-        return datetime.strptime(
-            thread_date.strip(),
-            self.sitemap_datetime_format
-        )
 
     def start_requests(self):
         # Temporary action to start spider

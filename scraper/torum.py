@@ -52,7 +52,7 @@ class TorumSpider(SitemapSpider):
     post_date_xpath = '//p[@class="author"]/text()[last()]'
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "Tor"
     sitemap_datetime_format = '%d %b %Y'
     post_datetime_format = '%d %b %Y'
 
@@ -87,6 +87,7 @@ class TorumSpider(SitemapSpider):
             self.base_url,
             headers=self.headers,
             callback=self.enter_captcha,
+            errback=self.check_site_error,
             dont_filter=True,
             meta={
                 'proxy': PROXY

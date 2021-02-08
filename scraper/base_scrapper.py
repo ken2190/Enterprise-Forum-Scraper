@@ -596,6 +596,9 @@ class BypassCloudfareSpider(scrapy.Spider):
             )
         )
 
+        if not bypass_cookies:
+            raise CloseSpider(reason='access_is_blocked')
+        
         return bypass_cookies, ip
 
     def get_cloudflare_cookies_via_browser(self, base_url=None, proxy=False, fraud_check=False):
@@ -1476,7 +1479,7 @@ class SitemapSpider(BypassCloudfareSpider):
             meta["ip"] = ip
 
         # Branch choices requests
-        if self.start_date and self.sitemap_url:
+        if self.sitemap_url:
             yield scrapy.Request(
                 url=self.sitemap_url,
                 headers=self.headers,
@@ -1635,6 +1638,9 @@ class SitemapSpider(BypassCloudfareSpider):
         elif failure.check(TunnelError):
             request = failure.request
             self.logger.error('TunnelError on %s', request.url)
+            raise CloseSpider(reason='site_is_down')
+        
+        else:
             raise CloseSpider(reason='site_is_down')
 
     def parse(self, response):

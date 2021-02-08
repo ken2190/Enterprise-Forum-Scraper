@@ -214,7 +214,7 @@ from templates.crdpro_template import CrdProParser
 from templates.shadownet_template import ShadownetParser
 from templates.hashes_template import HashesParser
 from templates.leakforums_template import LeakForumsParser
-
+from templates.bitcoingarden_template import BitcoinGardenParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -431,5 +431,6 @@ PARSER_MAP = {
     'crdpro': CrdProParser,
     'shadownet': ShadownetParser,
     'hashes': HashesParser,
-    'leakforums': LeakForumsParser
+    'leakforums': LeakForumsParser,
+    'bitcoingarden': BitcoinGardenParser
 }

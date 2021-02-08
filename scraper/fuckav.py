@@ -35,8 +35,8 @@ class FuckavSpider(SitemapSpider):
     base_url = "https://fuckav.ru/"
 
     # Css stuffs
-    login_form_css = "form[action*=\"login.php\"]"
-    captcha_form_css = "#pagenav_menu + form[action*=\"login.php\"]"
+    login_form_css = captcha_form_css = '//form[@method="post"]'
+    # captcha_form_css = "#pagenav_menu + form[action*=\"login.php\"]"
 
     # Xpath stuffs
     forum_xpath = "//td[contains(@id,\"f\")]/div/a[contains(@href,\"forumdisplay.php?f\")]/@href|" \
@@ -163,7 +163,7 @@ class FuckavSpider(SitemapSpider):
 
         yield FormRequest.from_response(
             response,
-            formcss=self.login_form_css,
+            formxpath=self.login_form_css,
             formdata={
                 "vb_login_username": USERNAME,
                 "vb_login_password": "",
@@ -206,7 +206,7 @@ class FuckavSpider(SitemapSpider):
 
         yield FormRequest.from_response(
             response,
-            formcss=self.captcha_form_css,
+            formxpath=self.captcha_form_css,
             formdata={
                 "humanverify[input]": captcha_token,
                 "s": "",
