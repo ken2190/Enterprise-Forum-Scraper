@@ -41,41 +41,42 @@ class HashesParser(BaseTemplate):
                 continue
 
     def process_file(self, input_file_path, output_file_path):
-        with open(input_file_path, 'r') as fp:
-            fp.seek(0)
+        with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
+            with open(input_file_path, 'r') as fp:
+                fp.seek(0)
 
-            while True:
-                row = fp.readline()
-                if not row:
-                    break
-                row = row.strip()
-                
-                if row:
-                    hash_type = row.split(" ")[0]
-                    hash_content = row.split(" ")[1]
-
-                    if len(hash_content.split(":")) == 3:
-                        hash_value = hash_content.split(":")[0]
-                        hash_salt = hash_content.split(":")[1]
-                        hash_plain = hash_content.split(":")[2]
-                    else:
-                        hash_value = hash_content.split(":")[0]
-                        hash_salt = ''
-                        hash_plain = hash_content.split(":")[1]
+                while True:
+                    row = fp.readline()
+                    if not row:
+                        break
+                    row = row.strip()
                     
-                    data = {
-                        '_source': {
-                            'source': 'hashes.org',
-                            "type": 'hash',
-                            'hashtype': hash_type,
-                            'hash': hash_value,
-                            'salt': hash_salt,
-                            'value': hash_plain
+                    if row:
+                        hash_type = row.split(" ")[0]
+                        hash_content = row.split(" ")[1]
+
+                        if len(hash_content.split(":")) == 3:
+                            hash_value = hash_content.split(":")[0]
+                            hash_salt = hash_content.split(":")[1]
+                            hash_plain = hash_content.split(":")[2]
+                        else:
+                            hash_value = hash_content.split(":")[0]
+                            hash_salt = ''
+                            hash_plain = hash_content.split(":")[1]
+                        
+                        data = {
+                            '_source': {
+                                'source': 'hashes.org',
+                                "type": 'hash',
+                                'hashtype': hash_type,
+                                'hash': hash_value,
+                                'salt': hash_salt,
+                                'value': hash_plain
+                            }
                         }
-                    }
 
-                    with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
-                        utils.write_json(file_pointer, data)
-                    
-            print(f'Json for paste_id {input_file_path} '
-                f'written in {output_file_path}')
+                    json_file = json.dumps(data, indent=4, ensure_ascii=False)
+                    file_pointer.write(json_file)
+                        
+        print(f'Json for paste_id {input_file_path} '
+        f'written in {output_file_path}')
