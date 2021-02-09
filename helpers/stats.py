@@ -62,31 +62,31 @@ def get_warnings(stats, site_type='forum'):
     warnings = []
 
     # check if forum count > 0
-    if stats.get(MAINLIST_COUNT, 0) == 0:
-        warnings.append(_warn_msg("W10"))
+    # if stats.get(MAINLIST_COUNT, 0) == 0:
+    #     warnings.append(_warn_msg("W10"))
 
     # check if thread count > 0
-    if stats.get(DETAILS_COUNT, 0) == 0:
-        warnings.append(_warn_msg("W11"))
+    # if stats.get(DETAILS_COUNT, 0) == 0:
+    #     warnings.append(_warn_msg("W11"))
 
     # check if message count > 0
-    if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) >= stats.get(DETAILS_COUNT, 0):
-        warnings.append(_warn_msg("W12"))
+    # if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) >= stats.get(DETAILS_COUNT, 0):
+    #     warnings.append(_warn_msg("W12"))
 
     thread_extraction_failed = (
         stats.get(DETAILS_NO_URL_COUNT, 0) > 0 or
         stats.get(DETAILS_NO_TOPIC_ID_COUNT, 0) > 0 or
         stats.get(DETAILS_NO_DATE_COUNT, 0) > 0
     )
-    if thread_extraction_failed:
-        warnings.append(_warn_msg("W13"))
+    # if thread_extraction_failed:
+    #     warnings.append(_warn_msg("W13"))
         
     # check if all the forums were processed
     processed_forums_cnt = (
         stats.get(MAINLIST_PROCESSED_COUNT, 0) + stats.get(MAINLIST_NO_DETAIL_COUNT, 0)
     )
-    if forum_cnt > processed_forums_cnt:
-        warnings.append(_warn_msg("W01"))
+    # if forum_cnt > processed_forums_cnt:
+    #     warnings.append(_warn_msg("W01"))
 
     # check if all of the threads were processed
     processed_threads_cnt = (
@@ -98,29 +98,29 @@ def get_warnings(stats, site_type='forum'):
         stats.get(DETAILS_NO_DATE_COUNT, 0) +
         stats.get(DETAILS_NO_MESSAGES_COUNT, 0)
     )
-    if thread_cnt > processed_threads_cnt:
-        warnings.append(_warn_msg("W02"))
+    # if thread_cnt > processed_threads_cnt:
+    #     warnings.append(_warn_msg("W02"))
 
     # check if all avatars were scraped
-    saved_avatars_cnt = stats.get(AVATAR_SAVED_COUNT, 0)
-    if avatar_cnt > saved_avatars_cnt:
-        warnings.append(_warn_msg("W03"))
+    # saved_avatars_cnt = stats.get(AVATAR_SAVED_COUNT, 0)
+    # if avatar_cnt > saved_avatars_cnt:
+    #     warnings.append(_warn_msg("W03"))
 
     # check if all the threads have messages
-    if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) > 0:
-        warnings.append(_warn_msg("W04"))
+    # if stats.get(DETAILS_NO_MESSAGES_COUNT, 0) > 0:
+    #     warnings.append(_warn_msg("W04"))
 
     # check if at least one forum next page found
-    if stats.get(MAINLIST_NEXT_PAGE_COUNT, 0) == 0:
-        warnings.append(_warn_msg("W05"))
+    # if stats.get(MAINLIST_NEXT_PAGE_COUNT, 0) == 0:
+    #     warnings.append(_warn_msg("W05"))
 
     # check if at least one thread next page found
-    if stats.get(DETAILS_NEXT_PAGE_COUNT, 0) == 0:
-        warnings.append(_warn_msg("W06"))
+    # if stats.get(DETAILS_NEXT_PAGE_COUNT, 0) == 0:
+    #     warnings.append(_warn_msg("W06"))
 
     # check for err messages in the log
-    if stats.get("log_count/ERROR", 0) > 0:
-        warnings.append(_warn_msg("W07"))
+    # if stats.get("log_count/ERROR", 0) > 0:
+    #     warnings.append(_warn_msg("W07"))
 
     # check if no new files
     saved_count = stats.get(DETAILS_SAVED_COUNT, 0) + stats.get(AVATAR_SAVED_COUNT, 0)

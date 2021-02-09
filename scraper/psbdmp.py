@@ -32,6 +32,8 @@ class PsbdmpSpider(SitemapSpider):
     date_format = '%Y-%m-%d'
 
     def start_requests(self,):
+        if not self.start_date:
+            self.end_date = datetime.datetime.now()
         if not self.end_date:
             self.end_date = datetime.datetime.now()
         self.start_date = self.start_date - datetime.timedelta(days=1)
@@ -101,7 +103,7 @@ class PsbdmpSpider(SitemapSpider):
         with open(dump_file, 'w') as f:
             f.write(content)
         print('{} done..!'.format(dump_file))
-
+        self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
 class PsbdmpScrapper(SiteMapScrapper):
     spider_class = PsbdmpSpider
