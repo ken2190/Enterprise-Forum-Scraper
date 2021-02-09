@@ -15,8 +15,8 @@ from scraper.base_scrapper import (
 )
 
 
-USER = "hackwithme123"
-PASS = "6VUZmjFzM2WtyjV"
+USER = "GreenAmber"
+PASS = "Night#Verm01"
 
 class V3RMillionSpider(SitemapSpider):
     name = "v3rmillion_spider"
