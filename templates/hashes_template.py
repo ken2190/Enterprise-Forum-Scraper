@@ -42,9 +42,12 @@ class HashesParser(BaseTemplate):
 
     def process_file(self, input_file_path, output_file_path):
         with open(input_file_path, 'r') as fp:
-            content = fp.read()
+            fp.seek(0)
 
-            for row in content.split("\n"):
+            while True:
+                row = fp.readline()
+                if not row:
+                    break
                 row = row.strip()
                 
                 if row:
