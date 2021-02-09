@@ -47,7 +47,8 @@ class V3RMillionSpider(SitemapSpider):
     post_date_xpath = "//span[@class=\"post_date\"]/text()[1]"
 
     # Login Failed Message
-    login_failed_xpath = '//div[contains(@class, "error")]'
+    login_failed_xpath = '//div[contains(@class, "error")] |' \
+        '//strong[contains(., "Your location has changed, please check your email for an unlock code")]'
 
     # Avatar xpath #
     avatar_xpath = "//div[@class=\"author_avatar\"]/a/img/@src"
@@ -151,7 +152,8 @@ class V3RMillionSpider(SitemapSpider):
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats
-        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
+        forum_cnt = self.crawler.stats.get('mainlist/mainlist_count', 0)
+        self.crawler.stats.set_value("mainlist/mainlist_count", forum_cnt + len(all_forums))
 
         for forum_url in all_forums:
             if self.base_url not in forum_url:
