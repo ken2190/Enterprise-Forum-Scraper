@@ -119,7 +119,7 @@ class IpHandler(object):
         try:
             ip = json.loads(response).get("ip")
         except:
-            ip = '255.255.255.255'
+            return '10.10.10.10', self.fraudulent_threshold + 1
 
         # Load score
         score = await self.get_fraud_score(ip)
