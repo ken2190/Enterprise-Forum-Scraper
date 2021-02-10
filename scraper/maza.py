@@ -2,7 +2,7 @@ import os
 import re
 import logging
 import time
-# import dateparser
+import dateparser
 
 from selenium.webdriver.firefox.options import Options
 from scrapy import Request
@@ -49,8 +49,7 @@ class MazaSpider(SeleniumSpider):
     thread_last_page_xpath = './/dl[@class="pagination"]/dd/span[last()]'\
                              '/a[contains(@href, "showthread.php?")]'\
                              '/@href'
-    thread_date_xpath = './/em[@class="time"]/preceding-sibling::text()'
-
+    thread_date_xpath = '(.//dl[contains(@class, "threadlastpost")]/dd)[2]//text()'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagination_top"]'\
@@ -200,6 +199,40 @@ class MazaSpider(SeleniumSpider):
         time.sleep(10)
         self.logger.info('2nd phase login successful')
 
+    def extract_thread_stats(self, thread):
+
+        # Load stats
+        thread_first_page_url = None
+        if self.thread_first_page_xpath:
+            thread_first_page_url = thread.xpath(
+                self.thread_first_page_xpath
+            )
+
+        thread_last_page_url = None
+        if self.thread_last_page_xpath:
+            thread_last_page_url = thread.xpath(
+                self.thread_last_page_xpath
+            )
+
+        thread_lastmod = thread.xpath(
+            self.thread_date_xpath
+        )
+        thread_lastmod = ' '.join(thread_lastmod).strip()
+
+        # Process stats
+        if thread_last_page_url:
+            thread_url = thread_last_page_url[0]
+        elif thread_first_page_url:
+            thread_url = thread_first_page_url[0]
+        else:
+            thread_url = None
+
+        try:
+            thread_lastmod = dateparser.parse(thread_lastmod.strip())
+        except Exception as err:
+            thread_lastmod = None
+
+        return thread_url, thread_lastmod
 
 class MazaScrapper(SiteMapScrapper):
     spider_class = MazaSpider
