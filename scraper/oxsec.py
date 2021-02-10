@@ -29,6 +29,7 @@ class Ox00SecSpider(SitemapSpider):
         self.thread_url = 'https://0x00sec.org/t/{}/{}'
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.start_page = 0
+        self.use_proxy = 'On'
         self.headers = {
             'sec-fetch-mode': 'same-origin',
             'sec-fetch-site': 'same-origin',

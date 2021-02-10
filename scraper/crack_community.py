@@ -35,7 +35,8 @@ class CrackCommunitySpider(SitemapSpider):
 
     # captcha stuffs
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
-
+    use_proxy = 'On'
+    
     # Regex pattern
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",

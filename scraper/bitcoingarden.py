@@ -48,6 +48,8 @@ class BitcoinGardenSpider(SitemapSpider):
     sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"
     post_datetime_format = "%B %d, %Y, %I:%M:%S %p"
 
+    use_proxy = 'On'
+    
     def parse_thread_date(self, thread_date):
 
         # Check thread date validation

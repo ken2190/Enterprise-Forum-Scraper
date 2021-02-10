@@ -54,6 +54,8 @@ class XrpChatSpider(SitemapSpider):
     thread_page_xpath = '//li[contains(@class,"Pagination_active")]//a/text()'
     post_date_xpath = '//div[contains(@class,"ipsType_reset")]//time/@title'
 
+    use_proxy = 'On'
+    
     def parse_thread(self, response):
         yield from super().parse_thread(response)
         yield from super().parse_avatars(response)

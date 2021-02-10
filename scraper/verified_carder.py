@@ -49,11 +49,13 @@ class VerifiedCarderSpider(SitemapSpider):
         r".*page/(\d+)",
         re.IGNORECASE
     )
-
+    
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
+    use_proxy = 'On'
+    
     def parse_thread_date(self, thread_date):
         """
         :param thread_date: str => thread date as string

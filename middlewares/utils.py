@@ -113,9 +113,13 @@ class IpHandler(object):
             except Exception as err:
                 session_id = uuid.uuid1().hex
                 continue
-
+        
+        ip = None
         # Load ip
-        ip = json.loads(response).get("ip")
+        try:
+            ip = json.loads(response).get("ip")
+        except:
+            ip = '255.255.255.255'
 
         # Load score
         score = await self.get_fraud_score(ip)

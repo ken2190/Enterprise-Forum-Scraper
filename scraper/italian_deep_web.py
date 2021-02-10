@@ -53,7 +53,7 @@ class ItalianDeepWebSpider(SitemapSpider):
     login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
     
     # Other settings
-    use_proxy = "On"
+    use_proxy = "Tor"
     retry_http_codes = [406, 429, 500, 503]
     sitemap_datetime_format = '%m-%d-%Y'
     post_datetime_format = '%m-%d-%Y'

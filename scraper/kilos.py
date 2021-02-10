@@ -54,7 +54,7 @@ class KilosSpider(MarketPlaceSpider):
             'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700
         }
     }
-    use_proxy = "On"
+    use_proxy = "Tor"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

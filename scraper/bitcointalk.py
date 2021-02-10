@@ -47,6 +47,7 @@ class BitcoinTalkSpider(SitemapSpider):
         r".*/(\S+\.\w+)",
         re.IGNORECASE
     )
+    use_proxy = 'On'
 
     # Other settings
     sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"

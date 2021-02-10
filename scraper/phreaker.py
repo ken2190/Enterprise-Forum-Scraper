@@ -37,7 +37,8 @@ class PhreakerSpider(SitemapSpider):
 
     post_date_xpath = "//time[@class=\"u-dt\"]/@datetime"
     avatar_xpath = "//div[@class=\"message-avatar-wrapper\"]/a/img/@src"
-
+    use_proxy = 'On'
+    
     # Regex stuffs
     topic_pattern = re.compile(
         r"(?<=\.)\d*?(?=\/)",

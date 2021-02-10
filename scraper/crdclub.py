@@ -57,7 +57,8 @@ class CrdClubSpider(SitemapSpider):
     thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
     post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]/text()'
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
-
+    use_proxy = 'On'
+    
     # Login Failed Message
     login_failed_xpath = '//div[contains(text(), "You have entered an invalid username or password")]'
 

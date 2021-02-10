@@ -21,7 +21,8 @@ class CrackedToSpider(SitemapSpider):
     thread_sitemap_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
     thread_url_xpath = "//loc/text()"
     thread_lastmod_xpath = "//lastmod/text()"
-
+    use_proxy = 'On'
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base_url = 'https://cracked.to/'

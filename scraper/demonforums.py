@@ -71,7 +71,7 @@ class DemonForumsSpider(SitemapSpider):
     avatar_xpath = '//div[@class="author_avatar"]//img/@src'
     
     # Login Failed Message
-    login_failed_xpath = '//div[contains(text(), "You have entered an invalid username or password")]'
+    login_failed_xpath = '//div[contains(., "You have entered an invalid username or password")]'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -10,7 +10,7 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 class Dark2WebSpider(SitemapSpider):
     name = 'dark2web_spider'
-    base_url = 'https://dark2web.ru/'
+    base_url = 'https://dark2web.net'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href|'\
@@ -31,7 +31,8 @@ class Dark2WebSpider(SitemapSpider):
                       '//time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
-
+    
+    use_proxy = 'On'
     # Regex stuffs
     topic_pattern = re.compile(
         r"/threads/(\d+)",

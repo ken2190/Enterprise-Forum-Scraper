@@ -48,7 +48,7 @@ class RUnionSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "Tor"
     sitemap_datetime_format = '%Y-%m-%d %H ч.'
     post_datetime_format = '%Y-%m-%d %H ч.'
 

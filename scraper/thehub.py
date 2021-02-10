@@ -57,7 +57,7 @@ class TheHubSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "Tor"
     sitemap_datetime_format = "%B %d, %Y, %I:%M:%S %p"
     post_datetime_format = "%B %d, %Y, %I:%M:%S %p »"
 

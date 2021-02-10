@@ -19,6 +19,7 @@ class CrimeMarketSpider(BypassCloudfareSpider):
         self.start_url = 'https://crimemarket.to/index.php'
         self.output_path = output_path
         self.avatar_path = avatar_path
+        self.use_proxy = 'On'
         self.headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
             "accept-encoding": 'gzip, deflate, br',

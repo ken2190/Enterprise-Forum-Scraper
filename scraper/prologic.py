@@ -29,7 +29,8 @@ class ProLogicSpider(SitemapSpider):
     post_date_xpath = '//div[@class="post_date"]/abbr/@title'
 
     avatar_xpath = '//li[@class="avatar"]/a/img/@src'
-
+    use_proxy = 'On'
+     
     # Login Failed Message
     login_failed_xpath = '//p[contains(@class, "message error")]'
 

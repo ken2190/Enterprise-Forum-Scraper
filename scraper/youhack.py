@@ -39,6 +39,8 @@ class YouHackSpider(SitemapSpider):
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     handle_httpstatus_list = [403]
 
+    use_proxy = 'On'
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(

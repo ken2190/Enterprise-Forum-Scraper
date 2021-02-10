@@ -32,6 +32,7 @@ class HashKillerSpider(SitemapSpider):
     thread_page_xpath = "//li[contains(@class,\"pageNav-page--current\")]/a/text()"
     post_date_xpath = "//div[@class=\"message-attribution-main\"]/a/time/@datetime"
     avatar_xpath = "//div[@class=\"message-avatar-wrapper\"]/a/img/@src"
+    use_proxy = 'On'
     
     # Regex stuffs
     avatar_name_pattern = re.compile(
