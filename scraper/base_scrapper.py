@@ -2632,6 +2632,11 @@ class SeleniumSpider(SitemapSpider):
                 self.topic_pages_saved
             )
 
+            self.crawler.stats.set_value(
+                "mainlist/detail_saved_count",
+                self.topic_pages_saved
+            )
+
             # Kill task if kill count met
             if self.kill and self.topic_pages_saved >= self.kill:
                 raise CloseSpider(reason="Kill count met, shut down.")

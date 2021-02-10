@@ -33,7 +33,7 @@ class PsbdmpSpider(SitemapSpider):
 
     def start_requests(self,):
         if not self.start_date:
-            self.end_date = datetime.datetime.now()
+            self.start_date = datetime.datetime.now()
         if not self.end_date:
             self.end_date = datetime.datetime.now()
         self.start_date = self.start_date - datetime.timedelta(days=1)
