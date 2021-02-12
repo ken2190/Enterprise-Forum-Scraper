@@ -97,6 +97,7 @@ class CrackedToSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             self.logger.info(f'{topic_id}-{paginated_value} done..!')
+        self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
         avatars = response.xpath(
             '//div[@class="author_avatar"]/a/img')
