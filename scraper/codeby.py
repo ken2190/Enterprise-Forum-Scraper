@@ -65,7 +65,8 @@ class CodebySpider(SitemapSpider):
             headers=self.headers,
             meta={
                 "cookiejar": uuid.uuid1().hex
-            }
+            },
+            errback=self.check_site_error
         )
 
     def parse(self, response):
