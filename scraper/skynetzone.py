@@ -75,7 +75,7 @@ class SkyNetZoneSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         # Solve reCAPTCHA
-        solved_captcha = self.solve_recaptcha(response).solution.token  # , proxyless=True)
+        solved_captcha = self.solve_recaptcha(response) # , proxyless=True)
         self.logger.debug(f'reCAPTCHA token: {solved_captcha.solution.token}')
 
         formdata = {
@@ -84,19 +84,22 @@ class SkyNetZoneSpider(SitemapSpider):
             'g-recaptcha-response': solved_captcha.solution.token
         }
 
+        meta = self.synchronize_meta(response)
+        meta['solved_captcha'] = solved_captcha
+
         yield FormRequest.from_response(
             response,
             formxpath=self.login_form_xpath,
             formdata=formdata,
             dont_click=True,
-            meta=self.synchronize_meta(response),
             dont_filter=True,
             headers=self.headers,
             callback=self.check_if_logged_in,
-            cb_kwargs=dict(solved_captcha=solved_captcha)
+            meta=meta
         )
 
-    def check_if_logged_in(self, response, solved_captcha):
+    def check_if_logged_in(self, response):
+        solved_captcha = response.meta['solved_captcha']
         # check if logged in successfully
         if response.xpath(self.forum_xpath):
             # report a good CAPTCHA
