@@ -57,11 +57,6 @@ class CrackCommunitySpider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.headers.update(
-            {
-                "Host": "crackcommunity.com"
-            }
-        )
 
     def start_requests(self):
         # Temporary action to start spider
@@ -90,7 +85,8 @@ class CrackCommunitySpider(SitemapSpider):
             headers=self.headers,
             meta=meta,
             cookies=cookies,
-            callback=self.parse
+            callback=self.parse,
+            errback=self.check_site_error
         )
 
     def parse(self, response):
