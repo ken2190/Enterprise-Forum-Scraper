@@ -174,6 +174,7 @@ class YouHackSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             print(f'{topic_id}-{paginated_value} done..!')
+        self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
         avatars = response.xpath(
             '//div[@class="avatarHolder"]/a/img')
@@ -223,7 +224,8 @@ class YouHackSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.body)
             print(f"Avatar {file_name_only} done..!")
-
+        self.crawler.stats.inc_value("mainlist/avatar_saved_count")
+        
 
 class YouHackScrapper(SiteMapScrapper):
 
