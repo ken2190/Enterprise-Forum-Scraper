@@ -75,7 +75,8 @@ class DfasSpider(SitemapSpider):
             headers=self.headers,
             meta={
                 'proxy': PROXY
-            }
+            },
+            errback=self.check_site_error
         )
 
     def proceed_for_login(self, response):
