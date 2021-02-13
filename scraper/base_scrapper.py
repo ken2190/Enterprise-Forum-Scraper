@@ -698,13 +698,17 @@ class BypassCloudfareSpider(scrapy.Spider):
             retry = 0
             while retry < self.get_cookies_retry:
                 # Load different branch
-                if base_url:
-                    browser.get(base_url)
-                elif self.start_date and self.sitemap_url:
-                    browser.get(self.sitemap_url)
-                else:
-                    browser.get(self.base_url)
 
+                try:
+                    if base_url:
+                        browser.get(base_url)
+                    elif self.start_date and self.sitemap_url:
+                        browser.get(self.sitemap_url)
+                    else:
+                        browser.get(self.base_url)
+                except RuntimeError:
+                    raise CloseSpider(reason='site_is_down')
+                
                 try:
                     success = self.check_bypass_success(browser)
                 except RuntimeError:
@@ -2046,7 +2050,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 ip = self.ip_handler.get_good_ip()
 
             # Init proxy
-            if proxy:
+            if proxy == 'On':
                 if ip is None:
                     proxy = super_proxy % (
                         "%s-session-%s" % (
@@ -2082,12 +2086,16 @@ class SitemapSpider(BypassCloudfareSpider):
             retry = 0
             while retry < self.get_cookies_retry:
                 # Load different branch
-                if base_url:
-                    browser.get(base_url)
-                elif self.start_date and self.sitemap_url:
-                    browser.get(self.sitemap_url)
-                else:
-                    browser.get(self.base_url)
+
+                try:
+                    if base_url:
+                        browser.get(base_url)
+                    elif self.start_date and self.sitemap_url:
+                        browser.get(self.sitemap_url)
+                    else:
+                        browser.get(self.base_url)
+                except:
+                    raise CloseSpider(reason='site_is_down')
 
                 # Solve captcha if exist such requirements
                 if check_captcha:
