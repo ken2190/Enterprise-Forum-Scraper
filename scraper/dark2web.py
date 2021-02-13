@@ -27,7 +27,7 @@ class Dark2WebSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div[@class="message-attribution-main"]'\
+    post_date_xpath = '//ul[contains(@class, "message-attribution-main")]'\
                       '//time[@datetime]/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
