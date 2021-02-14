@@ -7,7 +7,7 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 class BruteSpider(SitemapSpider):
     name = 'brute_spider'
-    base_url = 'https://brute.su'
+    base_url = 'https://brute.pw'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href|'\
@@ -106,7 +106,7 @@ class BruteSpider(SitemapSpider):
             )
         else:
             cookies, ip = self.get_cloudflare_cookies(
-                base_url=self.login_url,
+                base_url=self.base_url,
                 proxy=True,
                 fraud_check=True
             )
