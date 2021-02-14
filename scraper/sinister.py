@@ -56,7 +56,8 @@ class SinisterSpider(SitemapSpider):
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.parse_main
+            callback=self.parse_main,
+            errback=self.check_site_error
         )
 
     def parse_main(self, response):
