@@ -30,7 +30,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
 class DemonForumsSpider(SitemapSpider):
     name = 'demonforums_spider'
 
-    use_proxy = "On"
+    use_proxy = "VIP"
     proxy_countries = ['us', 'uk']
 
     handle_httpstatus_list = [403, 503]
