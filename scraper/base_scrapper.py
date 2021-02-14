@@ -2613,11 +2613,13 @@ class SeleniumSpider(SitemapSpider):
             response.xpath(self.post_date_xpath)
             if post_date.strip() and dateparser.parse(post_date.strip())
         ]
-        if self.start_date and max(post_dates) < self.start_date:
-            self.logger.info(
-                "No more post to update."
-            )
-            return
+        
+        if post_dates:
+            if self.start_date and max(post_dates) < self.start_date:
+                self.logger.info(
+                    "No more post to update."
+                )
+                return
 
         current_page = self.get_thread_current_page(response)
         with open(
