@@ -573,8 +573,9 @@ class BypassCloudfareSpider(scrapy.Spider):
             }
 
             try:
-                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')
-                response = cf_bypasser.get(base_url, proxies=proxies)
+                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')\
+                cf_bypasser.proxies = proxies
+                response = cf_bypasser.get(base_url)
             except Exception:
                 self.logger.exception('Try #%s to bypass CloudFlare failed', try_num)
                 continue
@@ -2050,7 +2051,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 ip = self.ip_handler.get_good_ip()
 
             # Init proxy
-            if proxy == 'On':
+            if proxy != 'Off':
                 if ip is None:
                     proxy = super_proxy % (
                         "%s-session-%s" % (
@@ -2138,6 +2139,7 @@ class SitemapSpider(BypassCloudfareSpider):
                     "http": proxy,
                     "https": proxy
                 }
+
             data = requests.get(**request_kwargs).json()
             ip = data.get("ip")
 
