@@ -215,6 +215,7 @@ from templates.shadownet_template import ShadownetParser
 from templates.hashes_template import HashesParser
 from templates.leakforums_template import LeakForumsParser
 from templates.bitcoingarden_template import BitcoinGardenParser
+from templates.exetools_template import ExetoolsParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -432,5 +433,6 @@ PARSER_MAP = {
     'shadownet': ShadownetParser,
     'hashes': HashesParser,
     'leakforums': LeakForumsParser,
-    'bitcoingarden': BitcoinGardenParser
+    'bitcoingarden': BitcoinGardenParser,
+    'exetools': ExetoolsParser
 }
