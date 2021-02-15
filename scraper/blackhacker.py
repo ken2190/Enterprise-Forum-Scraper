@@ -122,8 +122,6 @@ class BlackHackerSpider(SitemapSpider):
             "securitytoken": security_token,
             "s": ''
         }
-        print("="*100)
-        print(formdata)
 
         yield FormRequest.from_response(
             response,
@@ -191,7 +189,7 @@ class BlackHackerSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         self.check_if_logged_in(response)
-        
+
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats
