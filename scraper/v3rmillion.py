@@ -92,6 +92,8 @@ class V3RMillionSpider(SitemapSpider):
             fraud_check=True
         )
 
+        print(f'IP Address : {ip}')
+
         # Init request kwargs and meta
         meta = {
             "cookiejar": uuid.uuid1().hex,
@@ -183,6 +185,7 @@ class V3RMillionScrapper(SiteMapScrapper):
     spider_class = V3RMillionSpider
     site_name = 'v3rmillion.net'
     site_type = 'forum'
+    proxy_countries = ['us']
 
     def load_settings(self):
         settings = super().load_settings()

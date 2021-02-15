@@ -340,7 +340,7 @@ class SiteMapScrapper:
             "kill": getattr(self, "kill", None),
             "get_users": getattr(self, "get_users", None),
             "no_proxy": getattr(self, "no_proxy", None),
-            "proxy_countries": getattr(self, "proxy_countries", None),
+            # "proxy_countries": getattr(self, "proxy_countries", None),
             "use_vip": getattr(self, "use_vip", None)
         }
 
@@ -544,7 +544,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             },
             requestPostHook=injection,
             debug=False,
-            delay=5
+            # delay=5
         )
     
         bypass_cookies = {}
@@ -887,6 +887,8 @@ class SitemapSpider(BypassCloudfareSpider):
     # Login Failed Message xpath
     login_failed_xpath = None
 
+    proxy_countries = []
+    
     # Other settings
     get_cookies_delay = 2
     get_cookies_retry = 5
@@ -924,7 +926,8 @@ class SitemapSpider(BypassCloudfareSpider):
             logger=self.logger,
             fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20),
-            use_proxy=self.use_proxy
+            use_proxy=self.use_proxy,
+            proxy_countries=self.proxy_countries
         )
 
         # Handle headers
