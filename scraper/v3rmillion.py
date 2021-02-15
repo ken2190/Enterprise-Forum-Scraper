@@ -72,6 +72,7 @@ class V3RMillionSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "VIP"
+    proxy_countries = ['us']
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
@@ -90,6 +91,8 @@ class V3RMillionSpider(SitemapSpider):
             proxy=True,
             fraud_check=True
         )
+
+        print(f'IP Address : {ip}')
 
         # Init request kwargs and meta
         meta = {
@@ -182,6 +185,7 @@ class V3RMillionScrapper(SiteMapScrapper):
     spider_class = V3RMillionSpider
     site_name = 'v3rmillion.net'
     site_type = 'forum'
+    proxy_countries = ['us']
 
     def load_settings(self):
         settings = super().load_settings()

@@ -1,6 +1,7 @@
 import re
 import os
 import uuid
+import hashlib
 
 from datetime import datetime, timedelta
 
@@ -14,17 +15,20 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
+USER='gordon418'
+PASS='Nightlion#123'
 
 class BlackHackerSpider(SitemapSpider):
 
     name = "blackhacker"
 
     # Url stuffs
-    base_url = "https://blackhacker.ru/"
-
+    base_url = "https://blackhacker.pw/"
+    login_url = "https://blackhacker.pw/member.php?action=login"
     # Xpath stuffs
 
     # Forum xpath #
+    login_form_css = 'form[action*="login.php?do=login"]'
     forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
     thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
     thread_first_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
@@ -41,6 +45,8 @@ class BlackHackerSpider(SitemapSpider):
                       '/a[contains(@name,"post")]'\
                       '/following-sibling::text()[1]'
     avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
+
+    login_failed_xpath = '//div[contains(., "Вы ввели неправильное имя или пароль")]'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -67,23 +73,64 @@ class BlackHackerSpider(SitemapSpider):
             callback=self.pass_cloudflare
         )
 
-    def pass_cloudflare(self, response):
+    def pass_cloudflare(self, cookies=None, ip=None):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
-            base_url=self.base_url,
+            base_url=self.login_url,
             proxy=True,
             fraud_check=True
         )
+        
+        if "cf_clearance" not in cookies:
+            yield Request(
+                url=self.temp_url,
+                headers=self.headers,
+                callback=self.pass_cloudflare
+            )
 
-        yield Request(
-            url=self.base_url,
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+        request_kwargs = {
+            "url": self.base_url,
+            "headers": self.headers,
+            "callback": self.parse_login,
+            "dont_filter": True,
+            "cookies": cookies,
+            "meta": meta
+        }
+
+        yield Request(**request_kwargs)
+
+    def parse_login(self, response):
+        self.synchronize_headers(response)
+
+        md5_pass = hashlib.md5(PASS.encode('utf-8')).hexdigest()
+        security_token = response.xpath(
+            '//input[@name="securitytoken"]/@value').extract_first()
+
+        formdata = {
+            "vb_login_username": USER,
+            "vb_login_password": "",
+            "vb_login_md5password": md5_pass,
+            "vb_login_md5password_utf": md5_pass,
+            "cookieuser": '1',
+            "url": "/member.php?action=login",
+            "do": "login",
+            "securitytoken": security_token,
+            "s": ''
+        }
+
+        yield FormRequest.from_response(
+            response,
+            formcss=self.login_form_css,
+            formdata=formdata,
+            dont_filter=True,
             headers=self.headers,
-            meta={
-                "cookiejar": uuid.uuid1().hex,
-                "ip": ip
-            },
-            cookies=cookies,
-            callback=self.parse
+            meta=self.synchronize_meta(response),
+            callback=self.parse_start
         )
 
     def parse_thread_date(self, thread_date):
@@ -125,10 +172,24 @@ class BlackHackerSpider(SitemapSpider):
                 self.post_datetime_format
             )
 
+    def parse_start(self, response):
+        self.synchronize_headers(response)
+
+        self.check_if_logged_in(response)
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse,
+            meta=self.synchronize_meta(response)
+        )
+
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-        # print(response.text)
+
+        self.check_if_logged_in(response)
+
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats

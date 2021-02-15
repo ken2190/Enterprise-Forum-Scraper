@@ -30,7 +30,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) '\
 class DemonForumsSpider(SitemapSpider):
     name = 'demonforums_spider'
 
-    use_proxy = "On"
+    use_proxy = "VIP"
     proxy_countries = ['us', 'uk']
 
     handle_httpstatus_list = [403, 503]
@@ -76,29 +76,31 @@ class DemonForumsSpider(SitemapSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.base_url = 'https://demonforums.net/'
-        self.headers = {
-            'accept': 'text/html,application/xhtml+xml,application/xml'
-                      ';q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,'
-                      'application/signed-exchange;v=b3;q=0.9',
-            'accept-language': 'en-US,en;q=0.9',
-            'cache-control': 'max-age=0',
-            'referer': 'https://demonforums.net/',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6)'
-                          ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'
-                          '85.0.4183.83 Safari/537.36'
-        }
+        # self.headers = {
+        #     'accept': 'text/html,application/xhtml+xml,application/xml'
+        #               ';q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,'
+        #               'application/signed-exchange;v=b3;q=0.9',
+        #     'accept-language': 'en-US,en;q=0.9',
+        #     'cache-control': 'max-age=0',
+        #     'referer': 'https://demonforums.net/',
+        #     'sec-fetch-dest': 'document',
+        #     'sec-fetch-mode': 'navigate',
+        #     'sec-fetch-site': 'same-origin',
+        #     'sec-fetch-user': '?1',
+        #     'upgrade-insecure-requests': '1',
+        #     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6)'
+        #                   ' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'
+        #                   '85.0.4183.83 Safari/537.36'
+        # }
 
     def start_requests(self):
-        cookies, ip = self.get_cloudflare_cookies(
+        cookies, ip = self.get_cookies(
             base_url=self.base_url,
-            proxy=True,
-            fraud_check=True
+            proxy=self.use_proxy,
+            fraud_check=True,
         )
+
+        self.logger.info(f'COOKIES: {cookies}')
 
         # Init request kwargs and meta
         meta = {

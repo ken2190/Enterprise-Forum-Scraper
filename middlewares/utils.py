@@ -2,6 +2,7 @@ import uuid
 import asyncio
 import aiohttp
 import json
+from random import choice
 
 from scrapy import Selector
 
@@ -27,6 +28,8 @@ class IpHandler(object):
         self.logger = kwargs.get("logger")
         self.fraudulent_threshold = kwargs.get("fraudulent_threshold", 50)
         self.ip_batch_size = kwargs.get("ip_batch_size", 20)
+        self.country = kwargs.get("proxy_countries")
+        
         if self.use_proxy == 'VIP':
             self.proxy_username = VIP_PROXY_USERNAME
             self.proxy_password = VIP_PROXY_PASSWORD
@@ -39,6 +42,13 @@ class IpHandler(object):
             self.proxy_username = PROXY_USERNAME
             self.proxy_password = PROXY_PASSWORD
             self.proxy = PROXY
+
+        if self.country:
+            country = choice(self.country)
+            self.proxy_username = "%s-country-%s" % (
+                self.proxy_username,
+                country
+            )
 
     async def fetch(self, url, **kwargs):
 

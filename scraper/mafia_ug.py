@@ -75,7 +75,16 @@ class MafiaUgSpider(SitemapSpider):
             post_date.strip()[:-1],
             self.post_datetime_format
         )
+
     def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cookie
+        )
+        
+    def pass_cookie(self, response):
         
         cookies, ip = self.get_cookies(
             base_url=self.base_url,

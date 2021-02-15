@@ -340,7 +340,7 @@ class SiteMapScrapper:
             "kill": getattr(self, "kill", None),
             "get_users": getattr(self, "get_users", None),
             "no_proxy": getattr(self, "no_proxy", None),
-            "proxy_countries": getattr(self, "proxy_countries", None),
+            # "proxy_countries": getattr(self, "proxy_countries", None),
             "use_vip": getattr(self, "use_vip", None)
         }
 
@@ -544,7 +544,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             },
             requestPostHook=injection,
             debug=False,
-            delay=5
+            # delay=5
         )
     
         bypass_cookies = {}
@@ -573,8 +573,9 @@ class BypassCloudfareSpider(scrapy.Spider):
             }
 
             try:
-                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')
-                response = cf_bypasser.get(base_url, proxies=proxies)
+                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')\
+                cf_bypasser.proxies = proxies
+                response = cf_bypasser.get(base_url)
             except Exception:
                 self.logger.exception('Try #%s to bypass CloudFlare failed', try_num)
                 continue
@@ -698,13 +699,17 @@ class BypassCloudfareSpider(scrapy.Spider):
             retry = 0
             while retry < self.get_cookies_retry:
                 # Load different branch
-                if base_url:
-                    browser.get(base_url)
-                elif self.start_date and self.sitemap_url:
-                    browser.get(self.sitemap_url)
-                else:
-                    browser.get(self.base_url)
 
+                try:
+                    if base_url:
+                        browser.get(base_url)
+                    elif self.start_date and self.sitemap_url:
+                        browser.get(self.sitemap_url)
+                    else:
+                        browser.get(self.base_url)
+                except RuntimeError:
+                    raise CloseSpider(reason='site_is_down')
+                
                 try:
                     success = self.check_bypass_success(browser)
                 except RuntimeError:
@@ -882,6 +887,8 @@ class SitemapSpider(BypassCloudfareSpider):
     # Login Failed Message xpath
     login_failed_xpath = None
 
+    proxy_countries = []
+    
     # Other settings
     get_cookies_delay = 2
     get_cookies_retry = 5
@@ -919,7 +926,8 @@ class SitemapSpider(BypassCloudfareSpider):
             logger=self.logger,
             fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20),
-            use_proxy=self.use_proxy
+            use_proxy=self.use_proxy,
+            proxy_countries=self.proxy_countries
         )
 
         # Handle headers
@@ -2046,7 +2054,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 ip = self.ip_handler.get_good_ip()
 
             # Init proxy
-            if proxy:
+            if proxy != 'Off':
                 if ip is None:
                     proxy = super_proxy % (
                         "%s-session-%s" % (
@@ -2082,12 +2090,16 @@ class SitemapSpider(BypassCloudfareSpider):
             retry = 0
             while retry < self.get_cookies_retry:
                 # Load different branch
-                if base_url:
-                    browser.get(base_url)
-                elif self.start_date and self.sitemap_url:
-                    browser.get(self.sitemap_url)
-                else:
-                    browser.get(self.base_url)
+
+                try:
+                    if base_url:
+                        browser.get(base_url)
+                    elif self.start_date and self.sitemap_url:
+                        browser.get(self.sitemap_url)
+                    else:
+                        browser.get(self.base_url)
+                except:
+                    raise CloseSpider(reason='site_is_down')
 
                 # Solve captcha if exist such requirements
                 if check_captcha:
@@ -2130,6 +2142,7 @@ class SitemapSpider(BypassCloudfareSpider):
                     "http": proxy,
                     "https": proxy
                 }
+
             data = requests.get(**request_kwargs).json()
             ip = data.get("ip")
 
@@ -2605,11 +2618,13 @@ class SeleniumSpider(SitemapSpider):
             response.xpath(self.post_date_xpath)
             if post_date.strip() and dateparser.parse(post_date.strip())
         ]
-        if self.start_date and max(post_dates) < self.start_date:
-            self.logger.info(
-                "No more post to update."
-            )
-            return
+        
+        if post_dates:
+            if self.start_date and max(post_dates) < self.start_date:
+                self.logger.info(
+                    "No more post to update."
+                )
+                return
 
         current_page = self.get_thread_current_page(response)
         with open(
