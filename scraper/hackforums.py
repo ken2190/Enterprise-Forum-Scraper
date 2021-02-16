@@ -49,7 +49,8 @@ class HackForumsSpider(SitemapSpider):
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     hcaptcha_site_key_xpath = "//script[@data-sitekey]/@data-sitekey"
 
-    login_failed_xpath = "//div[contains(., 'correct the following errors')]"
+    login_failed_xpath = "//div[contains(., 'correct the following errors')] |" \
+                    "//*[contains(., 'been suspended or you have been banned')]"
 
     # Regex stuffs
     topic_pattern = re.compile(
