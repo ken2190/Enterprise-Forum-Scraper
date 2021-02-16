@@ -16,7 +16,7 @@ from scraper.base_scrapper import (
 # PASSWORD = "Night#Hack001"
 # USERNAME = "z234567890"
 # PASSWORD = "KL5uyxBQ8cEz4mW"
-USERNAME = "gordon418"
+USERNAME = "gordal418"
 PASSWORD = "Readytogo418#"
 
 
