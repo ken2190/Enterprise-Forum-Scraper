@@ -57,6 +57,16 @@ class SkyFraudSpider(SitemapSpider):
     sitemap_datetime_format = '%d.%m.%Y'
 
     def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.pass_cookie,
+            errback=self.check_site_error
+        )
+        
+    def pass_cookie(self, response):
+        
         cookies, ip = self.get_cookies(
             base_url=self.base_url,
             proxy=self.use_proxy,
@@ -71,14 +81,12 @@ class SkyFraudSpider(SitemapSpider):
             "ip": ip
         }
 
-        self.logger.info(f'COOKIES: {cookies}')
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.parse_start,
-            cookies=cookies,
             meta=meta,
-            dont_filter=True
+            cookies=cookies,
+            callback=self.parse_start
         )
 
     def parse_thread_date(self, thread_date):
