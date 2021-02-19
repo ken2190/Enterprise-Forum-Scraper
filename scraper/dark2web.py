@@ -32,7 +32,7 @@ class Dark2WebSpider(SitemapSpider):
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
     
-    use_proxy = 'On'
+    use_proxy = 'VIP'
     # Regex stuffs
     topic_pattern = re.compile(
         r"/threads/(\d+)",
