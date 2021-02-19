@@ -11,9 +11,6 @@ class BitcoinGardenParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser_name = "bitcoingarden.org"
-        self.thread_name_pattern = re.compile(
-            r'(\d+).*html$'
-        )
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//div[@id="forumposts"]//div[contains(@class,"windowbg") and not(@valign)]'
@@ -28,19 +25,6 @@ class BitcoinGardenParser(BaseTemplate):
 
         # main function
         self.main()
-
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: (self.thread_name_pattern.search(x).group(1),
-                           x.split("-")[-1]))
-        return sorted_files
 
     def get_date(self, tag):
         post_date = tag.xpath(self.date_xpath)
