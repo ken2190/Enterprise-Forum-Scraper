@@ -16,8 +16,8 @@ from scraper.base_scrapper import (
 # PASSWORD = "Night#Hack001"
 # USERNAME = "z234567890"
 # PASSWORD = "KL5uyxBQ8cEz4mW"
-USERNAME = "gordal418"
-PASSWORD = "Readytogo418#"
+USERNAME = "gamer418"
+PASSWORD = "Nightlion#123"
 
 
 class HackForumsSpider(SitemapSpider):
@@ -75,7 +75,7 @@ class HackForumsSpider(SitemapSpider):
     fraudulent_threshold = 10
 
     use_proxy = "VIP"
-    # proxy_countries = ['uk']
+    proxy_countries = ['uk']
 
     def parse_captcha(self, response):
         ip_ban_check = response.xpath(
@@ -119,6 +119,8 @@ class HackForumsSpider(SitemapSpider):
             fraud_check=True
         )
         
+        print(f'IP Address: {ip}')
+
         if "cf_clearance" not in cookies:
             yield Request(
                 url=self.temp_url,
