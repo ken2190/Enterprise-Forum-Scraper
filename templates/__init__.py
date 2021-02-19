@@ -216,6 +216,7 @@ from templates.hashes_template import HashesParser
 from templates.leakforums_template import LeakForumsParser
 from templates.bitcoingarden_template import BitcoinGardenParser
 from templates.exetools_template import ExetoolsParser
+from templates.happyblog_template import HappyblogParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -434,5 +435,6 @@ PARSER_MAP = {
     'hashes': HashesParser,
     'leakforums': LeakForumsParser,
     'bitcoingarden': BitcoinGardenParser,
-    'exetools': ExetoolsParser
+    'exetools': ExetoolsParser,
+    'happyblog': HappyblogParser
 }
