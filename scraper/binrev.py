@@ -61,7 +61,7 @@ class BinRevSpider(SitemapSpider):
     login_failed_xpath = '//p[contains(@class, "ipsMessage ipsMessage_error")]'
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "VIP"
 
     def start_requests(self):
         yield Request(
@@ -69,7 +69,7 @@ class BinRevSpider(SitemapSpider):
             headers=self.headers,
             meta={
                 "cookiejar": uuid.uuid1().hex,
-                "country": "CA"
+                "country": "us"
             },
             callback=self.parse,
             dont_filter=True,
@@ -93,7 +93,7 @@ class BinRevSpider(SitemapSpider):
             meta=self.synchronize_meta(
                 response,
                 default_meta={
-                    "country": "CA"
+                    "country": "us"
                 }
             ),
             dont_filter=True,
