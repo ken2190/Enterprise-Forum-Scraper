@@ -47,6 +47,7 @@ class PasteBinSpider(scrapy.Spider):
         with open(dump_file, 'w') as f:
             f.write(content)
         print('{} done..!'.format(dump_file))
+        self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
 
 class PasteBinScrapper(SiteMapScrapper):

@@ -47,6 +47,8 @@ class ScrapeBoxForumSpider(SitemapSpider):
     sitemap_datetime_format = "%m-%d-%Y"
     post_datetime_format = "%m-%d-%Y"
 
+    use_proxy = 'On'
+    
     def parse_thread_date(self, thread_date):
         """
         :param thread_date: str => thread date as string

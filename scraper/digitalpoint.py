@@ -29,12 +29,13 @@ class DigitalPointSpider(SitemapSpider):
     thread_last_page_xpath = './/span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
     thread_date_xpath = './/a[@class="dateTime"]/span/text()|'\
-                        './/a[@class="dateTime"]/abbr/@data-datestring'
+                        './/a[@class="dateTime"]/abbr/@title'
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
                         '/text()'
-    post_date_xpath = '//span[@class="DateTime"]/@title'
+    post_date_xpath = '//abbr[@class="DateTime"]/@title |' \
+                    '//span[@class="DateTime"]/@title'
 
     avatar_xpath = '//div[@class="avatarHolder"]/a/img/@src'
 

@@ -54,8 +54,8 @@ class ShadowCardersSpider(SitemapSpider):
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
     thread_pagination_xpath = '//nav/a[contains(text()," Prev")]/@href'
 
-    post_date_xpath = '//span[contains(@class,"muted")]//abbr/@title|'\
-                      '//span[contains(@class,"muted")]//span[@class="DateTime"]/@title'
+    post_date_xpath = '//abbr[@class="DateTime"]/@title|'\
+                      '//span[@class="DateTime"]/@title'
 
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
 

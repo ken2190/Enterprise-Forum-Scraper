@@ -38,6 +38,7 @@ class ChkNetSpider(SitemapSpider):
     avatar_xpath = '//div[@class="avatar-container"]/img/@src'
 
     # Other settings
+    use_proxy = 'On'
     sitemap_datetime_format = '%a %b %d, %Y %I:%M %p'
     post_datetime_format = '%a %b %d, %Y %I:%M %p'
 

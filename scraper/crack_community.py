@@ -25,7 +25,10 @@ class CrackCommunitySpider(SitemapSpider):
     thread_first_page_xpath = ".//h3[@class=\"title\"]/a/@href"
     thread_last_page_xpath = ".//span[@class=\"itemPageNav\"]/a[last()]/@href"
 
-    thread_date_xpath = ".//a[@class=\"dateTime\"]/*/@title"
+    thread_date_xpath = './/dl[@class="lastPostInfo"]'\
+                        '//a[@class="dateTime"]/abbr/@data-datestring|'\
+                        './/dl[@class="lastPostInfo"]'\
+                        '//a[@class="dateTime"]/span/text()'
     thread_pagination_xpath = "//div[@class=\"PageNav\"]/nav/a[contains(text(),\"Prev\")]/@href"
     thread_page_xpath = "//div[@class=\"PageNav\"]/nav/a[@class=\"currentPage \"]/text()"
 
@@ -35,7 +38,8 @@ class CrackCommunitySpider(SitemapSpider):
 
     # captcha stuffs
     ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
-
+    use_proxy = 'On'
+    
     # Regex pattern
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
@@ -56,11 +60,6 @@ class CrackCommunitySpider(SitemapSpider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.headers.update(
-            {
-                "Host": "crackcommunity.com"
-            }
-        )
 
     def start_requests(self):
         # Temporary action to start spider
@@ -89,7 +88,8 @@ class CrackCommunitySpider(SitemapSpider):
             headers=self.headers,
             meta=meta,
             cookies=cookies,
-            callback=self.parse
+            callback=self.parse,
+            errback=self.check_site_error
         )
 
     def parse(self, response):

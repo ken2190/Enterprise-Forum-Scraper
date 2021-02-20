@@ -37,7 +37,8 @@ class ProcrdSpider(SitemapSpider):
 
     post_date_xpath = '//div[contains(@class, "message-attribution-main")]/a/time/@datetime'
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
-
+    use_proxy = 'On'
+    
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/.*\.(\d+)",

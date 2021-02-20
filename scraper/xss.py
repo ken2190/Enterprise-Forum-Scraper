@@ -6,15 +6,8 @@ from scrapy.exceptions import CloseSpider
 
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-# USER = "thecreator"
-# PASS = "Night#Xss01"
-# USER = "thecreator101@protonmail.com"
-# PASS = "Night#Xss01"
-
-# USER = "cyrax6626"
-# PASS = "#@nightlion6626"
-USER = "ronnyboy18@protonmail.ch"
-PASS = "Xs_Rb118!"
+USER = "GalactusPrime"
+PASS = "KXpro218gj2"
 
 class XSSSpider(SitemapSpider):
     name = "xss_spider"

@@ -66,7 +66,8 @@ class CryptBBSpider(SitemapSpider):
             dont_filter=True,
             meta={
                 'proxy': PROXY
-            }
+            },
+            errback=self.check_site_error
         )
 
     def synchronize_meta(self, response, default_meta={}):

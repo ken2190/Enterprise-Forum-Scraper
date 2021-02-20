@@ -15,6 +15,7 @@ from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
+from scrapy.exceptions import CloseSpider
 
 
 class VBIranSpider(SitemapSpider):
@@ -82,6 +83,8 @@ class VBIranSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
+        if response.xpath("//*[contains(., 'If you are the owner of this website, please contact your hosting provider')]"):
+            raise CloseSpider(reason='site_is_down')
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 

@@ -46,7 +46,7 @@ class CebulkaSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "Tor"
     sitemap_datetime_format = '%Y-%m-%d %p'
     post_datetime_format = '%Y-%m-%d %p'
 

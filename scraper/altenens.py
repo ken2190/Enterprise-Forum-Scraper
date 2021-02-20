@@ -101,7 +101,7 @@ class AltenensSpider(SitemapSpider):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        captcha_response = self.solve_recaptcha(response, proxyless=True).solution.token
+        # captcha_response = self.solve_recaptcha(response, proxyless=True).solution.token
         
         # Exact token
         token = response.xpath(
@@ -112,7 +112,7 @@ class AltenensSpider(SitemapSpider):
             "remember": '1',
             '_xfRedirect': '',
             '_xfToken': token,
-            'g-recaptcha-response': captcha_response
+            # 'g-recaptcha-response': captcha_response
         }
 
         yield FormRequest(

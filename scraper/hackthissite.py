@@ -28,7 +28,8 @@ class HackThisSiteSpider(SitemapSpider):
                       '/following-sibling::text()[1]'
 
     avatar_xpath = '//div[@class="avatar-container"]/a/img/@src'
-
+    use_proxy = 'On'
+    
     # Regex stuffs
     topic_pattern = re.compile(
         r"&t=(\d+)",

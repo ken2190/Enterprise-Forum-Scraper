@@ -51,6 +51,8 @@ class SafeSkyHacksSpider(SitemapSpider):
     avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
     pagination_pattern = re.compile(r'.*/page(\d+)')
 
+    use_proxy = 'On'
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(

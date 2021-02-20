@@ -19,7 +19,7 @@ class XakerSpider(SitemapSpider):
     name = 'xaker_spider'
 
     # Url stuffs
-    base_url = "http://xaker.name/"
+    base_url = "https://xak.guru/"
 
     # Xpath stuffs
     forum_xpath = '//ol[@class="nodeList"]//h3/a/@href'
@@ -29,7 +29,7 @@ class XakerSpider(SitemapSpider):
     thread_last_page_xpath = './/span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
 
-    thread_date_xpath = './/abbr[contains(@class,"DateTime")]/@title|'\
+    thread_date_xpath = './/abbr[contains(@class,"DateTime")]/@data-datestring|'\
                         './/dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
                         '/@title'
 
@@ -123,7 +123,7 @@ class XakerSpider(SitemapSpider):
             )
         else:
             cookies, ip = self.get_cloudflare_cookies(
-                base_url=self.login_url,
+                base_url=self.base_url,
                 proxy=True,
                 fraud_check=True
             )
@@ -150,7 +150,6 @@ class XakerSpider(SitemapSpider):
         self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
 
         for forum_url in all_forums:
-            print(forum_url)
             # Standardize url
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url

@@ -42,7 +42,8 @@ class EnclaveSpider(SitemapSpider):
     post_date_xpath = '//div[@class="ipsType_reset"]//time/@datetime'
 
     avatar_xpath = '//div[@class="cAuthorPane_photo"]//img/@src'
-
+    use_proxy = 'On'
+    
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",

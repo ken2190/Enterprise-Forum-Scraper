@@ -39,6 +39,8 @@ class YouHackSpider(SitemapSpider):
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     handle_httpstatus_list = [403]
 
+    use_proxy = 'On'
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(
@@ -172,6 +174,7 @@ class YouHackSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             print(f'{topic_id}-{paginated_value} done..!')
+        self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
         avatars = response.xpath(
             '//div[@class="avatarHolder"]/a/img')
@@ -221,7 +224,8 @@ class YouHackSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.body)
             print(f"Avatar {file_name_only} done..!")
-
+        self.crawler.stats.inc_value("mainlist/avatar_saved_count")
+        
 
 class YouHackScrapper(SiteMapScrapper):
 

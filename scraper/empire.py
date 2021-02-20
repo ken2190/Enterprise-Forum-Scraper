@@ -65,7 +65,7 @@ class EmpireSpider(MarketPlaceSpider):
         re.IGNORECASE
     )
 
-    use_proxy = "On"
+    use_proxy = "Tor"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

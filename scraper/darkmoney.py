@@ -70,7 +70,8 @@ class DarkMoneySpider(SitemapSpider):
                 "cookiejar": uuid.uuid1().hex,
                 "ip": ip
             },
-            cookies=cookies
+            cookies=cookies,
+            errback=self.check_site_error
         )
 
     def parse_thread(self, response):

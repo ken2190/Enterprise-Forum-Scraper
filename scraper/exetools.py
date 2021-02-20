@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import dateparser
 
 from datetime import (
     datetime,
@@ -15,17 +16,15 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-USER = 'Cyrax_011'
-PASS = 'S5eVZWqf!3wNdtb'
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36'
 
 
-class CrdClubSpider(SitemapSpider):
-    name = "crdclub_spider"
+class ExetoolsSpider(SitemapSpider):
+    name = "exetools_spider"
 
     # Url stuffs
-    base_url = "http://crdclub.su/"
+    base_url = "https://forum.exetools.com/"
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -55,7 +54,7 @@ class CrdClubSpider(SitemapSpider):
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
-    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]/text()'
+    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]/div[2]//text()'
     avatar_xpath = '//a[contains(@href, "member.php?")]/img/@src'
     use_proxy = 'On'
     
@@ -65,18 +64,6 @@ class CrdClubSpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y, %H:%M'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.headers.update({
-            'origin': 'https://crdclub.su',
-            'referer': 'https://crdclub.su/index.php',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'same-origin',
-            'sec-fetch-user': '?1',
-            'user-agent': USER_AGENT,
-        })
 
     def start_requests(self):
         yield Request(
@@ -88,35 +75,6 @@ class CrdClubSpider(SitemapSpider):
             dont_filter=True
         )
 
-    def parse(self, response):
-
-        formdata = {
-            'vb_login_username': USER,
-            'vb_login_password': PASS,
-        }
-        yield FormRequest.from_response(
-            response=response,
-            formxpath=self.login_form_xpath,
-            formdata=formdata,
-            headers=self.headers,
-            meta=self.synchronize_meta(response),
-            callback=self.after_login,
-        )
-
-    def after_login(self, response):
-        # Synchronize user agent in cloudfare middleware
-        self.synchronize_headers(response)
-
-        # Check if login failed
-        self.check_if_logged_in(response)
-
-        yield Request(
-            url=self.base_url,
-            headers=self.headers,
-            callback=self.parse_start,
-            meta=self.synchronize_meta(response),
-        )
-
     def parse_thread_date(self, thread_date):
         """
         :param thread_date: str => thread date as string
@@ -124,16 +82,16 @@ class CrdClubSpider(SitemapSpider):
                             using class sitemap_datetime_format
         """
         # Standardize thread_date
+        if not thread_date:
+            return datetime.today()
+
         thread_date = thread_date.strip()
         if "today" in thread_date.lower():
             return datetime.today()
         elif "yesterday" in thread_date.lower():
             return datetime.today() - timedelta(days=1)
         else:
-            return datetime.strptime(
-                thread_date,
-                self.sitemap_datetime_format
-            )
+            return dateparser.parse(thread_date).replace(tzinfo=None)
 
     def parse_post_date(self, post_date):
         """
@@ -151,12 +109,9 @@ class CrdClubSpider(SitemapSpider):
         elif "yesterday" in post_date.lower():
             return datetime.today() - timedelta(days=1)
         else:
-            return datetime.strptime(
-                post_date,
-                self.post_datetime_format
-            )
+            return dateparser.parse(post_date).replace(tzinfo=None)
 
-    def parse_start(self, response):
+    def parse(self, response):
 
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
@@ -201,8 +156,8 @@ class CrdClubSpider(SitemapSpider):
             return
 
 
-class CrdClubScrapper(SiteMapScrapper):
+class ExetoolsScrapper(SiteMapScrapper):
 
-    spider_class = CrdClubSpider
-    site_name = 'crdclub.su'
+    spider_class = ExetoolsSpider
+    site_name = 'forum.exetools.com'
     site_type = 'forum'

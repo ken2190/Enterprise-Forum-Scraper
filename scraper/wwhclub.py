@@ -38,6 +38,7 @@ class WwhClubSpider(SitemapSpider):
             'sec-fetch-site': 'none',
             'sec-fetch-user': '?1'
         }
+        self.use_proxy = 'On'
 
     def start_requests(self):
         # Temporary action to start spider

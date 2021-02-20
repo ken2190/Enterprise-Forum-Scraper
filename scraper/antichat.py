@@ -45,6 +45,7 @@ class AntichatSpider(SitemapSpider):
 
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
 
+    use_proxy = 'On'
     # Regex stuffs
     topic_pattern = re.compile(
         r"threads/(\d+)/",

@@ -54,6 +54,8 @@ class RaidForumsSpider(SitemapSpider):
                       "//span[@class=\"post_date\"]/span[@title]/@title"
     avatar_xpath = "//div[@class=\"post__user\"]/a/img/@src"
 
+    use_proxy = 'On'
+    
     # Other settings
     sitemap_datetime_format = "%B %d, %Y at %I:%M %p"
     post_datetime_format = "%B %d, %Y at %I:%M %p"

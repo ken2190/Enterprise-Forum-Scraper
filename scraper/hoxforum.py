@@ -34,7 +34,8 @@ class HoxForumSpider(SitemapSpider):
     post_date_xpath = '//span[@class="post_date"]/text()'
 
     avatar_xpath = '//div[contains(@class, "author_avatar")]/a/img/@src'
-
+    use_proxy = 'On'
+    
     # Regex stuffs
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",

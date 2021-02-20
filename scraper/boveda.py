@@ -15,7 +15,7 @@ class BovedaSpider(SitemapSpider):
     name = 'boveda'
 
     # Url stuffs
-    base_url = "https://www.bvd41.cc/"
+    base_url = "https://pandora.to/"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'

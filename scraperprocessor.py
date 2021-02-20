@@ -96,7 +96,7 @@ def process_scraper(scraper):
 
         # check for "No new files"(W08) warning
         if 'W08' in result.get('result/warnings', []):
-            raise RuntimeError(WARNING_MESSAGES['W08'])
+            raise RuntimeError('W08')
 
         ############################
         # Run parser for template
@@ -136,7 +136,10 @@ def process_scraper(scraper):
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
+        if str(e) != 'W08':
+            update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
+        else:
+            update_scraper(scraper, {'status': 'Warning', 'pid': None, 'message': WARNING_MESSAGES['W08']})
 
 
 def help():

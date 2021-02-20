@@ -47,7 +47,7 @@ class DfasSpider(SitemapSpider):
         re.IGNORECASE
     )
     # Other settings
-    use_proxy = "On"
+    use_proxy = "Tor"
     sitemap_datetime_format = '%Y-%m-%d %H:%M:%S'
     post_datetime_format = '%Y-%m-%d %H:%M:%S'
 
@@ -75,7 +75,8 @@ class DfasSpider(SitemapSpider):
             headers=self.headers,
             meta={
                 'proxy': PROXY
-            }
+            },
+            errback=self.check_site_error
         )
 
     def proceed_for_login(self, response):

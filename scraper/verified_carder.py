@@ -27,7 +27,7 @@ class VerifiedCarderSpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = '//div[@id="ipsLayout_mainArea"]//h4[contains(@class, "ipsDataItem_title ipsType_large")]/a/@href'
 
-    pagination_xpath = '//a[@class="pagination_next"]/@href'
+    pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
 
     thread_xpath = '//div[@id="ipsLayout_mainArea"]//div[@class="ipsBox"]/ol/li[contains(@class, "ipsDataItem ipsDataItem_responsivePhoto")]'
     thread_first_page_xpath = './div[@class="ipsDataItem_main"]/h4//a/@href'
@@ -49,11 +49,13 @@ class VerifiedCarderSpider(SitemapSpider):
         r".*page/(\d+)",
         re.IGNORECASE
     )
-
+    
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
+    use_proxy = 'On'
+    
     def parse_thread_date(self, thread_date):
         """
         :param thread_date: str => thread date as string
@@ -101,7 +103,7 @@ class VerifiedCarderSpider(SitemapSpider):
                 callback=self.parse_forum
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, is_first_page=True):
 
         # Parse sub forums
         yield from self.parse(response)

@@ -47,7 +47,8 @@ class JstashBazarSpider(SitemapSpider):
     handle_httpstatus_list = [511]
     sitemap_datetime_format = '%d.%m.%Y'
     post_datetime_format = '%d.%m.%Y, %H:%M'
-
+    use_proxy = 'On'
+    
     # Regex stuffs
     topic_pattern = re.compile(
         r".*t=(\d+)",

@@ -1,7 +1,9 @@
 import os
 import re
+import uuid
 
 from datetime import datetime
+from datetime import datetime, timedelta
 
 from scraper.base_scrapper import (
     SitemapSpider,
@@ -15,96 +17,146 @@ from scrapy import (
 class SkyFraudSpider(SitemapSpider):
 
     name = "skyfraud_spider"
-    sitemap_url = "https://sky-fraud.ru/sitemap_forum_1.xml.gz"
     base_url = "https://sky-fraud.ru/"
     
     # Xpath stuffs
-    thread_sitemap_xpath = "//url[loc[contains(text(),\"/showthread.php\")] and lastmod]"
-    thread_url_xpath = "//loc/text()"
-    thread_lastmod_xpath = "//lastmod/text()"
-    sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
+    thread_xpath = '//tbody[contains(@id, "threadbits_forum_")]/tr'
+    thread_first_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
+                              '/a[contains(@href, "showthread.php?")]/@href'
+    thread_last_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div/span'\
+                             '/a[contains(@href, "showthread.php?")]'\
+                             '[last()]/@href'
+    thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
+
+    pagination_xpath = '//a[@rel="next"]/@href'
+    thread_pagination_xpath = '//a[@rel="prev"]/@href'
+    thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
+    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]'\
+                      '/a[contains(@name,"post")]'\
+                      '/following-sibling::text()[1]'
+    avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
+
+    login_failed_xpath = '//div[contains(., "Вы ввели неправильное имя или пароль")]'
 
     # Regex stuffs
     topic_pattern = re.compile(
-        r".*t=(\d+)",
+        r"t=(\d+)",
         re.IGNORECASE
     )
     avatar_name_pattern = re.compile(
-        r".*/(\S+\.\w+)",
-        re.IGNORECASE
-    )
-    pagination_pattern = re.compile(
-        r"&page=(\d+)",
+        r"u=(\d+)",
         re.IGNORECASE
     )
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "VIP"
+    cloudfare_delay = 10
+    handle_httpstatus_list = [503]
+    post_datetime_format = '%d.%m.%Y, %H:%M'
+    sitemap_datetime_format = '%d.%m.%Y'
 
-    def parse_thread_date(self, thread_date):
-        return datetime.strptime(
-            thread_date.split('+')[0],
-            self.sitemap_datetime_format
+    def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.pass_cookie,
+            errback=self.check_site_error
+        )
+        
+    def pass_cookie(self, response):
+        
+        cookies, ip = self.get_cookies(
+            base_url=self.base_url,
+            proxy=self.use_proxy,
+            fraud_check=True,
         )
 
-    def parse_sitemap(self, response):
-        yield from self.parse_sitemap_forum(response)
+        self.logger.info(f'COOKIES: {cookies}')
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse_start
+        )
+
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        thread_date = thread_date.strip()
+        if "днес" in thread_date.lower():
+            return datetime.today()
+        elif "вчера" in thread_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                thread_date,
+                self.sitemap_datetime_format
+            )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        # Standardize thread_date
+        post_date = post_date.strip()
+        if not post_date:
+            return
+
+        if "днес" in post_date.lower():
+            return datetime.today()
+        elif "вчера" in post_date.lower():
+            return datetime.today() - timedelta(days=1)
+        else:
+            return datetime.strptime(
+                post_date,
+                self.post_datetime_format
+            )
+
+    def parse_start(self, response):
+        self.synchronize_headers(response)
+
+        self.check_if_logged_in(response)
+
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse,
+            meta=self.synchronize_meta(response)
+        )
 
     def parse(self, response):
-
-        # Synchronize header user agent with cloudfare middleware
+        # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
-        forums = response.xpath(
-            '//a[contains(@href, "forumdisplay.php?")]')
-        for forum in forums:
-            url = forum.xpath('@href').extract_first()
-            if self.base_url not in url:
-                url = self.base_url + url
+        self.check_if_logged_in(response)
+
+        all_forums = response.xpath(self.forum_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
+        for forum_url in all_forums:
+
+            # Standardize url
+            if self.base_url not in forum_url:
+                forum_url = self.base_url + forum_url
             yield Request(
-                url=url,
-                headers=self.headers,
-                callback=self.parse_forum,
-                meta=self.synchronize_meta(response)
-            )
-
-    def parse_forum(self, response):
-        # Synchronize header user agent with cloudfare middleware
-        self.synchronize_headers(response)
-
-        self.logger.info('next_page_url: {}'.format(response.url))
-        threads = response.xpath(
-            '//a[contains(@id, "thread_title_")]')
-        for thread in threads:
-            thread_url = thread.xpath('@href').extract_first()
-            if self.base_url not in thread_url:
-                thread_url = self.base_url + thread_url
-
-            # Get topic id
-            topic_id = self.get_topic_id(thread_url)
-            if not topic_id:
-                continue
-
-            yield Request(
-                url=thread_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "topic_id": topic_id
-                    }
-                )
-            )
-
-        # Pagination
-        next_page = response.xpath("//a[@rel=\"next\"]")
-        if next_page:
-            next_page_url = next_page.xpath("@href").extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
+                url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response)
@@ -112,36 +164,41 @@ class SkyFraudSpider(SitemapSpider):
 
     def parse_thread(self, response):
 
-        # Synchronize header user agent with cloudfare middleware
+        # Save generic thread
+        yield from super().parse_thread(response)
+
+        # Save avatars
+        yield from self.parse_avatars(response)
+
+    def parse_avatars(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
         self.synchronize_headers(response)
 
-        # Load topic id
-        topic_id = response.meta.get("topic_id")
-
-        # Save thread content
-        pagination = self.pagination_pattern.findall(response.url)
-        paginated_value = pagination[0] if pagination else 1
-        file_name = '{}/{}-{}.html'.format(
-            self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('utf-8'))
-            self.logger.info(f'{topic_id}-{paginated_value} done..!')
-
         # Save avatar content
-        avatars = response.xpath('//a[contains(@href, "member.php?")]/img')
-        for avatar in avatars:
-            avatar_url = avatar.xpath('@src').extract_first()
+        for avatar in response.xpath(self.avatar_xpath):
+            avatar_url = avatar.xpath('img/@src').extract_first()
+
+            # Standardize avatar url
+            if not avatar_url.lower().startswith("http"):
+                avatar_url = self.base_url + avatar_url
+
             if 'image/svg' in avatar_url:
                 continue
-            name_match = self.avatar_name_pattern.findall(avatar_url)
-            if not name_match:
+
+            user_url = avatar.xpath('@href').extract_first()
+            match = self.avatar_name_pattern.findall(user_url)
+            if not match:
                 continue
-            if self.base_url not in avatar_url:
-                avatar_url = self.base_url + avatar_url
-            name = name_match[0]
-            file_name = '{}/{}'.format(self.avatar_path, name)
+
+            file_name = os.path.join(
+                self.avatar_path,
+                f'{match[0]}.jpg'
+            )
+
             if os.path.exists(file_name):
                 continue
+
             yield Request(
                 url=avatar_url,
                 headers=self.headers,
@@ -151,33 +208,16 @@ class SkyFraudSpider(SitemapSpider):
                     default_meta={
                         "file_name": file_name
                     }
-                )
+                ),
             )
 
-        # Thread pagination
-        next_page = response.xpath("//a[@rel=\"next\"]")
-        if next_page:
-            next_page_url = next_page.xpath("@href").extract_first()
-            if self.base_url not in next_page_url:
-                next_page_url = self.base_url + next_page_url
-            yield Request(
-                url=next_page_url,
-                headers=self.headers,
-                callback=self.parse_thread,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "topic_id": topic_id
-                    }
-                )
+    def check_bypass_success(self, browser):
+        return bool(
+            browser.current_url.startswith(self.base_url) and
+            browser.find_elements_by_xpath(
+                '//input[@id="navbar_username"]'
             )
-
-    def parse_avatar(self, response):
-        file_name = response.meta['file_name']
-        file_name_only = file_name.rsplit('/', 1)[-1]
-        with open(file_name, 'wb') as f:
-            f.write(response.body)
-            self.logger.info(f"Avatar {file_name_only} done..!")
+        )
 
 
 class SkyFraudScrapper(SiteMapScrapper):

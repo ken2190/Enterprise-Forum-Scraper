@@ -46,7 +46,7 @@ class TorigonSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "Tor"
     sitemap_datetime_format = '%a %b %d, %Y'
 
     def __init__(self, *args, **kwargs):

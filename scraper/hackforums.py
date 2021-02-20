@@ -16,8 +16,8 @@ from scraper.base_scrapper import (
 # PASSWORD = "Night#Hack001"
 # USERNAME = "z234567890"
 # PASSWORD = "KL5uyxBQ8cEz4mW"
-USERNAME = "xbyte"
-PASSWORD = "Night#Byte001"
+USERNAME = "gamer418"
+PASSWORD = "Nightlion#123"
 
 
 class HackForumsSpider(SitemapSpider):
@@ -49,6 +49,9 @@ class HackForumsSpider(SitemapSpider):
     thread_pagination_xpath = "//a[@class=\"pagination_previous\"]/@href"
     hcaptcha_site_key_xpath = "//script[@data-sitekey]/@data-sitekey"
 
+    login_failed_xpath = "//div[contains(., 'correct the following errors')] |" \
+                    "//*[contains(., 'been suspended or you have been banned')]"
+
     # Regex stuffs
     topic_pattern = re.compile(
         r"tid=(\d+)",
@@ -69,10 +72,10 @@ class HackForumsSpider(SitemapSpider):
     handle_httpstatus_list = [403, 503]
     get_cookies_delay = 60
     get_cookies_retry = 4
-    fraudulent_threshold = 50
+    fraudulent_threshold = 10
 
-    use_proxy = "On"
-    # proxy_countries = ['uk']
+    use_proxy = "VIP"
+    proxy_countries = ['uk']
 
     def parse_captcha(self, response):
         ip_ban_check = response.xpath(
@@ -98,9 +101,17 @@ class HackForumsSpider(SitemapSpider):
                 fraud_check=True
             )
 
-        yield from self.start_requests(cookies=cookies, ip=ip)
+        yield from self.pass_cloudflare(cookies=cookies, ip=ip)
 
-    def start_requests(self, cookies=None, ip=None):
+    def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, cookies=None, ip=None):
         # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.login_url,
@@ -108,6 +119,15 @@ class HackForumsSpider(SitemapSpider):
             fraud_check=True
         )
         
+        print(f'IP Address: {ip}')
+
+        if "cf_clearance" not in cookies:
+            yield Request(
+                url=self.temp_url,
+                headers=self.headers,
+                callback=self.pass_cloudflare
+            )
+
         # Init request kwargs and meta
         meta = {
             "cookiejar": uuid.uuid1().hex,
@@ -116,7 +136,7 @@ class HackForumsSpider(SitemapSpider):
         request_kwargs = {
             "url": self.base_url,
             "headers": self.headers,
-            "callback": self.parse_start,
+            "callback": self.parse_login,
             "dont_filter": True,
             "cookies": cookies,
             "meta": meta
@@ -232,6 +252,8 @@ class HackForumsSpider(SitemapSpider):
 
         # Synchronize user agent for cloudfare middlewares
         self.synchronize_headers(response)
+
+        self.check_if_logged_in(response)
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()

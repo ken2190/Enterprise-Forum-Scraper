@@ -21,10 +21,10 @@ class ProxyBaseSpider(SitemapSpider):
     name = "proxybase_spider"
 
     # Url stuffs
-    base_url = "http://proxy-base.com/"
+    base_url = "https://proxy-base.com/"
 
     # Xpath stuffs
-    forum_xpath = '//td[2]//a[contains(@href,"http://proxy-base.com/f") and not(contains(@href,"html"))]/@href'
+    forum_xpath = '//td//a[contains(@href,"https://proxy-base.com/f") and not(contains(@href,"html"))]/@href'
     thread_xpath = '//tbody[contains(@id,"threadbits")]/tr'
     thread_first_page_xpath = './/tr[td[contains(@id, "td_threadtitle_")]]/@href'
     thread_last_page_xpath = './/td[4]//a[img]/@href'
@@ -97,6 +97,7 @@ class ProxyBaseSpider(SitemapSpider):
         self.synchronize_headers(response)
         all_forums = response.xpath(self.forum_xpath).extract()
 
+        print(all_forums)
         # update stats
         self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forums))
         for forum_url in all_forums:
@@ -112,7 +113,7 @@ class ProxyBaseSpider(SitemapSpider):
                 meta=self.synchronize_meta(response)
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, is_first_page=True):
         # Check status 503
         if response.status == 503:
             request = response.request

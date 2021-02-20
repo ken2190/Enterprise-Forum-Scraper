@@ -13,7 +13,7 @@ class NulledBBParser(BaseTemplate):
         self.avatar_name_pattern = re.compile(r'.*avatar_(\d+\.\w+)')
         self.comments_xpath = '//article[contains(@class, "post")]'
         self.header_xpath = '//article[contains(@class, "post")]'
-        self.date_xpath = '//span[@data-toggle]/text()'
+        self.date_xpath = '//div[@class="flex-fill"]/span[@data-toggle]/text()'
         self.title_xpath = '//h1[contains(@itemprop, "headline")]/text()'
         self.post_text_xpath = '//div[@itemprop="articleBody"]//text()'
         self.avatar_xpath = '//a[contains(@class,"post-avatar")]/img/@src'

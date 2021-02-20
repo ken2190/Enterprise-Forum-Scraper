@@ -38,6 +38,17 @@ class DeutschLandSpider(SitemapSpider):
     sitemap_datetime_format = '%d-%m-%Y'
     post_datetime_format = '%d-%m-%Y'
 
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
+
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
+
+        return meta
+        
     def start_requests(self):
         yield Request(
             url=self.base_url,
@@ -45,7 +56,8 @@ class DeutschLandSpider(SitemapSpider):
             meta={
                 'proxy': PROXY
             },
-            dont_filter=True
+            dont_filter=True,
+            errback=self.check_site_error
         )
 
     def parse(self, response):

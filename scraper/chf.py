@@ -74,7 +74,8 @@ class ChfSpider(SitemapSpider):
             url=self.base_url,
             headers=self.headers,
             meta=meta,
-            cookies=cookies
+            cookies=cookies,
+            errback=self.check_site_error
         )
 
     def parse(self, response):

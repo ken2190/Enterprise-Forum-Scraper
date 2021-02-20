@@ -29,6 +29,7 @@ class Ox00SecSpider(SitemapSpider):
         self.thread_url = 'https://0x00sec.org/t/{}/{}'
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.start_page = 0
+        self.use_proxy = 'On'
         self.headers = {
             'sec-fetch-mode': 'same-origin',
             'sec-fetch-site': 'same-origin',
@@ -76,6 +77,8 @@ class Ox00SecSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             self.logger.info(f'{topic_id}-{paginated_value} done..!')
+            self.crawler.stats.inc_value("mainlist/detail_saved_count")
+
         preloaded_data = response.xpath(
             '//div[@id="data-preloaded"]/@data-preloaded').extract_first()
         json_data = json.loads(preloaded_data)
@@ -110,7 +113,8 @@ class Ox00SecSpider(SitemapSpider):
         with open(file_name, 'wb') as f:
             f.write(response.body)
             self.logger.info(f"Avatar for {file_name_only} done..!")
-
+            self.crawler.stats.inc_value("mainlist/avatar_saved_count")
+            
 class Ox00SecScrapper(SiteMapScrapper):
 
     spider_class = Ox00SecSpider
