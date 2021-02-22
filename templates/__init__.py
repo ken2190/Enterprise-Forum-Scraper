@@ -217,6 +217,8 @@ from templates.leakforums_template import LeakForumsParser
 from templates.bitcoingarden_template import BitcoinGardenParser
 from templates.exetools_template import ExetoolsParser
 from templates.happyblog_template import HappyblogParser
+from templates.tenec_template import TenecParser
+from templates.psylab_template import PsylabParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -436,5 +438,7 @@ PARSER_MAP = {
     'leakforums': LeakForumsParser,
     'bitcoingarden': BitcoinGardenParser,
     'exetools': ExetoolsParser,
-    'happyblog': HappyblogParser
+    'happyblog': HappyblogParser,
+    'tenec': TenecParser,
+    'psylab': PsylabParser
 }
