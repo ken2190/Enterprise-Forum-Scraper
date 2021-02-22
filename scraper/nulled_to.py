@@ -26,7 +26,7 @@ class NulledSpider(SitemapSpider):
     start_url = 'https://www.nulled.to'
 
     # Xpath stuffs
-    forum_xpath = "//h4//a/@href"
+    forum_xpath = "//td[contains(@class, 'col_c_forum')]/h4//a/@href"
     thread_xpath = "//tr[contains(@id,'trow')]"
     thread_date_xpath = ".//td[@class='col_f_post']/ul/li[contains(@class,'blend_links')]/a/text()"
     thread_first_page_xpath = ".//a[@itemprop='url' and contains(@id, 'tid-link-')]/@href"

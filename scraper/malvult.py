@@ -24,7 +24,7 @@ class MalvultSpider(SitemapSpider):
 
     # Xpath stuffs
     forum_xpath = '//h3[@class="nodeTitle"]/a[contains(@href, "forums/")]/@href'
-    thread_xpath = '//ol[@class="discussionListItems"]/li'
+    thread_xpath = '//li[contains(@id, "thread-")]'
     thread_first_page_xpath = './/h3[@class="title"]'\
                               '/a[contains(@href,"threads/")]/@href'
     thread_last_page_xpath = './/span[@class="itemPageNav"]'\

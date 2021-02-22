@@ -54,7 +54,34 @@ class BlackHatWorldSpider(SitemapSpider):
     )
 
     def start_requests(self):
-        yield Request(self.start_url, self.parse)
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
+        yield Request(
+            url=self.start_url,
+            headers=self.headers,
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse
+        )
 
     def parse(self, response):
 

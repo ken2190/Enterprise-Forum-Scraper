@@ -79,9 +79,10 @@ class MafiaUgSpider(SitemapSpider):
     def start_requests(self):
         # Temporary action to start spider
         yield Request(
-            url=self.temp_url,
+            url=self.base_url,
             headers=self.headers,
-            callback=self.pass_cookie
+            callback=self.pass_cookie,
+            errback=self.check_site_error
         )
         
     def pass_cookie(self, response):

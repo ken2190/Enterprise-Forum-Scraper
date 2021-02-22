@@ -36,12 +36,10 @@ class NulledBBSpider(SitemapSpider):
             '//section[contains(@class, "forumdisplay-subforum")]//div[contains(@class, "forum-title")]/a/@href'
 
     thread_xpath = '//article[contains(@class, "thread")]'
-    pagination_xpath = '//a[@class="pagination_next"]/@href'
+    pagination_xpath = '//a[contains(@class, "pagination_next")]/@href'
     thread_first_page_xpath = './/span[contains(@id, "tid_")]'\
                               '/a[contains(@href, "thread-")]/@href'
-    thread_last_page_xpath = './/a[contains(@href, "action=newpost")]/@href'
-    # thread_date_xpath = './/div[contains(@class,"threadlist-lastpost")]/span/*[last()]/span/@title|'\
-    #                     './/div[contains(@class,"threadlist-lastpost")]/span/*[last()]/text()'
+    last_page_xpath = '//div[contains(@class, "pagination")]//ul/li[last()]/a/@href'
 
     avatar_xpath = '//a[contains(@class, "post-avatar")]/img/@src'
 
@@ -49,7 +47,7 @@ class NulledBBSpider(SitemapSpider):
 
     thread_pagination_xpath = '//a[contains(@class, "pagination_previous")]/@href'
 
-    post_date_xpath = '//span[@data-toggle]/text()'
+    post_date_xpath = '//div[@class="flex-fill"]/span[@data-toggle="tooltip"]/text()'
     
     use_proxy="On"
 
@@ -93,7 +91,7 @@ class NulledBBSpider(SitemapSpider):
             thread_url = None
 
         return thread_url
-    
+
     def parse_forum(self, response, thread_meta={}, is_first_page=True):
 
         # Synchronize header user agent with cloudfare middleware
@@ -103,71 +101,15 @@ class NulledBBSpider(SitemapSpider):
             "Next_page_url: %s" % response.url
         )
 
+        # Parse sub forums
+        yield from self.parse(response)
+
         threads = response.xpath(self.thread_xpath)
 
-        lastmod_pool = []
         for thread in threads:
             thread_url = self.extract_thread_stats(thread)
-            thread_lastmod = None
 
-            # Standardize thread url only if it is not complete url
-            if 'http://' not in thread_url and 'https://' not in thread_url:
-                temp_url = thread_url
-                if self.base_url not in thread_url:
-                    temp_url = response.urljoin(thread_url)
-
-                if self.base_url not in temp_url:
-                    temp_url = self.base_url + thread_url
-
-                # last_page = requests.get(temp_url)
-                # last_page = lxml.html.fromstring(last_page.text)
-                # thread_lastmod = last_page.xpath(self.post_date_xpath)[-1].strip()
-
-            if not thread_url:
-                self.crawler.stats.inc_value("mainlist/detail_no_url_count")
-                self.logger.warning(
-                    "Unable to find thread URL on the forum: %s",
-                    response.url
-                )
-                continue
-
-            # Parse topic id
             topic_id = self.get_topic_id(thread_url)
-            if not topic_id:
-                self.crawler.stats.inc_value("mainlist/detail_no_topic_id_count")
-                self.logger.warning(
-                    "Unable to find topic ID of the thread: %s",
-                    response.urljoin(thread_url)
-                )
-                continue
-
-            if thread_lastmod is None:
-                if topic_id not in self.topics:
-                    self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("mainlist/detail_no_date_count")
-                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
-
-                if self.start_date:
-                    self.logger.info(
-                        "Date not found in thread %s " % thread_url
-                    )
-                    continue
-            else:
-                lastmod_pool.append(thread_lastmod)
-
-            # If start date, check last mod
-            if self.start_date and thread_lastmod < self.start_date:
-                if topic_id not in self.topics:
-                    self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("mainlist/detail_outdated_count")
-                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
-
-                self.logger.info(
-                    "Thread %s last updated is %s before start date %s. Ignored." % (
-                        thread_url, thread_lastmod, self.start_date
-                    )
-                )
-                continue
 
             # Standardize thread url only if it is not complete url
             if 'http://' not in thread_url and 'https://' not in thread_url:
@@ -180,67 +122,21 @@ class NulledBBSpider(SitemapSpider):
 
                 thread_url = temp_url
 
-            # Check file exist
-            if self.check_existing_file_date(
-                    topic_id=topic_id,
-                    thread_date=thread_lastmod,
-                    thread_url=thread_url
-            ):
-                # update stats
-                if topic_id not in self.topics:
-                    self.topics.add(topic_id)
-                    self.crawler.stats.inc_value("mainlist/detail_already_scraped_count")
-                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
-
-                continue
-
-            # Check thread meta
             if thread_meta:
                 meta = thread_meta
             else:
                 meta = self.synchronize_meta(response)
-
-            # Update topic id
             meta["topic_id"] = topic_id
-
-            # update stats
-            self.topics.add(topic_id)
-            self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
             yield Request(
                 url=thread_url,
                 headers=self.headers,
-                callback=self.parse_thread,
+                callback=self.process_forum,
                 meta=meta
             )
 
         # get next page
         next_page = self.get_forum_next_page(response)
-        if is_first_page and next_page:
-            self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
-
-        # Pagination
-        if not lastmod_pool:
-            self.crawler.stats.inc_value("mainlist/mainlist_no_detail_count")
-            self.logger.info(
-                "Forum without thread, exit: %s",
-                response.url
-            )
-            return
-
-        # update stats
-        if is_first_page:
-            self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
-
-        if self.start_date and self.start_date > max(lastmod_pool):
-            self.logger.info(
-                "Found no more thread update later than %s in forum %s. Exit." % (
-                    self.start_date,
-                    response.url
-                )
-            )
-            return
-
         if next_page:
             yield Request(
                 url=next_page,
@@ -250,22 +146,119 @@ class NulledBBSpider(SitemapSpider):
                 cb_kwargs={'is_first_page': False}
             )
 
-    def parse_thread_date(self, post_date):
-        try:
-            date = post_date.split('Posted: ')[-1]
-            return dateparser.parse(date).replace(tzinfo=None)
-        except:
-            return datetime.now()
+    def process_forum(self, response):
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
 
-    def parse_post_date(self, post_date):
-        try:
-            date = post_date.split('Posted: ')[-1]
-            return dateparser.parse(date).replace(tzinfo=None)
-        except:
-            return datetime.now()
+        # Get topic id
+        topic_id = response.meta.get("topic_id")
+
+        thread_last_page_url = response.xpath(
+            self.last_page_xpath
+        ).extract_first()
+
+        if thread_last_page_url:
+            thread_last_page_url = self.parse_thread_url(thread_last_page_url)
+
+            # Standardize thread url only if it is not complete url
+            if 'http://' not in thread_last_page_url and 'https://' not in thread_last_page_url:
+                temp_url = thread_last_page_url
+                if self.base_url not in thread_last_page_url:
+                    temp_url = response.urljoin(thread_last_page_url)
+
+                if self.base_url not in temp_url:
+                    temp_url = self.base_url + thread_last_page_url
+
+                thread_last_page_url = temp_url
+        else:
+            thread_last_page_url = response.url
+        
+        yield Request(
+            url=thread_last_page_url,
+            headers=self.headers,
+            callback=self.parse_thread,
+            meta=self.synchronize_meta(
+                response,
+                default_meta={
+                    "topic_id": topic_id
+                }
+            )
+        )
 
     def parse_thread(self, response):
-        yield from super().parse_thread(response)
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Get topic id
+        topic_id = response.meta.get("topic_id")
+
+        # Load all post date
+        post_dates = [
+            self.parse_post_date(post_date) for post_date in
+            response.xpath(self.post_date_xpath).extract()
+            if post_date.strip() and self.parse_post_date(post_date)
+        ]
+
+        if self.start_date and not post_dates:
+            self.logger.info('No dates found in thread: %s', response.url)
+            return
+
+        # get next page
+        next_page = self.get_thread_next_page(response)
+        if next_page:
+            self.crawler.stats.inc_value("mainlist/detail_next_page_count")
+
+        # check if the thread contains new messages
+        if self.start_date and max(post_dates) < self.start_date:
+            if topic_id not in self.topics_scraped:
+                self.crawler.stats.inc_value("mainlist/detail_outdated_count")
+
+            self.logger.info(
+                "No more post to update."
+            )
+            return
+
+        # Save thread content
+        if not self.useronly:
+            current_page = self.get_thread_current_page(response)
+            with open(
+                file=os.path.join(
+                    self.output_path,
+                    "%s-%s.html" % (
+                        topic_id,
+                        current_page
+                    )
+                ),
+                mode="w+",
+                encoding="utf-8"
+            ) as file:
+                file.write(response.text)
+            self.logger.info(
+                f'{topic_id}-{current_page} done..!'
+            )
+
+            # Update stats
+            self.topics_scraped.add(topic_id)
+            self.crawler.stats.set_value(
+                "mainlist/detail_saved_count",
+                len(self.topics_scraped)
+            )
+
+        # Thread pagination
+        if next_page:
+            yield Request(
+                url=next_page,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "topic_id": topic_id
+                    }
+                )
+            )
+        
         yield from super().parse_avatars(response)
 
 class NulledBBScrapper(SiteMapScrapper):
