@@ -29,6 +29,7 @@ class IpHandler(object):
         self.fraudulent_threshold = kwargs.get("fraudulent_threshold", 50)
         self.ip_batch_size = kwargs.get("ip_batch_size", 20)
         self.country = kwargs.get("proxy_countries")
+        self.city = kwargs.get("proxy_cities")
         
         if self.use_proxy == 'VIP':
             self.proxy_username = VIP_PROXY_USERNAME
@@ -49,6 +50,13 @@ class IpHandler(object):
                 self.proxy_username,
                 country
             )
+
+            if self.city:
+                city = choice(self.city)
+                self.proxy_username = "%s-city-%s" % (
+                    self.proxy_username,
+                    city
+                )
 
     async def fetch(self, url, **kwargs):
 

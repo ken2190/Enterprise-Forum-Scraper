@@ -888,6 +888,7 @@ class SitemapSpider(BypassCloudfareSpider):
     login_failed_xpath = None
 
     proxy_countries = []
+    proxy_cities = []
     
     # Other settings
     get_cookies_delay = 2
@@ -927,7 +928,8 @@ class SitemapSpider(BypassCloudfareSpider):
             fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20),
             use_proxy=self.use_proxy,
-            proxy_countries=self.proxy_countries
+            proxy_countries=self.proxy_countries,
+            proxy_cities=self.proxy_cities
         )
 
         # Handle headers

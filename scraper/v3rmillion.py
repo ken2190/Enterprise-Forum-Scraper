@@ -73,6 +73,8 @@ class V3RMillionSpider(SitemapSpider):
     # Other settings
     use_proxy = "VIP"
     proxy_countries = ['us']
+    proxy_cities = ['miami']
+
     sitemap_datetime_format = "%m-%d-%Y, %I:%M %p"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 

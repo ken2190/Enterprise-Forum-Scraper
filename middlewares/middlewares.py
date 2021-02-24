@@ -109,6 +109,10 @@ class DedicatedProxyMiddleware(object):
                    or uuid.uuid1().hex)
         country = request.meta.get("country")
         country = [country] if country else getattr(spider, 'proxy_countries', [])
+
+        city = request.meta.get("city")
+        city = [city] if city else getattr(spider, 'proxy_cities', [])
+
         ip = request.meta.get("ip")
 
         # Init username
@@ -128,6 +132,13 @@ class DedicatedProxyMiddleware(object):
                 username,
                 country
             )
+
+            if city:
+                city = choice(city)
+                username = "%s-city-%s" % (
+                    username,
+                    city
+                )
 
         # If has ip meta, make it priority over session
         if ip:
