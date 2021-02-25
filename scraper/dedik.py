@@ -16,9 +16,9 @@ class DedikSpider(SitemapSpider):
     # xpaths
     forum_xpath = '//li[@data-forumid]//a[contains(@href, "forum/")]/@href'
 
-    pagination_xpath = '//li[@data-rowid]/a/@href'
+    pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
 
-    thread_xpath = '//li[contains(@class, "ipsDataItem ")]'
+    thread_xpath = '//li[@data-rowid]'
     thread_first_page_xpath = './/span[@class="ipsType_break ipsContained"]'\
                               '/a/@href'
     thread_last_page_xpath = './/li[@class="ipsPagination_page"][last()]'\
