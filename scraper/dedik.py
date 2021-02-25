@@ -1,6 +1,7 @@
 import os
 import re
 import scrapy
+import uuid
 from math import ceil
 import configparser
 from scrapy.http import Request, FormRequest
@@ -13,11 +14,9 @@ class DedikSpider(SitemapSpider):
     base_url = "http://dedik.cc/"
 
     # xpaths
-    forum_xpath = '//div[@class="ipsDataItem_main"]//h4/a/@href|'\
-                  '//div[@class="ipsDataItem_main"]/ul/li'\
-                  '/a[contains(@href, "forum/")]/@href'
+    forum_xpath = '//li[@data-forumid]//a[contains(@href, "forum/")]/@href'
 
-    pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
+    pagination_xpath = '//li[@data-rowid]/a/@href'
 
     thread_xpath = '//li[contains(@class, "ipsDataItem ")]'
     thread_first_page_xpath = './/span[@class="ipsType_break ipsContained"]'\
@@ -51,6 +50,31 @@ class DedikSpider(SitemapSpider):
     sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
     post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 
+    def start_requests(self):
+        cookies, ip = self.get_cookies(
+            base_url=self.base_url,
+            proxy=self.use_proxy,
+            fraud_check=True,
+        )
+
+        self.logger.info(f'COOKIES: {cookies}')
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
+        self.logger.info(f'COOKIES: {cookies}')
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            callback=self.parse,
+            cookies=cookies,
+            meta=meta,
+            dont_filter=True
+        )
+
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
@@ -70,7 +94,7 @@ class DedikSpider(SitemapSpider):
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response)
             )
-
+        
     def parse_thread(self, response):
 
         # Parse generic thread
