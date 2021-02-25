@@ -21,9 +21,9 @@ class CrackingSoulSpider(SitemapSpider):
                              '/div/div/span[contains(@class,"smalltext")]'\
                              '/a[last()]/@href'
     thread_date_xpath = './/td[contains(@class,"forumdisplay")]'\
-                        '/div/span[@class="lastpost smalltext1"]/text()|'\
+                        '/div/span[@class="lastpost smalltext"]/text()|'\
                         './/td[contains(@class,"forumdisplay")]'\
-                        '/div/span[@class="lastpost smalltext1"]/span/@title'
+                        '/div/span[@class="lastpost smalltext"]/span/@title'
     thread_pagination_xpath = '//div[@class="pagination"]'\
                               '//a[@class="pagination_previous"]/@href'
     thread_page_xpath = '//span[@class="pagination_current"]/text()'

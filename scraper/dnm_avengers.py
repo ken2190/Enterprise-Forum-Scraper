@@ -13,8 +13,8 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 '\
 class DNMAvengersSpider(SitemapSpider):
     name = 'dnmavengers_spider'
 
-    base_url = 'http://avengersdutyk3xf.onion/'
-    login_url = 'http://avengersdutyk3xf.onion/member.php'
+    base_url = 'http://avengerssbkfrkhlbpxmonvdvsyi3xesvzar2oxincbqx5rqoehpkwqd.onion/'
+    login_url = 'http://avengerssbkfrkhlbpxmonvdvsyi3xesvzar2oxincbqx5rqoehpkwqd.onion/member.php'
 
     forum_xpath = '//a[contains(@href, "forum-")]/@href'
     pagination_xpath = '//div[@class="pagination"]'\
