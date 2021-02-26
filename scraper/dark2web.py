@@ -7,6 +7,9 @@ from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36'
+MIN_DELAY = 1
+MAX_DELAY = 3
 
 class Dark2WebSpider(SitemapSpider):
     name = 'dark2web_spider'
@@ -47,6 +50,14 @@ class Dark2WebSpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
 
     def parse_thread_date(self, thread_date):
         """
@@ -111,6 +122,9 @@ class Dark2WebScrapper(SiteMapScrapper):
         settings.update(
             {
                 "RETRY_HTTP_CODES": [403, 406, 429, 500, 503],
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
+                "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
             }
         )
         return settings
