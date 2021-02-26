@@ -7,6 +7,7 @@ API_TOKEN = os.getenv('API_TOKEN')
 OUTPUT_DIR = os.getenv('OUTPUT_DIR') or 'output'
 PARSE_DIR = os.getenv('PARSE_DIR') or 'parse'
 COMBO_DIR = os.getenv('COMBO_DIR') or 'combo'
+AVATAR_DIR = os.getenv('AVATAR_DIR') or 'avartar'
 ARCHIVE_DIR = os.getenv('ARCHIVE_DIR') or 'archive'
 IMPORT_DIR = os.getenv('IMPORT_DIR') or 'import'
 OFFSITE_DEST = os.getenv('OFFSITE_DEST') or 'b2:/ViperStorage/forums/2020/file'
