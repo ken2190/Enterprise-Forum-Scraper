@@ -22,6 +22,10 @@ main_parser_arguments = [
         "kwargs": {"help": argparse.SUPPRESS, "required": False}
     },
     {
+        "args": ("-avartar", '--avartar_path'),
+        "kwargs": {"help": argparse.SUPPRESS, "required": False}
+    },
+    {
         "args": ("-x", '--proxy'),
         "kwargs": {"help": argparse.SUPPRESS, "required": False}
     },

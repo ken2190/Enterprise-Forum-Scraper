@@ -16,6 +16,7 @@ from settings import (
     DV_BASE_URL,
     OUTPUT_DIR,
     PARSE_DIR,
+    AVATAR_DIR
 )
 
 headers = {
@@ -71,7 +72,8 @@ def process_scraper(scraper):
     # the output dirs for the scraper and parser
     scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
     parse_output_dir = os.path.join(PARSE_DIR, subfolder)
-
+    avartar_output_dir = os.path.join(AVATAR_DIR, subfolder)
+    
     try:
         ############################
         # Run scraper for template
@@ -84,6 +86,7 @@ def process_scraper(scraper):
             'start_date': start_date,
             'template': template,
             'output': scraper_output_dir,
+            'avartar_path': avartar_output_dir,
             'sitename': sitename
         }
 
