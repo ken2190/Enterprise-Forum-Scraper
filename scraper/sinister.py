@@ -13,6 +13,7 @@ from scraper.base_scrapper import (
 USERNAME = "seraleone"
 PASSWORD = "BcCeQGx5"
 
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36'
 
 class SinisterSpider(SitemapSpider):
 
@@ -53,6 +54,14 @@ class SinisterSpider(SitemapSpider):
     use_proxy = "VIP"
     proxy_countries = ['us']
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
+
     def start_requests(self):
         yield Request(
             url=self.base_url,
