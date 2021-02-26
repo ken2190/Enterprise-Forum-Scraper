@@ -23,14 +23,14 @@ class TenecSpider(SitemapSpider):
 
     # Xpath stuffs
     forum_xpath = '//div[@id="ipsLayout_mainArea"]//h4[contains(@class, "ipsDataItem_title ipsType_large")]/a/@href'
-    pagination_xpath = '//a[@class="pagination_next"]/@href'
+    pagination_xpath = '//li[@class="ipsPagination_next"]/a/@href'
     
     thread_xpath = '//div[@id="ipsLayout_mainArea"]//div[@class="ipsBox"]/ol/li[contains(@class, "ipsDataItem ipsDataItem_responsivePhoto")]'
     thread_first_page_xpath = './div[@class="ipsDataItem_main"]/h4//a/@href'
-    thread_last_page_xpath = './div[@class="ipsDataItem_main"]/h4//ul[contains(@class, "ipsPagination_mini")]/li[last()]/a/@href'
+    thread_last_page_xpath = './div[@class="ipsDataItem_main"]//ul[contains(@class, "ipsPagination_mini")]/li[@class="ipsPagination_last"]/a/@href'
     thread_date_xpath = './ul[contains(@class, "ipsDataItem_lastPoster")]//time/@datetime'
 
-    thread_pagination_xpath = '//ul[@class="ipsPagination"]//li[@class="ipsPagination_prev"]/a/@href'
+    thread_pagination_xpath = '//ul[@class="ipsPagination"]/li[@class="ipsPagination_prev"]/a/@href'
     thread_page_xpath = '//ul[@class="ipsPagination"]/li[contains(@class, "ipsPagination_active")]/a/@data-page'
     post_date_xpath = '//div[@class="ipsType_reset"]//time/@datetime'
 
@@ -83,7 +83,7 @@ class TenecSpider(SitemapSpider):
                 callback=self.parse_forum
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, is_first_page=True):
 
         # Parse sub forums
         yield from self.parse(response)
