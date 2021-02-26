@@ -51,7 +51,8 @@ class SinisterSpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = "%m-%d-%Y"
     use_proxy = "VIP"
-
+    proxy_countries = ['us']
+    
     def start_requests(self):
         yield Request(
             url=self.base_url,
