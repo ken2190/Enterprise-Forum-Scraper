@@ -10,7 +10,7 @@ import dateutil.parser as dparser
 from datetime import datetime
 
 USERNAME='root'
-KEY_FILE = os.path.expanduser('~/.ssh/id_rsa.pub')
+KEY_FILE = os.path.expanduser('ssl_certificate/shadow.pem')
 INPUT_PATH='/data/log/ejabberd'
 
 class ShadownetScrapper:
