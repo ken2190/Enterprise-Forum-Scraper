@@ -10,7 +10,7 @@ import dateutil.parser as dparser
 from datetime import datetime
 
 USERNAME='root'
-KEY_FILE = '../ssl_certificate/shadow.pem'
+KEY_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ssl_certificate/shadow.pem')
 INPUT_PATH='/data/log/ejabberd'
 
 class ShadownetScrapper:
@@ -18,7 +18,6 @@ class ShadownetScrapper:
         self.host = kwargs['sitename']
         self.username = USERNAME
         self.key_file = KEY_FILE
-
         self.input_path = INPUT_PATH
         self.output_path = kwargs['output']
         self.start_date = kwargs['start_date']
