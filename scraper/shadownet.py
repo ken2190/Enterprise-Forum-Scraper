@@ -9,7 +9,7 @@ from zipfile import ZipFile
 import dateutil.parser as dparser
 from datetime import datetime
 
-USERNAME='root'
+USERNAME='ejabberd'
 KEY_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ssl_certificate/shadow.pem')
 INPUT_PATH='/data/log/ejabberd'
 
