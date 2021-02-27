@@ -25,8 +25,19 @@ class ShadownetScrapper:
         self.time_format = "%Y-%m-%d"
         self.sitename = kwargs["sitename"]
 
-        if not self.sitename:
-            print("ERROR : No Sitename")
+        help_message = """
+            Usage: collector.py -scrape [-t TEMPLATE] [-o OUTPUT] [--sitename SITENAME] [-s START_DATE]\n
+            Arguments:
+            -t          | --template TEMPLATE:     Template forum to scrape
+            -o          | --output OUTPUT:         Output folder path
+            --sitename                             Sitename
+
+            Optional:
+            --start_date                           START_DATE: Scrape threads that are newer than supplied date
+            """
+
+        if not self.sitename or not self.output_path:
+            print(help_message)
             exit(1)
 
         if self.start_date:

@@ -39,8 +39,7 @@ class Scraper:
 
         template = self.kwargs.get('template')
 
-        if not template:
-            help_message = """
+        help_message = """
             Usage: collector.py -scrape [-t TEMPLATE] [-o OUTPUT] [-s START_DATE]\n
             Arguments:
             -t | --template TEMPLATE:     Template forum to scrape
@@ -55,6 +54,8 @@ class Scraper:
             --use_vip                     Use VIP proxies
 
             """
+
+        if not template:
             print(help_message)
             return
 
@@ -65,13 +66,14 @@ class Scraper:
             return
 
         output_folder = self.kwargs.get('output')
-        if not output_folder:
-            print('Output path missing')
+        if not output_folder and template != 'shadownet':
+            print(help_message)
             return
 
         # ------------make folder if not exist -----------------
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
+        if template != 'shadownet':
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
 
         stats = None
         scraper_obj = scraper(self.kwargs)
