@@ -10,7 +10,7 @@ import dateutil.parser as dparser
 from datetime import datetime
 
 USERNAME='root'
-KEY_FILE = os.path.expanduser('ssl_certificate/shadow.pem')
+KEY_FILE = '../ssl_certificate/shadow.pem'
 INPUT_PATH='/data/log/ejabberd'
 
 class ShadownetScrapper:
@@ -80,7 +80,7 @@ class ShadownetScrapper:
         except Exception as e:
             print(f'ERROR Can not connect to {SSHConfig["host"]}.')
             print(e)
-            return None
+            exit(1)
         print(f'Connected to {SSHConfig["host"]}')
         return ssh
 
@@ -196,7 +196,6 @@ class ShadownetScrapper:
         ssh = self.getSSHClient_key(SSHConfig)
 
         # Download Logs
-        print("="*100)
         self.download_logs(ssh, input_path, self.output_path)
     
     def start(self):
