@@ -55,12 +55,18 @@ class BaseTemplate:
                     self.time_format
                 ).timestamp()
             except Exception as err:
-                raise ValueError(
-                    "Wrong date format. Correct format is: %s. Detail: %s" % (
-                        self.time_format,
-                        err
+                try:
+                   self.start_date = datetime.datetime.strptime(
+                        self.start_date,
+                        "%Y-%m-%d"
+                    ).timestamp()
+                except Exception as err:
+                    raise ValueError(
+                        "Wrong date format. Correct format is: %s or %s." % (
+                            self.time_format,
+                            "%Y-%m-%d"
+                        )
                     )
-                )
                 
     def get_filtered_files(self, files):
         filtered_files = list(

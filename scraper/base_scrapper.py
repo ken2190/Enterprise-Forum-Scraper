@@ -305,12 +305,18 @@ class SiteMapScrapper:
                     self.time_format
                 )
             except Exception as err:
-                raise ValueError(
-                    "Wrong date format. Correct format is: %s. Detail: %s" % (
-                        self.time_format,
-                        err
+                try:
+                   self.start_date = datetime.strptime(
+                        self.start_date,
+                        "%Y-%m-%d"
                     )
-                )
+                except Exception as err:
+                    raise ValueError(
+                        "Wrong date format. Correct format is: %s or %s." % (
+                            self.time_format,
+                            "%Y-%m-%d"
+                        )
+                    )
 
         if self.end_date:
             try:
