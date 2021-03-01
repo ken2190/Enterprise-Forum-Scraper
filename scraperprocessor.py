@@ -62,12 +62,12 @@ def process_scraper(scraper):
     """
     start_date = None
     if scraper['nextStartDate']:
-        start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
+        start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD HH:mm:ss')
     subfolder = scraper['name']
     template = scraper['template']
     sitename = scraper['name']
 
-    process_date = arrow.now().format('YYYY-MM-DD')
+    process_date = arrow.now().format('YYYY-MM-DD HH:mm:ss')
 
     # the output dirs for the scraper and parser
     scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
