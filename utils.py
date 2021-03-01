@@ -61,11 +61,14 @@ def get_html_response(template, pattern=None, encoding=None, mode='rb'):
             return
         return html_response
 
-def write_json(file_pointer, data, check=False):
+def write_json(file_pointer, data, start_date, check=False):
     """
     writes `data` in file object `file_pointer`.
     """
     if data["_source"].get('date'):
+        if start_date:
+            if start_date > float(data["_source"]["date"]):
+                return ""
         data["_source"]["date"] = str(float(data["_source"]["date"])*1000)
     
     json_file = json.dumps(data, indent=4, ensure_ascii=False)
@@ -89,7 +92,7 @@ def write_json(file_pointer, data, check=False):
     else:
         return ""
 
-def write_comments(file_pointer, comments, output_file):
+def write_comments(file_pointer, comments, output_file, start_date):
     if not output_file:
         return
     """
@@ -117,7 +120,7 @@ def write_comments(file_pointer, comments, output_file):
             c['_source']['cid'] = str(int(comments[index-1]['_source']['cid']) + 1)
 
     for comment in comments:
-        write_json(file_pointer, comment)
+        write_json(file_pointer, comment, start_date)
     file_pointer.close()
     print('\nJson written in {}'.format(output_file))
     print('----------------------------------------\n')

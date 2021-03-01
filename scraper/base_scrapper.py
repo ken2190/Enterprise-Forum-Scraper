@@ -274,7 +274,7 @@ class SiteMapScrapper:
         "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
     }
 
-    time_format = "%Y-%m-%d"
+    time_format = "%Y-%m-%d %H:%M:%S"
 
     spider_class = None
 

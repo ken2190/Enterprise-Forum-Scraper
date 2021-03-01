@@ -109,6 +109,7 @@ def process_scraper(scraper):
         update_scraper(scraper, {'status': 'Processing'})
 
         kwargs = {
+            'start_date': start_date,
             'template': template,
             'output': parse_output_dir,
             'input_path': scraper_output_dir,
