@@ -6,8 +6,13 @@ from scrapy.exceptions import CloseSpider
 
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-USER = "GalactusPrime"
-PASS = "KXpro218gj2"
+LOGINS = [
+    {"USER":"GalactusPrime", "PASS":"KXpro218gj2"},
+    {"USER":"USER1", "PASS":"PASS1"},
+    {"USER":"USER2", "PASS":"PASS2"},
+    {"USER":"USER3", "PASS":"PASS3"},
+]
+
 MIN_DELAY = 1
 MAX_DELAY = 3
 
@@ -64,11 +69,15 @@ class XSSSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        login = self.get_login(LOGINS)
+        print(login)
         yield FormRequest.from_response(
             response,
             formxpath=self.login_form_xpath,
-            formdata={"login": USER,
-                      "password": PASS},
+            formdata={
+                "login": login["USER"],
+                "password": login["PASS"]
+            },
             headers=self.headers,
             meta=self.synchronize_meta(response),
             dont_filter=True,

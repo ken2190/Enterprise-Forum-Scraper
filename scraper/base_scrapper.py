@@ -1010,6 +1010,16 @@ class SitemapSpider(BypassCloudfareSpider):
 
         return meta
 
+    def get_login(self, LOGINS):
+        today = datetime.today()
+        year = today.year
+        month = today.month
+        day = today.day
+        days_in_the_year = (datetime.strptime(f'{year}{month}{day}', '%Y%m%d') - datetime(year, 1, 1)).days + 1
+        index = days_in_the_year % len(LOGINS)
+
+        return LOGINS[index]
+
     def extract_thread_stats(self, thread):
         """
         :param thread: str => thread html contain url and last mod
