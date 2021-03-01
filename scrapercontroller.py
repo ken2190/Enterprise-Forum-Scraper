@@ -103,6 +103,7 @@ def load_and_schedule_scrapers():
 
         schedule.every().minute.do(load_and_schedule_scrapers)
     except Exception as exc:
+        schedule.every().minute.do(load_and_schedule_scrapers)
         logger.error('Failed to load and schedule scrapers: %s', exc)
 
 
