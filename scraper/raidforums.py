@@ -11,6 +11,8 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'
+
 class RaidForumsSpider(SitemapSpider):
 
     name = 'raidforums_spider'
@@ -60,6 +62,14 @@ class RaidForumsSpider(SitemapSpider):
     sitemap_datetime_format = "%B %d, %Y at %I:%M %p"
     post_datetime_format = "%B %d, %Y at %I:%M %p"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "User-Agent": USER_AGENT
+            }
+        )
+        
     def parse(self, response):
 
         # Synchronize headers user agent with cloudfare middleware
