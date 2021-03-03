@@ -130,7 +130,8 @@ def process_scraper(scraper):
             site=scraper['name'],
             template=template,
             date=arrow.now().format('YYYY_MM_DD'),
-            sync=False
+            sync=False,
+            site_name=sitename
         )
         post_processing.run(kwargs)
 

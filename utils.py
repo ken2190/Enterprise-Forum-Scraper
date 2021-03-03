@@ -61,7 +61,7 @@ def get_html_response(template, pattern=None, encoding=None, mode='rb'):
             return
         return html_response
 
-def write_json(file_pointer, data, start_date, check=False):
+def write_json(file_pointer, data, start_date=None, check=False):
     """
     writes `data` in file object `file_pointer`.
     """
