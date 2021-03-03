@@ -30,7 +30,6 @@ def parse_args():
     parser.add_argument('-site', help='A site name', required=True)
     parser.add_argument('-template', help='Template name for this site', required=True)
     parser.add_argument('-date', help='A datestamp', required=True)
-    parser.add_argument('--sitename', help='Sitename', action='store_true')
     parser.add_argument('--sync', help='Sync with cloud', action='store_true',
                         default=False)
 
@@ -90,7 +89,6 @@ def run(kwargs=None):
         site = kwargs['site']
         template = kwargs['template']
         date = kwargs['date']
-        sitename = kwargs['sitename']
         sync = kwargs.get('sync', False)
     else:
         # parse cmdline arguments
@@ -99,22 +97,13 @@ def run(kwargs=None):
         template = args.template
         date = args.date
         sync = args.sync
-        sitename = args.sitename
 
     def exit(exit_code=2, exception=None):
         if args:
             sys.exit(exit_code)
         else:
             raise exception
-
-    # prepare paths
-    if site == 'shadownet':
-        html_dir = os.path.join(OUTPUT_DIR, site, sitename)
-        parse_dir = os.path.join(PARSE_DIR, site, sitename)
-    else:
-        html_dir = os.path.join(OUTPUT_DIR, site)
-        parse_dir = os.path.join(PARSE_DIR, site)
-
+    
     scraper = SCRAPER_MAP.get(template)
     if not scraper:
         err_msg = "ERROR: Invalid site template"
@@ -126,6 +115,15 @@ def run(kwargs=None):
         err_msg = f"ERROR: {site} has no site_type set"
         print(err_msg)
         exit(2, RuntimeError(err_msg))
+
+    # prepare paths
+    if site_type == 'shadownet':
+        html_dir = os.path.join(OUTPUT_DIR, site_type, site)
+        parse_dir = os.path.join(PARSE_DIR, site_type, site)
+    else:
+        html_dir = os.path.join(OUTPUT_DIR, site)
+        parse_dir = os.path.join(PARSE_DIR, site)
+
     # check input dirs
     print('Checking paths...')
     check_input_dirs(html_dir, parse_dir, site_type, exit)
@@ -144,7 +142,7 @@ def run(kwargs=None):
         cmd = f"jq -c '.' {parse_dir}/*/*.json"
         combined_json_file = os.path.join(
             COMBO_DIR,
-            f'{sitename}-{date}.json'
+            f'{site}-{date}.json'
         )
     else:
         cmd = f"jq -c '.' {parse_dir}/*.json"
@@ -173,20 +171,12 @@ def run(kwargs=None):
     # archive scraped HTML and combined JSON
     ##############################################
     print('Archiving HTML files...')
-    if site_type == 'shadownet':
-        html_archive = os.path.join(
-            ARCHIVE_DIR,
-            site_type,
-            'original',
-            f'{sitename}-html-{date}.tar.gz'
-        )
-    else:
-        html_archive = os.path.join(
-            ARCHIVE_DIR,
-            site_type,
-            'original',
-            f'{site}-html-{date}.tar.gz'
-        )
+    html_archive = os.path.join(
+        ARCHIVE_DIR,
+        site_type,
+        'original',
+        f'{site}-html-{date}.tar.gz'
+    )
     try:
         make_tarfile(html_archive, html_dir)
     except OSError as err:
@@ -194,18 +184,11 @@ def run(kwargs=None):
         exit(2, err)
 
     print('Archiving the combined JSON file...')
-    if site_type == 'shadownet':
-        combined_json_archive = os.path.join(
-            ARCHIVE_DIR,
-            site_type,
-            f'{sitename}-{date}.tar.gz'
-        )
-    else:
-        combined_json_archive = os.path.join(
-            ARCHIVE_DIR,
-            site_type,
-            f'{site}-{date}.tar.gz'
-        )
+    combined_json_archive = os.path.join(
+        ARCHIVE_DIR,
+        site_type,
+        f'{site}-{date}.tar.gz'
+    )
     try:
         make_tarfile(combined_json_archive, combined_json_file)
     except OSError as err:
