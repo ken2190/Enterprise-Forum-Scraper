@@ -72,8 +72,8 @@ def process_scraper(scraper):
     # the output dirs for the scraper and parser
     avartar_output_dir = os.path.join(AVATAR_DIR, subfolder)
     if scraper['template'] == 'shadownet':
-        scraper_output_dir = os.path.join(OUTPUT_DIR, template, sitename)
-        parse_output_dir = os.path.join(OUTPUT_DIR, template, sitename)
+        scraper_output_dir = os.path.join(OUTPUT_DIR, template, subfolder)
+        parse_output_dir = os.path.join(PARSE_DIR, template, subfolder)
     else:
         scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
         parse_output_dir = os.path.join(PARSE_DIR, subfolder)
