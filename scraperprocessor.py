@@ -131,7 +131,7 @@ def process_scraper(scraper):
             template=template,
             date=arrow.now().format('YYYY_MM_DD'),
             sync=False,
-            site_name=sitename
+            sitename=sitename
         )
         post_processing.run(kwargs)
 
