@@ -27,10 +27,8 @@ class ShadownetScrapper:
         self.input_path = INPUT_PATH
         self.output_path = kwargs['output']
         self.start_date = kwargs['start_date']
-        self.time_format = "%Y-%m-%d"
+        self.time_format = "%Y-%m-%d %H:%M:%S"
         self.sitename = kwargs["sitename"]
-        
-        time_format = "%Y-%m-%d %H:%M:%S"
 
         help_message = """
             Usage: collector.py -scrape [-t TEMPLATE] [-o OUTPUT] [--sitename SITENAME] [-s START_DATE]\n
