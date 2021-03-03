@@ -13,59 +13,68 @@ class ShadownetParser(BaseTemplate):
     def __init__(self, *args, **kwargs):
         self.folder_path = kwargs.get('folder_path')
         self.output_folder = kwargs.get('output_folder')
-        self.parser_name = kwargs.get('sitename')
-        
+        self.parser_name = 'shadownet'
+        self.sitename = kwargs.get('sitename')
         self.main()
 
     def main(self):
-        for _dir in os.listdir(self.folder_path):
+        for domain_dir in os.listdir(self.folder_path):
             try:
-                path = os.path.join(self.folder_path, _dir)
-                if not os.path.isdir(path):
+                domain_dir_path = os.path.join(self.folder_path, domain_dir)
+                if not os.path.isdir(domain_dir_path):
                     continue
-                try:
-                    _dir = _dir.lstrip("log_")
-                    ts = dparser.parse(_dir).timestamp()
-                except ValueError:
-                    continue
+                
+                print("="*100)
+                print(f'Proceeding for log folder for  {domain_dir}\n')
 
-                print(f'Proceeding for Folder {_dir}')
-                with os.scandir(path) as dp:
-                    for i in dp:
-                        if not i.name.endswith('.log'):
-                            continue
+                output_folder = os.path.join(self.output_folder, domain_dir)
+                if not os.path.isdir(output_folder):
+                    os.makedirs(output_folder)
 
-                        input_file_path = os.path.join(path, i.name)
-                        if 'sender_' in i.name:
-                            output_file_path = os.path.join(
-                                self.output_folder, f'sender_{_dir}.json'
-                            )
-                            self.process_sender_file(
-                                input_file_path, output_file_path, ts
-                            )
+                for log_dir in os.listdir(domain_dir_path):
+                    log_dir_path = os.path.join(domain_dir_path, log_dir)
+                    if not os.path.isdir(log_dir_path):
+                        continue
 
-                        if 'session_' in i.name:
-                            output_file_path = os.path.join(
-                                self.output_folder, f'session_{_dir}.json'
-                            )
-                            self.process_session_file(
-                                input_file_path, output_file_path, ts
-                            )
+                    try:
+                        _dir = log_dir.lstrip("log_")
+                        ts = dparser.parse(_dir).timestamp()
+                    except ValueError:
+                        continue
 
-                        if 'registration' in i.name:
-                            output_file_path = os.path.join(
-                                self.output_folder, f'registration_{_dir}.json'
-                            )
-                            self.process_registration_file(
-                                input_file_path, output_file_path, ts
-                            )
+                    output_file_path = os.path.join(
+                        output_folder, f'{_dir}.json'
+                    )
 
-                print('----------------------------------------\n')
+                    file_pointer = open(output_file_path, 'w', encoding='utf-8')
+                    with os.scandir(log_dir_path) as dp:
+                        for i in dp:
+                            if not i.name.endswith('.log'):
+                                continue
+
+                            input_file_path = os.path.join(log_dir_path, i.name)
+                            if 'sender_' in i.name:
+                                self.process_sender_file(
+                                    input_file_path, file_pointer, ts, domain_dir
+                                )
+
+                            if 'session_' in i.name:
+                                self.process_session_file(
+                                    input_file_path, file_pointer, ts, domain_dir
+                                )
+
+                            if 'registration' in i.name:
+                                self.process_registration_file(
+                                    input_file_path, file_pointer, ts, domain_dir
+                                )
+
+                    print(f'Json written in {output_file_path}')
+                    print('----------------------------------------\n')
             except Exception:
                 traceback.print_exc()
                 continue
 
-    def process_sender_file(self, input_file_path, output_file_path, ts):
+    def process_sender_file(self, input_file_path, file_pointer, ts, domain_dir):
         with open(input_file_path, 'r') as fp:
             content = fp.read()
 
@@ -76,7 +85,7 @@ class ShadownetParser(BaseTemplate):
                     data = {
                         '_source': {
                             'type': 'message',
-                            'site': self.parser_name,
+                            'site': domain_dir,
                             'message': item['message'],
                             'sender': item['sender'],
                             'recipient': item['recipient'],
@@ -85,12 +94,9 @@ class ShadownetParser(BaseTemplate):
                         }
                     }
 
-                    with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
-                        utils.write_json(file_pointer, data)
+                    utils.write_json(file_pointer, data)
         
-            print(f'Json for  {input_file_path} written in {output_file_path}')
-    
-    def process_session_file(self, input_file_path, output_file_path, ts):
+    def process_session_file(self, input_file_path, file_pointer, ts, domain_dir):
         with open(input_file_path, 'r') as fp:
             content = fp.read()
 
@@ -101,19 +107,16 @@ class ShadownetParser(BaseTemplate):
                     data = {
                         '_source': {
                             'type': 'session',
-                            'site': self.parser_name,
+                            'site': domain_dir,
                             'user': item['user'],
                             'ip': item['ip'],
                             'date': dparser.parse(item['timestamp']).timestamp()
                         }
                     }
 
-                    with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
-                        utils.write_json(file_pointer, data)
+                    utils.write_json(file_pointer, data)
         
-            print(f'Json for  {input_file_path} written in {output_file_path}')
-
-    def process_registration_file(self, input_file_path, output_file_path, ts):
+    def process_registration_file(self, input_file_path, file_pointer, ts, domain_dir):
         with open(input_file_path, 'r') as fp:
             content = fp.read()
 
@@ -123,8 +126,8 @@ class ShadownetParser(BaseTemplate):
 
                     data = {
                         '_source': {
-                            'type': 'session',
-                            'site': self.parser_name,
+                            'type': 'registration',
+                            'site': domain_dir,
                             'server': item['server'],
                             'user': item['user'],
                             'email': item['email'],
@@ -133,7 +136,4 @@ class ShadownetParser(BaseTemplate):
                         }
                     }
 
-                    with open(output_file_path, 'a', encoding='utf-8') as file_pointer:
-                        utils.write_json(file_pointer, data)
-        
-            print(f'Json for  {input_file_path} written in {output_file_path}')
+                    utils.write_json(file_pointer, data)

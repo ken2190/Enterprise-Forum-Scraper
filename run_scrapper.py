@@ -91,7 +91,7 @@ class Scraper:
             if template != 'shadownet':
                 stats = scraper_obj.do_scrape()
             else:
-                scraper_obj.start()
+                stats = scraper_obj.start()
 
             if stats:
                 err = get_error(stats)

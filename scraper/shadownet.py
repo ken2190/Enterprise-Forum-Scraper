@@ -14,6 +14,12 @@ KEY_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 INPUT_PATH='/data/log/ejabberd'
 
 class ShadownetScrapper:
+    site_type = 'shadownet'
+    name = 'shadownet'
+    stats = {
+        'mainlist/detail_saved_count': 0
+    }
+
     def __init__(self, kwargs):
         self.host = kwargs['sitename']
         self.username = USERNAME
@@ -23,6 +29,8 @@ class ShadownetScrapper:
         self.start_date = kwargs['start_date']
         self.time_format = "%Y-%m-%d"
         self.sitename = kwargs["sitename"]
+        
+        time_format = "%Y-%m-%d %H:%M:%S"
 
         help_message = """
             Usage: collector.py -scrape [-t TEMPLATE] [-o OUTPUT] [--sitename SITENAME] [-s START_DATE]\n
@@ -46,12 +54,18 @@ class ShadownetScrapper:
                     self.time_format
                 )
             except Exception as err:
-                raise ValueError(
-                    "Wrong date format. Correct format is: %s. Detail: %s" % (
-                        self.time_format,
-                        err
+                try:
+                   self.start_date = datetime.strptime(
+                        self.start_date,
+                        "%Y-%m-%d"
                     )
-                )
+                except Exception as err:
+                    raise ValueError(
+                        "Wrong date format. Correct format is: %s or %s." % (
+                            self.time_format,
+                            "%Y-%m-%d"
+                        )
+                    )
 
     def getSSHClient_key(self, SSHConfig):
         print(f'Connecting {SSHConfig["host"]}...')
@@ -64,7 +78,7 @@ class ShadownetScrapper:
         except Exception as e:
             print(f'ERROR Can not connect to {SSHConfig["host"]}.')
             print(e)
-            exit(1)
+            return None
         print(f'Connected to {SSHConfig["host"]}')
         return ssh
 
@@ -100,9 +114,10 @@ class ShadownetScrapper:
         for filename in ftp_client.listdir(input_path):
             if not os.path.isfile(os.path.join(local_dir, filename)):
                 ftp_client.get(os.path.join(input_path, filename), os.path.join(local_dir, filename))
-                print(f'Done : {os.path.join(input_path, filename)}')
+                self.stats["mainlist/detail_saved_count"] += 1 
+                print(f'Done : {os.path.join(local_dir, filename)}')
             else:
-                print(f'Already Exist : {os.path.join(input_path, filename)}')
+                print(f'Already Exist : {os.path.join(local_dir, filename)}')
 
     def download_logs(self, ssh, input_path, output_path):
         """ Download logs from server to local dir"""
@@ -150,6 +165,13 @@ class ShadownetScrapper:
                             self.download_dir(ssh, os.path.join(domain_dir_path, daily_dir_name), os.path.join(local_dir, daily_dir_name))
                             print("-"*100)
                             print(f"Sub Dir Done: {os.path.join(domain_dir_path, daily_dir_name)} to {os.path.join(local_dir, daily_dir_name)}\n")
+                        else:
+                            print(
+                                "Folder %s ignored because the date in the past. Detail: %s" % (
+                                    os.path.join(domain_dir_path, daily_dir_name),
+                                    _dir
+                                )
+                            )
                     else:
                         self.download_dir(ssh, os.path.join(domain_dir_path, daily_dir_name), os.path.join(local_dir, daily_dir_name))
                         print("-"*100)
@@ -166,9 +188,13 @@ class ShadownetScrapper:
         
         # Connect to server
         ssh = self.getSSHClient_key(SSHConfig)
+        if not ssh:
+            self.stats["finish_reason"] = 'login_is_failed'
+            return
 
         # Download Logs
         self.download_logs(ssh, self.input_path, self.output_path)
     
     def start(self):
         self.process()
+        return self.stats
