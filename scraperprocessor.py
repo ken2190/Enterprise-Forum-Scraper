@@ -70,13 +70,13 @@ def process_scraper(scraper):
     process_date = arrow.now().format('YYYY-MM-DD HH:mm:ss')
 
     # the output dirs for the scraper and parser
+    avartar_output_dir = os.path.join(AVATAR_DIR, subfolder)
     if scraper['template'] == 'shadownet':
         scraper_output_dir = os.path.join(OUTPUT_DIR, template, sitename)
         parse_output_dir = os.path.join(OUTPUT_DIR, template, sitename)
     else:
         scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
         parse_output_dir = os.path.join(PARSE_DIR, subfolder)
-        avartar_output_dir = os.path.join(AVATAR_DIR, subfolder)
 
     try:
         ############################
