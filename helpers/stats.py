@@ -52,6 +52,11 @@ def get_error(stats, site_type='forum'):
     if stats.get(CANNOT_BYPASS_CAPTCHA, 0) > 1:
         return _err_msg("E20")
 
+    finish_exception = stats.get("finish_exception")
+    if finish_exception:
+        return "E00", f"{finish_exception[0]}: {finish_exception[1]}"
+
+
 def get_warnings(stats, site_type='forum'):
     """ Check stats and return list of warnings """
 

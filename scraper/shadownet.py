@@ -183,7 +183,7 @@ class ShadownetScrapper:
             'username': self.username,
             'key_file': self.key_file
         }
-        
+
         # Connect to server
         ssh = self.getSSHClient_key(SSHConfig)
         if not ssh:
@@ -194,5 +194,9 @@ class ShadownetScrapper:
         self.download_logs(ssh, self.input_path, self.output_path)
     
     def start(self):
-        self.process()
-        return self.stats
+        try:
+            self.process()
+        except Exception as e:
+            self.stats["finish_exception"] = (type(e).__qualname__, str(e))
+        finally:
+            return self.stats

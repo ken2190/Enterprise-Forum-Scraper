@@ -56,6 +56,9 @@ class HashesSpider(scrapy.Spider):
 
 if __name__ == '__main__':
     settings = {
+        "EXTENSIONS": {
+            "extensions.log_exception_into_stats.LogExceptionIntoStats": 0
+        },
         "DOWNLOADER_MIDDLEWARES": {
             'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
             'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': None,

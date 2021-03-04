@@ -260,6 +260,9 @@ class SiteMapScrapper:
     MAX_DELAY = 2
 
     settings = {
+        "EXTENSIONS": {
+            "extensions.log_exception_into_stats.LogExceptionIntoStats": 0
+        },
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
             # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,

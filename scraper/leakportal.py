@@ -157,6 +157,9 @@ class LeakPortalScrapper():
 
     def do_scrape(self):
         settings = {
+            "EXTENSIONS": {
+                "extensions.log_exception_into_stats.LogExceptionIntoStats": 0
+            },
             'DOWNLOAD_DELAY': self.request_delay,
             'CONCURRENT_REQUESTS': self.no_of_threads,
             'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,

@@ -158,6 +158,9 @@ class CrimeMarketScrapper():
 
     def do_scrape(self):
         settings = {
+            "EXTENSIONS": {
+                "extensions.log_exception_into_stats.LogExceptionIntoStats": 0
+            },
             "DOWNLOADER_MIDDLEWARES": {
                 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
             },
