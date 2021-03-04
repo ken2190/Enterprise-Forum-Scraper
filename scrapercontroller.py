@@ -98,6 +98,8 @@ def load_and_schedule_scrapers():
                     scraper['name'],
                     scraper['runAtTime']
                 )
+
+                schedule.every().days.at(scraper['runAtTime']).do(spawn_scraper, scraper)
             except Exception as exc:
                 logger.error('Failed to schedule %s: %s', scraper['name'], exc)
     except Exception as exc:
