@@ -99,9 +99,9 @@ class Scraper:
 
                 if err:
                     LOGGER.error(f'{err[0]}: {err[1]}')
-                    stats['result/error'] = err[0]
+                    stats['result/error'] = err
                 elif warnings:
-                    stats['result/warnings'] = [w[0] for w in warnings]
+                    stats['result/warnings'] = warnings
                     for warn in warnings:
                         LOGGER.warning(f'{warn[0]}: {warn[1]}')
                 else:

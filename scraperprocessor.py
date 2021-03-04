@@ -1,4 +1,3 @@
-
 import arrow
 import getopt
 import json
@@ -56,6 +55,17 @@ def update_scraper(scraper, payload):
         logger.warning('Failed to update scraper (status={})'.format(response.status_code))
 
 
+class ResultErrorException(Exception):
+    def __init__(self, err):
+        super().__init__("[{}] {}".format(err[0], err[1]))
+
+class ResultWarningException(Exception):
+    def __init__(self, warnings):
+        super().__init__(
+            "\n".join(["[{}] {}".format(warning[0], warning[1]) for warning in warnings])
+        )
+
+
 def process_scraper(scraper):
     """
     Processes the scraper by running the scraper template and then parsing the data.
@@ -97,13 +107,14 @@ def process_scraper(scraper):
         result = Scraper(kwargs).do_scrape()
 
         # check if there was any error
-        err_code = result.get('result/error')
-        if err_code:
-            raise RuntimeError('[%s] %s' % (err_code, ERROR_MESSAGES[err_code]))
+        err = result.get('result/error')
+        if err:
+            raise ResultErrorException(err)
 
         # check for "No new files"(W08) warning
-        if 'W08' in result.get('result/warnings', []):
-            raise RuntimeError('W08')
+        warnings = result.get('result/warnings', [])
+        if len(warnings) > 0:
+            raise ResultWarningException(warnings)
 
         ############################
         # Run parser for template
@@ -144,10 +155,11 @@ def process_scraper(scraper):
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        if str(e) != 'W08':
-            update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
+
+        if isinstance(e, ResultWarningException):
+            update_scraper(scraper, {'status': 'Warning', 'pid': None, 'message': str(e)})
         else:
-            update_scraper(scraper, {'status': 'Warning', 'pid': None, 'message': WARNING_MESSAGES['W08']})
+            update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
 
 
 def help():
@@ -183,11 +195,6 @@ def main(argv):
         # Get / Process Scraper
         ##############################
         scraper = get_scraper(scraper_id)
-        # scraper = dict(
-            # nextStartDate=arrow.now().format('YYYY-MM-DD'),
-            # name=scraper_id,
-            # template=scraper_id
-        # )
         process_scraper(scraper)
     except Exception as e:
         logger.error('Failed to process scraper: {}'.format(e))
