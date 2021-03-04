@@ -1,17 +1,23 @@
-before_script:
-  - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  - ssh-keyscan -t rsa ${HOST} >> ~/.ssh/known_hosts
-  - chmod 644 ~/.ssh/known_hosts
+stages:
+  - production
 
 deploy_production:
-  type: deploy
+  stage: production
+  variables:
+    ID_RSA_NAME: $CI_PROJECT_PATH_SLUG"_prod"
   environment:
     name: production
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo -e "$PROD_SSH_KEY" > ~/.ssh/$ID_RSA_NAME
+    - chmod 600 ~/.ssh/$ID_RSA_NAME
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
-    - ssh -tt root@${HOST} "docker exec -it scraping-env_scrapyd_1 bash -c 'cd /opt/forumparser; git pull;'"
+    - >
+    - ssh -i "~/.ssh/$ID_RSA_NAME" "root"@"$PROD_SERVER_HOST" "cd $PROD_PATH
+      && docker exec -it scraping-env_scrapyd_1 bash -c 'cd /opt/forumparser; git pull;'
+      && exit"
   only:
     - master
+
+
