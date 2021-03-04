@@ -123,7 +123,7 @@ def get_warnings(stats, site_type='forum'):
     #     warnings.append(_warn_msg("W07"))
 
     # check if no new files
-    saved_count = stats.get(DETAILS_SAVED_COUNT, 0) + stats.get(AVATAR_SAVED_COUNT, 0)
+    saved_count = stats.get(DETAILS_SAVED_COUNT, 0) # + stats.get(AVATAR_SAVED_COUNT, 0)
     if saved_count == 0:
         warnings.append(_warn_msg("W08"))
 
