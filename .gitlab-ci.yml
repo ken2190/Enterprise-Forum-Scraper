@@ -15,7 +15,7 @@ deploy_production:
   script:
     - >
     - ssh -i "~/.ssh/$ID_RSA_NAME" "root"@"$PROD_SERVER_HOST" "cd $PROD_PATH
-      && docker exec -it scraping-env_scrapyd_1 bash -c 'cd /opt/forumparser; git pull;'
+      && docker exec scraping-env_scrapyd_1 bash -c 'cd /opt/forumparser; git pull;'
       && exit"
   only:
     - master
