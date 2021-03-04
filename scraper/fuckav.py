@@ -16,13 +16,13 @@ from scrapy import (
     FormRequest
 )
 
-USERNAME = "thecreator"
-PASSWORD = "Night#Fuck000"
+USERNAME = "Kaddafi"
+PASSWORD = "AVS3rg910_1"
 MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
 USER_ID = ",42737,"
 
 MIN_DELAY = 1
-MAX_DELAY = 3
+MAX_DELAY = 4
 
 PROXY = 'http://127.0.0.1:8118'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
