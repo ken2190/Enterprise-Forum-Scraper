@@ -84,6 +84,7 @@ def load_and_schedule_scrapers():
 
     try:
         scrapers = get_active_scrapers()
+
         for scraper in scrapers:
             try:
                 if scraper.get('runNow', 0) != 0:
@@ -97,14 +98,15 @@ def load_and_schedule_scrapers():
                     scraper['name'],
                     scraper['runAtTime']
                 )
+
                 schedule.every().days.at(scraper['runAtTime']).do(spawn_scraper, scraper)
             except Exception as exc:
                 logger.error('Failed to schedule %s: %s', scraper['name'], exc)
-
-        schedule.every().minute.do(load_and_schedule_scrapers)
     except Exception as exc:
         logger.error('Failed to load and schedule scrapers: %s', exc)
+    finally:
         schedule.every().minute.do(load_and_schedule_scrapers)
+
 
 
 ###########################

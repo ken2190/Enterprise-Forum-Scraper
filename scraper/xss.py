@@ -7,10 +7,8 @@ from scrapy.exceptions import CloseSpider
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 LOGINS = [
-    {"USER":"GalactusPrime", "PASS":"KXpro218gj2"},
-    {"USER":"USER1", "PASS":"PASS1"},
-    {"USER":"USER2", "PASS":"PASS2"},
-    {"USER":"USER3", "PASS":"PASS3"},
+    {"USER":"bashman", "PASS":"Night#Bash011"},
+    {"USER":"Dexter101", "PASS":"Night#Dex8890"},
 ]
 
 MIN_DELAY = 1
