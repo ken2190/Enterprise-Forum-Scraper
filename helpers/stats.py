@@ -56,9 +56,6 @@ def get_error(stats, site_type='forum'):
     if finish_exception:
         return "E00", f"{finish_exception[0]}: {finish_exception[1]}"
 
-    if stats.get("log_count/ERROR", 0) > 0:
-        return _err_msg("E00")
-
 
 def get_warnings(stats, site_type='forum'):
     """ Check stats and return list of warnings """
