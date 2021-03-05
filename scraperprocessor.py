@@ -57,12 +57,12 @@ def update_scraper(scraper, payload):
 
 class ResultErrorException(Exception):
     def __init__(self, err):
-        super().__init__("[{}] {}".format(err[0], err[1]))
+        super().__init__(err[1])
 
 class ResultWarningException(Exception):
     def __init__(self, warnings):
         super().__init__(
-            "\n".join(["[{}] {}".format(warning[0], warning[1]) for warning in warnings])
+            "\n".join([warning[1] for warning in warnings])
         )
 
 
