@@ -132,7 +132,7 @@ def run(kwargs=None):
     if not os.listdir(parse_dir):
         err_msg = f"{parse_dir} is Empty"
         print(err_msg)
-        exit(2, RuntimeError(err_msg))
+        exit(0)
 
     ##############################################
     # merge parsed files
