@@ -71,6 +71,9 @@ class PsbdmpSpider(SitemapSpider):
 
         onlyfiles = [f.split(".")[0] for f in listdir(output_path) if isfile(join(output_path, f))]
         data = [item for item in json_data[0] if item['id'] not in onlyfiles]
+        if self.limit_time:
+            data = [item for item in data if int(item['date']) > self.limit_time.timestamp()]
+
         print(f'Paste count for {date}: {len(data)}')
 
         for item in data:
@@ -103,18 +106,6 @@ class PsbdmpSpider(SitemapSpider):
         content = json_data["content"]
         if not content:
             return
-        date =  datetime.datetime.strptime(
-            json_data["date"],
-            "%Y-%m-%d %H:%M"
-        )
-
-        if self.limit_time:
-            if self.limit_time > date:
-                self.logger.info(
-                        "Date is %s before start date %s. Ignored %s." % (
-                            json_data["date"], self.limit_time, dump_id
-                        )
-                    ) 
 
         with open(dump_file, 'w') as f:
             f.write(content)
