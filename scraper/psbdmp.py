@@ -29,9 +29,12 @@ class PsbdmpSpider(SitemapSpider):
     use_proxy = "On"
     download_thread = NO_OF_THREADS
     
-    date_format = '%Y-%m-%d'
+    time_format = "%Y-%m-%d %H:%M:%S"
+    date_format = "%Y-%m-%d"
 
     def start_requests(self,):
+        self.limit_time = self.start_date
+
         if not self.start_date:
             self.start_date = datetime.datetime.now()
         if not self.end_date:
@@ -96,10 +99,23 @@ class PsbdmpSpider(SitemapSpider):
             json_data = json.loads(response.text)
         except:
             return
-        
+
         content = json_data["content"]
         if not content:
             return
+        date =  datetime.datetime.strptime(
+            json_data["date"],
+            "%Y-%m-%d %H:%M"
+        )
+
+        if self.limit_time:
+            if self.limit_time > date:
+                self.logger.info(
+                        "Date is %s before start date %s. Ignored %s." % (
+                            json_data["date"], self.limit_time, dump_id
+                        )
+                    ) 
+
         with open(dump_file, 'w') as f:
             f.write(content)
         print('{} done..!'.format(dump_file))
