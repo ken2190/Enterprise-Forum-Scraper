@@ -364,21 +364,7 @@ class SiteMapScrapper:
 
     def ensure_avatar_path(self, template):
         if not self.avatar_path:
-            if getattr(self, 'site_name', None):
-                self.avatar_path = f'../avatars/{self.site_name}'
-            else:
-                self.avatar_path = f'../avatars/{template}'
-        else:
-            if getattr(self, 'site_name', None):
-                self.avatar_path = os.path.join(
-                    self.avatar_path,
-                    self.site_name
-                )
-            else:
-                self.avatar_path = os.path.join(
-                    self.avatar_path,
-                    template
-                )
+            self.avatar_path = f'../avatars/{template}'
         
         if not os.path.exists(self.avatar_path):
             os.makedirs(self.avatar_path)
