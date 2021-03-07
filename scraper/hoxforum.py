@@ -88,7 +88,7 @@ class HoxForumSpider(SitemapSpider):
                 callback=self.parse_forum
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, is_first_page=True):
 
         # Parse sub forums
         yield from self.parse(response)

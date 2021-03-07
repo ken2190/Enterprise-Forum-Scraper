@@ -1,12 +1,7 @@
 import os
 import re
 import time
-import logging
 
-from selenium.webdriver import (
-    Chrome,
-    ChromeOptions,
-)
 from datetime import (
     datetime,
     timedelta
@@ -17,8 +12,7 @@ from scrapy import (
 )
 from scraper.base_scrapper import (
     SitemapSpider,
-    SiteMapScrapper,
-    SeleniumSpider
+    SiteMapScrapper
 )
 
 
@@ -27,9 +21,8 @@ PASSWORD = "Night#Omerta"
 MD5PASS = "8956fb126e264fcf3da8a553e271a0c9"
 
 
-class OmertaSpider(SeleniumSpider):
+class OmertaSpider(SitemapSpider):
     name = 'omerta_spider'
-    delay = 0.1
 
     # Url stuffs
     base_url = "https://omerta.cc/"
@@ -52,9 +45,6 @@ class OmertaSpider(SeleniumSpider):
     post_date_xpath = "//a[contains(@name,\"post\")]/following-sibling::text()[contains(.,\":\")]"
 
     password_protect_xpath = "//div[@class=\"panel\"]/div/div/p[contains(text(),\"password protected\")]"
-    avatar_xpath = "//a[contains(@href,\"member.php?\")]/img/@src"
-    # Login Failed Message
-    login_failed_xpath = '//div[contains(text(), "an invalid username or password")]'
 
     # Regex stuffs
     topic_pattern = re.compile(
@@ -71,7 +61,7 @@ class OmertaSpider(SeleniumSpider):
     )
 
     # Other settings
-    use_proxy = "VIP"
+    use_proxy = 'VIP'
     sitemap_datetime_format = "%m-%d-%Y"
     post_datetime_format = "%m-%d-%Y, %I:%M %p"
 
@@ -88,13 +78,6 @@ class OmertaSpider(SeleniumSpider):
                 'Cache-Control': 'max-age=0',
             }
         )
-        selenium_logger = logging.getLogger("seleniumwire")
-        selenium_logger.setLevel(logging.ERROR)
-        selenium_logger = logging.getLogger("selenium.webdriver")
-        selenium_logger.setLevel(logging.ERROR)
-        urllib3_logger = logging.getLogger("urllib3.connectionpool")
-        urllib3_logger.setLevel(logging.ERROR)
-        self.setup_browser()
 
     def parse_thread_date(self, thread_date):
         """
@@ -134,102 +117,116 @@ class OmertaSpider(SeleniumSpider):
                 self.post_datetime_format
             )
 
-    def setup_browser(self):
-        chrome_options = ChromeOptions()
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument(f'user-agent={self.headers.get("User-Agent")}')
-        prefs = {
-            "download.prompt_for_download": False,
-            "download.default_directory": self.output_path,
-            "savefile.default_directory": self.output_path
-        }
-        chrome_options.add_experimental_option("prefs", prefs)
+    def parse(self, response):
 
-        self.browser = Chrome(
-            '/usr/local/bin/chromedriver',
-            chrome_options=chrome_options)
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
 
-    def start_requests(self):
+        yield FormRequest.from_response(
+            response=response,
+            meta=self.synchronize_meta(response),
+            formcss=self.login_form_css,
+            formdata={
+                "vb_login_username": USERNAME,
+                "vb_login_password": PASSWORD,
+                # "securitytoken": "guest",
+                # "vb_login_md5password": MD5PASS,
+                # "vb_login_md5password_utf": MD5PASS,
+                # "do": "login",
+                # "url": "/"
+            },
+            headers=self.headers,
+            dont_filter=True,
+            dont_click=True,
+            callback=self.parse_login
+        )
+
+    def parse_login(self, response):
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+        time.sleep(2)
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
             dont_filter=True,
+            callback=self.parse_start,
+            meta=self.synchronize_meta(response)
         )
 
-    def parse(self, response):
-        self.browser.get(self.base_url)
-        time.sleep(self.delay)
-        userbox = self.browser.find_element_by_name('vb_login_username')
-        passbox = self.browser.find_element_by_name('vb_login_password')
-        checkbox = self.browser.find_element_by_name('cookieuser')
-        userbox.send_keys(USERNAME)
-        passbox.send_keys(PASSWORD)
-        checkbox.click()
-        submit = self.browser.find_element_by_xpath('//input[@type="submit"]')
-        submit.click()
-        time.sleep(10)
-        super().parse_start()
+    def parse_start(self, response):
 
-    # def parse_thread(self, response):
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
 
-    #     # Synchronize user agent in cloudfare middleware
-    #     self.synchronize_headers(response)
+        # Load all forums
+        all_forums = response.xpath(self.forum_xpath).extract()
 
-    #     # Check if password protected
-    #     password_protected = response.xpath(self.password_protect_xpath).extract_first()
-    #     if password_protected:
-    #         self.logger.info(
-    #             "Thread %s has been protected by password. Ignored." % response.url
-    #         )
-    #         return
+        for forum_url in all_forums:
 
-    #     # Parse generic thread
-    #     yield from super().parse_thread(response)
+            # Standardize url
+            if self.base_url not in forum_url:
 
-    #     # Save avatars
-    #     avatars = response.xpath("//a[contains(@href,\"member.php?\")]/img")
-    #     for avatar in avatars:
-    #         avatar_url = avatar.xpath('@src').extract_first()
-    #         if self.base_url not in avatar_url:
-    #             avatar_url = self.base_url + avatar_url
-    #         user_id = avatar.xpath('@alt').re(r'(\w+)\'s')
-    #         if not user_id:
-    #             continue
-    #         file_name = '{}/{}.jpg'.format(self.avatar_path, user_id[0])
-    #         if os.path.exists(file_name):
-    #             continue
-    #         yield Request(
-    #             url=avatar_url,
-    #             headers=self.headers,
-    #             callback=self.parse_avatar,
-    #             meta=self.synchronize_meta(
-    #                 response,
-    #                 default_meta={
-    #                     "file_name": file_name,
-    #                     "user_id": user_id[0]
-    #                 }
-    #             )
-    #         )
+                if forum_url[0] == "/":
+                    forum_url = forum_url[1:]
 
-    def parse_avatars(self, response):
+                forum_url = self.base_url + forum_url
+
+            yield Request(
+                url=forum_url,
+                headers=self.headers,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_forum
+            )
+
+    def parse_thread(self, response):
+
+        # Synchronize user agent in cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Check if password protected
+        password_protected = response.xpath(self.password_protect_xpath).extract_first()
+        if password_protected:
+            self.logger.info(
+                "Thread %s has been protected by password. Ignored." % response.url
+            )
+            return
+
+        # Parse generic thread
+        yield from super().parse_thread(response)
+
+        # Save avatars
         avatars = response.xpath("//a[contains(@href,\"member.php?\")]/img")
         for avatar in avatars:
-            avatar_url = avatar.xpath('@src')[0]
+            avatar_url = avatar.xpath('@src').extract_first()
             if self.base_url not in avatar_url:
                 avatar_url = self.base_url + avatar_url
-            alts = avatar.xpath('@alt')
-            user_id = re.search(r'(\w+)\'s', alts[0])
+            user_id = avatar.xpath('@alt').re(r'(\w+)\'s')
             if not user_id:
                 continue
-            file_name = '{}/{}.jpg'.format(self.avatar_path, user_id[0].strip("'s"))
+            file_name = '{}/{}.jpg'.format(self.avatar_path, user_id[0])
             if os.path.exists(file_name):
                 continue
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        "file_name": file_name,
+                        "user_id": user_id[0]
+                    }
+                )
+            )
 
-            self.save_avatar(avatar_url, file_name)
-            time.sleep(self.delay)
-
+    def parse_avatar(self, response):
+        file_name = response.meta.get("file_name")
+        with open(file_name, 'wb') as f:
+            f.write(response.body)
+            self.logger.info(
+                f"Avatar for user {response.meta['user_id']} done..!"
+            )
 
 class OmertaScrapper(SiteMapScrapper):
 

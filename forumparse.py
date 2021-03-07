@@ -20,13 +20,14 @@ class Parser:
             return
 
         help_message = """
-            Usage: collector.py -parse [-t TEMPLATE] [-i INPUT_PATH] [-o OUTPUT]\n
+            Usage: collector.py -parse [-t TEMPLATE] [-i INPUT_PATH] [-o OUTPUT] [-s START_DATE]\n
             Arguments:
             -t | --template TEMPLATE:  Template forum to parse
             -i | --input_path INPUT_PATH:          Input folder path
             -o | --output OUTPUT:      Output folder path
 
             Optional:
+            -s | --start_date          START_DATE: Parse threads that are newer than supplied date
             -l | --list:               List available parsers (tempalte namess)
             -c | --checkonly           Limit missing author and date file
             """

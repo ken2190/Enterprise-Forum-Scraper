@@ -181,6 +181,8 @@ from scraper.leakforums import LeakForumsScrapper
 from scraper.happyblog import HappyBlogScrapper
 from scraper.bitcoingarden import BitcoinGardenScrapper
 from scraper.exetools import ExetoolsScrapper
+from scraper.tenec import TenecScrapper
+from scraper.psylab import PsylabScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -366,4 +368,6 @@ SCRAPER_MAP = {
     'happyblog': HappyBlogScrapper,
     'bitcoingarden': BitcoinGardenScrapper,
     'exetools': ExetoolsScrapper,
+    'tenec': TenecScrapper,
+    'psylab': PsylabScrapper
 }

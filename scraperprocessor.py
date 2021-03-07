@@ -1,4 +1,3 @@
-
 import arrow
 import getopt
 import json
@@ -16,6 +15,7 @@ from settings import (
     DV_BASE_URL,
     OUTPUT_DIR,
     PARSE_DIR,
+    AVATAR_DIR
 )
 
 headers = {
@@ -55,22 +55,38 @@ def update_scraper(scraper, payload):
         logger.warning('Failed to update scraper (status={})'.format(response.status_code))
 
 
+class ResultErrorException(Exception):
+    def __init__(self, err):
+        super().__init__(err[1])
+
+class ResultWarningException(Exception):
+    def __init__(self, warnings):
+        super().__init__(
+            "\n".join([warning[1] for warning in warnings])
+        )
+
+
 def process_scraper(scraper):
     """
     Processes the scraper by running the scraper template and then parsing the data.
     """
     start_date = None
     if scraper['nextStartDate']:
-        start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD')
+        start_date = arrow.get(scraper['nextStartDate']).format('YYYY-MM-DD HH:mm:ss')
     subfolder = scraper['name']
     template = scraper['template']
     sitename = scraper['name']
 
-    process_date = arrow.now().format('YYYY-MM-DD')
+    process_date = arrow.now().format('YYYY-MM-DD HH:mm:ss')
 
     # the output dirs for the scraper and parser
-    scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
-    parse_output_dir = os.path.join(PARSE_DIR, subfolder)
+    avartar_output_dir = os.path.join(AVATAR_DIR, subfolder)
+    if scraper['template'] == 'shadownet':
+        scraper_output_dir = os.path.join(OUTPUT_DIR, template, subfolder)
+        parse_output_dir = os.path.join(PARSE_DIR, template, subfolder)
+    else:
+        scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
+        parse_output_dir = os.path.join(PARSE_DIR, subfolder)
 
     try:
         ############################
@@ -84,19 +100,21 @@ def process_scraper(scraper):
             'start_date': start_date,
             'template': template,
             'output': scraper_output_dir,
+            'avartar_path': avartar_output_dir,
             'sitename': sitename
         }
 
         result = Scraper(kwargs).do_scrape()
 
         # check if there was any error
-        err_code = result.get('result/error')
-        if err_code:
-            raise RuntimeError('[%s] %s' % (err_code, ERROR_MESSAGES[err_code]))
+        err = result.get('result/error')
+        if err:
+            raise ResultErrorException(err)
 
         # check for "No new files"(W08) warning
-        if 'W08' in result.get('result/warnings', []):
-            raise RuntimeError('W08')
+        warnings = result.get('result/warnings', [])
+        if len(warnings) > 0:
+            raise ResultWarningException(warnings)
 
         ############################
         # Run parser for template
@@ -106,6 +124,7 @@ def process_scraper(scraper):
         update_scraper(scraper, {'status': 'Processing'})
 
         kwargs = {
+            'start_date': start_date,
             'template': template,
             'output': parse_output_dir,
             'input_path': scraper_output_dir,
@@ -136,10 +155,11 @@ def process_scraper(scraper):
 
     except Exception as e:
         logger.error('Failed to process scraper {}: {}'.format(scraper['name'], e))
-        if str(e) != 'W08':
-            update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
+
+        if isinstance(e, ResultWarningException):
+            update_scraper(scraper, {'status': 'Warning', 'pid': None, 'message': str(e)})
         else:
-            update_scraper(scraper, {'status': 'Warning', 'pid': None, 'message': WARNING_MESSAGES['W08']})
+            update_scraper(scraper, {'status': 'Error', 'pid': None, 'message': str(e)})
 
 
 def help():
@@ -175,11 +195,6 @@ def main(argv):
         # Get / Process Scraper
         ##############################
         scraper = get_scraper(scraper_id)
-        # scraper = dict(
-            # nextStartDate=arrow.now().format('YYYY-MM-DD'),
-            # name=scraper_id,
-            # template=scraper_id
-        # )
         process_scraper(scraper)
     except Exception as e:
         logger.error('Failed to process scraper: {}'.format(e))

@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 import re
 import datetime
-import dateutil.parser as dparser
+import dateparser
 
 from .base_template import BaseTemplate
 
@@ -36,7 +36,7 @@ class BitcoinGardenParser(BaseTemplate):
         # Standardize
         post_date = post_date.strip()
 
-        post_date = dparser.parse(post_date).timestamp()
+        post_date = dateparser.parse(post_date).timestamp()
         return str(post_date)
 
     def get_comment_id(self, tag):

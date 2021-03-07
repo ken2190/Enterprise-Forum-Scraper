@@ -9,24 +9,40 @@ from zipfile import ZipFile
 import dateutil.parser as dparser
 from datetime import datetime
 
-USERNAME='root'
-KEY_FILE = os.path.expanduser('~/.ssh/id_rsa.pub')
+USERNAME='ejabberd'
+KEY_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ssl_certificate/shadow.pem')
 INPUT_PATH='/data/log/ejabberd'
 
 class ShadownetScrapper:
+    site_type = 'shadownet'
+    name = 'shadownet'
+    stats = {
+        'mainlist/detail_saved_count': 0
+    }
+
     def __init__(self, kwargs):
         self.host = kwargs['sitename']
         self.username = USERNAME
         self.key_file = KEY_FILE
-
         self.input_path = INPUT_PATH
         self.output_path = kwargs['output']
         self.start_date = kwargs['start_date']
-        self.time_format = "%Y-%m-%d"
+        self.time_format = "%Y-%m-%d %H:%M:%S"
         self.sitename = kwargs["sitename"]
 
-        if not self.sitename:
-            print("ERROR : No Sitename")
+        help_message = """
+            Usage: collector.py -scrape [-t TEMPLATE] [-o OUTPUT] [--sitename SITENAME] [-s START_DATE]\n
+            Arguments:
+            -t          | --template TEMPLATE:     Template forum to scrape
+            -o          | --output OUTPUT:         Output folder path
+            --sitename                             Sitename
+
+            Optional:
+            --start_date                           START_DATE: Scrape threads that are newer than supplied date
+            """
+
+        if not self.sitename or not self.output_path:
+            print(help_message)
             exit(1)
 
         if self.start_date:
@@ -36,27 +52,18 @@ class ShadownetScrapper:
                     self.time_format
                 )
             except Exception as err:
-                raise ValueError(
-                    "Wrong date format. Correct format is: %s. Detail: %s" % (
-                        self.time_format,
-                        err
+                try:
+                   self.start_date = datetime.strptime(
+                        self.start_date,
+                        "%Y-%m-%d"
                     )
-                )
-
-    def getSSHClient(self, SSHConfig):
-        print(f'Connecting {SSHConfig["host"]}...')
-        ssh = paramiko.SSHClient()
-
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            ssh.connect(SSHConfig['host'], username=SSHConfig['username'], password=SSHConfig['password'])
-            ssh.get_transport().window_size = 10000000
-        except Exception as e:
-            print(f'ERROR Can not connect to {SSHConfig["host"]}.')
-            print(e)
-            return None
-        print(f'Connected to {SSHConfig["host"]}')
-        return ssh
+                except Exception as err:
+                    raise ValueError(
+                        "Wrong date format. Correct format is: %s or %s." % (
+                            self.time_format,
+                            "%Y-%m-%d"
+                        )
+                    )
 
     def getSSHClient_key(self, SSHConfig):
         print(f'Connecting {SSHConfig["host"]}...')
@@ -73,49 +80,15 @@ class ShadownetScrapper:
         print(f'Connected to {SSHConfig["host"]}')
         return ssh
 
-    def downloadSSHFile(self, ssh, remotepath, localpath):
-        try:
-            ftp_client=ssh.open_sftp()
-            ftp_client.get(remotepath, localpath)
-            ftp_client.close()
-        except Exception as e:
-            print(f'ERROR Cannot download file - {remotepath}')
-            print(e)
-            return False
-        print(f'Download file - {remotepath}')
-        return True
-
     def sftp_exists(self, sftp, path):
         try:
-            sftp.stat(path)
+            sftp.chdir(path)
             return True
         except FileNotFoundError:
             return False
 
     def is_dir_exists(self, path):
         return os.path.exists(path) and os.path.isdir(path)
-
-    def zip_download(self, ssh, folder_path, output_path):
-        """ Zip Folder and Download"""
-        input_folder_name = folder_path.split("/")[-1]
-        output_file = os.path.join('/tmp', input_folder_name) + '.zip'
-
-        try:
-            print(f'Zipping {folder_path} ...')
-            stdin, stdout, stderr = ssh.exec_command(f'cd {folder_path} && zip -r {output_file} .')
-            if not stdout.readlines():
-                return False
-        except Exception as e:
-            print(e)
-            return False
-        
-        ftp_client = ssh.open_sftp()
-        filename = input_folder_name + '.zip'
-        ftp_client.get(output_file, os.path.join(output_path, filename))
-        print(f'Download done to local: {os.path.join(output_path, filename)}')
-        stdin, stdout, stderr = ssh.exec_command(f'rm -rf {output_file}')
-
-        return os.path.join(output_path, filename)
 
     def download_dir(self, ssh, input_path, output_path):
         """Download Directory"""
@@ -130,16 +103,19 @@ class ShadownetScrapper:
 
         if not self.is_dir_exists(local_dir):
             os.makedirs(local_dir)
-            
+        
+        if not ftp_client.listdir(input_path):
+            err_msg = "Warning : No log file at directory: %s" % input_path
+            print(err_msg)
+            exit(1)
+
         for filename in ftp_client.listdir(input_path):
-            if stat.S_ISDIR(ftp_client.stat(os.path.join(input_path, filename)).st_mode):
-                self.download_logs(ssh, os.path.join(input_path, filename), os.path.join(local_dir, filename))
+            if not os.path.isfile(os.path.join(local_dir, filename)):
+                ftp_client.get(os.path.join(input_path, filename), os.path.join(local_dir, filename))
+                self.stats["mainlist/detail_saved_count"] += 1 
+                print(f'Done : {os.path.join(local_dir, filename)}')
             else:
-                if not os.path.isfile(os.path.join(local_dir, filename)):
-                    ftp_client.get(os.path.join(input_path, filename), os.path.join(local_dir, filename))
-                    print(f'Download done : {os.path.join(input_path, filename)}')
-                else:
-                    print(f'Already Exist : {os.path.join(input_path, filename)}')
+                print(f'Already Exist : {os.path.join(local_dir, filename)}')
 
     def download_logs(self, ssh, input_path, output_path):
         """ Download logs from server to local dir"""
@@ -151,24 +127,53 @@ class ShadownetScrapper:
             exit(1)
         
         local_dir = output_path
-
         if not self.is_dir_exists(local_dir):
             os.makedirs(local_dir)
         
-        dir_list = sorted(ftp_client.listdir(input_path))
-        for filename in dir_list:
-            if stat.S_ISDIR(ftp_client.stat(os.path.join(input_path, filename)).st_mode):
-                _dir = filename.lstrip("log_")
-                try:
-                    ts = dparser.parse(_dir)
-                except ValueError:
+        domain_dir_list = sorted(ftp_client.listdir(input_path))
+        if not domain_dir_list:
+            err_msg = "Warning : Input directory %s is empty" % input_path
+            print(err_msg)
+            exit(1)
+            
+        for domain_dir_name in domain_dir_list:
+            local_dir = output_path
+
+            domain_dir_path = os.path.join(input_path, domain_dir_name)
+            if stat.S_ISDIR(ftp_client.stat(domain_dir_path).st_mode):
+                print("="*100)
+                print(f"Downloading logs for {domain_dir_path}")
+                
+                daily_dir_list = sorted(ftp_client.listdir(domain_dir_path))
+                if not daily_dir_list:
+                    err_msg = f'Warning : Log directory for {domain_dir_name} is empty. Dir Path: {domain_dir_path}\n'
+                    print(err_msg)
                     continue
                 
-                if self.start_date:
-                    if ts >= self.start_date:
-                        self.download_dir(ssh, os.path.join(input_path, filename), os.path.join(local_dir, filename))
-                else:
-                    self.download_dir(ssh, os.path.join(input_path, filename), os.path.join(local_dir, filename))
+                local_dir = os.path.join(local_dir, domain_dir_name)
+                for daily_dir_name in daily_dir_list:
+                    _dir = daily_dir_name.lstrip("log_")
+                    try:
+                        ts = dparser.parse(_dir)
+                    except ValueError:
+                        continue
+                    
+                    if self.start_date:
+                        if ts >= self.start_date:
+                            self.download_dir(ssh, os.path.join(domain_dir_path, daily_dir_name), os.path.join(local_dir, daily_dir_name))
+                            print("-"*100)
+                            print(f"Sub Dir Done: {os.path.join(domain_dir_path, daily_dir_name)} to {os.path.join(local_dir, daily_dir_name)}\n")
+                        else:
+                            print(
+                                "Folder %s ignored because the date in the past. Detail: %s" % (
+                                    os.path.join(domain_dir_path, daily_dir_name),
+                                    _dir
+                                )
+                            )
+                    else:
+                        self.download_dir(ssh, os.path.join(domain_dir_path, daily_dir_name), os.path.join(local_dir, daily_dir_name))
+                        print("-"*100)
+                        print(f"Sub Dir Done: {os.path.join(domain_dir_path, daily_dir_name)} to {os.path.join(local_dir, daily_dir_name)}\n")
             else:
                 continue
 
@@ -178,15 +183,20 @@ class ShadownetScrapper:
             'username': self.username,
             'key_file': self.key_file
         }
-        
-        input_path = os.path.join(self.input_path, self.sitename)
 
         # Connect to server
         ssh = self.getSSHClient_key(SSHConfig)
+        if not ssh:
+            self.stats["finish_reason"] = 'login_is_failed'
+            return
 
         # Download Logs
-        print("="*100)
-        self.download_logs(ssh, input_path, self.output_path)
+        self.download_logs(ssh, self.input_path, self.output_path)
     
     def start(self):
-        self.process()
+        try:
+            self.process()
+        except Exception as e:
+            self.stats["finish_exception"] = (type(e).__qualname__, str(e))
+        finally:
+            return self.stats

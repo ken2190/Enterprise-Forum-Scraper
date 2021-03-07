@@ -8,7 +8,7 @@ from .base_template import BaseTemplate
 class Dark2WebParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
-        locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         super().__init__(*args, **kwargs)
         self.parser_name = "dark2web.ru"
         self.avatar_name_pattern = re.compile(r'.*/(\w+\.\w+)')

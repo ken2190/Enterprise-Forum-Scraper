@@ -260,6 +260,9 @@ class SiteMapScrapper:
     MAX_DELAY = 2
 
     settings = {
+        "EXTENSIONS": {
+            "extensions.log_exception_into_stats.LogExceptionIntoStats": 0
+        },
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
             # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
@@ -274,12 +277,13 @@ class SiteMapScrapper:
         "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
     }
 
-    time_format = "%Y-%m-%d"
+    time_format = "%Y-%m-%d %H:%M:%S"
 
     spider_class = None
 
     def __init__(self, kwargs):
         self.output_path = kwargs.get("output")
+        self.avatar_path = kwargs.get("avartar_path")
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
         self.end_date = kwargs.get("end_date")
@@ -304,12 +308,18 @@ class SiteMapScrapper:
                     self.time_format
                 )
             except Exception as err:
-                raise ValueError(
-                    "Wrong date format. Correct format is: %s. Detail: %s" % (
-                        self.time_format,
-                        err
+                try:
+                   self.start_date = datetime.strptime(
+                        self.start_date,
+                        "%Y-%m-%d"
                     )
-                )
+                except Exception as err:
+                    raise ValueError(
+                        "Wrong date format. Correct format is: %s or %s." % (
+                            self.time_format,
+                            "%Y-%m-%d"
+                        )
+                    )
 
         if self.end_date:
             try:
@@ -353,10 +363,9 @@ class SiteMapScrapper:
             os.makedirs(self.user_path)
 
     def ensure_avatar_path(self, template):
-        if getattr(self, 'site_name', None):
-            self.avatar_path = f'../avatars/{self.site_name}'
-        else:
+        if not self.avatar_path:
             self.avatar_path = f'../avatars/{template}'
+        
         if not os.path.exists(self.avatar_path):
             os.makedirs(self.avatar_path)
 
@@ -888,6 +897,7 @@ class SitemapSpider(BypassCloudfareSpider):
     login_failed_xpath = None
 
     proxy_countries = []
+    proxy_cities = []
     
     # Other settings
     get_cookies_delay = 2
@@ -927,7 +937,8 @@ class SitemapSpider(BypassCloudfareSpider):
             fraudulent_threshold=getattr(self, "fraudulent_threshold", 50),
             ip_batch_size=getattr(self, "ip_batch_size", 20),
             use_proxy=self.use_proxy,
-            proxy_countries=self.proxy_countries
+            proxy_countries=self.proxy_countries,
+            proxy_cities=self.proxy_cities
         )
 
         # Handle headers
@@ -987,6 +998,16 @@ class SitemapSpider(BypassCloudfareSpider):
         meta.update(default_meta)
 
         return meta
+
+    def get_login(self, LOGINS):
+        today = datetime.today()
+        year = today.year
+        month = today.month
+        day = today.day
+        days_in_the_year = (datetime.strptime(f'{year}{month}{day}', '%Y%m%d') - datetime(year, 1, 1)).days + 1
+        index = days_in_the_year % len(LOGINS)
+
+        return LOGINS[index]
 
     def extract_thread_stats(self, thread):
         """

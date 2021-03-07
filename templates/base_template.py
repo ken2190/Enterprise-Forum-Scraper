@@ -13,7 +13,10 @@ class BrokenPage(Exception):
 
 class BaseTemplate:
 
+    time_format = "%Y-%m-%d %H:%M:%S"
+
     def __init__(self, *args, **kwargs):
+        self.start_date = kwargs.get("start_date")
         self.output_folder = kwargs.get('output_folder')
         self.folder_path = kwargs.get('folder_path')
         self.distinct_files = set()
@@ -45,6 +48,26 @@ class BaseTemplate:
         )
         self.files = self.get_filtered_files(kwargs.get('files'))
 
+        if self.start_date:
+            try:
+                self.start_date = datetime.datetime.strptime(
+                    self.start_date,
+                    self.time_format
+                ).timestamp()
+            except Exception as err:
+                try:
+                   self.start_date = datetime.datetime.strptime(
+                        self.start_date,
+                        "%Y-%m-%d"
+                    ).timestamp()
+                except Exception as err:
+                    raise ValueError(
+                        "Wrong date format. Correct format is: %s or %s." % (
+                            self.time_format,
+                            "%Y-%m-%d"
+                        )
+                    )
+                
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
@@ -113,7 +136,7 @@ class BaseTemplate:
                     )
                     file_pointer = open(output_file, 'w', encoding='utf-8')
 
-                    error_msg = utils.write_json(file_pointer, data, self.checkonly)
+                    error_msg = utils.write_json(file_pointer, data, self.start_date, self.checkonly)
                     if error_msg:
                         print(error_msg)
                         print('----------------------------------------\n')
@@ -161,7 +184,7 @@ class BaseTemplate:
                             break
 
                 if final:   
-                    utils.write_comments(file_pointer, comments, output_file)   
+                    utils.write_comments(file_pointer, comments, output_file, self.start_date)   
                     comments = []   
                     output_file = None  
                     final = None    

@@ -29,9 +29,12 @@ class PsbdmpSpider(SitemapSpider):
     use_proxy = "On"
     download_thread = NO_OF_THREADS
     
-    date_format = '%Y-%m-%d'
+    time_format = "%Y-%m-%d %H:%M:%S"
+    date_format = "%Y-%m-%d"
 
     def start_requests(self,):
+        self.limit_time = self.start_date
+
         if not self.start_date:
             self.start_date = datetime.datetime.now()
         if not self.end_date:
@@ -68,6 +71,9 @@ class PsbdmpSpider(SitemapSpider):
 
         onlyfiles = [f.split(".")[0] for f in listdir(output_path) if isfile(join(output_path, f))]
         data = [item for item in json_data[0] if item['id'] not in onlyfiles]
+        if self.limit_time:
+            data = [item for item in data if int(item['date']) > self.limit_time.timestamp()]
+
         print(f'Paste count for {date}: {len(data)}')
 
         for item in data:
@@ -96,10 +102,11 @@ class PsbdmpSpider(SitemapSpider):
             json_data = json.loads(response.text)
         except:
             return
-        
+
         content = json_data["content"]
         if not content:
             return
+
         with open(dump_file, 'w') as f:
             f.write(content)
         print('{} done..!'.format(dump_file))

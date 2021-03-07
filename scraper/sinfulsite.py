@@ -61,7 +61,7 @@ class SinfulSiteSpider(SitemapSpider):
                 meta=self.synchronize_meta(response),
             )
 
-    def parse_forum(self, response):
+    def parse_forum(self, response, is_first_page=True):
         # Synchronize header user agent with cloudfare middleware
         self.synchronize_headers(response)
 

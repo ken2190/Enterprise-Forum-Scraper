@@ -22,6 +22,10 @@ main_parser_arguments = [
         "kwargs": {"help": argparse.SUPPRESS, "required": False}
     },
     {
+        "args": ("-avartar", '--avartar_path'),
+        "kwargs": {"help": argparse.SUPPRESS, "required": False}
+    },
+    {
         "args": ("-x", '--proxy'),
         "kwargs": {"help": argparse.SUPPRESS, "required": False}
     },
@@ -102,7 +106,11 @@ main_parser_arguments = [
         "kwargs": {"help": 'Do scan db ip port', "action": 'store_true'}
     },
     {
-        "args": ('--get_users',),
+        "args": ("-post", '--post'),
+        "kwargs": {"help": 'Post processing', "action": 'store_true'}
+    },
+    {
+        "args": ('--users',),
         "kwargs": {
             "help": 'Scrape forum users',
             "action": 'store_true',
@@ -112,7 +120,7 @@ main_parser_arguments = [
     {
         "args": ('--no_proxy',),
         "kwargs": {
-            "help": 'Disable proxies',
+            "help": argparse.SUPPRESS,
             "action": 'store_true',
             "default": None
         }
@@ -120,7 +128,7 @@ main_parser_arguments = [
     {
         "args": ('--proxy_countries',),
         "kwargs": {
-            "help": 'Comma-delimited list of proxy countries',
+            "help": argparse.SUPPRESS,
             "default": None,
             "type": lambda val: [c.strip().lower() for c in val.split(',')]
         }
@@ -128,18 +136,14 @@ main_parser_arguments = [
     {
         "args": ('--use_vip',),
         "kwargs": {
-            "help": 'Use VIP proxies',
+            "help": argparse.SUPPRESS,
             "action": 'store_true',
             "default": None
         }
     },
     {
-        "args": ("-post", '--post'),
-        "kwargs": {"help": 'Post processing', "action": 'store_true'}
-    },
-    {
         "args": ("-c", '--checkonly'),
-        "kwargs": {"help": 'Limit missing author and date file', "action": 'store_true'}
+        "kwargs": {"help": argparse.SUPPRESS, "action": 'store_true'}
     }
 ]
 

@@ -103,11 +103,7 @@ def run(kwargs=None):
             sys.exit(exit_code)
         else:
             raise exception
-
-    # prepare paths
-    html_dir = os.path.join(OUTPUT_DIR, site)
-    parse_dir = os.path.join(PARSE_DIR, site)
-
+    
     scraper = SCRAPER_MAP.get(template)
     if not scraper:
         err_msg = "ERROR: Invalid site template"
@@ -119,6 +115,15 @@ def run(kwargs=None):
         err_msg = f"ERROR: {site} has no site_type set"
         print(err_msg)
         exit(2, RuntimeError(err_msg))
+
+    # prepare paths
+    if site_type == 'shadownet':
+        html_dir = os.path.join(OUTPUT_DIR, site_type, site)
+        parse_dir = os.path.join(PARSE_DIR, site_type, site)
+    else:
+        html_dir = os.path.join(OUTPUT_DIR, site)
+        parse_dir = os.path.join(PARSE_DIR, site)
+
     # check input dirs
     print('Checking paths...')
     check_input_dirs(html_dir, parse_dir, site_type, exit)
@@ -127,17 +132,24 @@ def run(kwargs=None):
     if not os.listdir(parse_dir):
         err_msg = f"{parse_dir} is Empty"
         print(err_msg)
-        exit(2, RuntimeError(err_msg))
+        exit(0)
 
     ##############################################
     # merge parsed files
     ##############################################
     print('Combining JSON files...')
-    cmd = f"jq -c '.' {parse_dir}/*.json"
-    combined_json_file = os.path.join(
-        COMBO_DIR,
-        f'{site}-{date}.json'
-    )
+    if site_type == 'shadownet':
+        cmd = f"jq -c '.' {parse_dir}/*/*.json"
+        combined_json_file = os.path.join(
+            COMBO_DIR,
+            f'{site}-{date}.json'
+        )
+    else:
+        cmd = f"jq -c '.' {parse_dir}/*.json"
+        combined_json_file = os.path.join(
+            COMBO_DIR,
+            f'{site}-{date}.json'
+        )
     try:
         with open(combined_json_file, 'a') as f:
             subprocess.run(
