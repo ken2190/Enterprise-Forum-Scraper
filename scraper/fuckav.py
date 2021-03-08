@@ -1,5 +1,7 @@
 import re
 import uuid
+import hashlib
+import time
 
 from urllib.parse import quote_plus
 
@@ -18,14 +20,14 @@ from scrapy import (
 
 USERNAME = "Kaddafi"
 PASSWORD = "AVS3rg910_1"
-MD5PASSWORD = "2daf343aca1fd2b2075cde2dc60a7129"
+MD5PASSWORD = hashlib.md5(PASSWORD.encode('utf-8')).hexdigest()
 USER_ID = ",42737,"
 
 MIN_DELAY = 1
-MAX_DELAY = 4
+MAX_DELAY = 3
 
 PROXY = 'http://127.0.0.1:8118'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'
 
 class FuckavSpider(SitemapSpider):
 
@@ -44,10 +46,10 @@ class FuckavSpider(SitemapSpider):
 
     pagination_xpath = "//a[@rel=\"next\"]/@href"
 
-    thread_xpath = "//tbody[contains(@id,\"threadbits_forum\")]/tr"
-    thread_first_page_xpath = ".//a[contains(@id,\"thread_title\")]/@href"
-    thread_last_page_xpath = ".//span/a[contains(@href,\"showthread\")][font[font]][last()]/@href|" \
-                             ".//span[a[font]][last()][following-sibling::span]/a/@href"
+    thread_xpath = "//tbody[contains(@id,\"threadbits_forum\")]/tr[contains(., 'от')]"
+    thread_first_page_xpath = ".//a[contains(@id,'thread_title_')]/@href"
+    thread_last_page_xpath = ".//span[@class='smallfont']/a[contains(@href,'showthread')][last()]/@href"
+                            #  ".//span[a[font]][last()][following-sibling::span]/a/@href"
     thread_date_xpath = ".//td[contains(@title,\"Ответов\")]/div/text()[1]"
 
     thread_pagination_xpath = "//a[@rel=\"prev\"]/@href"
@@ -83,7 +85,8 @@ class FuckavSpider(SitemapSpider):
     use_proxy = "On"
     sitemap_datetime_format = "%d-%m-%Y"
     post_datetime_format = "%d-%m-%Y"
-
+    session_hash = ''
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(
@@ -140,6 +143,7 @@ class FuckavSpider(SitemapSpider):
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+        time.sleep(2)
 
         # Load session hash
         session_hash = self.get_session_hash.search(
@@ -183,6 +187,7 @@ class FuckavSpider(SitemapSpider):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
 
+        USER_ID = response.xpath("//div[@id='userdata_el']/@user_id")
         # Load captcha
         captcha_url = response.xpath(self.captcha_xpath).extract_first()
         if self.base_url not in captcha_url:
@@ -193,8 +198,8 @@ class FuckavSpider(SitemapSpider):
             captcha_url,
             response,
             cookies={
-                "User_id": USER_ID,
-                "IDstack": quote_plus(USER_ID)
+                "sessionhash": self.session_hash,
+                # "IDstack": quote_plus(USER_ID)
             },
             headers={
                 "Referer": "https://fuckav.ru/login.php?do=login",
@@ -203,12 +208,16 @@ class FuckavSpider(SitemapSpider):
                 "Sec-fetch-site": "same-origin",
             }
         )
+        
+        if captcha_token:
+            yield from self.start_requests()
 
         yield FormRequest.from_response(
             response,
             formxpath=self.captcha_form_css,
             formdata={
                 "humanverify[input]": captcha_token,
+                "humanverify[hash]": response.xpath("//input[@id='hash']/@value").extract()[0],
                 "s": "",
                 "securitytoken": "guest",
                 "do": "dologin",
