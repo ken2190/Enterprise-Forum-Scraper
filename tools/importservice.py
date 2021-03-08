@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-An import service tool
-"""
-
 import os
 import shutil
 import argparse
@@ -11,23 +7,23 @@ import subprocess
 import sys
 
 
-IMPORT_DIR = "/data/processing/import/{site_type}/"
+IMPORT_DIR = "/data/processing/import/2021/{site_type}/"
 BACKUP_DIR = "/data/processing/{site_type}/backup/"
-ORIGIN_DIR = "/data/processing/import/{site_type}/"
+ORIGIN_DIR = "/data/processing/import/2021/{site_type}/"
 
-RSYNC_SERVER = "root@51.161.115.138"
+RSYNC_SERVER = "root@142.44.214.143"
 KEY_PATH = "~/.ssh/id_rsa"
 
 CLEANUP_AFTER_IMPORT = True
 
 ELASTIC_IMPORT_INDEXES = {
     'forum': 'dv-f002',
-    'marketplace': 'dv-f001',
-    'telegram': 'dv-f001',
+    'marketplace': 'dv-f002',
+    'telegram': 'dv-f002',
     'paste': 'dv-paste01',
-    'nosql': 'dv-m001'
+    'nosql': 'dv-meta01'
 }
-ELASTIC_OUT = 'http://localhost:9200/{elastic_index}'
+ELASTIC_OUT = 'http://node4:9200/{elastic_index}'
 
 
 def parse_args():
