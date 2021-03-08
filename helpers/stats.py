@@ -33,13 +33,8 @@ def get_error(stats):
     if stats.get('cannot_bypass_captcha', 0) > 1:
         return _err_msg("E20")
 
-    # NOTE: Retrying maximum number of times and died without connection.
-    if stats.get('retry/max_reached') and stats.get('log_count/ERROR', 0) < 3:
-        return _err_msg("E10")
-
     # NOTE: Connected but for unknown reason stopped after few requests.
-    #       The '11' is based on the number of configured retries.
-    if stats.get('retry/max_reached') and stats.get('downloader/request_count', 0) < 11:
+    if stats.get('retry/max_reached') and stats.get('downloader/request_count', 0) < 20:
         return _err_msg("E10")
 
     finish_exception = stats.get("finish_exception")
