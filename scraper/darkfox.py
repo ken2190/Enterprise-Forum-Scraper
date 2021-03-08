@@ -192,6 +192,10 @@ class DarkFoxSpider(MarketPlaceSpider):
         # Check if bypass captcha failed
         self.check_if_captcha_failed(response, self.captcha_failed_xpath_2)
         
+        captcha_1 = response.xpath(self.captcha_url_xpath_1).extract()
+        if captcha_1:
+            yield from self.parse_captcha_1(response)
+
         yield from super().parse_start(response)
 
 
