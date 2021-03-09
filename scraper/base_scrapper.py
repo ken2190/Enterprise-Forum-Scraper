@@ -258,10 +258,12 @@ class BaseTorScrapper(BaseScrapper):
 class SiteMapScrapper:
     MIN_DELAY = 1
     MAX_DELAY = 2
+    DAILY_LIMIT = 0
 
     settings = {
         "EXTENSIONS": {
-            "extensions.log_exception_into_stats.LogExceptionIntoStats": 0
+            "extensions.log_exception_into_stats.LogExceptionIntoStats": 0,
+            "scrapy.extensions.closespider.CloseSpider": 10
         },
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
@@ -274,7 +276,8 @@ class SiteMapScrapper:
         "LOG_LEVEL": "DEBUG",
         "AUTOTHROTTLE_ENABLED": True,
         "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
-        "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
+        "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY,
+        "CLOSESPIDER_PAGECOUNT": DAILY_LIMIT
     }
 
     time_format = "%Y-%m-%d %H:%M:%S"

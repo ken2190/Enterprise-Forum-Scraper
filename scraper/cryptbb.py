@@ -12,7 +12,7 @@ USER = 'Cyrax011'
 PASS = '4hr63yh38a61SDW0'
 
 PROXY = 'http://127.0.0.1:8118'
-
+DAILY_LIMIT = 100000
 
 class CryptBBSpider(SitemapSpider):
     name = 'cryptbb_spider'
@@ -142,6 +142,9 @@ class CryptBBSpider(SitemapSpider):
         # Check if login failed
         self.check_if_logged_in(response)
         
+        if response.xpath("//li[contains(text(), 'The image verification code that you entered was incorrect')]").extract():
+            yield from self.proceed_for_login(response)
+
         all_forums = response.xpath(self.forum_xpath).extract()
 
         # update stats
@@ -172,3 +175,12 @@ class CryptBBScrapper(SiteMapScrapper):
     spider_class = CryptBBSpider
     site_name = 'cryptbb_cryptbb2gezhohku'
     site_type = 'forum'
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "CLOSESPIDER_PAGECOUNT": DAILY_LIMIT
+            }
+        )
+        return settings
