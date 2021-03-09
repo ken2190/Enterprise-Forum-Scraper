@@ -23,7 +23,7 @@ ELASTIC_IMPORT_INDEXES = {
     'paste': 'dv-paste01',
     'nosql': 'dv-meta01'
 }
-ELASTIC_OUT = 'http://node4:9200/{elastic_index}'
+ELASTIC_OUT = 'http://node1:9200/{elastic_index}'
 
 
 def parse_args():
