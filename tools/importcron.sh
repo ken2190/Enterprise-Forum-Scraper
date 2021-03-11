@@ -27,19 +27,29 @@ if [ "$(ls -A /data/processing/import/2021/forum/ )" ]; then
      /usr/bin/env python3 "$SCRIPT_PATH" -type forum >> "$LOGPATH" 2>&1
 else
     echo "Forum folder is empty. Skipping. "
+fi
 
 if [ "$(ls -A /data/processing/import/2021/forum/ )" ]; then
      /usr/bin/env python3 "$SCRIPT_PATH" -type paste >> "$LOGPATH" 2>&1
 else
     echo "Paste folder is empty. Skipping. "
+fi
 
 if [ "$(ls -A /data/processing/import/2021/forum/ )" ]; then
      /usr/bin/env python3 "$SCRIPT_PATH" -type nosql >> "$LOGPATH" 2>&1
 else
     echo "NoSQL folder is empty. Skipping. "
+fi
 
 if [ "$(ls -A /data/processing/import/2021/marketplace/ )" ]; then
      /usr/bin/env python3 "$SCRIPT_PATH" -type marketplace >> "$LOGPATH" 2>&1
 else
     echo "Marketplace folder is empty. Skipping. "
+fi
+
+if [ "$(ls -A /data/processing/import/2021/shadownet/ )" ]; then
+     /usr/bin/env python3 "$SCRIPT_PATH" -type shadownet >> "$LOGPATH" 2>&1
+else
+    echo "Shadownet folder is empty. Skipping. "
+fi
 
