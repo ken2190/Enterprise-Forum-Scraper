@@ -138,18 +138,11 @@ def run(kwargs=None):
     # merge parsed files
     ##############################################
     print('Combining JSON files...')
-    if site_type == 'shadownet':
-        cmd = f"jq -c '.' {parse_dir}/*/*.json"
-        combined_json_file = os.path.join(
-            COMBO_DIR,
-            f'{site}-{date}.json'
-        )
-    else:
-        cmd = f"jq -c '.' {parse_dir}/*.json"
-        combined_json_file = os.path.join(
-            COMBO_DIR,
-            f'{site}-{date}.json'
-        )
+    cmd = 'find . -name \\*.json -exec cat {} + | jq -c .'
+    combined_json_file = os.path.join(
+        COMBO_DIR,
+        f'{site}-{date}.json'
+    )
     try:
         with open(combined_json_file, 'a') as f:
             subprocess.run(
