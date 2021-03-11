@@ -95,7 +95,7 @@ def main():
 
     # execute RSYNC command to get files from scraping server
     print('Executing RSYNC...')
-    cmd = f"rsync -avz -e 'ssh -i {KEY_PATH}' "\
+    cmd = f"rsync --ignore-missing-args -avz -e 'ssh -i {KEY_PATH}' "\
           f"{RSYNC_SERVER}:{ORIGIN_DIR}* {IMPORT_DIR}"
     try:
         subprocess.run(
