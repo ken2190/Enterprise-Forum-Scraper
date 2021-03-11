@@ -21,7 +21,8 @@ ELASTIC_IMPORT_INDEXES = {
     'marketplace': 'dv-f002',
     'telegram': 'dv-f002',
     'paste': 'dv-paste01',
-    'nosql': 'dv-meta01'
+    'nosql': 'dv-meta01',
+    'shadownet': 'dv-shadownet01'
 }
 ELASTIC_OUT = 'http://node1:9200/{elastic_index}'
 
@@ -75,7 +76,7 @@ def main():
     site_type = args.type
     if not ELASTIC_IMPORT_INDEXES.get(site_type):
         print(f"ERROR: Invalid site type: {site_type}. "
-              "Allowed values are forum, paste, nosql, marketplace, telegram")
+              "Allowed values are forum, paste, nosql, marketplace, telegram, shadownet")
         return
 
     IMPORT_DIR = IMPORT_DIR.format(site_type=site_type)
