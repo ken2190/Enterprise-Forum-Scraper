@@ -13,7 +13,8 @@ from scraper.base_scrapper import (
     MarketPlaceSpider,
     SiteMapScrapper
 )
-
+MIN_DELAY = 2
+MAX_DELAY = 4
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
@@ -204,7 +205,14 @@ class DarkFoxScrapper(SiteMapScrapper):
     site_name = 'darkfox (57d5j6hfzfpsfev6c7f5ltney5xahudevvttfmw4lrtkt42iqdrkxmqd)'
     site_type = 'marketplace'
 
-    def __init__(self, kwargs):
-        kwargs['get_users'] = True
-        super().__init__(kwargs)
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
+                "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
+            }
+        )
+        return settings
 
