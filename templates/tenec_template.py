@@ -25,7 +25,7 @@ class TenecParser(BaseTemplate):
         self.title_xpath = '//h1[@class="ipsType_pageTitle ipsContained_container"]/span/span/text()'
         self.avatar_xpath = '//div[contains(@class, "cAuthorPane_photo")]/a/img/@src'
         self.avatar_ext = ''
-        self.index = 1
+        self.index = 0
         # main function
         self.main()
 
@@ -81,3 +81,18 @@ class TenecParser(BaseTemplate):
         author = ' '.join(author).strip() if author else None
 
         return author.encode('latin1', errors='ignore').decode('utf8', errors='ignore')
+    
+    def get_comment_id(self, tag):
+        comment_id = ""
+        if self.comment_block_xpath:
+            comment_block = tag.xpath(self.comment_block_xpath)
+            comment_block = ''.join(comment_block)
+        else:
+            self.index += 1
+            return str(self.index)
+
+        if comment_block:
+            comment_id = re.compile(r'(\d+)').findall(comment_block)[0]
+            # comment_id = ''.join(comment_block).strip().split('#')[-1]
+
+        return comment_id.replace(',', '').replace('.', '')
