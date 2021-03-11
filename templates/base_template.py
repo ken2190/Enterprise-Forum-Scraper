@@ -292,7 +292,7 @@ class BaseTemplate:
         comment_id = ""
         if self.comment_block_xpath:
             comment_block = tag.xpath(self.comment_block_xpath)
-            comment_block = ''.join(comment_block)
+            comment_block = ''.join(comment_block).replace(',', '').replace('.', '')
         else:
             return str(self.index)
 
