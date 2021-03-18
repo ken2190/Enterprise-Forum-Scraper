@@ -219,6 +219,9 @@ from templates.exetools_template import ExetoolsParser
 from templates.happyblog_template import HappyblogParser
 from templates.tenec_template import TenecParser
 from templates.psylab_template import PsylabParser
+from templates.mctrades_template import MctradesParser
+from templates.russiancarderru_template import RussiancarderRuParser
+from templates.darkteam_template import DarkteamParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -440,5 +443,8 @@ PARSER_MAP = {
     'exetools': ExetoolsParser,
     'happyblog': HappyblogParser,
     'tenec': TenecParser,
-    'psylab': PsylabParser
+    'psylab': PsylabParser,
+    'mctrades': MctradesParser,
+    'russiancarder_ru': RussiancarderRuParser,
+    'darkteam': DarkteamParser
 }

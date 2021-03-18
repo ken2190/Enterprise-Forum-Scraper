@@ -183,6 +183,9 @@ from scraper.bitcoingarden import BitcoinGardenScrapper
 from scraper.exetools import ExetoolsScrapper
 from scraper.tenec import TenecScrapper
 from scraper.psylab import PsylabScrapper
+from scraper.mctrades import MctradesScrapper
+from scraper.russiancarder_ru import RussiancarderRuScrapper
+from scraper.darkteam import DarkteamScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -369,5 +372,8 @@ SCRAPER_MAP = {
     'bitcoingarden': BitcoinGardenScrapper,
     'exetools': ExetoolsScrapper,
     'tenec': TenecScrapper,
-    'psylab': PsylabScrapper
+    'psylab': PsylabScrapper,
+    'mctrades': MctradesScrapper,
+    'russiancarder_ru': RussiancarderRuScrapper,
+    'darkteam': DarkteamScrapper,
 }
