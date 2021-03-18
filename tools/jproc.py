@@ -106,14 +106,14 @@ def process_line(out_file, single_json, args):
         final_data.update({key: value})
     if final_data.get('a'):
         final_data['a'] = final_data['a'].replace('zip', '').strip()
+    if args.importdate:
+        final_data['importdate'] = args.importdate
+    if args.breach:
+        final_data['breach'] = args.breach
     if args.format:
         filtered_json = {'_source': final_data}
     else:
         filtered_json = final_data
-    if args.importdate:
-        filtered_json['importdate'] = args.importdate
-    if args.breach:
-        filtered_json['breach'] = args.breach
     out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
 
 
