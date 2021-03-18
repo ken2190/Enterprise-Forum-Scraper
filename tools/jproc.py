@@ -83,7 +83,7 @@ def process_line(out_file, single_json, args):
             i.strip() for i in out_fields.split(',')] if out_fields else []
         filter_json(json_response, "", out_fields)
 
-    address = 'city state zip'
+    address = 'address city state zip'
     name = 'fn ln'
     final_data = dict()
     if '_source' in json_response:
@@ -93,14 +93,14 @@ def process_line(out_file, single_json, args):
     for key, value in data:
         if key in ['email', 'e'] and args.domain:
             domain = value.split('@')[-1]
-            final_data.update({'d': domain})
-        if key in ['city', 'state', 'zip'] and args.address_merge:
+            final_data.update({'domain': domain})
+        if key in ['address', 'city', 'state', 'zip'] and args.address_merge:
             address = address.replace(key, value)
-            final_data.update({'a': address})
+            final_data.update({'address': address})
             continue
         if key in ['fn', 'ln'] and args.name_merge:
             name = name.replace(key, value)
-            final_data.update({'n': name})
+            final_data.update({'name': name})
             continue
 
         final_data.update({key: value})
