@@ -32,15 +32,15 @@ class YouHackSpider(SitemapSpider):
                               '/a[contains(@href,"threads/")]/@href'
     thread_last_page_xpath = './/span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
-    thread_date_xpath = './/dl[@class="lastPostInfo"]'\
-                        '//a[@class="dateTime"]/*/@title'
+    thread_date_xpath = './/span[@class="lastThreadMeta"]'\
+                        '//*[contains(@class, "DateTime")]/*/@title'
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
                         '/text()'
-    post_date_xpath = '//div[@class="messageDetails"]'\
+    post_date_xpath = '//div[@class="privateControls"]'\
                       '//span[@class="DateTime"]/text()|'\
-                      '//div[@class="messageDetails"]'\
+                      '//div[@class="privateControls"]'\
                       '//abbr[@class="DateTime"]/@data-datestring'
 
     avatar_xpath = '//div[@class="avatarHolder"]/a/img/@src'
