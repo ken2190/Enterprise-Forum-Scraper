@@ -33,13 +33,14 @@ class YouHackSpider(SitemapSpider):
     thread_last_page_xpath = './/span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
     thread_date_xpath = './/span[@class="lastThreadMeta"]'\
-                        '//*[contains(@class, "DateTime")]/*/@title'
+                        '//*[contains(@class, "DateTime")]/*/@title|'\
+                        './/dl[@class="lastPostInfo"]//*[@class="DateTime"]/@title'
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
                         '/text()'
     post_date_xpath = '//div[@class="privateControls"]'\
-                      '//span[@class="DateTime"]/text()|'\
+                      '//span[@class="DateTime"]/@title|'\
                       '//div[@class="privateControls"]'\
                       '//abbr[@class="DateTime"]/@data-datestring'
 
