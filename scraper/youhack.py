@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import dateparser
 
 from datetime import datetime
 from scrapy.utils.gz import gunzip
@@ -64,6 +65,16 @@ class YouHackSpider(SitemapSpider):
     sitemap_datetime_format = "%d/%m/%y"
     post_datetime_format = "%d/%m/%y"
 
+    def parse_thread_date(self, thread_date):
+        if not thread_date:
+            return
+        return dateparser.parse(thread_date.strip())
+
+    def parse_post_date(self, post_date):
+        if not post_date:
+            return
+        return dateparser.parse(post_date.strip())
+
     def start_requests(self,):
         yield Request(
             url=self.base_url,
@@ -108,6 +119,17 @@ class YouHackSpider(SitemapSpider):
     def parse(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+        
+        if response.xpath(self.recaptcha_site_key_xpath):
+            yield Request(
+                url=self.base_url,
+                headers=self.headers,
+                callback=self.parse_captcha,
+                meta={
+                    "cookiejar": uuid.uuid1().hex
+                },
+                dont_filter=True,
+            )
 
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
