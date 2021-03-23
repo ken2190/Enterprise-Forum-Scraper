@@ -2,7 +2,9 @@ import os
 import re
 import scrapy
 import uuid
+import time
 
+from scrapy.exceptions import CloseSpider
 from datetime import datetime
 import dateparser
 
@@ -20,8 +22,7 @@ from scraper.base_scrapper import (
 USER = 'donotreplytothismailever@gmail.com'
 PASS = 'nightlion123'
 
-USER_AGENT = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-              '(KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36')
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36'
 
 
 class ShadowCardersSpider(SitemapSpider):
@@ -130,20 +131,14 @@ class ShadowCardersSpider(SitemapSpider):
         return dateparser.parse(post_date)
     
     def start_requests(self):
-        # Temporary action to start spider
-        yield Request(
-            url=self.temp_url,
-            headers=self.headers,
-            callback=self.pass_cloudflare
-        )
 
-    def pass_cloudflare(self, response):
-        # Load cookies and ip
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
-            proxy=True,
-            fraud_check=True
+            proxy=self.use_proxy,
+            fraud_check=True,
         )
+
+        self.logger.info(f'COOKIES: {cookies}')
 
         # Init request kwargs and meta
         meta = {
@@ -156,22 +151,43 @@ class ShadowCardersSpider(SitemapSpider):
             headers=self.headers,
             meta=meta,
             cookies=cookies,
-            callback=self.parse
+            callback=self.parse_start
         )
 
-    def parse(self, response):
-        yield FormRequest.from_response(
-            response=response,
-            formid="login",
-            formdata={
-                "login": USER,
-                "password": PASS,
-            },
-            headers=self.headers,
-            dont_filter=True,
-            meta=self.synchronize_meta(response),
-            callback=self.parse_start,
-        )
+    def get_cookies_extra(self, browser):
+        def find_element(name):
+            for element in browser.find_elements_by_name(name):
+                if element.is_displayed():
+                    return element
+        try:
+            browser.implicitly_wait(15)
+            browser.find_element_by_xpath("//a[href='login/']").click()
+            print("-"*100)
+            find_element('login').send_keys(USER)
+            password_field = find_element('password')
+            password_field.send_keys(PASS)
+            password_field.submit()
+            # browser.find_element_by_xpath("//input[value='Log in']").click()
+        except:
+            return False
+
+        # Check if login success
+        print(browser.page_source.lower())
+        return USER.lower() in browser.page_source.lower()
+
+    # def parse(self, response):
+    #     yield FormRequest.from_response(
+    #         response=response,
+    #         formid="login",
+    #         formdata={
+    #             "login": USER,
+    #             "password": PASS,
+    #         },
+    #         headers=self.headers,
+    #         dont_filter=True,
+    #         meta=self.synchronize_meta(response),
+    #         callback=self.parse_start,
+    #     )
 
     def parse_start(self, response):
 
