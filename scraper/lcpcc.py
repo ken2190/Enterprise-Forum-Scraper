@@ -8,27 +8,32 @@ import configparser
 from lxml.html import fromstring
 from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
+from scraper.base_scrapper import (
+    SitemapSpider,
+    SiteMapScrapper
+)
 
-
-USER = 'sandman'
-PASS = 'Sand#LCP001'
-CODE = 'shithead'
+USER = 'BashMan'
+PASS = 'LF03jCP2mfu823321'
+CODE = 'superman'
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) "\
              "AppleWebKit/537.36 (KHTML, like Gecko) "\
              "Chrome/75.0.3770.142 Safari/537.36"
 
 
-class LCPSpider(scrapy.Spider):
+class LCPSpider(SitemapSpider):
     name = 'lcp_spider'
 
-    def __init__(self, output_path):
-        self.base_url = "https://lcp.cc/"
-        self.start_url = '{}/forums/'.format(self.base_url)
-        self.topic_pattern = re.compile(r'viewe=(\w+)')
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.pagination_pattern = re.compile(r'.*page-(\d+)$')
-        self.start_url = 'https://lcp.cc/login.php'
-        self.output_path = output_path
+    base_url = "http://84.38.187.236/"
+    start_url = '{}/forums/'.format(base_url)
+    topic_pattern = re.compile(r'view=.*?-(\w+)')
+    avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
+    pagination_pattern = re.compile(r'.*page-(\d+)$')
+    start_url = 'http://84.38.187.236/login.php'
+
+    use_proxy = 'On'
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.headers = {
             "User-Agent": USER_AGENT
         }
@@ -103,7 +108,7 @@ class LCPSpider(scrapy.Spider):
             )
         else:
             threads = response.xpath(
-                '//a[contains(@href, "viewe=")]')
+                '//a[contains(@href, "sid=")]')
             max_pages = 10
             counter = 0
             for thread in threads:
@@ -146,9 +151,10 @@ class LCPSpider(scrapy.Spider):
         paginated_value = pagination[0] if pagination else 1
         file_name = '{}/{}-{}.html'.format(
             self.output_path, topic_id, paginated_value)
-        with open(file_name, 'wb') as f:
-            f.write(response.text.encode('cp1252'))
+        with open(file_name, 'w') as f:
+            f.write(response.text.encode('latin1', errors='ignore').decode('utf8', errors='ignore'))
             print(f'{topic_id}-{paginated_value} done..!')
+            self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
         next_page = response.xpath(
             '//a[@class="pageNav-jump pageNav-jump--next"]')
@@ -164,40 +170,18 @@ class LCPSpider(scrapy.Spider):
             )
 
 
-class LCPScrapper():
+class LCPScrapper(SiteMapScrapper):
+    spider_class = LCPSpider
+    site_name = 'lcp.cc'
     site_type = 'forum'
 
-    def __init__(self, kwargs):
-        self.output_path = kwargs.get('output')
-        self.proxy = kwargs.get('proxy') or None
-        self.request_delay = 0.1
-        self.no_of_threads = 10
-
-    def do_scrape(self):
-        settings = {
-            "EXTENSIONS": {
-                "extensions.log_exception_into_stats.LogExceptionIntoStats": 0
-            },
-            'DOWNLOAD_DELAY': self.request_delay,
-            'CONCURRENT_REQUESTS': self.no_of_threads,
-            'CONCURRENT_REQUESTS_PER_DOMAIN': self.no_of_threads,
-            'RETRY_HTTP_CODES': [403, 429, 500, 503],
-            'RETRY_TIMES': 10,
-            'LOG_ENABLED': True,
-
-        }
-        if self.proxy:
-            settings.update({
-                "DOWNLOADER_MIDDLEWARES": {
-                    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-                    'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-                    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-                    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-                    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-                },
-                'ROTATING_PROXY_LIST': self.proxy,
-
-            })
-        process = CrawlerProcess(settings)
-        process.crawl(LCPSpider, self.output_path)
-        process.start()
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "AUTOTHROTTLE_ENABLED": True,
+                "AUTOTHROTTLE_START_DELAY": 4,
+                "AUTOTHROTTLE_MAX_DELAY": 6,
+            }
+        )
+        return settings

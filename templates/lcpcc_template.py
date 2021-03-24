@@ -20,7 +20,7 @@ class LCPCCParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//table[@class="posthead"]'
         self.header_xpath ='//table[@class="posthead"]'
-        self.date_xpath = 'tr//td[@style="text-align:right;"]/text()'
+        self.date_xpath = 'tr//td[@style="text-align:right;"]//text()'
         self.author_xpath = 'tr//td[@style="text-align:right;"]/preceding-sibling::td[1]/text()'
         self.title_xpath = '//hr/preceding-sibling::b[1]/text()'
         self.post_text_xpath = 'following-sibling::text()'
@@ -86,11 +86,12 @@ class LCPCCParser(BaseTemplate):
 
     def get_date(self, tag):
         date = tag.xpath(self.date_xpath)
+        date = ''.join(date)
         if not date:
             return ''
 
         pattern = re.compile(r'\s*on\s*(.*)')
-        match = pattern.findall(date[0].strip())
+        match = pattern.findall(date.strip())
         if not match:
             return
 
@@ -106,7 +107,7 @@ class LCPCCParser(BaseTemplate):
             return ''
 
         author = ' '.join(author)
-        pattern = re.compile(r'\.\s*(.*),')
+        pattern = re.compile(r'(\w+),')
         match = pattern.findall(author.strip())
         if not match:
             return
