@@ -14,7 +14,10 @@ class ShadowCardersParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//ol[@class="messageList"]/li'
         self.header_xpath = '//ol[@class="messageList"]/li'
-        self.date_xpath = 'div//a[@class="datePermalink"]/span/text()'
+        self.date_xpath =  '//div[@class="privateControls"]'\
+                      '//span[@class="DateTime"]/@title|'\
+                      '//div[@class="privateControls"]'\
+                      '//abbr[@class="DateTime"]/@data-datestring'
         self.author_xpath = './/h3//a[@class="username"]//text()'
         self.title_xpath = '//div[@class="titleBar"]/h1/text()'
         self.post_text_xpath = 'div//blockquote[contains(@class,"messageText")]//text()'

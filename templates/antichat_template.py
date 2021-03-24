@@ -23,7 +23,10 @@ class AntichatParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//ol[@class="messageList"]/li'
         self.header_xpath = '//ol[@class="messageList"]/li'
-        self.date_xpath = 'div//a[@class="datePermalink"]/span/text()|div//a[@class="datePermalink"]/abbr/@data-datestring'
+        self.date_xpath = '//div[@class="privateControls"]'\
+                      '//span[@class="DateTime"]/@title|'\
+                      '//div[@class="privateControls"]'\
+                      '//abbr[@class="DateTime"]/@data-datestring'
         self.date_pattern = '%d %b  %Y'
         self.author_xpath = 'div//div[@class="uix_userTextInner"]/a[@class="username"]//text()'
         self.title_xpath = '//div[@class="titleBar"]/h1/text()'
