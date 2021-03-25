@@ -9,10 +9,10 @@ from scraper.base_scrapper import (
 
 class DarkMoneySpider(SitemapSpider):
 
-    name = "darkmoney.tw"
+    name = "darkmoney.pl"
 
     # Url stuffs
-    base_url = "https://darkmoney.tw/"
+    base_url = "https://darkmoney.pl/"
 
     # Xpath stuffs
     forum_xpath = '//tbody[contains(@id,"collapseobj_forum")]/tr/td[1]/div/a/@href'
@@ -94,7 +94,7 @@ class DarkMoneySpider(SitemapSpider):
 class DarkMoneyScrapper(SiteMapScrapper):
 
     spider_class = DarkMoneySpider
-    site_name = 'darkmoney.tw'
+    site_name = 'darkmoney.pl'
     site_type = 'forum'
 
     def load_settings(self):
