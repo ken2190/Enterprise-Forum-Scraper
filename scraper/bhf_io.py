@@ -42,18 +42,19 @@ class BHFIOSpider(SitemapSpider):
     # Xpath stuffs
     forum_xpath = "//a[contains(@href,\"/forums\")]/@href"
     pagination_xpath = "//a[contains(@class,\"pageNav-jump--next\")]/@href"
-    thread_xpath = "//div[contains(@class,\"structItem--thread\")]"
-    thread_first_page_xpath = ".//div[@class=\"structItem-title\"]/a/@href"
-    thread_last_page_xpath = ".//span[@class=\"structItem-pageJump\"]/"\
-                             "a[last()]/@href"
-    thread_date_xpath = ".//time[contains(@class,\"structItem-latestDate\")]"\
-                        "/@title"
-    thread_pagination_xpath = "//a[contains(@class,\"pageNav-jump--prev\")]"\
-                              "/@href"
-    thread_page_xpath = "//li[contains(@class,\"pageNav-page--current\")]"\
-                        "/a/text()"
-    post_date_xpath = "//div[@class=\"message-attribution-main\"]"\
-                      "/a[@class=\"u-concealed\"]/time/@title"
+    thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
+    thread_first_page_xpath = './/div[@class="structItem-title"]'\
+                              '/a[contains(@href,"threads/")]/@href'
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
+                             '/a[last()]/@href'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]'\
+                        '/@datetime'
+    pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+                              '/@href'
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+                        '/a/text()'
+    post_date_xpath = '//article//time/@title'
 
     avatar_xpath = "//img[contains(@class,\"avatar\")]/@src"
 
@@ -91,16 +92,6 @@ class BHFIOSpider(SitemapSpider):
             self.backup_codes = [
                 re.sub(r'\s+', '', code) for code in file.read().split("\n")
             ]
-
-    def parse_thread_date(self, thread_date):
-        if not thread_date:
-            return
-        return dateparser.parse(thread_date.strip())
-
-    def parse_post_date(self, post_date):
-        if not post_date:
-            return
-        return dateparser.parse(post_date.strip())
 
     def write_backup_codes(self):
         with open(
@@ -250,15 +241,8 @@ class BHFIOSpider(SitemapSpider):
         )
         return
 
-    def get_topic_id(self, url=None):
-        topic_id = self.topic_pattern.findall(url)
-        try:
-            return topic_id[0]
-        except Exception:
-            return
-
-    def parse_thread_url(self, thread_url):
-        return thread_url.replace(".vc", ".io")
+    # def parse_thread_url(self, thread_url):
+    #     return thread_url.replace(".vc", ".io")
 
     def parse(self, response):
 
@@ -291,6 +275,22 @@ class BHFIOSpider(SitemapSpider):
         # Parse generic avatar
         yield from super().parse_avatars(response)
 
+    def check_existing_file_date(self, **kwargs):
+        # Load variables
+        topic_id = kwargs.get("topic_id")
+        thread_date = kwargs.get("thread_date")
+        thread_url = kwargs.get("thread_url")
+
+        # Check existing file date
+        existing_file_date = self.get_existing_file_date(topic_id)
+        if existing_file_date and thread_date and existing_file_date.timestamp() > thread_date.timestamp():
+            self.logger.info(
+                f"Thread {thread_url} ignored because existing "
+                f"file is already latest. Last Scraped: {existing_file_date}"
+            )
+            return True
+
+        return False
 
 class BHFIOScrapper(SiteMapScrapper):
 
