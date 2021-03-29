@@ -8,7 +8,7 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 LOGINS = [
     {"USER":"bashman", "PASS":"Night#Bash011"},
-    {"USER":"Dexter101", "PASS":"Night#Dex8890"},
+    {"USER":"WorldWideTech", "PASS":"XWWtTttTttT114"},
 ]
 
 MIN_DELAY = 1
