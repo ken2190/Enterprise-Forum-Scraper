@@ -137,7 +137,8 @@ class FuckavSpider(SitemapSpider):
             meta={
                 "cookiejar": uuid.uuid1().hex
             },
-            errback=self.check_site_error
+            errback=self.check_site_error,
+            dont_filter=True
         )
 
     def parse(self, response):
@@ -209,29 +210,30 @@ class FuckavSpider(SitemapSpider):
             }
         )
         
-        if captcha_token:
+        if not captcha_token:
             yield from self.start_requests()
-
-        yield FormRequest.from_response(
-            response,
-            formxpath=self.captcha_form_css,
-            formdata={
-                "humanverify[input]": captcha_token,
-                "humanverify[hash]": response.xpath("//input[@id='hash']/@value").extract()[0],
-                "s": "",
-                "securitytoken": "guest",
-                "do": "dologin",
-                "vb_login_password": MD5PASSWORD,
-                "vb_login_username": USERNAME,
-                "url": "https://fuckav.ru/index.php",
-                "cookieuser": "0",
-                "postvars": "",
-                "logintype": ""
-            },
-            headers=self.headers,
-            meta=self.synchronize_meta(response),
-            callback=self.parse_redirect
-        )
+        else:
+            print(f"Captcha Token: {captcha_token}")
+            yield FormRequest.from_response(
+                response,
+                formxpath=self.captcha_form_css,
+                formdata={
+                    "humanverify[input]": captcha_token,
+                    "humanverify[hash]": response.xpath("//input[@id='hash']/@value").extract()[0],
+                    "s": "",
+                    "securitytoken": "guest",
+                    "do": "dologin",
+                    "vb_login_password": MD5PASSWORD,
+                    "vb_login_username": USERNAME,
+                    "url": "https://fuckav.ru/index.php",
+                    "cookieuser": "0",
+                    "postvars": "",
+                    "logintype": ""
+                },
+                headers=self.headers,
+                meta=self.synchronize_meta(response),
+                callback=self.parse_redirect
+            )
 
     def parse_redirect(self, response):
         # Synchronize cloudfare user agent
