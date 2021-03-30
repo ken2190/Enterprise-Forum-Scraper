@@ -13,8 +13,8 @@ from scraper.base_scrapper import (
     MarketPlaceSpider,
     SiteMapScrapper
 )
-MIN_DELAY = 2
-MAX_DELAY = 4
+MIN_DELAY = 1
+MAX_DELAY = 3
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
@@ -95,7 +95,8 @@ class DarkFoxSpider(MarketPlaceSpider):
             dont_filter=True,
             meta={
                 'proxy': PROXY,
-                'handle_httpstatus_list': [302]
+                'handle_httpstatus_list': [302],
+                'next_callback': self.parse_start
             }
         )
 
@@ -111,10 +112,13 @@ class DarkFoxSpider(MarketPlaceSpider):
         return next_page_url
 
 
-    def parse_captcha_1(self, response):
+    def parse_captcha_1(self, response, next_callback=None):
 
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
+
+        if not next_callback:
+            next_callback = response.meta.get('next_callback')
 
         # Load cookies
         cookies = response.request.headers.get("Cookie")
@@ -144,7 +148,7 @@ class DarkFoxSpider(MarketPlaceSpider):
             formxpath=self.captch_form_xpath,
             formdata=formdata,
             headers=self.headers,
-            callback=self.parse_start,
+            callback=next_callback,
             dont_filter=True,
             meta=self.synchronize_meta(response),
         )
@@ -195,10 +199,96 @@ class DarkFoxSpider(MarketPlaceSpider):
         
         captcha_1 = response.xpath(self.captcha_url_xpath_1).extract()
         if captcha_1:
-            yield from self.parse_captcha_1(response)
+            yield from self.parse_captcha_1(
+                response, 
+                self.parse_start
+            )
 
         yield from super().parse_start(response)
 
+    def parse_products(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        captcha_1 = response.xpath(self.captcha_url_xpath_1).extract()
+        if captcha_1:
+            yield from self.parse_captcha_1(
+                response, 
+                self.parse_products
+            )
+            
+        self.logger.info('next_page_url: {}'.format(response.url))
+        products = response.xpath(self.product_url_xpath).extract()
+        
+        self.crawler.stats.set_value("mainlist/detail_count", len(products))
+
+        for product_url in products:
+            product_url = self.get_product_url(product_url)
+            if not product_url:
+                self.crawler.stats.inc_value("mainlist/detail_no_url_count")
+                self.logger.warning(
+                    "Unable to find product URL on the marketplace: %s",
+                    response.url
+                )
+                continue
+
+            file_id = self.get_file_id(product_url)
+            file_name = '{}/{}.html'.format(self.output_path, file_id)
+            
+            self.crawler.stats.inc_value("mainlist/detail_next_page_count")
+            self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
+
+            if os.path.exists(file_name):
+                continue
+            yield Request(
+                url=product_url,
+                headers=self.headers,
+                callback=self.parse_product,
+                dont_filter=True,
+                meta=self.synchronize_meta(
+                    response,
+                    default_meta={
+                        'file_id': file_id
+                    }
+                )
+            )
+        next_page_url = self.get_product_next_page(response)
+        if next_page_url:
+            self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
+            
+            yield Request(
+                url=next_page_url,
+                headers=self.headers,
+                callback=self.parse_products,
+                dont_filter=True,
+                meta=self.synchronize_meta(response),
+            )
+
+    def parse_product(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        captcha_1 = response.xpath(self.captcha_url_xpath_1).extract()
+        if captcha_1:
+            yield from self.parse_captcha_1(
+                response, 
+                self.parse_product
+            )
+
+        if "file_id" in response.meta:
+            file_id = response.meta['file_id']
+        else:
+            file_id = self.get_file_id(response.request.url)
+
+        file_name = '{}/{}.html'.format(self.output_path, file_id)
+        with open(file_name, 'wb') as f:
+            f.write(response.text.encode('utf-8'))
+            self.logger.info(f'Product: {file_id} done..!')
+            self.crawler.stats.inc_value("mainlist/detail_saved_count")
+
+        response.meta['file_id'] = file_id
+        if self.avatar_xpath:
+            yield from self.parse_avatars(response)
 
 class DarkFoxScrapper(SiteMapScrapper):
     spider_class = DarkFoxSpider
