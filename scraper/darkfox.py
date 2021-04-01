@@ -13,8 +13,9 @@ from scraper.base_scrapper import (
     MarketPlaceSpider,
     SiteMapScrapper
 )
-MIN_DELAY = 1
+MIN_DELAY = 2
 MAX_DELAY = 3
+DAILY_LIMIT = 10000
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
@@ -301,7 +302,8 @@ class DarkFoxScrapper(SiteMapScrapper):
             {
                 "AUTOTHROTTLE_ENABLED": True,
                 "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
-                "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY
+                "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY,
+                "CLOSESPIDER_PAGECOUNT": DAILY_LIMIT
             }
         )
         return settings
