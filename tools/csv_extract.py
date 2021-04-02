@@ -2,7 +2,7 @@ import re
 import traceback
 import argparse
 import csv
-
+import sys
 
 class Parser:
     def __init__(self):
@@ -32,8 +32,11 @@ class Parser:
             required=True)
 
     def get_args(self,):
-        return self.parser.parse_args()
-
+        try:
+            return self.parser.parse_args()
+        except:
+            self.parser.print_help()
+            sys.exit(0)
 
 def process_line(line, fields, default_fields):
     data = dict()
