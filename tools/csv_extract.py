@@ -12,13 +12,14 @@ class Parser:
                  .d8888b.  .d8888b. 888     888                888                          888
                 d88P  Y88bd88P  Y88b888     888                888                          888
                 888    888Y88b.     888     888                888                          888
-                888        \"Y888b.  Y88b   d88P .d88b. 888  888888888888d888 8888b.  .d8888b888888
-                888           \"Y88b. Y88b d88P d8P  Y8b\`Y8bd8P\'888   888P\"      \"88bd88P\"   888
-                888    888      \"888  Y88o88P  88888888  X88K  888   888    .d888888888     888
-                Y88b  d88PY88b  d88P   Y888P   Y8b.    .d8\"\"8b.Y88b. 888    888  888Y88b.   Y88b.
-                 \"Y8888P\"  \"Y8888P\"     Y8P     \"Y8888 888  888 \"Y888888    \"Y888888 \"Y8888P \"Y888
-                                Extract data from a CSV file into a new CSV file.
-                                Specify which columns you want to keep using -k
+                888        "Y888b.  Y88b   d88P .d88b. 888  888888888888d888 8888b.  .d8888b888888
+                888           "Y88b. Y88b d88P d8P  Y8b`Y8bd8P'888   888P"      "88bd88P"   888
+                888    888      "888  Y88o88P  88888888  X88K  888   888    .d888888888     888
+                Y88b  d88PY88b  d88P   Y888P   Y8b.    .d8""8b.Y88b. 888    888  888Y88b.   Y88b.
+                 "Y8888P"  "Y8888P"     Y8P     "Y8888 888  888 "Y888888    "Y888888 "Y8888P "Y888
+                 
+	               Extract data from a CSV file into a new CSV file.
+                       Specify which columns you want to keep using -k
                 ''')
         self.parser.add_argument(
             '-i', '--input', help='Input File', required=True)
@@ -26,7 +27,7 @@ class Parser:
             '-o', '--output', help='Output File', required=True)
         self.parser.add_argument(
             '-k', '--keep',
-            help='list of fields/values to keep (comma separated). '
+            help='list of columns/values to keep (comma separated). '
                  'Everything else will be ignored.',
             required=True)
 
