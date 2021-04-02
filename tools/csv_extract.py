@@ -3,6 +3,7 @@ import traceback
 import argparse
 import csv
 import sys
+import json
 
 class Parser:
     def __init__(self):
@@ -40,22 +41,23 @@ class Parser:
 
 def process_line(line, fields, default_fields):
     data = dict()
-    default_values = line.split(',')[:20]
+    result = dict()
+    default_values = line.split(',')
     for k, v in zip(default_fields, default_values):
         data.update({k: v.strip('"')})
+    line = json.dumps(data)
     for f in fields:
-        if f not in line:
+        if f not in data:
             continue
         match = re.findall(rf'{f}\":\s+\"?([^\"^,]+)', line)
         if not match:
             continue
         if 'null' in match[0]:
             continue
-        if data.get(f):
-            continue
-        data.update({f: match[0].strip('"').strip('}')})
-    print(data)
-    return data
+        result.update({f: match[0].strip('"').strip('}')})
+
+    print(result)
+    return result
 
 
 def main():
@@ -63,25 +65,29 @@ def main():
     input_file = args.input
     output_file = args.output
     fieldnames = args.keep.split(',')
-    default_fields = [f'Field{i}' for i in range(1, 21)]
-    default_fields.extend(fieldnames)
+    
+    with open(input_file, newline='') as f:
+        input_reader = csv.reader(f)
+        default_fields = next(input_reader)
+
     with open(output_file, mode='w') as csv_file:
         writer = csv.DictWriter(
-            csv_file, fieldnames=default_fields, quoting=csv.QUOTE_ALL)
+            csv_file, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
         writer.writeheader()
         with open(input_file, 'r') as fp:
             for line_number, line in enumerate(fp, 1):
-                try:
-                    print('Writing line number:', line_number)
-                    data = process_line(line, fieldnames, default_fields)
-                    if data:
-                        writer.writerow(data)
+                if line_number > 1:
+                    try:
+                        print('Writing line number:', line_number)
+                        data = process_line(line, fieldnames, default_fields)
 
-                except Exception:
-                    print('Error in line number:', line_number)
-                    traceback.print_exc()
-                    break
+                        if data:
+                            writer.writerow(data)
 
+                    except Exception:
+                        print('Error in line number:', line_number)
+                        traceback.print_exc()
+                        break
 
 if __name__ == '__main__':
     main()
