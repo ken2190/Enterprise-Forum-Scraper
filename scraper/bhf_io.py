@@ -33,7 +33,7 @@ class BHFIOSpider(SitemapSpider):
     pagination_pattern = re.compile(r'.*page-(\d+)')
 
     # Css stuffs
-    login_form_css = "form[action]"
+    login_form_xpath = '//form[@method="post"]'
     backup_code_url = f'{base_url}/login/two-step?provider=backup&remember=1&'\
                       f'_xfRedirect={base_url}/'
     account_css = r'a[href="/account/"]'
@@ -104,11 +104,11 @@ class BHFIOSpider(SitemapSpider):
             )
 
     def start_requests(self):
+        # Temporary action to start spider
         yield Request(
             url=self.login_url,
-            dont_filter=True,
             headers=self.headers,
-            callback=self.parse_login,
+            callback=self.parse_login
         )
 
     def parse_login(self, response):
@@ -126,17 +126,17 @@ class BHFIOSpider(SitemapSpider):
             'g-recaptcha-response': captcha_response,
             'h-captcha-response': captcha_response,
             "remember": '1',
-            '_xfRedirect': self.base_url,
+            '_xfRedirect': '/',
             '_xfToken': token
         }
         self.logger.info(f'Login Token is: {token}')
-        yield FormRequest(
-            url=self.login_url,
+        yield FormRequest.from_response(
+            response,
+            formxpath=self.login_form_xpath,
             callback=self.parse_post_login,
             formdata=params,
             headers=self.headers,
-            dont_filter=True,
-
+            dont_filter=True
         )
 
     def parse_post_login(self, response):
