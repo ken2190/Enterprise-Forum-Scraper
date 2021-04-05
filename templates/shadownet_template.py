@@ -82,17 +82,37 @@ class ShadownetParser(BaseTemplate):
                 if line:
                     item = json.loads(line)
 
+                    try:
+                        sender = item['sender'].split("/")[0]
+                    except:
+                        sender = item['sender']
+                    
+                    try:
+                        recipient = item['recipient'].split("/")[0]
+                    except:
+                        recipient = item['recipient']
+
                     data = {
                         '_source': {
                             'type': 'message',
                             'site': domain_dir,
                             'message': item['message'],
-                            'sender': item['sender'],
-                            'recipient': item['recipient'],
+                            'sender': sender,
+                            'recipient': recipient,
                             'ip': item['ip'],
                             'date': dparser.parse(item['timestamp']).timestamp()
                         }
                     }
+
+                    if len(item['sender'].split("/")) > 1:
+                        sender_resource = item['sender'].split("/")[1]
+                        if sender_resource:
+                            data["_source"]["sender_resource"] = sender_resource
+
+                    if len(item['recipient'].split("/")) > 1:
+                        recipient_resource = item['recipient'].split("/")[1]
+                        if recipient_resource:
+                            data["_source"]["recipient_resource"] = recipient_resource
 
                     utils.write_json(file_pointer, data)
         
@@ -104,15 +124,25 @@ class ShadownetParser(BaseTemplate):
                 if line:
                     item = json.loads(line)
 
+                    try:
+                        user = item['user'].split("/")[0]
+                    except:
+                        user = item['user']
+
                     data = {
                         '_source': {
                             'type': 'session',
                             'site': domain_dir,
-                            'user': item['user'],
-                            'ip': item['ip'],
+                            'user': user,
+                            'ip': item['ip'].replace("::ffff:", ''),
                             'date': dparser.parse(item['timestamp']).timestamp()
                         }
                     }
+
+                    if len(item['user'].split("/")) > 1:
+                        resource = item['user'].split("/")[1]
+                        if resource:
+                            data["_source"]["resource"] = resource
 
                     utils.write_json(file_pointer, data)
         
@@ -124,16 +154,26 @@ class ShadownetParser(BaseTemplate):
                 if line:
                     item = json.loads(line)
 
+                    try:
+                        user = item['user'].split("/")[0]
+                    except:
+                        user = item['user']
+
                     data = {
                         '_source': {
                             'type': 'registration',
                             'site': domain_dir,
                             'server': item['server'],
-                            'user': item['user'],
+                            'user': user,
                             'email': item['email'],
                             'password': item['password'],
                             'date': dparser.parse(item['timestamp']).timestamp()
                         }
                     }
+
+                    if len(item['user'].split("/")) > 1:
+                        resource = item['user'].split("/")[1]
+                        if resource:
+                            data["_source"]["resource"] = resource
 
                     utils.write_json(file_pointer, data)
