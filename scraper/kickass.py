@@ -66,6 +66,8 @@ class KickAssSpider(SitemapSpider):
     )
     
     use_proxy = "Tor"
+    RAMDOM_REQUEST_COUNT = random.randint(5, 10)
+    RAMDOM_AVATAR_REQUEST_COUNT = random.randint(5, 20)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -321,7 +323,11 @@ class KickAssSpider(SitemapSpider):
                 len(self.topics_scraped)
             )
 
-        time.sleep(random.randint(5, 30))
+            self.RAMDOM_REQUEST_COUNT = self.RAMDOM_REQUEST_COUNT - 1
+            if self.RAMDOM_REQUEST_COUNT == 0:
+                self.RAMDOM_REQUEST_COUNT = random.randint(5, 10)
+                time.sleep(random.randint(60, 120))
+
         # Thread pagination
         if next_page:
             yield Request(
@@ -380,8 +386,6 @@ class KickAssSpider(SitemapSpider):
             self.avatars.add(avatar_url)
             self.crawler.stats.set_value("mainlist/avatar_count", len(self.avatars))
             
-            time.sleep(random.randint(5, 30))
-            
             yield Request(
                 url=avatar_url,
                 headers=self.headers,
@@ -394,6 +398,26 @@ class KickAssSpider(SitemapSpider):
                 ),
             )
 
+    def parse_avatar(self, response):
+
+        # Load file name
+        file_name = response.meta.get("file_name")
+        avatar_name = os.path.basename(file_name)
+
+        # Save avatar
+        with open(file_name, "wb") as f:
+            f.write(response.body)
+            self.logger.info(
+                f"Avatar {avatar_name} done..!"
+            )
+
+        self.RAMDOM_AVATAR_REQUEST_COUNT = self.RAMDOM_AVATAR_REQUEST_COUNT - 1
+        if self.RAMDOM_AVATAR_REQUEST_COUNT == 0:
+            self.RAMDOM_AVATAR_REQUEST_COUNT = random.randint(5, 20)
+            time.sleep(random.randint(30, 60))
+
+        self.crawler.stats.inc_value("mainlist/avatar_saved_count")
+        
 class KickAssScrapper(SiteMapScrapper):
 
     spider_class = KickAssSpider
