@@ -4,6 +4,7 @@ import traceback
 # import locale
 import utils
 import dateparser
+import datetime
 
 from .base_template import BaseTemplate
 
@@ -24,6 +25,7 @@ class FreeHackParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//li[contains(@class,"postcontainer")]'
         self.header_xpath = '//li[contains(@class,"postcontainer")]'
+        self.date_pattern = '%d-%m-%Y, %H:%M'
         self.date_xpath = './/span[@class="date"]//text()'
         self.author_xpath = './/a[contains(@class,"username")]//descendant::text()|'\
             './/div[contains(@class,"username_container")]//descendant::text()'
@@ -56,10 +58,14 @@ class FreeHackParser(BaseTemplate):
         date = date_block.strip() if date_block else ""
 
         try:
-            date = dateparser.parse(date).timestamp()
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
             return str(date)
-        except Exception:
-            return ""
+        except:
+            try:
+                date = dateparser.parse(date).timestamp()
+                return str(date)
+            except:
+                pass
 
         return ""
 

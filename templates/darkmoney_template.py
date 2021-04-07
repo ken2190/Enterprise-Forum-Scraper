@@ -26,7 +26,7 @@ class DarkMoneyParser(BaseTemplate):
 
         self.date_xpath = 'table//td[1][@class="thead"]/a/following-sibling::text()'
 
-        self.date_pattern = "%m/%d/%Y at %H:%M"
+        self.date_pattern = '%d.%m.%Y, %H:%M'
         self.title_xpath = 'table//tr[@valign="top"]/td[@class="alt1" and @id]/div[@class="smallfont"]/strong//text()'        
         self.avatar_xpath = './/td[1]//a[contains(@rel, "nofollow") and img]/img/@src'
         self.avatar_ext = 'jpg'

@@ -23,6 +23,7 @@ class MfdParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//div[@class="mfd-post"]'
         self.header_xpath = '//div[@class="mfd-post"]'
+        self.date_pattern = "%d.%m.%Y %H:%M"
         self.date_xpath = './/div[@class="mfd-post-top-1"]/a/text()'
         self.author_xpath = './/div[@class="mfd-post-top-0"]//text()'
         self.title_xpath = '//div[@class="mfd-header"]/h1/text()'

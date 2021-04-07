@@ -2,6 +2,7 @@
 import re
 #import locale
 import dateparser
+import datetime
 
 from .base_template import BaseTemplate
 
@@ -14,6 +15,7 @@ class CrackingSoulParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//div[@id="posts"]/div[contains(@class,"post ")]'
         self.header_xpath = '//div[@id="posts"]/div[contains(@class,"post ")]'
+        self.date_pattern = '%d-%m-%Y, %I:%M %p'
         self.date_xpath_1 = './/span[@class="post_date"]/text()'
         self.date_xpath_2 = './/span[@class="post_date"]/span[1]/@title'
         self.title_xpath = '//span[@class="active"]//text()'
@@ -35,7 +37,7 @@ class CrackingSoulParser(BaseTemplate):
 
         # check if date is already a timestamp
         try:
-            date = dateparser.parse(date).timestamp()
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
             return str(date)
         except:
             try:
@@ -43,7 +45,7 @@ class CrackingSoulParser(BaseTemplate):
                 return date
             except:
                 try:
-                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+                    date = dateparser.parse(date).timestamp()
                     return str(date)
                 except:
                     pass

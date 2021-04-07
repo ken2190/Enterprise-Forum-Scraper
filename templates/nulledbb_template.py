@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 import re
 import dateparser
+import datetime
 
 from .base_template import BaseTemplate
 
@@ -13,6 +14,7 @@ class NulledBBParser(BaseTemplate):
         self.avatar_name_pattern = re.compile(r'.*avatar_(\d+\.\w+)')
         self.comments_xpath = '//article[contains(@class, "post")]'
         self.header_xpath = '//article[contains(@class, "post")]'
+        self.date_pattern = '%d-%m-%Y, %I:%M %p'
         self.date_xpath = '//div[@class="flex-fill"]/span[@data-toggle]/text()'
         self.title_xpath = '//h1[contains(@itemprop, "headline")]/text()'
         self.post_text_xpath = '//div[@itemprop="articleBody"]//text()'
@@ -31,7 +33,11 @@ class NulledBBParser(BaseTemplate):
 
         date = date[0].replace('Posted:', '').strip()
         try:
-            date = dateparser.parse(date).timestamp()
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
             return str(date)
         except:
-            return ""
+            try:
+                date = dateparser.parse(date).timestamp()
+                return str(date)
+            except:
+                return ""

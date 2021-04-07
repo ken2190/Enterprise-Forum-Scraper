@@ -21,7 +21,9 @@ class ProbivParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//div[@class="message-inner"]'
         self.header_xpath = '//div[@class="message-inner"]'
-        self.date_xpath = './/time/text()'
+        self.date_pattern = "%Y-%m-%dT%H:%M:%SZ"
+        self.date_xpath = './/div[contains(@class,"message-attribution-main")]//time/@title|'\
+            './/ul[contains(@class,"message-attribution-main")]//time/@title'
         self.author_xpath = './/span[contains(@class,"username")]/text()'
         self.title_xpath = '//h1[@class="p-title-value"]//text()'
         self.post_text_xpath = './/article[contains(@class,"message-body js-selectToQuote")]/descendant::text()[not(ancestor::blockquote)]'

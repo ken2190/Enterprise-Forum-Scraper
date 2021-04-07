@@ -4,6 +4,7 @@ import re
 import dateutil.parser as dparser
 import dateparser
 from datetime import date, timedelta
+import datetime
 
 from .base_template import BaseTemplate
 
@@ -24,6 +25,7 @@ class CyberForumParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
         self.header_xpath = '//div[@id="posts"]//div[@class="page"]/div/div[@id]'
+        self.date_pattern = '%d.%m.%Y, %H:%M'
         self.date_xpath_1 = './/td[contains(@class,"alt2 smallfont")][1]//text()'
         self.date_xpath_2 = './/div[contains(@class,"smallfont shade")]/text()'
         self.author_xpath = './/*[contains(@class,"bigusername")]//text()'
@@ -58,7 +60,7 @@ class CyberForumParser(BaseTemplate):
 
         # check if date is already a timestamp
         try:
-            date = dateparser.parse(date).timestamp()
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
             return str(date)
         except:
             try:
@@ -66,7 +68,7 @@ class CyberForumParser(BaseTemplate):
                 return date
             except:
                 try:
-                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+                    date = dateparser.parse(date).timestamp()
                     return str(date)
                 except:
                     pass
