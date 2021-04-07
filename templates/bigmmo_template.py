@@ -21,7 +21,8 @@ class BigMMOParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath =  '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
-        self.date_xpath = './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/text()'
+        self.date_xpath = './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/@title|'\
+            './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/text()'
         self.post_text_xpath =  './/div[contains(@class,"messageContent")]//article/blockquote/descendant::text()[not(ancestor::div[contains(@class,"bbCodeQuote")])]'
         self.title_xpath =  '//div[contains(@class,"media__body")]/h1//text()'
         self.comment_block_xpath = './/div[@class="messageDetails"]/a//text()'
