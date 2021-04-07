@@ -1442,7 +1442,7 @@ class SitemapSpider(BypassCloudfareSpider):
             return captcha_text.replace(' ', '')
         else:
             self.crawler.stats.set_value("cannot_bypass_captcha", 1)
-            return ''
+            return False
 
     def get_captcha_image_content(self, image_url, cookies={}, headers={}, proxy=None):
 

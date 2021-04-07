@@ -186,6 +186,8 @@ from scraper.psylab import PsylabScrapper
 from scraper.mctrades import MctradesScrapper
 from scraper.russiancarder_ru import RussiancarderRuScrapper
 from scraper.darkteam import DarkteamScrapper
+# from scraper.cardingteam_biz import CardingteamBizScrapper
+from scraper.kickass import KickAssScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -376,4 +378,6 @@ SCRAPER_MAP = {
     'mctrades': MctradesScrapper,
     'russiancarder_ru': RussiancarderRuScrapper,
     'darkteam': DarkteamScrapper,
+    # 'cardingteam_biz': CardingteamBizScrapper
+    'kickass': KickAssScrapper
 }
