@@ -1,5 +1,6 @@
 # Production
-cloudscraper >= 1.2.56
+cloudscraper >= 1.2.58
+brotli >= 1.0.9
 msgpack >= 1.0.0
 cryptography >= 3.0
 urllib3 >= 1.25.10
