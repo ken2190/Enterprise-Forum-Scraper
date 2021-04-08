@@ -43,7 +43,7 @@ class FreeHackSpider(SitemapSpider):
     # Other settings
     use_proxy = "On"
     sitemap_datetime_format = '%d.%m.%Y,'
-    post_datetime_format = '%d.%m.%Y,'
+    post_datetime_format = '%d.%m.%Y, %H:%M'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

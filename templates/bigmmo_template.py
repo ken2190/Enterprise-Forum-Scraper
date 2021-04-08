@@ -22,9 +22,13 @@ class BigMMOParser(BaseTemplate):
         self.comments_xpath =  '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.date_xpath = './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/@title|'\
-            './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/text()'
+            './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/text()|' \
+            '//div[@class="messageDetails"]//abbr[@class="DateTime"]/@data-datestring|' \
+            '//div[@class="privateControls"]//span[@class="DateTime"]/@title|'\
+            '//div[@class="privateControls"]//abbr[@class="DateTime"]/@data-datestring'
         self.post_text_xpath =  './/div[contains(@class,"messageContent")]//article/blockquote/descendant::text()[not(ancestor::div[contains(@class,"bbCodeQuote")])]'
-        self.title_xpath =  '//div[contains(@class,"media__body")]/h1//text()'
+        self.title_xpath =  '//div[contains(@class,"media__body")]/h1//text()|' \
+            '//div[contains(@class,"titleBar")]/h1//text()'
         self.comment_block_xpath = './/div[@class="messageDetails"]/a//text()'
         self.author_xpath = './/div[contains(@class,"messageUserBlock")]//a[contains(@class,"username")]//text()'
 

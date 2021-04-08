@@ -25,7 +25,7 @@ class FreeHackParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//li[contains(@class,"postcontainer")]'
         self.header_xpath = '//li[contains(@class,"postcontainer")]'
-        self.date_pattern = '%d-%m-%Y, %H:%M'
+        self.date_pattern = '%d.%m.%Y, %H:%M'
         self.date_xpath = './/span[@class="date"]//text()'
         self.author_xpath = './/a[contains(@class,"username")]//descendant::text()|'\
             './/div[contains(@class,"username_container")]//descendant::text()'
@@ -54,7 +54,7 @@ class FreeHackParser(BaseTemplate):
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)
 
-        date_block = ' '.join(date_block)
+        date_block = ''.join(date_block)
         date = date_block.strip() if date_block else ""
 
         try:

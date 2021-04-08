@@ -1,8 +1,8 @@
 # -- coding: utf-8 --
 import re
 # import locale
-import dateutil.parser as dparser
-from datetime import date as Date
+import dateparser as dparser
+import datetime
 
 from .base_template import BaseTemplate
 
@@ -24,6 +24,7 @@ class UinsellParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//div[contains(@id, "posts")]/div[contains(@align,"center")]'
         self.header_xpath = '//div[contains(@id, "posts")]/div[contains(@align,"center")]'
+        self.date_pattern = '%d-%m-%Y, %H:%M'
         self.date_xpath = './/table[contains(@class, "tborder")][1]//td[contains(@class, "thead")][1]/text()'
         self.title_xpath = '//table[1]//tr/td[1]//tr[2]/td/strong/text()'
         self.post_text_xpath = './/div[contains(@id, "post_message")]/text()'
@@ -58,10 +59,9 @@ class UinsellParser(BaseTemplate):
             return ""
 
         try:
-            date = dparser.parse(date).timestamp()
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
             return str(date)
         except:
-            date = Date.today().strftime("%B %d, %Y") + date.split(",")[-1]
             date = dparser.parse(date).timestamp()
             return str(date)
 
