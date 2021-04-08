@@ -17,7 +17,7 @@ from scrapy import (
 class SkyFraudSpider(SitemapSpider):
 
     name = "skyfraud_spider"
-    base_url = "https://sky-fraud.ru/"
+    base_url = "http://skyfraud.ru/"
     
     # Xpath stuffs
     forum_xpath = '//a[contains(@href, "forumdisplay.php?")]/@href'
@@ -52,41 +52,18 @@ class SkyFraudSpider(SitemapSpider):
     # Other settings
     use_proxy = "VIP"
     cloudfare_delay = 10
-    handle_httpstatus_list = [503]
+    handle_httpstatus_list = [404, 503]
     post_datetime_format = '%d.%m.%Y, %H:%M'
     sitemap_datetime_format = '%d.%m.%Y'
 
     def start_requests(self):
-        # Temporary action to start spider
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.pass_cookie,
-            errback=self.check_site_error
-        )
-        
-    def pass_cookie(self, response):
-        
-        cookies, ip = self.get_cookies(
-            base_url=self.base_url,
-            proxy=self.use_proxy,
-            fraud_check=True,
-        )
-
-        self.logger.info(f'COOKIES: {cookies}')
-
-        # Init request kwargs and meta
-        meta = {
-            "cookiejar": uuid.uuid1().hex,
-            "ip": ip
-        }
-
-        yield Request(
-            url=self.base_url,
-            headers=self.headers,
-            meta=meta,
-            cookies=cookies,
-            callback=self.parse_start
+            callback=self.parse_start,
+            # cookies=cookies,
+            # meta=meta,
+            dont_filter=True
         )
 
     def parse_thread_date(self, thread_date):
