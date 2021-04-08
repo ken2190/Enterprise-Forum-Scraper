@@ -35,8 +35,8 @@ class SilkRoad4Spider(MarketPlaceSpider):
     avatar_xpath = '//div[@id="img"]/img/@src'
 
     # Login Failed Message xpath
-    login_failed_xpath = login_form_xpath
-    captcha_failed_xpath = captcha_url_xpath
+    login_failed_xpath = lonin_user_xpath
+    captcha_failed_xpath = "//font[contains(text(), 'Wrong Captcha')]"
 
     # Regex stuffs
     avatar_name_pattern = re.compile(
@@ -170,7 +170,8 @@ class SilkRoad4Spider(MarketPlaceSpider):
             formdata = {
                 'username': USER,
                 'password': PASS,
-                "captcha": captcha
+                "captcha": captcha,
+                "login": "Login"
             }
 
             yield FormRequest.from_response(
@@ -185,13 +186,14 @@ class SilkRoad4Spider(MarketPlaceSpider):
 
     def parse_start(self, response):
 
-        # Check if login failed
-        self.check_if_logged_in(response)
-
         # Check if bypass captcha failed
-        self.check_if_captcha_failed(response, self.captcha_failed_xpath)
-        
-        yield from super().parse_start(response)
+        if response.xpath(self.captcha_failed_xpath):
+            yield from self.parse_captcha(response)
+        else:
+            # Check if login failed
+            self.check_if_logged_in(response)
+            
+            yield from super().parse_start(response)
 
 
 class SilkRoad4Scrapper(SiteMapScrapper):
