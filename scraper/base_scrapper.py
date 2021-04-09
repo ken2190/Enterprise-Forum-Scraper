@@ -585,7 +585,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             }
 
             try:
-                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')\
+                # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')
                 cf_bypasser.proxies = proxies
                 response = cf_bypasser.get(base_url)
             except Exception:
@@ -1072,12 +1072,12 @@ class SitemapSpider(BypassCloudfareSpider):
                             using class post_datetime_format
         """
         try:
-            return dateparser.parse(post_date).replace(tzinfo=None)
-        except:
             return datetime.strptime(
                 post_date.strip(),
                 self.post_datetime_format
             )
+        except:
+            return dateparser.parse(post_date).replace(tzinfo=None)
 
     def parse_thread_url(self, thread_url):
         """

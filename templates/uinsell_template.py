@@ -24,7 +24,7 @@ class UinsellParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//div[contains(@id, "posts")]/div[contains(@align,"center")]'
         self.header_xpath = '//div[contains(@id, "posts")]/div[contains(@align,"center")]'
-        self.date_pattern = '%d-%m-%Y, %H:%M'
+        self.date_pattern = '%d.%m.%Y, %H:%M'
         self.date_xpath = './/table[contains(@class, "tborder")][1]//td[contains(@class, "thead")][1]/text()'
         self.title_xpath = '//table[1]//tr/td[1]//tr[2]/td/strong/text()'
         self.post_text_xpath = './/div[contains(@id, "post_message")]/text()'

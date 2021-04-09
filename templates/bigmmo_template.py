@@ -21,6 +21,7 @@ class BigMMOParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath =  '//ol[@class="messageList"]/li[contains(@class,"message")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@class,"message")]'
+        self.date_pattern = "%d/%m/%y lúc %H:%M"
         self.date_xpath = './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/@title|'\
             './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/text()|' \
             '//div[@class="messageDetails"]//abbr[@class="DateTime"]/@data-datestring|' \
