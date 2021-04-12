@@ -25,6 +25,7 @@ class BigMMOParser(BaseTemplate):
         self.date_xpath = './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/@title|'\
             './/div[contains(@class,"messageDetails")]//span[contains(@class,"DateTime")]/text()|' \
             '//div[@class="messageDetails"]//abbr[@class="DateTime"]/@data-datestring|' \
+            '//div[@class="messageDetails"]//abbr[@class="DateTime"]/@data-time|' \
             '//div[@class="privateControls"]//span[@class="DateTime"]/@title|'\
             '//div[@class="privateControls"]//abbr[@class="DateTime"]/@data-datestring'
         self.post_text_xpath =  './/div[contains(@class,"messageContent")]//article/blockquote/descendant::text()[not(ancestor::div[contains(@class,"bbCodeQuote")])]'
