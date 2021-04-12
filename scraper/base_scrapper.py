@@ -1058,12 +1058,12 @@ class SitemapSpider(BypassCloudfareSpider):
                             using class sitemap_datetime_format
         """
         try:
-            return dateparser.parse(thread_date).replace(tzinfo=None)
-        except:
             return datetime.strptime(
                 thread_date.strip(),
                 self.post_datetime_format
             )
+        except:
+            return dateparser.parse(thread_date).replace(tzinfo=None)
 
     def parse_post_date(self, post_date):
         """
