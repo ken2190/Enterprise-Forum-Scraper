@@ -37,21 +37,19 @@ def parse_args():
     return args
 
 
-def check_input_dirs(html_dir, parse_dir, site_type, exit):
+def check_input_dirs(html_dir, parse_dir, site_type):
     """ Checks input data """
 
     def is_dir_exists(path):
         return os.path.exists(path) and os.path.isdir(path)
 
     if not is_dir_exists(html_dir):
-        err_msg = "ERROR STAGE 0: Scraper output directory does not exist: %s" % html_dir
-        print(err_msg)
-        exit(2, RuntimeError(err_msg))
+        print_erorr_message_and_raise_exception(
+            "ERROR STAGE 0: Scraper output directory does not exist: %s" % html_dir)
 
     if not is_dir_exists(parse_dir):
-        err_msg = "ERROR STAGE 0: Parsing output directory does not exist: %s" % PARSE_DIR
-        print(err_msg)
-        exit(2, RuntimeError(err_msg))
+        print_erorr_message_and_raise_exception(
+            "ERROR STAGE 0: Parsing output directory does not exist: %s" % PARSE_DIR)
 
     if not is_dir_exists(COMBO_DIR):
         print("WARNING: JSON combo directory does not exist: %s" % COMBO_DIR)
@@ -64,8 +62,9 @@ def check_input_dirs(html_dir, parse_dir, site_type, exit):
 
     import_dir = os.path.join(IMPORT_DIR, site_type)
     if not is_dir_exists(import_dir):
-        err_msg = "Warning: Import directory does not exist: %s" % import_dir
+        warning_message = "Warning: Import directory does not exist: %s" % import_dir
         os.makedirs(import_dir)
+        print(warning_message)
 
 
 def make_tarfile(output_filename, source):
@@ -79,6 +78,35 @@ def make_tarfile(output_filename, source):
             print(os.path.join(source, f))
     else:
         print(source)
+
+
+def exit_func(exit_code=2, exception=None):
+    if not exception:
+        sys.exit(exit_code)
+    else:
+        raise exception
+
+
+def validate_output_json_file(combined_json_file):
+    validate_output_file("output_json", combined_json_file)
+
+
+def validate_json_archive_file(combined_json_archive):
+    validate_output_file("json_archive", combined_json_archive)
+
+
+def validate_output_file(file_label, output_file_name):
+    if not os.path.exists(output_file_name):
+        print_erorr_message_and_raise_exception(
+            f"ERROR: cannot find the {file_label} file at ({output_file_name}). Aborting.")
+    if os.path.getsize(output_file_name) == 0:
+        print_erorr_message_and_raise_exception(
+            f"ERROR:  The {file_label} file at ({output_file_name}) is empty. Aborting.")
+
+
+def print_erorr_message_and_raise_exception(error_message):
+    print(error_message)
+    exit_func(2, RuntimeError(error_message))
 
 
 def run(kwargs=None):
@@ -98,23 +126,17 @@ def run(kwargs=None):
         date = args.date
         sync = args.sync
 
-    def exit(exit_code=2, exception=None):
-        if args:
-            sys.exit(exit_code)
-        else:
-            raise exception
-    
     scraper = SCRAPER_MAP.get(template)
     if not scraper:
         err_msg = "ERROR: Invalid site template"
         print(err_msg)
-        exit(2, RuntimeError(err_msg))
+        exit_func(2, RuntimeError(err_msg))
 
     site_type = getattr(scraper, 'site_type', None)
     if not site_type:
         err_msg = f"ERROR: {site} has no site_type set"
         print(err_msg)
-        exit(2, RuntimeError(err_msg))
+        exit_func(2, RuntimeError(err_msg))
 
     # prepare paths
     if site_type == 'shadownet':
@@ -126,13 +148,13 @@ def run(kwargs=None):
 
     # check input dirs
     print('Checking paths...')
-    check_input_dirs(html_dir, parse_dir, site_type, exit)
+    check_input_dirs(html_dir, parse_dir, site_type)
 
     # check if the parse dir contain at least one file
     if not os.listdir(parse_dir):
         err_msg = f"{parse_dir} is Empty"
         print(err_msg)
-        exit(0)
+        exit_func(0)
 
     ##############################################
     # merge parsed files
@@ -158,8 +180,9 @@ def run(kwargs=None):
             "ERROR: JQ exited with non-zero exit code: retcode=%d, err=%s" %
             (err.returncode, err.stderr)
         )
-        exit(2, err)
+        exit_func(2, err)
 
+    validate_output_json_file(combined_json_file)
     ##############################################
     # archive scraped HTML and combined JSON
     ##############################################
@@ -174,7 +197,7 @@ def run(kwargs=None):
         make_tarfile(html_archive, html_dir)
     except OSError as err:
         print("ERROR: Failed to create HTML archive: %s" % err)
-        exit(2, err)
+        exit_func(2, err)
 
     print('Archiving the combined JSON file...')
     combined_json_archive = os.path.join(
@@ -186,7 +209,9 @@ def run(kwargs=None):
         make_tarfile(combined_json_archive, combined_json_file)
     except OSError as err:
         print("ERROR: Failed to create JSON archive: %s" % err)
-        exit(2, err)
+        exit_func(2, err)
+
+    validate_json_archive_file(combined_json_archive)
 
     ##############################################
     # move combined JSON to import dir
@@ -197,18 +222,16 @@ def run(kwargs=None):
         shutil.move(combined_json_file, import_dir)
     except OSError as err:
         print("ERROR: Failed to move JSON to import directory: %s" % err)
-        exit(2, err)
+        exit_func(2, err)
 
     ##############################################
     # delete scraped HTML and parsed JSON files
     ##############################################
     print('Deleting source HTML and JSON files...')
     if not os.path.exists(html_archive):
-        print("ERROR: missing archive file %s" % html_archive)
-        exit(2, err)
+        print_erorr_message_and_raise_exception("ERROR: missing archive file %s" % html_archive)
     elif os.path.getsize(html_archive) == 0:
-        print("ERROR: empty archive file %s" % html_archive)
-        exit(2, err)
+        print_erorr_message_and_raise_exception("ERROR: empty archive file %s" % html_archive)
     else:
         shutil.rmtree(html_dir)
         shutil.rmtree(parse_dir)
@@ -230,8 +253,7 @@ def run(kwargs=None):
                 "ERROR: Failed to copy archive directory offset: retcode=%d, "
                 "err=%s" % (err.returncode, err.stderr)
             )
-            exit(2, err)
-
+            exit_func(2, err)
     print('Done')
 
 
