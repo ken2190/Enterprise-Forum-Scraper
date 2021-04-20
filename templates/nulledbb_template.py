@@ -15,12 +15,12 @@ class NulledBBParser(BaseTemplate):
         self.comments_xpath = '//article[contains(@class, "post")]'
         self.header_xpath = '//article[contains(@class, "post")]'
         self.date_pattern = '%d-%m-%Y, %I:%M %p'
-        self.date_xpath = '//div[@class="flex-fill"]/span[@data-toggle]/text()'
+        self.date_xpath = './/div[@class="flex-fill"]/span[@data-toggle]/text()'
         self.title_xpath = '//h1[contains(@itemprop, "headline")]/text()'
-        self.post_text_xpath = '//div[@itemprop="articleBody"]//text()'
-        self.avatar_xpath = '//a[contains(@class,"post-avatar")]/img/@src'
+        self.post_text_xpath = './/div[@itemprop="articleBody"]//text()'
+        self.avatar_xpath = './/a[contains(@class,"post-avatar")]/img/@src'
         self.comment_block_xpath = './/a[@class="mt-n1"]/text()'
-        self.author_xpath = '//div[contains(@class, "post-username")]//text()'
+        self.author_xpath = './/div[contains(@class, "post-username")]//text()'
 
         # main function
         self.main()
