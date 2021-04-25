@@ -182,21 +182,18 @@ def run(kwargs=None):
     # merge parsed files
     ##############################################
     print("Combining JSON files...")
-    cmd = "find . -name \\*.json -exec cat {} + | jq -c ."
     combined_json_file = os.path.join(combo_folder, f"{site}-{date}.json")
+    cmd = f"find . -name \\*.json -exec cat {{}} + | jq -c . | sort -us -o {combined_json_file}"
     try:
-        with open(combined_json_file, "a") as f:
-            subprocess.run(
-                cmd,
-                cwd=parse_dir,
-                check=True,
-                shell=True,
-                stdout=f,
-                stderr=subprocess.PIPE,
-            )
+        subprocess.run(cmd,
+                       cwd=parse_dir,
+                       check=True,
+                       shell=True,
+                       stderr=subprocess.PIPE,
+                       )
     except subprocess.CalledProcessError as err:
         print(
-            "ERROR: JQ exited with non-zero exit code: retcode=%d, err=%s"
+            "ERROR: JQ/SORT exited with non-zero exit code: retcode=%d, err=%s"
             % (err.returncode, err.stderr)
         )
         exit_func(2, err)
