@@ -29,8 +29,10 @@ class MalvultSpider(SitemapSpider):
                               '/a[contains(@href,"threads/")]/@href'
     thread_last_page_xpath = './/span[@class="itemPageNav"]'\
                              '/a[last()]/@href'
-    thread_date_xpath = './/dl[@class="lastPostInfo"]'\
-                        '//a[@class="dateTime"]/abbr/@data-datestring|'\
+    thread_date_xpath = './/dl[@class="lastPostInfo"]' \
+                        '//a[@class="dateTime"]/abbr/@data-time|' \
+                        './/dl[@class="lastPostInfo"]' \
+                        '//a[@class="dateTime"]/abbr/@data-datestring|' \
                         './/dl[@class="lastPostInfo"]'\
                         '//a[@class="dateTime"]/span/text()'
     pagination_xpath = '//nav/a[last()]/@href'
