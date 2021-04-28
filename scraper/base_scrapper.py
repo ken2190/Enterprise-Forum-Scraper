@@ -68,14 +68,15 @@ PROXY_USERNAME = "lum-customer-hl_afe4c719-zone-zone1"
 PROXY_PASSWORD = "8jywfhrmovdh"
 PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
+
 # Residential proxy
 # PROXY_USERNAME = "lum-customer-dataviper-zone-zone2"
 # PROXY_PASSWORD = "hh27g7gkk11"
 # PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
-#PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
-#PROXY_PASSWORD = "5d2ad17825b0"
-#PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
+# PROXY_USERNAME = "lum-customer-dataviper-zone-unblocked"
+# PROXY_PASSWORD = "5d2ad17825b0"
+# PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 
 ###############################################################################
 # Base Scraper
@@ -85,12 +86,12 @@ PROXY = "http://%s:%s@zproxy.lum-superproxy.io:22225"
 class BaseScrapper:
 
     def __init__(self, kwargs):
-        self.topic_start_count = int(kwargs.get('topic_start'))\
+        self.topic_start_count = int(kwargs.get('topic_start')) \
             if kwargs.get('topic_start') else None
-        self.topic_end_count = int(kwargs.get('topic_end')) + 1\
+        self.topic_end_count = int(kwargs.get('topic_end')) + 1 \
             if kwargs.get('topic_end') else None
         self.output_path = kwargs.get('output')
-        self.wait_time = int(kwargs.get('wait_time'))\
+        self.wait_time = int(kwargs.get('wait_time')) \
             if kwargs.get('wait_time') else 1
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -110,7 +111,7 @@ class BaseScrapper:
         if kwargs.get('daily'):
             self.ensure_daily_output_path()
 
-    def ensure_daily_output_path(self,):
+    def ensure_daily_output_path(self, ):
         folder_name = datetime.now().date().isoformat()
         self.output_path = f'{self.output_path}/{folder_name}'
         if not os.path.exists(self.output_path):
@@ -125,21 +126,21 @@ class BaseScrapper:
         html_response = fromstring(content)
         return html_response
 
-    def get_broken_file_topics(self,):
+    def get_broken_file_topics(self, ):
         broken_topics = []
         file_pattern = re.compile(r'.*/(\d+)-?1?\.html')
-        for _file in glob(self.output_path+'/*'):
+        for _file in glob(self.output_path + '/*'):
             topic_match = file_pattern.findall(_file)
-            if topic_match and os.path.getsize(_file) < 4*1024:
+            if topic_match and os.path.getsize(_file) < 4 * 1024:
                 broken_topics.append(topic_match[0])
         return broken_topics
 
     def get_page_content(
-        self,
-        url,
-        ignore_xpath=None,
-        continue_xpath=None,
-        topic=None
+            self,
+            url,
+            ignore_xpath=None,
+            continue_xpath=None,
+            topic=None
     ):
         try:
             response = self.session.get(url, headers=self.headers)
@@ -153,7 +154,7 @@ class BaseScrapper:
                 return self.get_page_content(
                     url, ignore_xpath, continue_xpath)
             if self.cloudfare_error and html_response.xpath(
-               self.cloudfare_error):
+                    self.cloudfare_error):
                 if self.cloudfare_count < 5:
                     self.cloudfare_count += 1
                     time.sleep(60)
@@ -173,9 +174,9 @@ class BaseScrapper:
             return
 
     def process_user_profile(
-        self,
-        uid,
-        url,
+            self,
+            uid,
+            url,
     ):
         self.retry = False
         output_file = f'{self.output_path}/UID-{uid}.html'
@@ -191,10 +192,10 @@ class BaseScrapper:
         return
 
     def process_first_page(
-        self,
-        topic,
-        ignore_xpath=None,
-        continue_xpath=None
+            self,
+            topic,
+            ignore_xpath=None,
+            continue_xpath=None
     ):
         self.cloudfare_count = 0
         self.retry = False
@@ -312,7 +313,7 @@ class SiteMapScrapper:
                 )
             except Exception as err:
                 try:
-                   self.start_date = datetime.strptime(
+                    self.start_date = datetime.strptime(
                         self.start_date,
                         "%Y-%m-%d"
                     )
@@ -368,7 +369,7 @@ class SiteMapScrapper:
     def ensure_avatar_path(self, template):
         if not self.avatar_path:
             self.avatar_path = f'../avatars/{template}'
-        
+
         if not os.path.exists(self.avatar_path):
             os.makedirs(self.avatar_path)
 
@@ -400,7 +401,6 @@ class SiteMapScrapper:
 
 
 class FromDateScrapper(BaseScrapper, SiteMapScrapper):
-
     from_date_spider_class = None
     time_format = "%Y-%m-%d"
 
@@ -424,14 +424,12 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
         process.start()
 
 
-
 ###############################################################################
 # Base Spider
 ###############################################################################
 
 
 class BypassCloudfareSpider(scrapy.Spider):
-
     use_proxy = "On"
     proxy = None
     download_delay = 0.3
@@ -476,12 +474,12 @@ class BypassCloudfareSpider(scrapy.Spider):
                         # "middlewares.middlewares.BypassCloudfareMiddleware": 200
                     }
                 )
-            #else:
-                #downloader_middlewares.update(
-                    #{
-                        #"middlewares.middlewares.BypassCloudfareMiddleware": 200
-                    #}
-                #)
+            # else:
+            # downloader_middlewares.update(
+            # {
+            # "middlewares.middlewares.BypassCloudfareMiddleware": 200
+            # }
+            # )
 
             # Default settings
             crawler.settings.set(
@@ -539,6 +537,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             if session.is_New_IUAM_Challenge(response) \
             or session.is_New_Captcha_Challenge(response) \
             or session.is_BFM_Challenge(response):
+                print(f"INFO: helheim injection used for ({self.name}).")
                 return helheim('52455eed-754b-4220-a070-c913698954b2', session, response)
             else:
                 return response
@@ -558,7 +557,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             debug=False,
             # delay=5
         )
-    
+
         bypass_cookies = {}
         try_num = 0
         # Loop create cookies
@@ -611,7 +610,7 @@ class BypassCloudfareSpider(scrapy.Spider):
 
         if not bypass_cookies:
             raise CloseSpider(reason='access_is_blocked')
-        
+
         return bypass_cookies, ip
 
     def get_cloudflare_cookies_via_browser(self, base_url=None, proxy=False, fraud_check=False):
@@ -721,7 +720,7 @@ class BypassCloudfareSpider(scrapy.Spider):
                         browser.get(self.base_url)
                 except RuntimeError:
                     raise CloseSpider(reason='site_is_down')
-                
+
                 try:
                     success = self.check_bypass_success(browser)
                 except RuntimeError:
@@ -844,7 +843,6 @@ class BypassCloudfareSpider(scrapy.Spider):
 
 
 class SitemapSpider(BypassCloudfareSpider):
-
     # Url stuffs
     base_url = None
     sitemap_url = None
@@ -901,7 +899,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
     proxy_countries = []
     proxy_cities = []
-    
+
     # Other settings
     get_cookies_delay = 2
     get_cookies_retry = 5
@@ -967,9 +965,9 @@ class SitemapSpider(BypassCloudfareSpider):
             self.backup_codes = []
         else:
             with open(
-                file=self.backup_code_file,
-                mode="r",
-                encoding="utf-8"
+                    file=self.backup_code_file,
+                    mode="r",
+                    encoding="utf-8"
             ) as file:
                 self.backup_codes = [
                     code.strip() for code in file.read().split("\n")
@@ -977,9 +975,9 @@ class SitemapSpider(BypassCloudfareSpider):
 
     def write_backup_codes(self):
         with open(
-            file=self.backup_code_file,
-            mode="w+",
-            encoding="utf-8"
+                file=self.backup_code_file,
+                mode="w+",
+                encoding="utf-8"
         ) as file:
             file.write(
                 "\n".join(self.backup_codes)
@@ -1134,14 +1132,14 @@ class SitemapSpider(BypassCloudfareSpider):
     def get_existing_file_date(self, topic_id):
 
         ## Load first page file name
-        #file_name = os.path.join(
-            #self.output_path,
-            #"%s-1.html" % topic_id
-        #)
+        # file_name = os.path.join(
+        # self.output_path,
+        # "%s-1.html" % topic_id
+        # )
 
         ## If file name exist then return
-        #if not os.path.exists(file_name):
-            #return
+        # if not os.path.exists(file_name):
+        # return
 
         last_scrape_datetimes = [
             datetime.fromtimestamp(
@@ -1230,7 +1228,7 @@ class SitemapSpider(BypassCloudfareSpider):
         return proxy
 
     # Main method to solve all kind of captcha: recaptcha #
-    
+
     def solve_hcaptcha(self, response, proxy=None, site_url=None, site_key=None, user_agent=None,
                        cookies=None):
         """
@@ -1301,7 +1299,7 @@ class SitemapSpider(BypassCloudfareSpider):
             return ''
 
     # Main method to solve all kind of captcha: recaptcha #
-    
+
     def solve_recaptcha(self, response, *, proxyless=False, max_try_count=3):
         """
         :param response: scrapy response => response that contains regular recaptcha
@@ -1423,7 +1421,7 @@ class SitemapSpider(BypassCloudfareSpider):
                     temp_url = self.base_url + image_url
 
                 image_url = temp_url
-            
+
             image_content = self.get_captcha_image_content(
                 image_url, cookies, headers, proxy)
         except Exception as err:
@@ -1488,7 +1486,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
             # Load domain ip
             try:
-                r = requests.get(api+domain)
+                r = requests.get(api + domain)
                 if r.status_code == 200:
                     ip = r.text.splitlines()[0]
                     return ip
@@ -1546,7 +1544,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # update stats
         self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forum))
-        
+
         for forum in all_forum:
             yield Request(
                 url=forum,
@@ -1612,9 +1610,9 @@ class SitemapSpider(BypassCloudfareSpider):
 
         # Check file exist
         if self.check_existing_file_date(
-            topic_id=topic_id,
-            thread_date=thread_date,
-            thread_url=thread_url
+                topic_id=topic_id,
+                thread_date=thread_date,
+                thread_url=thread_url
         ):
             return
 
@@ -1641,12 +1639,12 @@ class SitemapSpider(BypassCloudfareSpider):
             login_failed = response.xpath(self.login_failed_xpath).extract()
             if len(login_failed):
                 raise CloseSpider(reason='login_is_failed')
-    
+
     def check_if_captcha_failed(self, response, xpath):
         # check if captcha is passed.
         captcha_failed = response.xpath(xpath).extract()
         if len(captcha_failed):
-                raise CloseSpider(reason='cannot_bypass_captcha')
+            raise CloseSpider(reason='cannot_bypass_captcha')
 
     def check_site_error(self, failure):
         # check if site has error
@@ -1671,7 +1669,7 @@ class SitemapSpider(BypassCloudfareSpider):
             request = failure.request
             self.logger.error('TunnelError on %s', request.url)
             raise CloseSpider(reason='site_is_down')
-        
+
         else:
             raise CloseSpider(reason='site_is_down')
 
@@ -1896,15 +1894,15 @@ class SitemapSpider(BypassCloudfareSpider):
         if not self.useronly:
             current_page = self.get_thread_current_page(response)
             with open(
-                file=os.path.join(
-                    self.output_path,
-                    "%s-%s.html" % (
-                        topic_id,
-                        current_page
-                    )
-                ),
-                mode="w+",
-                encoding="utf-8"
+                    file=os.path.join(
+                        self.output_path,
+                        "%s-%s.html" % (
+                                topic_id,
+                                current_page
+                        )
+                    ),
+                    mode="w+",
+                    encoding="utf-8"
             ) as file:
                 file.write(response.text)
             self.logger.info(
@@ -1939,7 +1937,7 @@ class SitemapSpider(BypassCloudfareSpider):
 
     def get_thread_current_page(self, response):
         current_page = response.xpath(
-                self.thread_page_xpath
+            self.thread_page_xpath
         ).extract_first() or "1"
         return current_page
 
@@ -2209,7 +2207,7 @@ class MarketPlaceSpider(SitemapSpider):
         if self.base_url not in url:
             url = self.base_url + url
         return url
-    
+
     def get_user_pgp_url(self, url):
         if self.base_url not in url:
             url = self.base_url + url
@@ -2262,7 +2260,7 @@ class MarketPlaceSpider(SitemapSpider):
 
         self.logger.info('next_page_url: {}'.format(response.url))
         products = response.xpath(self.product_url_xpath).extract()
-        
+
         self.crawler.stats.set_value("mainlist/detail_count", len(products))
 
         for product_url in products:
@@ -2277,7 +2275,7 @@ class MarketPlaceSpider(SitemapSpider):
 
             file_id = self.get_file_id(product_url)
             file_name = '{}/{}.html'.format(self.output_path, file_id)
-            
+
             self.crawler.stats.inc_value("mainlist/detail_next_page_count")
             self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
 
@@ -2298,7 +2296,7 @@ class MarketPlaceSpider(SitemapSpider):
         next_page_url = self.get_product_next_page(response)
         if next_page_url:
             self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
-            
+
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
@@ -2449,7 +2447,7 @@ class MarketPlaceSpider(SitemapSpider):
 
             if 'image/svg' in avatar_url:
                 continue
-            
+
             ext = avatar_url.rsplit('.', 1)[-1]
             if "?" in ext:
                 ext = ext.split("?")[0]
@@ -2463,7 +2461,7 @@ class MarketPlaceSpider(SitemapSpider):
 
             if os.path.exists(file_name):
                 continue
-            
+
             self.crawler.stats.inc_value("mainlist/avatar_count")
 
             index = index + 1
@@ -2489,6 +2487,7 @@ class MarketPlaceSpider(SitemapSpider):
 
         self.crawler.stats.inc_value("mainlist/avatar_saved_count")
 
+
 class SeleniumSpider(SitemapSpider):
     ban_text = ''
     skip_forums = None
@@ -2506,7 +2505,7 @@ class SeleniumSpider(SitemapSpider):
             if self.base_url not in forum_url:
                 forum_url = self.base_url + forum_url
             if self.skip_forums and any(
-             forum_url.endswith(i) for i in self.skip_forums):
+                    forum_url.endswith(i) for i in self.skip_forums):
                 continue
             self.process_forum(forum_url)
             time.sleep(self.delay)
@@ -2642,7 +2641,7 @@ class SeleniumSpider(SitemapSpider):
             response.xpath(self.post_date_xpath)
             if post_date.strip() and dateparser.parse(post_date.strip())
         ]
-        
+
         if post_dates:
             if self.start_date and max(post_dates) < self.start_date:
                 self.logger.info(
@@ -2652,12 +2651,12 @@ class SeleniumSpider(SitemapSpider):
 
         current_page = self.get_thread_current_page(response)
         with open(
-            file=os.path.join(
-                self.output_path,
-                "%s-%s.html" % (topic_id, current_page)
-            ),
-            mode="w+",
-            encoding="utf-8"
+                file=os.path.join(
+                    self.output_path,
+                    "%s-%s.html" % (topic_id, current_page)
+                ),
+                mode="w+",
+                encoding="utf-8"
         ) as file:
             file.write(self.browser.page_source)
             self.logger.info(
