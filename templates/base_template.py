@@ -67,7 +67,7 @@ class BaseTemplate:
                             "%Y-%m-%d"
                         )
                     )
-                
+
     def get_filtered_files(self, files):
         filtered_files = list(
             filter(
@@ -343,18 +343,20 @@ class BaseTemplate:
         # check if date is already a timestamp
         try:
             date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
-            return str(date)
         except:
             try:
                 date = float(date)
-                return date
             except:
-                try:
-                    date = dateparser.parse(date).timestamp()
-                    return str(date)
-                except:
-                    pass
-
+                err_msg = f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})"
+                print(err_msg)
+                date = dateparser.parse(date).timestamp()
+        if not date:
+            curr_epoch = datetime.datetime.today().timestamp()
+            if date > curr_epoch:
+                err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
+                print(err_msg)
+                raise RuntimeError(err_msg)
+            return str(date)
         return ""
 
     def get_avatar(self, tag):

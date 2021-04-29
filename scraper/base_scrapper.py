@@ -1044,6 +1044,9 @@ class SitemapSpider(BypassCloudfareSpider):
 
         try:
             thread_lastmod = self.parse_thread_date(thread_lastmod)
+            curr_date = datetime.today()
+            if thread_lastmod and  thread_lastmod > curr_date:
+                print("ERROR thread_lastmod date ({thread_lastmod}) is greater than current time ()")
         except Exception as err:
             thread_lastmod = None
 
@@ -1061,6 +1064,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 self.post_datetime_format
             )
         except:
+            print(f"WARN: Error parsing thread date {thread_date.strip()} using the format ({self.post_datetime_format})")
             return dateparser.parse(thread_date).replace(tzinfo=None)
 
     def parse_post_date(self, post_date):
@@ -1075,6 +1079,7 @@ class SitemapSpider(BypassCloudfareSpider):
                 self.post_datetime_format
             )
         except:
+            print(f"WARN: Error parsing post date {post_date.strip()} using the format ({self.post_datetime_format})")
             return dateparser.parse(post_date).replace(tzinfo=None)
 
     def parse_thread_url(self, thread_url):
