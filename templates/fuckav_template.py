@@ -21,13 +21,13 @@ class FuckavParser(BaseTemplate):
         self.mode = 'r'
         self.comments_xpath = '//table[contains(@id, "post")]'
         self.header_xpath = '//table[contains(@id, "post")]'
-        self.date_xpath = 'tr//td[@class="alt1" and @align="right"]/div/text()'
+        self.date_xpath = './/tr//td[@class="alt1" and @align="right"]/div[@style="float:left;" and not(child::span)]/text()'
         self.date_pattern = '%d-%m-%Y, %H:%M'
         self.title_xpath = '//td[@class="navbar"]/a/following-sibling::strong[1]/text()'
-        self.post_text_xpath = 'tr//div[contains(@id, "post_message_")]/descendant::text()[not(ancestor::div[@style="margin:20px; margin-top:5px; "])]'
-        self.avatar_xpath = 'tr//a[contains(@href, "member.php")]/img/@src'
+        self.post_text_xpath = './/tr//div[contains(@id, "post_message_")]/descendant::text()[not(ancestor::div[@style="margin:20px; margin-top:5px; "])]'
+        self.avatar_xpath = './/tr//a[contains(@href, "member.php")]/img/@src'
         self.avatar_ext = 'jpg'
-        self.comment_block_xpath = 'tr//td[@class="alt1" and @align="right"]/a/strong/text()'
+        self.comment_block_xpath = './/tr//td[@class="alt1" and @align="right"]/a/strong/text()'
 
         # main function
         self.main()

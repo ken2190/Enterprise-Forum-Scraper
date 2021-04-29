@@ -29,8 +29,8 @@ MAX_DELAY = 3
 PROXY = 'http://127.0.0.1:8118'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'
 
-class FuckavSpider(SitemapSpider):
 
+class FuckavSpider(SitemapSpider):
     name = "fuckav_spider"
 
     # Url stuffs
@@ -38,29 +38,30 @@ class FuckavSpider(SitemapSpider):
 
     # Css stuffs
     login_form_css = captcha_form_css = '//form[@method="post"]'
-    # captcha_form_css = "#pagenav_menu + form[action*=\"login.php\"]"
-
+    
     # Xpath stuffs
-    forum_xpath = "//td[contains(@id,\"f\")]/div/a[contains(@href,\"forumdisplay.php?f\")]/@href|" \
-                  "//td[contains(@id,\"f\")]/div/table/tr/td/a[contains(@href,\"forumdisplay.php?f\")]/@href"
+    forum_xpath = "//td[contains(@id,'f')]/div/a[contains(@href,'forumdisplay.php?f')]/@href|" \
+                  "//td[contains(@id,'f')]/div/table/tr/td/a[contains(@href,'forumdisplay.php?f')]/@href"
 
-    pagination_xpath = "//a[@rel=\"next\"]/@href"
+    pagination_xpath = "//a[@rel='next']/@href"
 
-    thread_xpath = "//tbody[contains(@id,\"threadbits_forum\")]/tr[contains(., 'от')]"
+    thread_xpath = "//tbody[contains(@id,'threadbits_forum')]/tr[contains(., 'от')]"
     thread_first_page_xpath = ".//a[contains(@id,'thread_title_')]/@href"
     thread_last_page_xpath = ".//span[@class='smallfont']/a[contains(@href,'showthread')][last()]/@href"
-                            #  ".//span[a[font]][last()][following-sibling::span]/a/@href"
-    thread_date_xpath = ".//td[contains(@title,\"Ответов\")]/div/text()[1]"
+    thread_date_xpath = ".//td[contains(@title,'Ответов')]/div/text()[1]"
 
-    thread_pagination_xpath = "//a[@rel=\"prev\"]/@href"
+    sitemap_datetime_format = "%d-%m-%Y"
+    post_datetime_format = "%d-%m-%Y"
+
+    thread_pagination_xpath = "//a[@rel='prev']/@href"
     thread_page_xpath = "//span/strong/font/font/text()"
-    post_date_xpath = "//a[contains(@name,\"post\")]/following-sibling::text()[1][contains(.,\"-\")]"
-    avatar_xpath = "//div[@class=\"smallfont\"]/a/img/@src"
-    captcha_xpath = "//img[@id=\"imagereg\"]/@src"
+    post_date_xpath = "//a[contains(@name,'post')]/following-sibling::text()[1][contains(.,'-')]"
+    avatar_xpath = "//div[@class='smallfont']/a/img/@src"
+    captcha_xpath = "//img[@id='imagereg']/@src"
 
     # Login Failed Message
     login_failed_xpath = '//div[contains(., "Вы ввели неправильное имя или пароль")] |' \
-        '//input[@name="vb_login_username"]'
+                         '//input[@name="vb_login_username"]'
     captcha_failed_xpath = '//div[contains(@class, "alert alert-danger") and contains(., "The Captcha code")]'
 
     # Regex stuffs
@@ -83,10 +84,8 @@ class FuckavSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "On"
-    sitemap_datetime_format = "%d-%m-%Y"
-    post_datetime_format = "%d-%m-%Y"
     session_hash = ''
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(
@@ -209,7 +208,7 @@ class FuckavSpider(SitemapSpider):
                 "Sec-fetch-site": "same-origin",
             }
         )
-        
+
         if not captcha_token:
             yield from self.start_requests()
         else:
@@ -253,7 +252,7 @@ class FuckavSpider(SitemapSpider):
 
         # Check if login failed
         self.check_if_logged_in(response)
-        
+
         # Load all forums
         all_forums = response.xpath(self.forum_xpath).extract()
 
@@ -283,7 +282,6 @@ class FuckavSpider(SitemapSpider):
 
 
 class FuckavScrapper(SiteMapScrapper):
-
     spider_class = FuckavSpider
     site_type = 'forum'
 
@@ -297,6 +295,7 @@ class FuckavScrapper(SiteMapScrapper):
             }
         )
         return settings
+
 
 if __name__ == "__main__":
     pass
