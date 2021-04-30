@@ -27,7 +27,7 @@ class WhiteHatParser(BaseTemplate):
         self.avatar_xpath = './/div[contains(@class,"avatarHolder")]//img/@src'
         self.title_xpath = '//div[contains(@class,"titleBar")]/h1/text()'
         self.comment_block_xpath = './/div[@class="publicControls"]/a//text()'
-
+        self.date_pattern = "%d/%m/%y, %I:%M %p"
         # main function
         self.main()
 
