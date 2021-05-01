@@ -28,16 +28,19 @@ class WhitehatSpider(SitemapSpider):
     thread_xpath = '//ol[@class="discussionListItems"]/li'
     thread_first_page_xpath = './/h3[@class="title"]/a/@href'
     thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
-    thread_date_xpath = './/dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
-                        '/text()|.//dl[@class="lastPostInfo"]'\
+    thread_date_xpath = './/dl[@class="lastPostInfo"]'\
+                        '//abbr[@class="DateTime"]/@data-time|'\
+                        './/dl[@class="lastPostInfo"]' \
+                        '//span[@class="DateTime"]/text()|' \
+                        './/dl[@class="lastPostInfo"]'\
                         '//abbr[@class="DateTime"]/@data-datestring'
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
     thread_pagination_xpath = '//nav/a[contains(text(),"< Trước")]/@href'
 
     post_date_xpath = '//p[@id="pageDescription"]'\
-                      '//span[@class="DateTime"]/text()|'\
+                      '//abbr[@class="DateTime"]/@data-time|'\
                       '//p[@id="pageDescription"]'\
-                      '//abbr[@class="DateTime"]/@data-datestring'
+                      '//span[@class="DateTime"]/text()'
 
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
 

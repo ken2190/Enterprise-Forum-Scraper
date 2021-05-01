@@ -350,7 +350,7 @@ class BaseTemplate:
                 err_msg = f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})"
                 print(err_msg)
                 date = dateparser.parse(date).timestamp()
-        if not date:
+        if date:
             curr_epoch = datetime.datetime.today().timestamp()
             if date > curr_epoch:
                 err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
