@@ -51,6 +51,7 @@ class SinisterSpider(SitemapSpider):
 
     # Other settings
     sitemap_datetime_format = "%m-%d-%Y"
+    post_datetime_format = "%m-%d-%Y, %I:%M %p"
     use_proxy = "VIP"
     proxy_countries = ['us']
     
