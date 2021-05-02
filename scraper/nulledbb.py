@@ -1,13 +1,18 @@
+import datetime
 import os
 import re
+
+import dateparser
 
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-from scrapy import Request, FormRequest
+from scrapy import Request, Selector, FormRequest
 
 import dateutil.parser as dparser
+import requests
+import lxml.html
 
 USERNAME = ""
 PASSWORD = ""
@@ -39,7 +44,8 @@ class NulledBBSpider(SitemapSpider):
     thread_xpath = '//div[@class="content"]//div[contains(@class,"main-row") and contains(@class,"d-flex")]'
     pagination_xpath = '//a[contains(@class, "pagination_next")]/@href'
     thread_last_page_xpath = './/a[text()="Last Post"]/@href'
-    thread_date_xpath = './/a[text()="Last Post"]/preceding-sibling::div//span/@title'
+    thread_date_xpath = './/a[text()="Last Post"]/preceding-sibling::div//span/@title|' \
+                        './/a[text()="Last Post"]/preceding-sibling::div/*/text()'
     login_form_xpath = '//form[@action="member.php"]'
     search_form_xpath = '//form[@action="search.php"]'
     last_page_xpath = '//div[contains(@class, "pagination")]//ul/li[last()]/a/@href'
@@ -50,9 +56,13 @@ class NulledBBSpider(SitemapSpider):
 
     thread_pagination_xpath = '//a[contains(@class, "pagination_previous")]/@href'
 
-    post_date_xpath = '//div[@class="flex-fill"]/span[@data-toggle="tooltip"]/text()'
+    post_date_xpath = '//div[@class="flex-fill"]/span[@data-toggle="tooltip"]/span/@title|' \
+                      '//div[@class="flex-fill"]/span[@data-toggle="tooltip"]/text()'
 
     thread_date_pattern = ""
+
+    post_datetime_format = "%d-%m-%Y, %I:%M %p"
+    thread_datetime_format = "%d-%m-%Y, %I:%M %p"
 
     use_proxy = "On"
 
@@ -193,7 +203,11 @@ class NulledBBSpider(SitemapSpider):
             thread_url = None
 
         try:
-            thread_lastmod_parsed = dparser.parse(thread_lastmod.strip())
+            if 'seconds ago' in thread_lastmod:
+                seconds = thread_lastmod.split(' ')[0]
+                thread_lastmod_parsed = datetime.datetime.now() - datetime.timedelta(seconds=-int(seconds))
+            else:
+                thread_lastmod_parsed = dparser.parse(thread_lastmod.strip(), dayfirst=True)
         except Exception:
             thread_lastmod_parsed = None
         return thread_url, thread_lastmod_parsed
@@ -236,7 +250,7 @@ class NulledBBSpider(SitemapSpider):
                     self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
 
                 if self.start_date:
-                    self.logger.info(
+                    self.logger.warning(
                         "Date not found in thread %s " % thread_url
                     )
                     continue
