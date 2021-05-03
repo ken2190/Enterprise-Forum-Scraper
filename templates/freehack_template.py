@@ -63,7 +63,7 @@ class FreeHackParser(BaseTemplate):
         except:
             print(f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})")
             date = dateparser.parse(date).timestamp()
-        if not date:
+        if date:
             curr_epoch = datetime.datetime.today().timestamp()
             if date > curr_epoch:
                 err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
