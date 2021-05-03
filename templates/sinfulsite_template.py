@@ -26,7 +26,7 @@ class SinfulSiteParser(BaseTemplate):
         self.post_text_xpath = './/div[contains(@class,"textcontent") or contains(@class,"post_body")]//descendant::text()[not(ancestor::div[@class="hidelock"])]'
         self.avatar_xpath = './/div[@class="author_avatar"]//img/@src'
         self.comment_block_xpath ='.//div[@class="time fullwidth"]/div[1]/a/text()'
-
+        self.date_pattern = '%Y-%m-%d, %H:%M:%S'
         # main function
         self.main()
 
