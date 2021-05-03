@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 import re
-# import locale
+import datetime
+import dateutil.parser as dparser
 
 from .base_template import BaseTemplate
 
@@ -47,12 +48,31 @@ class MfdParser(BaseTemplate):
 
         return sorted_files
 
-    def extract_comments(self, html_response, pagination):
-        comments = list()
-        comment_blocks = html_response.xpath(self.comments_xpath)
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date = date_block[0].strip() if date_block else None
+        result = ""
 
-        comment_blocks = comment_blocks[1:]\
-            if pagination == 1 else comment_blocks
+        # check if date is already a timestamp
+        try:
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+            result = str(date)
+        except Exception as err1:
+            try:
+                result = float(date)
+            except Exception as err2:
+                try:
+                    date = dparser.parse(date, dayfirst=True).timestamp()
+                    result = str(date)
+                except Exception as err3:
+                    pass
+
+        return result
+
+    def extract_comments(self, html_response, pagination):
+        comments = []
+        comment_blocks = html_response.xpath(self.comments_xpath)
+        comment_blocks = comment_blocks[1:] if pagination == 1 else comment_blocks
 
         for comment_block in comment_blocks:
             user = self.get_author(comment_block)
