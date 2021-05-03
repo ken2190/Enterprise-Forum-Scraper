@@ -20,7 +20,7 @@ class SinfulSiteParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//div[contains(@class,"anchor post")]'
         self.header_xpath = '//div[contains(@class,"anchor post")]'
-        self.date_xpath = './/div[@class="time fullwidth"]/text()[1]'
+        self.date_xpath = './/div[@class="time fullwidth"]/span[1]/@title'
         self.author_xpath = './/div[contains(@class,"authorbit")]/div[3]//text()'
         self.title_xpath = '//div[@class="marginmid"][1]/text()'
         self.post_text_xpath = './/div[contains(@class,"textcontent") or contains(@class,"post_body")]//descendant::text()[not(ancestor::div[@class="hidelock"])]'
