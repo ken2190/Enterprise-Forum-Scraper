@@ -8,6 +8,7 @@ import datetime
 
 from .base_template import BaseTemplate
 
+
 class CyberForumParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
@@ -56,7 +57,7 @@ class CyberForumParser(BaseTemplate):
 
         if not date:
             date_block = tag.xpath(self.date_xpath_2)
-            date = date_block[0].strip() if date_block else None
+            date = date_block[0].strip().strip('.') if date_block else None
 
         # check if date is already a timestamp
         try:
@@ -68,7 +69,7 @@ class CyberForumParser(BaseTemplate):
                 return date
             except:
                 try:
-                    date = dateparser.parse(date).timestamp()
+                    date = dparser.parse(date, dayfirst=True).timestamp()
                     return str(date)
                 except:
                     pass
