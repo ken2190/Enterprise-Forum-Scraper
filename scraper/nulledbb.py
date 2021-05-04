@@ -1,19 +1,15 @@
 import os
 import re
 
+from scrapy import Request
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-from scrapy import Request, Selector
 
-from datetime import datetime
-import dateparser
-import requests
-import lxml.html
 
 class NulledBBSpider(SitemapSpider):
-
     name = 'nulledbb_spider'
 
     # Url stuffs
@@ -30,14 +26,14 @@ class NulledBBSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-
     # Xpath stuffs
-    forum_xpath = '//section[contains(@class, "subforums")]//li[contains(@class, "mb-1")]/a/@href |'\
-            '//section[contains(@class, "forumdisplay-subforum")]//div[contains(@class, "forum-title")]/a/@href'
+    forum_xpath = '//section[contains(@class, "subforums")]//li[contains(@class, "mb-1")]/a/@href |' \
+                  '//section[contains(@class, "forumdisplay-subforum")]' \
+                  '//div[contains(@class, "forum-title")]/a/@href'
 
     thread_xpath = '//article[contains(@class, "thread")]'
     pagination_xpath = '//a[contains(@class, "pagination_next")]/@href'
-    thread_first_page_xpath = './/span[contains(@id, "tid_")]'\
+    thread_first_page_xpath = './/span[contains(@id, "tid_")]' \
                               '/a[contains(@href, "thread-")]/@href'
     last_page_xpath = '//div[contains(@class, "pagination")]//ul/li[last()]/a/@href'
 
@@ -48,8 +44,8 @@ class NulledBBSpider(SitemapSpider):
     thread_pagination_xpath = '//a[contains(@class, "pagination_previous")]/@href'
 
     post_date_xpath = '//div[@class="flex-fill"]/span[@data-toggle="tooltip"]/text()'
-    
-    use_proxy="On"
+
+    use_proxy = "On"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -126,7 +122,7 @@ class NulledBBSpider(SitemapSpider):
                 meta = thread_meta
             else:
                 meta = self.synchronize_meta(response)
-            meta["topic_id"] = topic_id
+            meta["topic_id"] = str(topic_id)
 
             yield Request(
                 url=thread_url,
@@ -172,7 +168,7 @@ class NulledBBSpider(SitemapSpider):
                 thread_last_page_url = temp_url
         else:
             thread_last_page_url = response.url
-        
+
         yield Request(
             url=thread_last_page_url,
             headers=self.headers,
@@ -223,15 +219,15 @@ class NulledBBSpider(SitemapSpider):
         if not self.useronly:
             current_page = self.get_thread_current_page(response)
             with open(
-                file=os.path.join(
-                    self.output_path,
-                    "%s-%s.html" % (
-                        topic_id,
-                        current_page
-                    )
-                ),
-                mode="w+",
-                encoding="utf-8"
+                    file=os.path.join(
+                        self.output_path,
+                        "%s-%s.html" % (
+                                topic_id,
+                                current_page
+                        )
+                    ),
+                    mode="w+",
+                    encoding="utf-8"
             ) as file:
                 file.write(response.text)
             self.logger.info(
@@ -258,12 +254,11 @@ class NulledBBSpider(SitemapSpider):
                     }
                 )
             )
-        
+
         yield from super().parse_avatars(response)
 
-class NulledBBScrapper(SiteMapScrapper):
 
+class NulledBBScrapper(SiteMapScrapper):
     spider_class = NulledBBSpider
     site_name = 'nulledbb.com'
     site_type = 'forum'
-
