@@ -230,6 +230,42 @@ class NulledBBSpider(SitemapSpider):
 
             # Parse topic id
             topic_id = self.get_topic_id(thread_url)
+            if not topic_id:
+                self.crawler.stats.inc_value("mainlist/detail_no_topic_id_count")
+                self.logger.warning(
+                    "Unable to find topic ID of the thread: %s",
+                    response.urljoin(thread_url)
+                )
+                continue
+
+            if thread_lastmod is None:
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("mainlist/detail_no_date_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
+
+                if self.start_date:
+                    self.logger.info(
+                        "Date not found in thread %s " % thread_url
+                    )
+                    continue
+            else:
+                lastmod_pool.append(thread_lastmod)
+
+            # If start date, check last mod
+            if self.start_date and thread_lastmod < self.start_date:
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("mainlist/detail_outdated_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
+
+                self.logger.info(
+                    "Thread %s last updated is %s before start date %s. Ignored." % (
+                        thread_url, thread_lastmod, self.start_date
+                    )
+                )
+                continue
+
 
             # Standardize thread url only if it is not complete url
             if 'http://' not in thread_url and 'https://' not in thread_url:
