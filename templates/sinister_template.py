@@ -1,4 +1,5 @@
 # -- coding: utf-8 --
+import datetime
 import re
 import dateparser
 
@@ -35,7 +36,7 @@ class SinisterParser(BaseTemplate):
 
         # check if date is already a timestamp
         try:
-            date = dateparser.parse(date).timestamp()
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
             return str(date)
         except:
             try:
@@ -43,7 +44,7 @@ class SinisterParser(BaseTemplate):
                 return date
             except:
                 try:
-                    date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+                    date = dateparser.parse(date).timestamp()
                     return str(date)
                 except:
                     pass

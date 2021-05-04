@@ -6,27 +6,28 @@ from scrapy.http import Request, FormRequest
 from datetime import datetime, timedelta
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
+
 class SinfulSiteSpider(SitemapSpider):
     name = 'sinfulsite_spider'
     base_url = "https://sinfulsite.com/"
 
     # Xpaths
     forum_xpath = '//div[@class="flex-grow"]//a[contains(@href, "Forum-")]/@href'
-    pagination_xpath = '//div[@class="pagination"]'\
+    pagination_xpath = '//div[@class="pagination"]' \
                        '/a[@class="next"]/@href'
     thread_xpath = '//div[@class="layer forumdisplay" and not(@style)]'
     thread_first_page_xpath = './/span[contains(@id,"tid_")]/a/@href'
-    thread_last_page_xpath = './/div[@class="description"]'\
-                             '//span[@class="smalltext"]'\
+    thread_last_page_xpath = './/div[@class="description"]' \
+                             '//span[@class="smalltext"]' \
                              '/a[last()]/@href'
-    thread_date_xpath = './/div[contains(@class,"latest")]'\
-                        '//span[@class="small"]/text()|'\
-                        './/div[contains(@class,"latest")]'\
+    thread_date_xpath = './/div[contains(@class,"latest")]' \
+                        '//span[@class="small"]/text()|' \
+                        './/div[contains(@class,"latest")]' \
                         '//span[@class="small"]/span/@title'
-    thread_pagination_xpath = '//div[@class="pagination"]'\
+    thread_pagination_xpath = '//div[@class="pagination"]' \
                               '//a[@class="previous"]/@href'
     thread_page_xpath = '//span[@class="current"]/text()'
-    post_date_xpath = '//div[@class="time fullwidth"]/span/@title|'\
+    post_date_xpath = '//div[@class="time fullwidth"]/span/@title|' \
                       '//div[@class="time fullwidth"]/text()[1]'
 
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
@@ -105,7 +106,6 @@ class SinfulSiteSpider(SitemapSpider):
 
 
 class SinfulSiteScrapper(SiteMapScrapper):
-
     spider_class = SinfulSiteSpider
     site_name = 'sinfulsite.com'
     site_type = 'forum'

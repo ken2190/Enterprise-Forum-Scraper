@@ -30,17 +30,12 @@ class ShadowCardersSpider(SitemapSpider):
     name = 'shadowcarders_spider'
 
     # Url stuffs
-    base_url = "https://shadowcarders.com/"
+    base_url = "https://shadowcarders.com"
     login_url = "https://shadowcarders.com/login/login"
 
     # Css stuffs
     login_form_css = "//form[@id='login']"
     forum_xpath = "//a[contains(@href, 'Forum-')]/@href"
-
-    name = 'shadowcarders_spider'
-
-    # Url stuffs
-    base_url = "https://shadowcarders.com"
 
     # Xpath stuffs
     forum_xpath = '//ol[@class="nodeList"]//h3[@class="nodeTitle"]/a/@href'
@@ -50,8 +45,8 @@ class ShadowCardersSpider(SitemapSpider):
     thread_xpath = '//li[contains(@id, "thread-")]'
     thread_first_page_xpath = './/h3[@class="title"]/a/@href'
     thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
-    thread_date_xpath = './/dd[@class="muted"]//abbr/@data-datestring|'\
-                        './/dd[@class="muted"]/a/span/@title'
+    thread_date_xpath = './/dl[@class="lastPostInfo"]//a[@class="dateTime"]//abbr/@data-time|' \
+                        './/dl[@class="lastPostInfo"]//a[@class="dateTime"]/span/@title'
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
     thread_pagination_xpath = '//nav/a[contains(text()," Prev")]/@href'
 
@@ -69,17 +64,13 @@ class ShadowCardersSpider(SitemapSpider):
         r".(\d+)/",
         re.IGNORECASE
     )
-    avatar_name_pattern = re.compile(
-        r".(\d+).",
-        re.IGNORECASE
-    )
     pagination_pattern = re.compile(
         r"page-(\d+)",
         re.IGNORECASE
     )
 
     # Other settings
-    sitemap_datetime_format = '%d %b %Y at %H:%M %p'
+    sitemap_datetime_format = "%b %d, %y"
     post_datetime_format = '%d %b %Y at %H:%M %p'
 
     # Regex stuffs
@@ -90,7 +81,6 @@ class ShadowCardersSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "On"
-    sitemap_datetime_format = "%b %d, %y"
     handle_httpstatus_list = [403]
 
     def __init__(self, *args, **kwargs):
@@ -99,8 +89,9 @@ class ShadowCardersSpider(SitemapSpider):
             "User-Agent": USER_AGENT
         }
 
-    def get_avatar_file(self, url):
-
+    def get_avatar_file(self, url=None):
+        if url is None:
+            return
         if "image/svg" in url:
             return
 
@@ -130,7 +121,7 @@ class ShadowCardersSpider(SitemapSpider):
 
         return dateparser.parse(post_date)
     
-    def start_requests(self):
+    def start_requests(self, **kwargs):
 
         cookies, ip = self.get_cloudflare_cookies(
             base_url=self.base_url,
@@ -174,20 +165,6 @@ class ShadowCardersSpider(SitemapSpider):
         # Check if login success
         print(browser.page_source.lower())
         return USER.lower() in browser.page_source.lower()
-
-    # def parse(self, response):
-    #     yield FormRequest.from_response(
-    #         response=response,
-    #         formid="login",
-    #         formdata={
-    #             "login": USER,
-    #             "password": PASS,
-    #         },
-    #         headers=self.headers,
-    #         dont_filter=True,
-    #         meta=self.synchronize_meta(response),
-    #         callback=self.parse_start,
-    #     )
 
     def parse_start(self, response):
 

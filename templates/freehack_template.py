@@ -27,10 +27,11 @@ class FreeHackParser(BaseTemplate):
         self.header_xpath = '//li[contains(@class,"postcontainer")]'
         self.date_pattern = '%d.%m.%Y, %H:%M'
         self.date_xpath = './/span[@class="date"]//text()'
-        self.author_xpath = './/a[contains(@class,"username")]//descendant::text()|'\
-            './/div[contains(@class,"username_container")]//descendant::text()'
+        self.author_xpath = './/a[contains(@class,"username")]//descendant::text()|' \
+                            './/div[contains(@class,"username_container")]//descendant::text()'
         self.title_xpath = '//span[contains(@class,"threadtitle")]//descendant::text()'
-        self.post_text_xpath = './/div[contains(@class,"postbody")]//div[@class="content"]//descendant::text()[not(ancestor::div[@class="quote_container"])]'
+        self.post_text_xpath = './/div[contains(@class,"postbody")]//div[@class="content"]' \
+                               '//descendant::text()[not(ancestor::div[@class="quote_container"])]'
         self.avatar_xpath = './/div[contains(@class,"userinfo")]//a[@class="postuseravatar"]//img/@src'
         self.comment_block_xpath = './/div[contains(@class,"posthead")]//span[@class="nodecontrols"]/a//text()'
 
@@ -59,14 +60,16 @@ class FreeHackParser(BaseTemplate):
 
         try:
             date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
-            return str(date)
         except:
-            try:
-                date = dateparser.parse(date).timestamp()
-                return str(date)
-            except:
-                pass
-
+            print(f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})")
+            date = dateparser.parse(date).timestamp()
+        if date:
+            curr_epoch = datetime.datetime.today().timestamp()
+            if date > curr_epoch:
+                err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
+                print(err_msg)
+                raise RuntimeError(err_msg)
+            return str(date)
         return ""
 
     def get_avatar(self, tag):

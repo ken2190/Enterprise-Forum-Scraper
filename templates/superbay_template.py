@@ -27,6 +27,7 @@ class SuperBayParser(BaseTemplate):
         self.avatar_xpath = './/div[@class="author_avatar"]//img/@src'
         self.avatar_ext = 'jpg'
         self.comment_block_xpath = './/div[@class="post_head"]//strong/a/text()'
+        self.date_pattern = "%b %d, %Y, %H:%M %p"
 
         # main function
         self.main()
