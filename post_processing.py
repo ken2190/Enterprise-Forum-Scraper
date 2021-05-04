@@ -182,8 +182,9 @@ def run(kwargs=None):
     # merge parsed files
     ##############################################
     print("Combining JSON files...")
-    combined_json_file = os.path.join(combo_folder, f"{site}-{date}.json")
+    combined_json_file = os.path.abspath(os.path.join(combo_folder, f"{site}-{date}.json"))
     cmd = f"find . -name \\*.json -exec cat {{}} + | jq -c . | sort -us -o {combined_json_file}"
+
     try:
         subprocess.run(cmd,
                        cwd=parse_dir,
