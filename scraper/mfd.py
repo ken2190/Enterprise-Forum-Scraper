@@ -23,7 +23,7 @@ class MfdSpider(SitemapSpider):
     thread_xpath = '//table[@class="mfd-table mfd-threads"]//tr[td]'
     thread_first_page_xpath = './/a[contains(@href,"forum/thread/?id=")]/@href'
     thread_last_page_xpath = './/a[contains(@href,"forum/thread/?id=")]/@href'
-    thread_date_xpath = './/td[@class="mfd-item-lastpost"]/span/text()'
+    thread_date_xpath = './/td[@class="mfd-item-lastpost"]/a/text()'
     pagination_xpath = '//div[@class="mfd-paginator"]'\
                        '/a[@class="mfd-paginator-selected"]'\
                        '/following-sibling::a[1]/@href'
