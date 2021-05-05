@@ -28,7 +28,7 @@ class BaseTemplate:
         self.comment_pattern = None
         self.encoding = None
         self.mode = 'rb'
-
+        self.offset_hours = 0
         self.comments_xpath = ''
         self.comment_block_xpath = ''
         self.author_xpath = ''
