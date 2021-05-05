@@ -59,13 +59,16 @@ class MfdParser(BaseTemplate):
         try:
             date = datetime.datetime.strptime(date, self.date_pattern)
         except Exception as err1:
+            print(f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})")
+
             try:
                 result = float(date)
             except Exception as err2:
                 try:
                     date = dparser.parse(date, dayfirst=True)
                 except Exception as err3:
-                    pass
+                    err_msg = f"ERROR: Parsing {date} date is failed. {err3}"
+                    raise ValueError(err_msg)
 
         if isinstance(date, datetime.datetime):
             if self.offset_hours:
