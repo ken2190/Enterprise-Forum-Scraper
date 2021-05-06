@@ -1,18 +1,18 @@
 import re
-import uuid
+from datetime import datetime
 
+import dateparser as dateparser
 from scrapy import Request, FormRequest
-from scrapy.exceptions import CloseSpider
 
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 LOGINS = [
-    {"USER":"bashman", "PASS":"Night#Bash011"},
-    {"USER":"WorldWideTech", "PASS":"XWWtTttTttT114"},
+    {"USER": "WorldWideTech", "PASS": "XWWtTttTttT114"},
 ]
 
 MIN_DELAY = 1
 MAX_DELAY = 3
+
 
 class XSSSpider(SitemapSpider):
     name = "xss_spider"
@@ -23,21 +23,21 @@ class XSSSpider(SitemapSpider):
 
     # Selectors
     login_form_xpath = "//form[@action='/login/login']"
-    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
+    forum_xpath = '//h3[@class="node-title"]/a/@href|' \
                   '//a[contains(@class,"subNodeLink--forum")]/@href'
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
-    thread_first_page_xpath = './/div[@class="structItem-title"]'\
+    thread_first_page_xpath = './/div[@class="structItem-title"]' \
                               '/a[contains(@href,"threads/")]/@href'
-    thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]' \
                              '/a[last()]/@href'
-    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]'\
-                        '/@datetime'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]' \
+                        '/@data-time'
     pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
-    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]' \
                               '/@href'
-    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]' \
                         '/a/text()'
-    post_date_xpath = '//div[contains(@class, "message-cell--main")]//a/time[@datetime]/@datetime'
+    post_date_xpath = '//div[contains(@class, "message-cell--main")]//a/time[@datetime]/@data-time'
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # captcha success
@@ -50,13 +50,11 @@ class XSSSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "VIP"
-    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
     # Login Failed Message
     login_failed_xpath = '//div[contains(@class, "blockMessage")]'
 
     def start_requests(self):
-
         yield Request(
             url=self.login_url,
             headers=self.headers,
@@ -101,9 +99,42 @@ class XSSSpider(SitemapSpider):
         # Parse generic avatar
         yield from super().parse_avatars(response)
 
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        try:
+            return datetime.fromtimestamp(float(thread_date))
+        except:
+            try:
+                return datetime.strptime(
+                    thread_date.strip(),
+                    self.post_datetime_format
+                )
+            except:
+                return dateparser.parse(thread_date).replace(tzinfo=None)
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        try:
+            return datetime.fromtimestamp(float(post_date))
+        except:
+            try:
+                return datetime.strptime(
+                    post_date.strip(),
+                    self.post_datetime_format
+                )
+            except:
+                return dateparser.parse(post_date).replace(tzinfo=None)
+
 
 class XSSScrapper(SiteMapScrapper):
-
     spider_class = XSSSpider
     site_name = 'xss.is'
     site_type = 'forum'
