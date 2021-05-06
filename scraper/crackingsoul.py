@@ -1,4 +1,8 @@
 import re
+import dateparser
+import dateutil.parser as dparser
+
+from datetime import datetime
 from scrapy import Request
 from scraper.base_scrapper import (
     SitemapSpider,
@@ -38,7 +42,7 @@ class CrackingSoulSpider(SitemapSpider):
     # Other settings
     use_proxy = "On"
     sitemap_datetime_format = '%d-%m-%Y'
-    post_datetime_format = '%d-%m-%Y'
+    post_datetime_format = '%d-%m-%Y, %H:%M %p'
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -59,6 +63,40 @@ class CrackingSoulSpider(SitemapSpider):
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response),
             )
+
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        try:
+            return datetime.strptime(
+                thread_date.strip(),
+                self.post_datetime_format
+            )
+        except:
+            try:
+                return dparser.parse(thread_date, dayfirst=True)
+            except:
+                return dateparser.parse(thread_date).replace(tzinfo=None)
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        try:
+            return datetime.strptime(
+                post_date.strip(),
+                self.post_datetime_format
+            )
+        except:
+            try:
+                return dparser.parse(thread_date, dayfirst=True)
+            except:
+                return dateparser.parse(post_date).replace(tzinfo=None)
 
     def parse_thread(self, response):
 

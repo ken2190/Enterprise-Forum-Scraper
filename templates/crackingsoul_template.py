@@ -1,10 +1,11 @@
 # -- coding: utf-8 --
 import re
-#import locale
+# import locale
 import dateparser
 import datetime
 
 from .base_template import BaseTemplate
+
 
 class CrackingSoulParser(BaseTemplate):
 
@@ -24,6 +25,8 @@ class CrackingSoulParser(BaseTemplate):
         self.avatar_xpath = './/div[@class="author_avatar"]/a/img/@src'
         self.author_xpath = './/div[contains(@class,"author_information")]//strong//text()'
 
+        self.offset_hours = -2
+
         # main function
         self.main()
 
@@ -35,19 +38,29 @@ class CrackingSoulParser(BaseTemplate):
             date_block = tag.xpath(self.date_xpath_2)
             date = date_block[0].strip() if date_block else None
 
+        result = ""
+
         # check if date is already a timestamp
         try:
-            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
-            return str(date)
-        except:
+            date = datetime.datetime.strptime(date, self.date_pattern)
+        except Exception as err1:
+            print(f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})")
+
             try:
-                date = float(date)
-                return date
+                result = float(date)
             except:
                 try:
-                    date = dateparser.parse(date).timestamp()
-                    return str(date)
+                    date = dparser.parse(date, dayfirst=True)
                 except:
-                    pass
+                    try:
+                        date = dateparser.parse(date)
+                    except Exception as err2:
+                        err_msg = f"ERROR: Parsing {date} date is failed. {err2}"
+                        raise ValueError(err_msg)
 
-        return ""
+        if isinstance(date, datetime.datetime):
+            if self.offset_hours:
+                date += datetime.timedelta(hours=self.offset_hours)
+            result = str(date.timestamp())
+
+        return result
