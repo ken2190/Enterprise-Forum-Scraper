@@ -1045,7 +1045,9 @@ class SitemapSpider(BypassCloudfareSpider):
         try:
             thread_lastmod = self.parse_thread_date(thread_lastmod)
             curr_date = datetime.today()
-            if thread_lastmod and  thread_lastmod > curr_date:
+            if thread_lastmod \
+                    and isinstance(thread_lastmod, datetime) \
+                    and thread_lastmod.timestamp() > curr_date.timestamp():
                 print("ERROR thread_lastmod date ({thread_lastmod}) is greater than current time ()")
         except Exception as err:
             thread_lastmod = None
