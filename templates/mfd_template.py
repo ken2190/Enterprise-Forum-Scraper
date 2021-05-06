@@ -31,6 +31,8 @@ class MfdParser(BaseTemplate):
         self.post_text_xpath = './/div[@class="mfd-quote-text"]//text()'
         self.avatar_xpath = './/div[@class="mfd-post-avatar"]//img/@src'
 
+        self.offset_hours = -3
+
         # main function
         self.main()
 
@@ -55,17 +57,23 @@ class MfdParser(BaseTemplate):
 
         # check if date is already a timestamp
         try:
-            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
-            result = str(date)
+            date = datetime.datetime.strptime(date, self.date_pattern)
         except Exception as err1:
+            print(f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})")
+
             try:
                 result = float(date)
             except Exception as err2:
                 try:
-                    date = dparser.parse(date, dayfirst=True).timestamp()
-                    result = str(date)
+                    date = dparser.parse(date, dayfirst=True)
                 except Exception as err3:
-                    pass
+                    err_msg = f"ERROR: Parsing {date} date is failed. {err3}"
+                    raise ValueError(err_msg)
+
+        if isinstance(date, datetime.datetime):
+            if self.offset_hours:
+                date += datetime.timedelta(hours=self.offset_hours)
+            result = str(date.timestamp())
 
         return result
 
