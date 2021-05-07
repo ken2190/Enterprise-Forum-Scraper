@@ -1,3 +1,4 @@
+from templates.eleaks_template import EleaksParser
 from templates.oday_template import OdayParser
 from templates.bmr_template import BMRParser
 from templates.evolution_template import EvolutionParser
@@ -446,5 +447,6 @@ PARSER_MAP = {
     'psylab': PsylabParser,
     'mctrades': MctradesParser,
     'russiancarder_ru': RussiancarderRuParser,
+    'eleaks': EleaksParser,
     'darkteam': DarkteamParser
 }

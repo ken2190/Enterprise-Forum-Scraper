@@ -188,6 +188,7 @@ from scraper.russiancarder_ru import RussiancarderRuScrapper
 from scraper.darkteam import DarkteamScrapper
 # from scraper.cardingteam_biz import CardingteamBizScrapper
 from scraper.kickass import KickAssScrapper
+from scraper.eleaks import EleaksScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -253,6 +254,7 @@ SCRAPER_MAP = {
     'digitalpoint': DigitalPointScrapper,
     'dnmavengers': DNMAvengersScrapper,
     'dsslegends': DssLegendsScrapper,
+    'eleaks': EleaksScrapper,
     'empire': EmpireScrapper,
     'enclave': EnclaveScrapper,
     'envoy': EnvoyScrapper,
