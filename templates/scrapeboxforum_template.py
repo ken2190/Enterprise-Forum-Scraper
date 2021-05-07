@@ -1,7 +1,8 @@
 # -- coding: utf-8 --
 import re
-# import locale
 import utils
+import datetime
+import dateparser
 
 from .base_template import BaseTemplate
 
@@ -22,7 +23,10 @@ class ScrapeBoxForumParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//div[@class="post "]'
         self.header_xpath = '//div[@class="post "]'
-        self.date_xpath = 'div//span[@class="post_date"]/text()'
+        self.date_xpath = 'div//span[@class="post_date"]//text()[' \
+                          'not(parent::span[@class="post_edit"]' \
+                          '|parent::span[@class="edited_post"]' \
+                          '|parent::a)]'
         self.date_pattern = "%m-%d-%Y, %I:%M %p"
         self.title_xpath = '//td[@class="thead"]/div/strong/text()'
         self.avatar_xpath = 'div//div[@class="author_avatar"]/a/img/@src'
@@ -112,3 +116,35 @@ class ScrapeBoxForumParser(BaseTemplate):
                 )
 
         return post_text.strip()
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date = ''.join(date_block).strip() if date_block else None
+
+        if not date:
+            return ""
+
+        # check if date is already a timestamp
+        try:
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+        except:
+            try:
+                date = float(date)
+            except:
+                msg = f"WARN: could not figure out date from: ({date}) " \
+                      f"using date pattern ({self.date_pattern}). So, try to parse" \
+                      f"using auto parsing library."
+                print(msg)
+                try:
+                    date = dateparser.parse(date).timestamp()
+                except Exception as err:
+                    err_msg = f"ERROR: Parsing {date} date is failed. {err}"
+                    raise ValueError(err_msg)
+
+        curr_epoch = datetime.datetime.today().timestamp()
+
+        if date > curr_epoch:
+            err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
+            print(err_msg)
+            raise RuntimeError(err_msg)
+        return str(date)

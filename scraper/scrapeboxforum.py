@@ -1,4 +1,5 @@
 import re
+import dateparser
 
 from datetime import datetime
 from scrapy import (
@@ -44,8 +45,8 @@ class ScrapeBoxForumSpider(SitemapSpider):
     )
 
     # Other settings
-    sitemap_datetime_format = "%m-%d-%Y"
-    post_datetime_format = "%m-%d-%Y"
+    sitemap_datetime_format = "%m-%d-%Y, %H:%M %p"
+    post_datetime_format = "%m-%d-%Y, %H:%M %p"
 
     use_proxy = 'On'
     
@@ -55,10 +56,19 @@ class ScrapeBoxForumSpider(SitemapSpider):
         :return: datetime => thread date as datetime converted from string,
                             using class sitemap_datetime_format
         """
-        return datetime.strptime(
-            thread_date.strip()[:10],
-            self.sitemap_datetime_format
-        )
+        date = None
+
+        try:
+            date = datetime.strptime(thread_date.strip(),
+                                     self.sitemap_datetime_format)
+        except:
+            try:
+                date = dateparser.parse(thread_date.strip())
+            except:
+                print(f'Failed to parse ({thread_date}) thread date, so skipping it...')
+                pass
+
+        return date
 
     def parse_post_date(self, post_date):
         """
@@ -66,10 +76,19 @@ class ScrapeBoxForumSpider(SitemapSpider):
         :return: datetime => post date as datetime converted from string,
                             using class post_datetime_format
         """
-        return datetime.strptime(
-            post_date.strip()[:10],
-            self.post_datetime_format
-        )
+        date = None
+
+        try:
+            date = datetime.strptime(post_date.strip(),
+                                     self.post_datetime_format)
+        except:
+            try:
+                date = dateparser.parse(post_date.strip())
+            except:
+                print(f'Failed to parse ({post_date}) post date, so skipping it...')
+                pass
+
+        return date
 
     def parse(self, response):
 
