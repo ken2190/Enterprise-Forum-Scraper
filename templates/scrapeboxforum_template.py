@@ -119,7 +119,7 @@ class ScrapeBoxForumParser(BaseTemplate):
 
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)
-        date = ''.join(date_block).strip() if date_block else None
+        date = ''.join(date_block).split('\n')[0].strip() if date_block else None
 
         if not date:
             return ""
