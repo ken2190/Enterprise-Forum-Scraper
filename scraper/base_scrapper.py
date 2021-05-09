@@ -2236,7 +2236,7 @@ class SitemapSpiderWithDelay(SitemapSpider):
             if self.DELAY_BETWEEN_FORUMS:
                 delay = yielded_forum * self.DELAY_BETWEEN_FORUMS
                 meta['request_delay'] = delay
-                self.logger.info(f"scheduled forum {forum_url} with delay {delay}")
+                self.logger.info(f"scheduled forum {forum} with delay {delay}")
 
             yield Request(
                 url=forum,
