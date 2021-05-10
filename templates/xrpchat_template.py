@@ -20,6 +20,7 @@ class XrpChatParser(BaseTemplate):
         self.post_text_xpath = './/div[contains(@class,"cPost_content")]/'\
                                'descendant::text()[not(ancestor::blockquote)]'
         self.avatar_xpath = 'aside//li[@class="cAuthorPane_photo"]/a/img/@src'
+        self.date_pattern = '%Y-%m-%dT%H:%M:%SZ'
         self.index = 1
 
         # main function
