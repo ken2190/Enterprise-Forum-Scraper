@@ -400,6 +400,18 @@ class SiteMapScrapper:
         return stats_dict
 
 
+class SiteMapScrapperWithDelay(SiteMapScrapper):
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "SCHEDULER": "extensions.custom_delay_scheduler.scheduler.Scheduler",
+                "SCHEDULER_DELAY_QUEUE": "extensions.custom_delay_scheduler.pqueues.ScrapyDelayedRequestsPriorityQueue"
+            }
+        )
+        return settings
+
+
 class FromDateScrapper(BaseScrapper, SiteMapScrapper):
     from_date_spider_class = None
     time_format = "%Y-%m-%d"
@@ -1048,7 +1060,7 @@ class SitemapSpider(BypassCloudfareSpider):
             if thread_lastmod \
                     and isinstance(thread_lastmod, datetime) \
                     and thread_lastmod.timestamp() > curr_date.timestamp():
-                print(f"ERROR thread_lastmod date ({thread_lastmod}) is greater than current time ({curr_date})")
+                self.logger.info(f"ERROR thread_lastmod date ({thread_lastmod}) is greater than current time ({curr_date})")
         except Exception as err:
             thread_lastmod = None
 
@@ -2186,6 +2198,441 @@ class SitemapSpider(BypassCloudfareSpider):
             )
 
             return bypass_cookies, ip
+
+
+class SitemapSpiderWithDelay(SitemapSpider):
+    # DELAYS in SECONDS
+    DELAY_BETWEEN_FORUMS = None  # defines the delay between scraping two different subforums. Only valid when scraping all forums.
+    DELAY_FOR_FORUM_NEXT_PAGE = None  # defines the delay before going to next page of a single subforum/unread page
+    DELAY_BETWEEN_THREADS = None  # defines the delay before opening the next thread for scraping within a single subforum/unread page.
+    DELAY_FOR_THREAD_NEXT_PAGE = None  # defines the delay between opening different thread pages.
+    DELAY_FOR_THREAD_PAGE_AVATARS = None  # defines the delay between scraping two avatars on a single thread page.
+
+    def parse_sitemap(self, response):
+        """
+        :param response: scrapy response => Level 1, forum sitemap
+        :return:
+        """
+
+        # Synchronize header user agent with cloudfare middleware
+        self.logger.info(
+            "Parsing Sitemap: %s" % response.url
+        )
+
+        self.synchronize_headers(response)
+
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load forum
+        all_forum = selector.xpath(self.forum_sitemap_xpath).extract()
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(all_forum))
+        yielded_forum = 0
+        for forum in all_forum:
+            yielded_forum += 1
+            meta = self.synchronize_meta(response)
+            if self.DELAY_BETWEEN_FORUMS:
+                delay = yielded_forum * self.DELAY_BETWEEN_FORUMS
+                meta['request_delay'] = delay
+                self.logger.info(f"scheduled forum {forum} with delay {delay}")
+
+            yield Request(
+                url=forum,
+                headers=self.headers,
+                callback=self.parse_sitemap_forum,
+                meta=meta
+            )
+
+    def parse_sitemap_forum(self, response):
+        """
+        :param response: scrapy response => Level 2, thread sitemap
+        :return:
+        """
+
+        # Synchronize header user agent with cloudfare middleware
+        self.synchronize_headers(response)
+        self.logger.info(
+            "Parsing sitemap forum: %s" % response.url
+        )
+        # Load selector
+        selector = Selector(text=response.text)
+
+        # Load thread
+        all_threads = selector.xpath(self.thread_sitemap_xpath).extract()
+        yielded_thread = 0
+        for thread in all_threads:
+            selector = Selector(text=thread)
+
+            # Load thread url and update
+            thread_url = self.parse_thread_url(
+                selector.xpath(self.thread_url_xpath).extract_first()
+            )
+            if not thread_url:
+                return
+            thread_date = self.parse_thread_date(
+                selector.xpath(self.thread_lastmod_xpath).extract_first()
+            )
+
+            if self.start_date > thread_date.replace(tzinfo=None):
+                self.logger.info(
+                    "Thread %s ignored because last update in the past. Detail: %s" % (
+                        thread_url,
+                        thread_date
+                    )
+                )
+                return
+
+            # Get topic id
+            topic_id = self.get_topic_id(thread_url)
+            if not topic_id:
+                return
+
+            # Check file exist
+            if self.check_existing_file_date(
+                    topic_id=topic_id,
+                    thread_date=thread_date,
+                    thread_url=thread_url
+            ):
+                return
+
+            # Add request_delay to meta
+            yielded_thread += 1
+            meta = self.synchronize_meta(response, default_meta={"topic_id": topic_id})
+            if self.DELAY_BETWEEN_THREADS:
+                delay = yielded_thread * self.DELAY_BETWEEN_THREADS
+                meta['request_delay'] = delay
+                self.logger.info(f"scheduled thread {thread_url} with delay {delay}")
+            # Load request arguments
+            request_arguments = {
+                "url": thread_url,
+                "headers": self.headers,
+                "callback": self.parse_thread,
+                "meta": meta
+            }
+            if self.cookies:
+                request_arguments["cookies"] = self.cookies
+
+            yield Request(**request_arguments)
+
+    def parse(self, response):
+        # Synchronize cloudfare user agent
+        self.synchronize_headers(response)
+
+        # Check if login success
+        self.check_if_logged_in(response)
+
+        all_forums = set(response.xpath(self.forum_xpath).extract())
+        self.forums.update(all_forums)
+
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(self.forums))
+        yielded_forum = 0
+        for forum_url in all_forums:
+            yielded_forum += 1
+            meta = self.synchronize_meta(response)
+            if self.DELAY_BETWEEN_FORUMS:
+                delay = yielded_forum * self.DELAY_BETWEEN_FORUMS
+                meta['request_delay'] = delay
+                self.logger.info(f"scheduled forum {forum_url} with delay {delay}")
+            yield response.follow(
+                url=forum_url,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=meta
+            )
+
+    def parse_forum(self, response, thread_meta={}, is_first_page=True):
+
+        # Synchronize header user agent with cloudfare middleware
+        self.logger.info(
+            "Parsing forum: %s" % response.url
+        )
+        self.synchronize_headers(response)
+        self.logger.info(
+            "Next_page_url: %s" % response.url
+        )
+
+        yielded_thread = 0
+        threads = response.xpath(self.thread_xpath)
+        lastmod_pool = []
+        for thread in threads:
+            thread_url, thread_lastmod = self.extract_thread_stats(thread)
+            if not thread_url:
+                self.crawler.stats.inc_value("mainlist/detail_no_url_count")
+                self.logger.warning(
+                    "Unable to find thread URL on the forum: %s",
+                    response.url
+                )
+                continue
+
+            # Parse topic id
+            topic_id = self.get_topic_id(thread_url)
+            if not topic_id:
+                self.crawler.stats.inc_value("mainlist/detail_no_topic_id_count")
+                self.logger.warning(
+                    "Unable to find topic ID of the thread: %s",
+                    response.urljoin(thread_url)
+                )
+                continue
+
+            if thread_lastmod is None:
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("mainlist/detail_no_date_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
+
+                if self.start_date:
+                    self.logger.info(
+                        "Date not found in thread %s " % thread_url
+                    )
+                    continue
+            else:
+                lastmod_pool.append(thread_lastmod)
+
+            # If start date, check last mod
+            if self.start_date and thread_lastmod < self.start_date:
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("mainlist/detail_outdated_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
+
+                self.logger.info(
+                    "Thread %s last updated is %s before start date %s. Ignored." % (
+                        thread_url, thread_lastmod, self.start_date
+                    )
+                )
+                continue
+
+            # Standardize thread url only if it is not complete url
+            if 'http://' not in thread_url and 'https://' not in thread_url:
+                temp_url = thread_url
+                if self.base_url not in thread_url:
+                    temp_url = response.urljoin(thread_url)
+
+                if self.base_url not in temp_url:
+                    temp_url = self.base_url + thread_url
+
+                thread_url = temp_url
+
+            # Check file exist
+            if self.check_existing_file_date(
+                    topic_id=topic_id,
+                    thread_date=thread_lastmod,
+                    thread_url=thread_url
+            ):
+                # update stats
+                if topic_id not in self.topics:
+                    self.topics.add(topic_id)
+                    self.crawler.stats.inc_value("mainlist/detail_already_scraped_count")
+                    self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
+
+                continue
+
+            # Check thread meta
+            if thread_meta:
+                meta = thread_meta
+            else:
+                meta = self.synchronize_meta(response)
+
+            # Update topic id
+            meta["topic_id"] = topic_id
+
+            # Add `request delay` to request
+            yielded_thread += 1
+            if self.DELAY_BETWEEN_THREADS:
+                delay = yielded_thread * self.DELAY_BETWEEN_THREADS
+                meta['request_delay'] = delay
+                self.logger.info(f"scheduled thread {thread_url} with delay {delay}")
+
+            # update stats
+            self.topics.add(topic_id)
+            self.crawler.stats.set_value("mainlist/detail_count", len(self.topics))
+
+            yield Request(
+                url=thread_url,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta=meta
+            )
+
+        # get next page
+        next_page = self.get_forum_next_page(response)
+        if is_first_page and next_page:
+            self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
+
+        # Pagination
+        if not lastmod_pool:
+            self.crawler.stats.inc_value("mainlist/mainlist_no_detail_count")
+            self.logger.info(
+                "Forum without thread, exit: %s",
+                response.url
+            )
+            return
+
+        # update stats
+        if is_first_page:
+            self.crawler.stats.inc_value("mainlist/mainlist_processed_count")
+
+        if self.start_date and self.start_date > max(lastmod_pool):
+            self.logger.info(
+                "Found no more thread update later than %s in forum %s. Exit." % (
+                    self.start_date,
+                    response.url
+                )
+            )
+            return
+        if next_page:
+            meta = self.synchronize_meta(response)
+            if self.DELAY_FOR_FORUM_NEXT_PAGE:
+                meta['request_delay'] = self.DELAY_FOR_FORUM_NEXT_PAGE
+                self.logger.info(f"scheduled forum next page {next_page} with delay {self.DELAY_FOR_FORUM_NEXT_PAGE}")
+            yield Request(
+                url=next_page,
+                headers=self.headers,
+                callback=self.parse_forum,
+                meta=meta,
+                cb_kwargs={'is_first_page': False}
+            )
+
+
+    def parse_thread(self, response):
+        self.logger.info(
+            "Parsing thread: %s" % response.url
+        )
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Get topic id
+        topic_id = response.meta.get("topic_id")
+
+        # Load all post date
+        post_dates = [
+            self.parse_post_date(post_date) for post_date in
+            response.xpath(self.post_date_xpath).extract()
+            if post_date.strip() and self.parse_post_date(post_date)
+        ]
+
+        if self.start_date and not post_dates:
+            if topic_id not in self.topics_scraped:
+                self.crawler.stats.inc_value("mainlist/detail_no_messages_count")
+
+            self.logger.info('No dates found in thread: %s', response.url)
+            return
+
+        # get next page
+        next_page = self.get_thread_next_page(response)
+        if next_page:
+            self.crawler.stats.inc_value("mainlist/detail_next_page_count")
+
+        # check if the thread contains new messages
+        if self.start_date and max(post_dates) < self.start_date:
+            if topic_id not in self.topics_scraped:
+                self.crawler.stats.inc_value("mainlist/detail_outdated_count")
+
+            self.logger.info(
+                "No more post to update."
+            )
+            return
+
+        # Save thread content
+        if not self.useronly:
+            current_page = self.get_thread_current_page(response)
+            with open(
+                    file=os.path.join(
+                        self.output_path,
+                        "%s-%s.html" % (
+                                topic_id,
+                                current_page
+                        )
+                    ),
+                    mode="w+",
+                    encoding="utf-8"
+            ) as file:
+                file.write(response.text)
+            self.logger.info(
+                f'{topic_id}-{current_page} done..!'
+            )
+            self.topic_pages_saved += 1
+
+            # Update stats
+            self.topics_scraped.add(topic_id)
+            self.crawler.stats.set_value(
+                "mainlist/detail_saved_count",
+                len(self.topics_scraped)
+            )
+
+            # Kill task if kill count met
+            if self.kill and self.topic_pages_saved >= self.kill:
+                raise CloseSpider(reason="Kill count met, shut down.")
+
+        # Thread pagination
+        if next_page:
+            meta = self.synchronize_meta(response, default_meta={"topic_id": topic_id})
+            if self.DELAY_FOR_THREAD_NEXT_PAGE:
+                meta['request_delay'] = self.DELAY_FOR_THREAD_NEXT_PAGE
+                self.logger.info(f"scheduled thread next page {next_page} with delay {self.DELAY_FOR_THREAD_NEXT_PAGE}")
+            yield Request(
+                url=next_page,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta=meta
+            )
+
+    def parse_avatars(self, response):
+
+        # Synchronize headers user agent with cloudfare middleware
+        self.synchronize_headers(response)
+
+        # Save avatar content
+        all_avatars = set(response.xpath(self.avatar_xpath).extract())
+        yielded_avatar = 0
+        for avatar_url in all_avatars:
+            # Standardize avatar url only if its not complete url
+            slash = False
+            if 'http://' not in avatar_url and 'https://' not in avatar_url:
+                temp_url = avatar_url
+
+                if avatar_url.startswith('//'):
+                    slash = True
+                    temp_url = avatar_url[2:]
+
+                if not avatar_url.lower().startswith("http"):
+                    temp_url = response.urljoin(avatar_url)
+
+                if self.base_url not in temp_url and not slash:
+                    temp_url = self.base_url + avatar_url
+
+                avatar_url = temp_url
+
+            if 'image/svg' in avatar_url:
+                continue
+
+            file_name = self.get_avatar_file(avatar_url)
+
+            if file_name is None:
+                continue
+
+            if os.path.exists(file_name):
+                continue
+
+            # update stats
+            self.avatars.add(avatar_url)
+            self.crawler.stats.set_value("mainlist/avatar_count", len(self.avatars))
+
+            # Add `request delay` to request
+            yielded_avatar += 1
+            meta = self.synchronize_meta(response, default_meta={"file_name": file_name})
+            if self.DELAY_FOR_THREAD_PAGE_AVATARS:
+                meta['request_delay'] = yielded_avatar * self.DELAY_FOR_THREAD_PAGE_AVATARS
+            yield Request(
+                url=avatar_url,
+                headers=self.headers,
+                callback=self.parse_avatar,
+                meta=meta
+            )
 
 
 class MarketPlaceSpider(SitemapSpider):
