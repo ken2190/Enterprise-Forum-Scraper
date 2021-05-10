@@ -4,7 +4,7 @@ from datetime import datetime
 import dateparser as dateparser
 from scrapy import Request, FormRequest
 
-from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
+from scraper.base_scrapper import SitemapSpiderWithDelay, SiteMapScrapperWithDelay
 
 LOGINS = [
     {"USER": "WorldWideTech", "PASS": "XWWtTttTttT114"},
@@ -14,8 +14,15 @@ MIN_DELAY = 1
 MAX_DELAY = 3
 
 
-class XSSSpider(SitemapSpider):
+class XSSSpider(SitemapSpiderWithDelay):
     name = "xss_spider"
+
+    # DELAYS in SECONDS
+    DELAY_BETWEEN_FORUMS = 600
+    DELAY_FOR_FORUM_NEXT_PAGE = 200
+    DELAY_BETWEEN_THREADS = 20
+    DELAY_FOR_THREAD_NEXT_PAGE = 5
+    DELAY_FOR_THREAD_PAGE_AVATARS = 1
 
     # Url stuffs
     base_url = "https://xss.is"
@@ -134,7 +141,7 @@ class XSSSpider(SitemapSpider):
                 return dateparser.parse(post_date).replace(tzinfo=None)
 
 
-class XSSScrapper(SiteMapScrapper):
+class XSSScrapper(SiteMapScrapperWithDelay):
     spider_class = XSSSpider
     site_name = 'xss.is'
     site_type = 'forum'
