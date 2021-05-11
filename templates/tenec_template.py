@@ -1,6 +1,8 @@
 # -- coding: utf-8 --
 import re
 import utils
+import datetime
+import dateparser
 
 from .base_template import BaseTemplate
 
@@ -26,6 +28,9 @@ class TenecParser(BaseTemplate):
         self.avatar_xpath = '//div[contains(@class, "cAuthorPane_photo")]/a/img/@src'
         self.avatar_ext = ''
         self.index = 0
+
+        self.date_pattern = '%Y-%m-%dT%H:%M:%S'
+
         # main function
         self.main()
 
@@ -96,3 +101,35 @@ class TenecParser(BaseTemplate):
             # comment_id = ''.join(comment_block).strip().split('#')[-1]
 
         return comment_id.replace(',', '').replace('.', '')
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date = date_block[0].strip().strip('Z') if date_block else None
+
+        if not date:
+            return ""
+
+        # check if date is already a timestamp
+        try:
+            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
+        except:
+            try:
+                date = float(date)
+            except:
+                msg = f"WARN: could not figure out date from: ({date}) " \
+                      f"using date pattern ({self.date_pattern}). So, try to parse" \
+                      f"using auto parsing library."
+                print(msg)
+                try:
+                    date = dateparser.parse(date).timestamp()
+                except Exception as err:
+                    err_msg = f"ERROR: Parsing {date} date is failed. {err}"
+                    raise ValueError(err_msg)
+
+        curr_epoch = datetime.datetime.today().timestamp()
+
+        if date > curr_epoch:
+            err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
+            print(err_msg)
+            raise RuntimeError(err_msg)
+        return str(date)

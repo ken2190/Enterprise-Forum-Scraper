@@ -60,6 +60,46 @@ class TenecSpider(SitemapSpider):
             callback=self.parse
         )
 
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        date = None
+
+        try:
+            date = datetime.strptime(thread_date.strip().strip('Z'),
+                                     self.sitemap_datetime_format)
+        except:
+            try:
+                date = dateparser.parse(thread_date.strip())
+            except:
+                print(f'Failed to parse ({thread_date}) thread date, so skipping it...')
+                pass
+
+        return date
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        date = None
+
+        try:
+            date = datetime.strptime(post_date.strip().strip('Z'),
+                                     self.post_datetime_format)
+        except:
+            try:
+                date = dateparser.parse(post_date.strip())
+            except:
+                print(f'Failed to parse ({post_date}) post date, so skipping it...')
+                pass
+
+        return date
+
     def parse(self, response):
 
         # Synchronize user agent for cloudfare middleware
