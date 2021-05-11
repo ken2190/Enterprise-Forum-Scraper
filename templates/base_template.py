@@ -183,12 +183,12 @@ class BaseTemplate:
                             print("Found 50 Files with missing header or date")
                             break
 
-                if final:   
-                    utils.write_comments(file_pointer, comments, output_file, self.start_date)   
-                    comments = []   
-                    output_file = None  
-                    final = None    
-                    if getattr(self, 'index', None):    
+                if final:
+                    utils.write_comments(file_pointer, comments, output_file, self.start_date)
+                    comments = []
+                    output_file = None
+                    final = None
+                    if getattr(self, 'index', None):
                         self.index = 1
 
             except BrokenPage as ex:
@@ -333,6 +333,38 @@ class BaseTemplate:
 
         return post_text.strip()
 
+    def parse_date_string(self, date_string):
+        if not date_string:
+            return ""
+
+        try:
+            date = datetime.datetime.strptime(date_string, self.date_pattern)
+        except:
+            try:  # check if date is already a timestamp
+                date = float(date_string)
+            except:
+                err_msg = f"WARN: could not figure out date from: ({date_string}) using date pattern ({self.date_pattern})"
+                print(err_msg)
+                try:
+                    date = dateparser.parse(date_string)
+                except Exception as err3:
+                    err_msg = f"ERROR: Parsing {date_string} date is failed. {err3}"
+                    raise ValueError(err_msg)
+
+        if isinstance(date, datetime.datetime):
+            if self.offset_hours:
+                date += datetime.timedelta(hours=self.offset_hours)
+            date = date.timestamp()
+
+        if date:
+            curr_epoch = datetime.datetime.today().timestamp()
+            if date > curr_epoch:
+                err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
+                print(err_msg)
+                raise ValueError(err_msg)
+            return str(date)
+        return ""
+
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)
         date = date_block[0].strip() if date_block else None
@@ -459,15 +491,15 @@ class MarketPlaceTemplate(BaseTemplate):
             'vendor': vendor,
             'description': list_description
         }
-        
+
         return data
-    
+
     def get_list_name(self, html_response):
         list_name = html_response.xpath(self.list_name_xpath)
         list_name = "".join([t.strip() for t in list_name if t.strip()])
 
         return list_name
-    
+
     def get_vendor(self, html_response):
         vendor = html_response.xpath(self.vendor_xpath)
         if vendor:
