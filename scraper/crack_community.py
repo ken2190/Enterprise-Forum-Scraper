@@ -8,8 +8,8 @@ from scraper.base_scrapper import (
 
 from scrapy import Request
 
-class CrackCommunitySpider(SitemapSpider):
 
+class CrackCommunitySpider(SitemapSpider):
     name = "crackcommunity_spider"
 
     # Url stuffs
@@ -17,36 +17,33 @@ class CrackCommunitySpider(SitemapSpider):
 
     # Xpath stuffs
     # Forum xpath #
-    forum_xpath = "//*[@class=\"nodeTitle\"]/a[contains(@href,\"forums\")]/@href"
-    pagination_xpath = "//div[@class=\"PageNav\"]/nav/a[@class=\"text\"]/@href"
+    forum_xpath = '//*[@class="nodeTitle"]/a[contains(@href,"forums")]/@href'
+    pagination_xpath = '//div[@class="PageNav"]/nav/a[@class="text"]/@href'
 
     # Thread xpath #
-    thread_xpath = "//li[contains(@id,\"thread\")]"
-    thread_first_page_xpath = ".//h3[@class=\"title\"]/a/@href"
-    thread_last_page_xpath = ".//span[@class=\"itemPageNav\"]/a[last()]/@href"
+    thread_xpath = '//li[contains(@id,"thread")]'
+    thread_first_page_xpath = './/h3[@class="title"]/a/@href'
+    thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
 
-    thread_date_xpath = './/dl[@class="lastPostInfo"]'\
-                        '//a[@class="dateTime"]/abbr/@data-datestring|'\
-                        './/dl[@class="lastPostInfo"]'\
+    thread_date_xpath = './/dl[@class="lastPostInfo"]' \
+                        '//a[@class="dateTime"]/abbr/@data-time|' \
+                        './/dl[@class="lastPostInfo"]' \
                         '//a[@class="dateTime"]/span/text()'
-    thread_pagination_xpath = "//div[@class=\"PageNav\"]/nav/a[contains(text(),\"Prev\")]/@href"
-    thread_page_xpath = "//div[@class=\"PageNav\"]/nav/a[@class=\"currentPage \"]/text()"
+    thread_pagination_xpath = '//div[@class="PageNav"]/nav/a[contains(text(),"Prev")]/@href'
+    thread_page_xpath = '//div[@class="PageNav"]/nav/a[@class="currentPage "]/text()'
 
     # Post xpath #
-    post_date_xpath = "//a[@class=\"datePermalink\"]/*/@title"
-    avatar_xpath = "//div[@class=\"avatarHolder\"]/a/img/@src"
+    post_date_xpath = './/a[@class="datePermalink"]//abbr/@data-time|' \
+                      './/a[@class="datePermalink"]//span/@title'
+    avatar_xpath = '//div[@class="avatarHolder"]/a/img/@src'
 
     # captcha stuffs
-    ip_check_xpath = "//text()[contains(.,\"Your IP\")]"
+    ip_check_xpath = '//text()[contains(.,"Your IP")]'
     use_proxy = 'On'
-    
+
     # Regex pattern
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
-        re.IGNORECASE
-    )
-    topic_pattern = re.compile(
-        r"threads/.*\.(\d+)/",
         re.IGNORECASE
     )
     pagination_pattern = re.compile(
@@ -135,7 +132,6 @@ class CrackCommunitySpider(SitemapSpider):
 
 
 class CrackCommunityScrapper(SiteMapScrapper):
-
     spider_class = CrackCommunitySpider
     site_name = 'crackcommunity.com'
     site_type = 'forum'
