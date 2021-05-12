@@ -1,10 +1,12 @@
 import re
 import uuid
+from datetime import datetime
 
+import dateparser as dateparser
 from scrapy import (
-    Request,
-    FormRequest
+    Request
 )
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -18,9 +20,9 @@ class MctradesSpider(SitemapSpider):
     base_url = "https://mctrades.org/"
 
     # Xpath stuffs
-    forum_xpath = '//div[@class="nodeText"]'\
-                  '//h3[@class="nodeTitle"]/a/@href|'\
-                  '//ol[@class="subForumList"]'\
+    forum_xpath = '//div[@class="nodeText"]' \
+                  '//h3[@class="nodeTitle"]/a/@href|' \
+                  '//ol[@class="subForumList"]' \
                   '//a[contains(@href, "forums/")]/@href'
 
     pagination_xpath = '//a[@class="text" and text()="Next >"]/@href'
@@ -28,17 +30,17 @@ class MctradesSpider(SitemapSpider):
     thread_xpath = '//ol[@class="discussionListItems"]/li'
     thread_first_page_xpath = './/h3[@class="title"]/a[contains(@href, "threads")]/@href'
     thread_last_page_xpath = './/span[@class="itemPageNav"]/a[last()]/@href'
-    thread_date_xpath = './/dl[@class="lastPostInfo"]//span[@class="DateTime"]'\
-                        '/@title|.//dl[@class="lastPostInfo"]'\
-                        '//abbr[@class="DateTime"]/@data-datestring'
+    thread_date_xpath = './/dl[@class="lastPostInfo"]' \
+                        '//abbr[@class="DateTime"]/@data-time|' \
+                        './/dl[@class="lastPostInfo"]' \
+                        '//span[@class="DateTime"]/@title'
     thread_page_xpath = '//nav/a[contains(@class,"currentPage")]/text()'
     thread_pagination_xpath = '//nav/a[contains(text(),"< Prev")]/@href'
 
-    post_date_xpath = '//div[@class="messageDetails"]'\
-                      '//span[@class="DateTime"]/text()|'\
-                      '//div[@class="messageDetails"]'\
-                      '//abbr[@class="DateTime"]/@data-datestring'
-
+    post_date_xpath = '//div[@class="messageDetails"]' \
+                      '//abbr[@class="DateTime"]/@data-time|' \
+                      '//div[@class="messageDetails"]' \
+                      '//span[@class="DateTime"]/@title'
     avatar_xpath = '//a[@data-avatarhtml="true"]/img/@src'
 
     # Regex stuffs
@@ -48,10 +50,10 @@ class MctradesSpider(SitemapSpider):
     )
     # Other settings
     use_proxy = "On"
-    sitemap_datetime_format = '%d/%m/%y, %I:%M %p'
-    post_datetime_format = '%d/%m/%y, %I:%M %p'
+    sitemap_datetime_format = '%b %d, %Y at %I:%M %p'
+    post_datetime_format = '%b %d, %Y at %I:%M %p'
 
-    def start_requests(self):
+    def start_requests(self, cookiejar=None, ip=None):
         # Temporary action to start spider
         yield Request(
             url=self.temp_url,
@@ -108,7 +110,7 @@ class MctradesSpider(SitemapSpider):
 
         # Parse generic forum
         yield from super().parse_forum(response)
-        
+
     def parse_thread(self, response):
 
         # Parse generic thread
@@ -117,9 +119,37 @@ class MctradesSpider(SitemapSpider):
         # Parse generic avatar
         yield from super().parse_avatars(response)
 
+    def parse_thread_date(self, thread_date):
+        try:  # check if datetime is a float
+            date = datetime.fromtimestamp(float(thread_date))
+        except:
+            try:
+                date = datetime.strptime(
+                    thread_date.strip(),
+                    self.post_datetime_format
+                )
+            except:
+                date = dateparser.parse(thread_date)
+        if date:
+            return date.replace(tzinfo=None)
+
+    def parse_post_date(self, post_date):
+        try:  # check if datetime is a float
+            date = datetime.fromtimestamp(float(post_date))
+        except:
+            try:
+                date = datetime.strptime(
+                    post_date.strip(),
+                    self.post_datetime_format
+                )
+            except:
+                date = dateparser.parse(post_date)
+        if date:
+            return date.replace(tzinfo=None)
+
+
 
 class MctradesScrapper(SiteMapScrapper):
-
     spider_class = MctradesSpider
     site_name = 'mctrades.org'
     site_type = 'forum'
