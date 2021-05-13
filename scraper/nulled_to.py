@@ -1,22 +1,16 @@
 import os
 import re
-import traceback
+import uuid
 
-from datetime import (
-    datetime,
-    timedelta
-)
-
-import dateparser
 from scrapy import (
-    Request,
-    FormRequest,
-    Selector
+    Request
 )
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
+
 
 class NulledSpider(SitemapSpider):
     name = 'nulled_spider'
@@ -68,12 +62,34 @@ class NulledSpider(SitemapSpider):
             }
         )
 
-    def start_requests(self):
-        # Proceed for banlist
+    def start_requests(self, cookiejar=None, ip=None):
+        # Bypassing cloudflare
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
-            callback=self.parse_start,
+            meta=meta,
+            cookies=cookies,
+            callback=self.parse_start
         )
 
     def parse_start(self, response):
