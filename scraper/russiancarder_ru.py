@@ -29,10 +29,10 @@ class RussiancarderRuSpider(SitemapSpider):
     thread_xpath = '//div[contains(@class, "structItem--thread")]'
     thread_first_page_xpath = './/div[@class="structItem-title"]/a[last()]/@href'
     thread_last_page_xpath = './/span[@class="structItem-pageJump"]/a[last()]/@href'
-    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]/@datetime'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]/@data-time'
     thread_page_xpath = '//nav//li[contains(@class,"pageNav-page--current")]/a/text()'
     thread_pagination_xpath = '//nav//a[contains(text(),"Prev")]/@href'
-    post_date_xpath = '//article//time/@title'
+    post_date_xpath = '//article//time/@data-time'
     avatar_xpath = '//article//a[contains(@class, "avatar")]/img/@src'
 
     # Regex stuffs
