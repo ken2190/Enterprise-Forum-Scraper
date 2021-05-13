@@ -50,7 +50,7 @@ from unicaps.exceptions import (
 )
 from unicaps.proxy import ProxyServer
 
-from helheim import helheim
+from helheim import helheim, isChallenge
 from middlewares.utils import IpHandler
 
 # Vip Proxy
@@ -546,9 +546,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             super_proxy = PROXY
 
         def injection(session, response):
-            if session.is_New_IUAM_Challenge(response) \
-            or session.is_New_Captcha_Challenge(response) \
-            or session.is_BFM_Challenge(response):
+            if isChallenge(response):
                 print(f"INFO: helheim injection used for ({self.name}).")
                 return helheim('52455eed-754b-4220-a070-c913698954b2', session, response)
             else:
