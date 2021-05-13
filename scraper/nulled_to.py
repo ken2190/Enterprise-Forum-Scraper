@@ -47,7 +47,7 @@ class NulledSpider(SitemapSpider):
 
     # Other settings
     sitemap_datetime_format = "%d %b, %Y"
-    post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    post_datetime_format = "%Y-%m-%dT%H:%M:%S+00:00"
 
     use_proxy = "On"
 
@@ -121,7 +121,6 @@ class NulledSpider(SitemapSpider):
 
         # Parse generic thread response
         yield from super().parse_thread(response)
-
 
     def parse_avatars(self, response):
 

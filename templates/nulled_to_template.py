@@ -28,6 +28,7 @@ class NulledToParser(BaseTemplate):
             r".*/profile/photo-(\d+\.\w+)\?.*",
             re.IGNORECASE
         )
+        self.date_pattern = "%Y-%m-%dT%H:%M:%S+00:00"
 
         # main function
         self.main()
