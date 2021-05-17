@@ -23,14 +23,13 @@ class CrackedToSpider(SitemapSpider):
 
     # Css stuffs
     login_form_xpath = "//form[@action='member.php']"
-    forum_xpath = "//a[contains(@href, 'Forum-Feedback-Suggestions')]/@href"
+    forum_xpath = "//a[starts-with(@href, 'Forum-')]/@href"
 
     # Xpath stuffs
     pagination_xpath = "//a[@class='pagination_next']/@href"
     thread_xpath = "//table[@id='topiclist']//tr[contains(@class, 'inline_row')]"
     thread_first_page_xpath = ".//span[contains(@id,'tid_')]/a[contains(@href,'Thread-')]/@href"
-
-    thread_last_page_xpath = './/span/span[@class="smalltext"]/a[contains(@href, "Thread-")][last()]/@href'
+    thread_last_page_xpath = './/a[text()="Last Post"]/@href'
 
     thread_date_xpath = ".//span[contains(@class,'lastpost')]/a/span/@title|"\
                         ".//span[contains(@class,'lastpost')]/a/text()|"\
