@@ -1,12 +1,10 @@
 import os
-import sys
 import re
+import sys
 import uuid
-import dateutil.parser as dparser
+
 from scrapy.http import Request
-from scrapy.crawler import CrawlerProcess
-from datetime import datetime
-from scrapy import Selector
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -14,8 +12,8 @@ from scraper.base_scrapper import (
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'
 
-class RaidForumsSpider(SitemapSpider):
 
+class RaidForumsSpider(SitemapSpider):
     name = 'raidforums_spider'
 
     # Url stuffs
@@ -35,30 +33,29 @@ class RaidForumsSpider(SitemapSpider):
         re.IGNORECASE
     )
 
-
     # Xpath stuffs
-    forum_sitemap_xpath = "//sitemap[loc[contains(text(),\"sitemap-threads.xml\")]]/loc/text()"
-    thread_sitemap_xpath = "//url[loc[contains(text(),\"/Thread-\")] and lastmod]"
+    forum_sitemap_xpath = '//sitemap[loc[contains(text(),"sitemap-threads.xml")]]/loc/text()'
+    thread_sitemap_xpath = '//url[loc[contains(text(),"/Thread-")] and lastmod]'
     thread_url_xpath = '//loc[not(contains(text(), "?page="))]/text()'
     thread_lastmod_xpath = "//lastmod/text()"
 
-    forum_xpath = "//td[contains(@class,\"trow\")]/a[@class=\"forums__forum-name\"]/@href"
-    thread_xpath = "//table[contains(@class,\"forum-display__thread-list\")]/" \
-                   "tr[td[contains(@class,\"forumdisplay\")] and " \
-                   "contains(@class,\"forum-display__thread\")]"
-    thread_date_xpath = ".//span[contains(@class,\"smalltext\")]/text()[contains(.,\"at\")]|" \
-                        ".//span[contains(@class,\"smalltext\")]/span[@title]/@title"
-    thread_first_page_xpath = ".//span[@class=\" subject_new\" and contains(@id,\"tid\")]/a/@href"
-    thread_last_page_xpath = ".//span[@class=\"smalltext\"]/text()[contains(.,\")\")]/preceding-sibling::a[1]/@href"
-    pagination_xpath = "//a[@class=\"pagination_next\"]/@href"
+    forum_xpath = '//td[contains(@class,"trow")]/a[@class="forums__forum-name"]/@href'
+    thread_xpath = '//table[contains(@class,"forum-display__thread-list")]/' \
+                   'tr[td[contains(@class,"forumdisplay")] and ' \
+                   'contains(@class,"forum-display__thread")]'
+    thread_date_xpath = './/span[contains(@class,"smalltext")]/text()[contains(.,"at")]|' \
+                        './/span[contains(@class,"smalltext")]/span[@title]/@title'
+    thread_first_page_xpath = './/span[@class=" subject_new" and contains(@id,"tid")]/a/@href'
+    thread_last_page_xpath = './/span[@class="smalltext"]/text()[contains(.,")")]/preceding-sibling::a[1]/@href'
+    pagination_xpath = '//a[@class="pagination_next"]/@href'
     thread_pagination_xpath = '//section[@id="thread-navigation"]//a[@class="pagination_previous"]/@href'
-    thread_page_xpath = "//span[@class=\"pagination_current\"]/text()"
-    post_date_xpath = "//span[@class=\"post_date\"]/text()[contains(.,\"at\")]|" \
-                      "//span[@class=\"post_date\"]/span[@title]/@title"
-    avatar_xpath = "//div[@class=\"post__user\"]/a/img/@src"
+    thread_page_xpath = '//span[@class="pagination_current"]/text()'
+    post_date_xpath = '//span[@class="post_date"]/text()[contains(.,"at")]|' \
+                      '//span[@class="post_date"]/span[@title]/@title'
+    avatar_xpath = '//div[@class="post__user"]/a/img/@src'
 
     use_proxy = 'On'
-    
+
     # Other settings
     sitemap_datetime_format = "%B %d, %Y at %I:%M %p"
     post_datetime_format = "%B %d, %Y at %I:%M %p"
@@ -70,7 +67,7 @@ class RaidForumsSpider(SitemapSpider):
                 "User-Agent": USER_AGENT
             }
         )
-    
+
     def start_requests(self):
         # Temporary action to start spider
         yield Request(
@@ -184,7 +181,7 @@ class RaidForumsSpider(SitemapSpider):
     def parse_user_history(self, response):
         user_id = response.meta['user_id']
 
-        file_name = '{}/{}-history.html'.format(self.user_path, user_id)        
+        file_name = '{}/{}-history.html'.format(self.user_path, user_id)
         with open(file_name, 'wb') as f:
             f.write(response.text.encode('utf-8'))
             print(f"History for user {user_id} done..!")
@@ -246,10 +243,19 @@ class RaidForumsSpider(SitemapSpider):
 
 
 class RaidForumsScrapper(SiteMapScrapper):
-
     spider_class = RaidForumsSpider
     site_name = 'raidforums.com'
     site_type = 'forum'
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "RETRY_HTTP_CODES": [403, 429, 500],
+            }
+        )
+        return settings
+
 
 if __name__ == '__main__':
     print("Success!")
