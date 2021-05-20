@@ -6,6 +6,7 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 USERNAME = 'kylelopz'
 PASSWORD = 'Password123'
+PROXY = 'http://127.0.0.1:8118'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 
@@ -48,8 +49,22 @@ class HeliumSpider(SitemapSpider):
         yield Request(
             url=self.login_url,
             headers=self.headers,
-            callback=self.start_login
+            callback=self.start_login,
+            meta={
+                'proxy': PROXY
+            }
         )
+
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
+
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
+
+        return meta
 
     def start_login(self, response):
         """
@@ -124,7 +139,8 @@ class HeliumSpider(SitemapSpider):
             yield Request(
                 url=response.urljoin(topic_url),
                 headers=self.headers,
-                callback=self.parse_thread
+                callback=self.parse_thread,
+                meta=self.synchronize_meta(response)
             )
 
         # get next page
