@@ -189,6 +189,7 @@ from scraper.darkteam import DarkteamScrapper
 # from scraper.cardingteam_biz import CardingteamBizScrapper
 from scraper.kickass import KickAssScrapper
 from scraper.eleaks import EleaksScrapper
+from scraper.helium import HeliumScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -273,6 +274,7 @@ SCRAPER_MAP = {
     'hackthebox': HackTheBoxScrapper,
     'hackthissite': HackThisSiteScrapper,
     'hashkiller': HashKillerScrapper,
+    'helium': HeliumScrapper,
     'hoxforum': HoxForumScrapper,
     'hydra': HydraScrapper,
     'ifud': IfudScrapper,
