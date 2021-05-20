@@ -546,16 +546,20 @@ class CloudflareV2BypassMiddleware(object):
         is_second_cloudfare_phrase_present = "jschl_answer" in response.text
         is_third_cloudfare_phrase_present = "Ray ID" in response.text
         is_fourth_cloudfare_phrase_present = "cf.challenge.js" in response.text
+        is_fifth_cloudflare_phrase_present = "error code: 1020" in response.text
         is_first_recaptcha_phrase_present = "Why do I have to complete a CAPTCHA" in response.text
         is_second_recaptcha_phrase_present = "cf_chl_captcha_tk" in response.text
         cloudfare_challenge_present = (
-                is_cloudflare_server_header_present
-                or is_first_cloudfare_phrase_present
-                or is_second_cloudfare_phrase_present
-                or is_third_cloudfare_phrase_present
-                or is_fourth_cloudfare_phrase_present
-                or is_first_recaptcha_phrase_present
-                or is_second_recaptcha_phrase_present
+                is_cloudflare_server_header_present and
+                (
+                    is_first_cloudfare_phrase_present
+                    or is_second_cloudfare_phrase_present
+                    or is_third_cloudfare_phrase_present
+                    or is_fourth_cloudfare_phrase_present
+                    or is_fifth_cloudflare_phrase_present
+                    or is_first_recaptcha_phrase_present
+                    or is_second_recaptcha_phrase_present
+                )
         )
         return cloudfare_challenge_present
 
