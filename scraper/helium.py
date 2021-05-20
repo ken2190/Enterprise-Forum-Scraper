@@ -35,10 +35,10 @@ class HeliumSpider(SitemapSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.count_dir = f'{self.output_path}/count'
+        self.master_list_dir = kwargs.get('master_list_path')
 
-        if not os.path.exists(self.count_dir):
-            os.mkdir(self.count_dir)
+        if not os.path.exists(self.master_list_dir):
+            os.mkdir(self.master_list_dir)
         self.headers.update({'User-Agent': USER_AGENT})
 
     def start_requests(self):
@@ -107,7 +107,7 @@ class HeliumSpider(SitemapSpider):
         :param post_ids: a list of Post IDs.
         """
         post_ids = [i.strip() for i in post_ids]
-        topic_txt_file = f'{self.count_dir}/{topic_id}.txt'
+        topic_txt_file = f'{self.master_list_dir}/{topic_id}.txt'
 
         if not os.path.exists(topic_txt_file):
             # This means the topic is completely new.

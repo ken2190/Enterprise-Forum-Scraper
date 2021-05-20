@@ -70,10 +70,14 @@ class Scraper:
             print(help_message)
             return
 
+        master_list_folder = self.kwargs.get('master_list_path')
+
         # ------------make folder if not exist -----------------
         if template != 'shadownet':
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
+            if not os.path.exists(master_list_folder):
+                os.makedirs(master_list_folder)
 
         stats = None
         scraper_obj = scraper(self.kwargs)
