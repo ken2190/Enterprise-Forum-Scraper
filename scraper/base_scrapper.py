@@ -288,6 +288,7 @@ class SiteMapScrapper:
     def __init__(self, kwargs):
         self.output_path = kwargs.get("output")
         self.avatar_path = kwargs.get("avartar_path")
+        self.master_list_path = kwargs.get("master_list_path")
         self.useronly = kwargs.get("useronly")
         self.start_date = kwargs.get("start_date")
         self.end_date = kwargs.get("end_date")
@@ -347,6 +348,7 @@ class SiteMapScrapper:
             "output_path": getattr(self, "output_path", None),
             "useronly": getattr(self, "useronly", None),
             "avatar_path": getattr(self, "avatar_path", None),
+            "master_list_path": getattr(self, "master_list_path", None),
             "start_date": getattr(self, "start_date", None),
             "end_date": getattr(self, "end_date", None),
             "user_path": getattr(self, "user_path", None),

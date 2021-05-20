@@ -15,7 +15,8 @@ from settings import (
     DV_BASE_URL,
     OUTPUT_DIR,
     PARSE_DIR,
-    AVATAR_DIR
+    AVATAR_DIR,
+    MASTER_LIST_DIR
 )
 
 headers = {
@@ -81,6 +82,10 @@ def process_scraper(scraper):
 
     # the output dirs for the scraper and parser
     avartar_output_dir = os.path.join(AVATAR_DIR, subfolder)
+
+    # the master_list dir for saving post ids in txt files
+    master_list_dir = os.path.join(MASTER_LIST_DIR, subfolder)
+
     if scraper['template'] == 'shadownet':
         scraper_output_dir = os.path.join(OUTPUT_DIR, template, subfolder)
         parse_output_dir = os.path.join(PARSE_DIR, template, subfolder)
@@ -101,6 +106,7 @@ def process_scraper(scraper):
             'template': template,
             'output': scraper_output_dir,
             'avartar_path': avartar_output_dir,
+            'master_list_path': master_list_dir,
             'sitename': sitename
         }
 

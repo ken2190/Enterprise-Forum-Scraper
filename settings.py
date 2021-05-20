@@ -5,6 +5,7 @@ load_dotenv()
 DV_BASE_URL = os.getenv('DV_BASE_URL') or 'https://api.dataviper.io'
 API_TOKEN = os.getenv('API_TOKEN')
 OUTPUT_DIR = os.getenv('OUTPUT_DIR') or 'output'
+MASTER_LIST_DIR = os.getenv('MASTER_LIST_DIR') or 'master-list'
 PARSE_DIR = os.getenv('PARSE_DIR') or 'parse'
 COMBO_DIR = os.getenv('COMBO_DIR') or 'combo'
 AVATAR_DIR = os.getenv('AVATAR_DIR') or 'avartar'
