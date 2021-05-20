@@ -375,9 +375,17 @@ class SiteMapScrapper:
 
     def do_scrape(self):
 
+        crawler_settings = self.load_settings()
+
+        if getattr(self.spider_class, 'use_cloudflare_v2_bypass', None):
+            crawler_settings.update(
+                {
+                    "DOWNLOADER_CLIENT_TLS_CIPHERS": 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA:AES256-SHA:DES-CBC3-SHA'
+                }
+            )
         # Load process
         process = CrawlerProcess(
-            self.load_settings()
+            crawler_settings
         )
 
         # Load crawler
@@ -443,6 +451,7 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
 
 class BypassCloudfareSpider(scrapy.Spider):
     use_proxy = "On"
+    use_cloudflare_v2_bypass = None
     proxy = None
     download_delay = 0.3
     download_thread = 10
@@ -484,6 +493,12 @@ class BypassCloudfareSpider(scrapy.Spider):
                     {
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
                         # "middlewares.middlewares.BypassCloudfareMiddleware": 200
+                    }
+                )
+            if cls.use_cloudflare_v2_bypass:
+                downloader_middlewares.update(
+                    {
+                        "middlewares.middlewares.CloudflareV2BypassMiddleware": 200
                     }
                 )
             # else:
