@@ -1,15 +1,12 @@
-import re
 import os
-import uuid
+import re
+from datetime import datetime
 
-from datetime import datetime, timedelta
 import dateparser
-
 from scrapy import (
-    Request,
-    FormRequest,
-    Selector
+    Request
 )
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -17,29 +14,26 @@ from scraper.base_scrapper import (
 
 
 class StormFrontSpider(SitemapSpider):
-
     name = "stormfront"
 
     # Url stuffs
     base_url = "https://www.stormfront.org/forum"
 
     # Xpath stuffs
-
-    # Forum xpath #
-    forum_xpath = '//a[contains(@href, "/forum/f")]/@href'
+    forum_xpath = '//td[starts-with(@id,"f")]//a[contains(@href, "/forum/f")]/@href'
     thread_xpath = '//tr[td[contains(@id, "td_threadtitle_")]]'
-    thread_first_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
+    thread_first_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div' \
                               '/a[contains(@href, "/forum/t")]/@href'
-    thread_last_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div'\
-                             '/span/a[contains(@href, "/forum/t")]'\
+    thread_last_page_xpath = './/td[contains(@id, "td_threadtitle_")]/div' \
+                             '/span/a[contains(@href, "/forum/t")]' \
                              '[last()]/@href'
     thread_date_xpath = './/span[@class="time"]/preceding-sibling::text()'
 
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
     thread_page_xpath = '//div[@class="pagenav"]//span/strong/text()'
-    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]'\
-                      '/a[contains(@name,"post")]'\
+    post_date_xpath = '//table[contains(@id, "post")]//td[@class="thead"][1]' \
+                      '/a[contains(@name,"post")]' \
                       '/following-sibling::text()[1]'
     avatar_xpath = '//a[contains(@href, "member.php?") and img/@src]'
 
@@ -54,23 +48,24 @@ class StormFrontSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "VIP"
+    use_cloudflare_v2_bypass = True
     cloudfare_delay = 10
     handle_httpstatus_list = [503]
     post_datetime_format = '%m-%d-%Y, %I:%M %p'
+    thread_datetime_format = '%m-%d-%Y'
     sitemap_datetime_format = '%m-%d-%Y'
 
     def parse_thread_date(self, thread_date):
-        thread_date = thread_date.strip()
         if not thread_date:
             return
-        return dateparser.parse(thread_date)
-
-    def parse_post_date(self, post_date):
-        post_date = post_date.strip()
-        if not post_date:
-            return
-        return dateparser.parse(post_date)
+        try:
+            return datetime.strptime(
+                thread_date.strip(),
+                self.thread_datetime_format
+            )
+        except:
+            return dateparser.parse(thread_date).replace(tzinfo=None)
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -143,7 +138,6 @@ class StormFrontSpider(SitemapSpider):
 
 
 class StormFrontScrapper(SiteMapScrapper):
-
     spider_class = StormFrontSpider
     site_name = 'stormfront.org'
     site_type = 'forum'
