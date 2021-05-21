@@ -6,6 +6,7 @@ from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 USERNAME = 'kylelopz'
 PASSWORD = 'Password123'
+PROXY = 'http://127.0.0.1:8118'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
 
 
@@ -34,10 +35,10 @@ class HeliumSpider(SitemapSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.count_dir = f'{self.output_path}/count'
+        self.master_list_dir = kwargs.get('master_list_path')
 
-        if not os.path.exists(self.count_dir):
-            os.mkdir(self.count_dir)
+        if not os.path.exists(self.master_list_dir):
+            os.mkdir(self.master_list_dir)
         self.headers.update({'User-Agent': USER_AGENT})
 
     def start_requests(self):
@@ -48,8 +49,22 @@ class HeliumSpider(SitemapSpider):
         yield Request(
             url=self.login_url,
             headers=self.headers,
-            callback=self.start_login
+            callback=self.start_login,
+            meta={
+                'proxy': PROXY
+            }
         )
+
+    def synchronize_meta(self, response, default_meta={}):
+        meta = {
+            key: response.meta.get(key) for key in ["cookiejar", "ip"]
+            if response.meta.get(key)
+        }
+
+        meta.update(default_meta)
+        meta.update({'proxy': PROXY})
+
+        return meta
 
     def start_login(self, response):
         """
@@ -92,7 +107,7 @@ class HeliumSpider(SitemapSpider):
         :param post_ids: a list of Post IDs.
         """
         post_ids = [i.strip() for i in post_ids]
-        topic_txt_file = f'{self.count_dir}/{topic_id}.txt'
+        topic_txt_file = f'{self.master_list_dir}/{topic_id}.txt'
 
         if not os.path.exists(topic_txt_file):
             # This means the topic is completely new.
@@ -124,7 +139,8 @@ class HeliumSpider(SitemapSpider):
             yield Request(
                 url=response.urljoin(topic_url),
                 headers=self.headers,
-                callback=self.parse_thread
+                callback=self.parse_thread,
+                meta=self.synchronize_meta(response)
             )
 
         # get next page

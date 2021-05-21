@@ -1,6 +1,7 @@
 import logging
 import os
 from scraper import SCRAPER_MAP
+from settings import MASTER_LIST_DIR
 from helpers.stats import get_error, get_warnings
 
 UPDATE_DB_PATH = '/Users/PathakUmesh/forums.db'
@@ -32,7 +33,6 @@ class Scraper:
                 "- -o/--output: output folder"
             )
             return
-
         if self.kwargs.get('list'):
             self.print_list_template()
             return
@@ -70,10 +70,15 @@ class Scraper:
             print(help_message)
             return
 
+        master_list_folder = self.kwargs.get('master_list_path',
+                                             f'{MASTER_LIST_DIR}/{template}/')
+
         # ------------make folder if not exist -----------------
         if template != 'shadownet':
             if not os.path.exists(output_folder):
                 os.makedirs(output_folder)
+            if not os.path.exists(master_list_folder):
+                os.makedirs(master_list_folder)
 
         stats = None
         scraper_obj = scraper(self.kwargs)

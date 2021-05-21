@@ -17,6 +17,8 @@ IMPORT_DIR=/data/processing/import/
 ARCHIVE_DIR=/data/processing/offsite/2020/
 OFFSITE_DEST=b2:/ViperStorage/forums/2020/
 
+# Directory where to save all txt files containing post IDs for non-date sites.
+MASTER_LIST_DIR=/data/processing/master-lists/
 
 IMPORT_DIR=/data/processing/import/
 
