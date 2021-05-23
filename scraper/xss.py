@@ -7,7 +7,7 @@ from scrapy import Request, FormRequest
 from scraper.base_scrapper import SitemapSpiderWithDelay, SiteMapScrapperWithDelay
 
 LOGINS = [
-    {"USER": "WorldWideTech", "PASS": "XWWtTttTttT114"},
+    {"USER": "WorldWideTech", "PASS": "XWWtTttTttT115"},
 ]
 
 MIN_DELAY = 1
