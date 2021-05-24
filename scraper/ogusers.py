@@ -68,7 +68,8 @@ class OgUsersSpider(SitemapSpider):
     bypass_success_xpath = '//a[@class="guestnav" and text()="Login"]'
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "VIP"
+    use_cloudflare_v2_bypass = True
     sitemap_datetime_format = "%m-%d-%Y"
     handle_httpstatus_list = [403]
     get_cookies_retry = 10
