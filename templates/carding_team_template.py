@@ -17,7 +17,7 @@ class CardingTeamParser(BaseTemplate):
         self.comments_xpath = '//div[@class="newposts"]'
         self.header_xpath = '//div[@class="newposts"]'
         self.author_xpath = './/strong/span[@class="largetext"]/descendant::text()'
-        self.title_xpath = '//td[@class="thead"]/div/strong/text()'
+        self.title_xpath = '//div/table//td[@class="thead"]/div/strong/text()'
         self.post_text_xpath = './/div[contains(@class, "post_body")]/descendant::text()[not(ancestor::blockquote)]'
         self.comment_block_xpath = './/div[@class="float_right"]/strong/a/text()'
         self.avatar_xpath = './/div[@class="author_avatar"]/a/img/@src'
