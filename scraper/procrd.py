@@ -1,25 +1,17 @@
 import re
-import uuid
 
-from datetime import (
-    datetime,
-    timedelta
-)
-from scrapy import (
-    Request,
-    FormRequest
-)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
+
 
 class ProcrdSpider(SitemapSpider):
 
     name = "procrd"
 
     # Url stuffs
-    base_url = "https://procrd.li/"
+    base_url = "https://procrd.biz"
 
     # Xpath stuffs
     forum_xpath = '//a[re:test(@href, "/forums/[a-zA-Z0-9-]+\.\d+/?$")]/@href'
@@ -29,13 +21,13 @@ class ProcrdSpider(SitemapSpider):
     thread_first_page_xpath = ('.//div[@class="structItem-title"]'
                                '/a[contains(@href, "/threads/")]/@href')
     thread_last_page_xpath = '(.//span[@class="structItem-pageJump"]/a)[last()]/@href'
-    thread_date_xpath = './/div[contains(@class, "structItem-cell--latest")]/a/time/@datetime'
+    thread_date_xpath = './/div[contains(@class, "structItem-cell--latest")]/a/time/@data-time'
 
     thread_page_xpath = '//li[contains(@class,"pageNav-page--current")]/a/text()'
     thread_pagination_xpath = ('//li[contains(@class,"pageNav-page--current")]'
                                '/preceding-sibling::li[1]/a/@href')
 
-    post_date_xpath = '//div[contains(@class, "message-attribution-main")]/a/time/@datetime'
+    post_date_xpath = '//div[contains(@class, "message-attribution-main")]/a/time/@data-time'
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
     use_proxy = 'On'
     
