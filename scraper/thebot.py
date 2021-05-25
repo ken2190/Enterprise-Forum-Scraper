@@ -1,23 +1,21 @@
-import os
 import json
 import re
-
-from urllib.parse import urlencode
-from lxml.html import fromstring
-
+import uuid
 from datetime import (
-    datetime,
-    timedelta
+    datetime
 )
+from urllib.parse import urlencode
+
+from lxml.html import fromstring
 from scrapy import (
     Request,
     FormRequest
 )
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-
 
 USER = "vrx9@protonmail.com"
 PASS = "Night#Bot000"
@@ -49,11 +47,6 @@ class TheBotSpider(SitemapSpider):
     # Login Failed Message
     login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
 
-    # Regex stuffs
-    topic_pattern = re.compile(
-        r"threads/.*\.(\d+)/",
-        re.IGNORECASE
-    )
     avatar_name_pattern = re.compile(
         r".*/(\S+\.\w+)",
         re.IGNORECASE
@@ -64,7 +57,8 @@ class TheBotSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "VIP"
+    use_cloudflare_v2_bypass = True
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
 
@@ -102,9 +96,32 @@ class TheBotSpider(SitemapSpider):
         )
 
     def start_requests(self):
+        # Temporary action to start spider
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
+            meta=meta,
+            cookies=cookies,
             callback=self.get_token
         )
 
@@ -204,5 +221,11 @@ class TheBotScrapper(SiteMapScrapper):
     site_name = 'thebot.cc'
     site_type = 'forum'
 
-if __name__ == "__main__":
-    pass
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                'RETRY_HTTP_CODES': [403, 406, 429, 500]
+            }
+        )
+        return settings
