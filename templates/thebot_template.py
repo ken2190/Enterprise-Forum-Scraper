@@ -1,8 +1,8 @@
-# -- coding: utf-8 --
 import re
 import utils
 
 from .base_template import BaseTemplate
+
 
 class TheBOTParser(BaseTemplate):
 
