@@ -1,6 +1,5 @@
-# -- coding: utf-8 --
+import datetime
 import re
-# import locale
 
 from .base_template import BaseTemplate
 
@@ -26,12 +25,13 @@ class DarkMoneyParser(BaseTemplate):
 
         self.date_xpath = 'table//td[1][@class="thead"]/a/following-sibling::text()'
 
-        self.date_pattern = '%d.%m.%Y, %H:%M'
+        self.date_pattern = '%d-%m-%Y, %H:%M'
         self.title_xpath = 'table//tr[@valign="top"]/td[@class="alt1" and @id]/div[@class="smallfont"]/strong//text()'        
         self.avatar_xpath = './/td[1]//a[contains(@rel, "nofollow") and img]/img/@src'
         self.avatar_ext = 'jpg'
         self.mode = 'r+'
-
+        self.date_pattern = '%d-%m-%Y, %H:%M'
+        self.offset_hours = -3
         self.main()
 
     def get_author(self, tag):
@@ -55,6 +55,19 @@ class DarkMoneyParser(BaseTemplate):
 
         return author
 
+    @staticmethod
+    def construct_date_string(date_block):
+        date_string = date_block[0].strip() if date_block else None
+        if 'Yesterday' in date_string:
+            date = datetime.date.today() - datetime.timedelta(days=1)
+            date_string = date_string.replace('Yesterday', date.strftime('%d-%m-%Y'))
+        elif 'Today' in date_string:
+            date = datetime.date.today()
+            date_string = date_string.replace('Today', date.strftime('%d-%m-%Y'))
+        return date_string
 
-
-
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date_string = self.construct_date_string(date_block)
+        date = self.parse_date_string(date_string)
+        return date
