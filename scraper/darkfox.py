@@ -1,18 +1,17 @@
+import base64
 import os
 import re
-import uuid
-import base64
-
-from urllib.parse import unquote
 
 from scrapy import (
     Request,
     FormRequest
 )
+from datetime import datetime
 from scraper.base_scrapper import (
     MarketPlaceSpider,
     SiteMapScrapper
 )
+
 MIN_DELAY = 2
 MAX_DELAY = 3
 DAILY_LIMIT = 10000
@@ -23,7 +22,6 @@ PROXY = 'http://127.0.0.1:8118'
 
 
 class DarkFoxSpider(MarketPlaceSpider):
-
     name = "darkfox_spider"
 
     # Url stuffs
@@ -55,11 +53,14 @@ class DarkFoxSpider(MarketPlaceSpider):
         r".*page=(\d+)",
         re.IGNORECASE
     )
-
     use_proxy = "Tor"
+    retry_count = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.master_list_path = kwargs.get('master_list_path')
+        if not os.path.exists(self.master_list_path):
+            os.mkdir(self.master_list_path)
         self.headers.update(
             {
                 "User-Agent": USER_AGENT
@@ -112,7 +113,6 @@ class DarkFoxSpider(MarketPlaceSpider):
             next_page_url = self.base_url + next_page_url
         return next_page_url
 
-
     def parse_captcha_1(self, response, next_callback=None):
 
         # Synchronize user agent for cloudfare middleware
@@ -124,16 +124,31 @@ class DarkFoxSpider(MarketPlaceSpider):
         # Load cookies
         cookies = response.request.headers.get("Cookie")
         if not cookies:
-            yield from self.start_requests()
+            self.retry_count += 1
+            if self.retry_count <= 5:
+                yield from self.start_requests()
+                self.logger.info(
+                    f"Retry #{self.retry_count} to load main page."
+                )
             return
 
         # Load captcha url
         captcha_url = response.xpath(
-                self.captcha_url_xpath_1).extract_first()
+            self.captcha_url_xpath_1).extract_first()
+        if not captcha_url:
+            self.logger.info(
+                "Captcha url not found."
+            )
+            return
         captcha = self.solve_captcha(
             captcha_url,
             response
         )
+        if not captcha:
+            self.logger.info(
+                "Did not get a captcha solution from solve_captcha."
+            )
+            return
         captcha = captcha.lower()
         self.logger.info(
             "Captcha has been solved: %s" % captcha
@@ -166,7 +181,7 @@ class DarkFoxSpider(MarketPlaceSpider):
         cookies = response.request.headers.get("Cookie")
         # Load captcha url
         captcha_url = response.xpath(
-                self.captcha_url_xpath_2).extract_first()
+            self.captcha_url_xpath_2).extract_first()
         captcha = self.solve_captcha(
             captcha_url,
             response
@@ -197,11 +212,11 @@ class DarkFoxSpider(MarketPlaceSpider):
 
         # Check if bypass captcha failed
         self.check_if_captcha_failed(response, self.captcha_failed_xpath_2)
-        
+
         captcha_1 = response.xpath(self.captcha_url_xpath_1).extract()
         if captcha_1:
             yield from self.parse_captcha_1(
-                response, 
+                response,
                 self.parse_start
             )
 
@@ -214,14 +229,14 @@ class DarkFoxSpider(MarketPlaceSpider):
         captcha_1 = response.xpath(self.captcha_url_xpath_1).extract()
         if captcha_1:
             yield from self.parse_captcha_1(
-                response, 
+                response,
                 self.parse_products
             )
-            
+
         self.logger.info('next_page_url: {}'.format(response.url))
         products = response.xpath(self.product_url_xpath).extract()
-        
-        self.crawler.stats.set_value("mainlist/detail_count", len(products))
+
+        self.crawler.stats.inc_value("mainlist/detail_count", len(products))
 
         for product_url in products:
             product_url = self.get_product_url(product_url)
@@ -234,6 +249,12 @@ class DarkFoxSpider(MarketPlaceSpider):
                 continue
 
             file_id = self.get_file_id(product_url)
+            product_txt_file = f'{self.master_list_path}/{file_id}.txt'
+            if os.path.exists(product_txt_file):
+                self.crawler.stats.inc_value("mainlist/product_already_in_master_list")
+                self.logger.info(f'{product_url} already scraped. Skipping.')
+                continue
+
             file_name = '{}/{}.html'.format(self.output_path, file_id)
             
             self.crawler.stats.inc_value("mainlist/detail_next_page_count")
@@ -256,7 +277,7 @@ class DarkFoxSpider(MarketPlaceSpider):
         next_page_url = self.get_product_next_page(response)
         if next_page_url:
             self.crawler.stats.inc_value("mainlist/mainlist_next_page_count")
-            
+
             yield Request(
                 url=next_page_url,
                 headers=self.headers,
@@ -272,7 +293,7 @@ class DarkFoxSpider(MarketPlaceSpider):
         captcha_1 = response.xpath(self.captcha_url_xpath_1).extract()
         if captcha_1:
             yield from self.parse_captcha_1(
-                response, 
+                response,
                 self.parse_product
             )
 
@@ -282,14 +303,17 @@ class DarkFoxSpider(MarketPlaceSpider):
             file_id = self.get_file_id(response.request.url)
 
         file_name = '{}/{}.html'.format(self.output_path, file_id)
-        with open(file_name, 'wb') as f:
+        product_txt_file = f'{self.master_list_path}/{file_id}.txt'
+        with open(file_name, 'wb') as f, open(product_txt_file, 'w') as file:
             f.write(response.text.encode('utf-8'))
+            file.write(f'{datetime.now().isoformat()}')
             self.logger.info(f'Product: {file_id} done..!')
             self.crawler.stats.inc_value("mainlist/detail_saved_count")
 
         response.meta['file_id'] = file_id
         if self.avatar_xpath:
             yield from self.parse_avatars(response)
+
 
 class DarkFoxScrapper(SiteMapScrapper):
     spider_class = DarkFoxSpider
@@ -307,4 +331,3 @@ class DarkFoxScrapper(SiteMapScrapper):
             }
         )
         return settings
-
