@@ -1,10 +1,9 @@
-import os
 import re
-import scrapy
-from math import ceil
-import configparser
-from scrapy.http import Request, FormRequest
-from datetime import datetime, timedelta
+from datetime import datetime
+from urllib.parse import urlencode
+
+from scrapy.http import Request
+
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 
@@ -13,22 +12,22 @@ class DarkTimeSpider(SitemapSpider):
     base_url = 'https://dark-time.com'
 
     # Xpaths
-    forum_xpath = '//h3[@class="node-title"]/a/@href|'\
+    forum_xpath = '//h3[@class="node-title"]/a/@href|' \
                   '//a[contains(@class,"subNodeLink--forum")]/@href'
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
-    thread_first_page_xpath = './/div[@class="structItem-title"]'\
+    thread_first_page_xpath = './/div[@class="structItem-title"]' \
                               '/a[contains(@href,"threads/")]/@href'
-    thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
+    thread_last_page_xpath = './/span[@class="structItem-pageJump"]' \
                              '/a[last()]/@href'
-    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]'\
-                        '/@datetime'
+    thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]' \
+                        '/@data-time'
     pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
-    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
+    thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]' \
                               '/@href'
-    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
+    thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]' \
                         '/a/text()'
-    post_date_xpath = '//ul[contains(@class, "message-attribution-main")]'\
-                      '//time[@datetime]/@datetime'
+    post_date_xpath = '//article[contains(@class,"message--post")]' \
+                      '//time[@data-time]/@data-time'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
@@ -45,8 +44,51 @@ class DarkTimeSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "On"
+    use_cloudflare_v2_bypass = True
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+
+    def extract_csrf_token(self, response):
+        csrf_token = response.xpath('//html[@data-csrf]/@data-csrf').extract_first()
+        return csrf_token
+
+    def start_requests(self, cookiejar=None, ip=None):
+        """
+        :return: => request start urls if no sitemap url or no start date
+                 => request sitemap url if sitemap url and start date
+        """
+
+        # Load meta
+        meta = {}
+        if cookiejar:
+            meta["cookiejar"] = cookiejar
+        if ip:
+            meta["ip"] = ip
+
+        # Branch choices requests
+        yield Request(
+            url=self.base_url,
+            headers=self.headers,
+            errback=self.check_site_error,
+            callback=self.change_language_to_english,
+            dont_filter=True,
+            meta=meta
+        )
+
+    def change_language_to_english(self, response):
+        self.synchronize_headers(response)
+        csrf_token = self.extract_csrf_token(response)
+        params = (
+            ('language_id', '1'),
+            ('_xfRedirect', self.base_url),
+            ('t', csrf_token),
+        )
+        change_language_url = self.base_url + '/?' + urlencode(params)
+        yield response.follow(
+            url=change_language_url,
+            meta=self.synchronize_meta(response),
+            callback=self.parse
+        )
 
     def parse_thread_date(self, thread_date):
         """
@@ -54,11 +96,13 @@ class DarkTimeSpider(SitemapSpider):
         :return: datetime => thread date as datetime converted from string,
                             using class sitemap_datetime_format
         """
-
-        return datetime.strptime(
-            thread_date.strip()[:-5],
-            self.sitemap_datetime_format
-        )
+        try:
+            return datetime.fromtimestamp(float(thread_date))
+        except:
+            return datetime.strptime(
+                thread_date.strip(),
+                self.sitemap_datetime_format
+            )
 
     def parse_post_date(self, post_date):
         """
@@ -66,10 +110,13 @@ class DarkTimeSpider(SitemapSpider):
         :return: datetime => post date as datetime converted from string,
                             using class post_datetime_format
         """
-        return datetime.strptime(
-            post_date.strip()[:-5],
-            self.post_datetime_format
-        )
+        try:
+            return datetime.fromtimestamp(float(post_date))
+        except:
+            return datetime.strptime(
+                post_date.strip(),
+                self.post_datetime_format
+            )
 
     def parse(self, response):
         # Synchronize cloudfare user agent
@@ -101,7 +148,6 @@ class DarkTimeSpider(SitemapSpider):
 
 
 class DarkTimeScrapper(SiteMapScrapper):
-
     spider_class = DarkTimeSpider
     site_name = 'dark-time.com'
     site_type = 'forum'
