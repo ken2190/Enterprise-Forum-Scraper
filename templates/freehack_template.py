@@ -1,10 +1,4 @@
-# -- coding: utf-8 --
 import re
-import traceback
-# import locale
-import utils
-import dateparser
-import datetime
 
 from .base_template import BaseTemplate
 
@@ -13,7 +7,6 @@ class FreeHackParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "free-hack.com"
         self.thread_name_pattern = re.compile(
             r'(\d+).*html$'
@@ -34,6 +27,7 @@ class FreeHackParser(BaseTemplate):
                                '//descendant::text()[not(ancestor::div[@class="quote_container"])]'
         self.avatar_xpath = './/div[contains(@class,"userinfo")]//a[@class="postuseravatar"]//img/@src'
         self.comment_block_xpath = './/div[contains(@class,"posthead")]//span[@class="nodecontrols"]/a//text()'
+        self.offset_hours = -1
 
         # main function
         self.main()
@@ -54,23 +48,10 @@ class FreeHackParser(BaseTemplate):
 
     def get_date(self, tag):
         date_block = tag.xpath(self.date_xpath)
-
         date_block = ''.join(date_block)
-        date = date_block.strip() if date_block else ""
-
-        try:
-            date = datetime.datetime.strptime(date, self.date_pattern).timestamp()
-        except:
-            print(f"WARN: could not figure out date from: ({date}) using date pattern ({self.date_pattern})")
-            date = dateparser.parse(date).timestamp()
-        if date:
-            curr_epoch = datetime.datetime.today().timestamp()
-            if date > curr_epoch:
-                err_msg = f"ERROR: the timestamp ({date}) is after current time ({curr_epoch})"
-                print(err_msg)
-                raise RuntimeError(err_msg)
-            return str(date)
-        return ""
+        date_string = date_block.strip() if date_block else None
+        date = self.parse_date_string(date_string)
+        return date
 
     def get_avatar(self, tag):
         avatar_block = tag.xpath(self.avatar_xpath)
