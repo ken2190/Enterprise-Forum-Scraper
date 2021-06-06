@@ -1,4 +1,6 @@
 import re
+import uuid
+from datetime import datetime
 
 from scrapy import (
     Request,
@@ -33,13 +35,13 @@ class SkyNetZoneSpider(SitemapSpider):
     thread_last_page_xpath = './/span[@class="structItem-pageJump"]'\
                              '/a[last()]/@href'
     thread_date_xpath = './/time[contains(@class, "structItem-latestDate")]'\
-                        '/@datetime'
+                        '/@data-time'
     pagination_xpath = '//a[contains(@class,"pageNav-jump--next")]/@href'
     thread_pagination_xpath = '//a[contains(@class, "pageNav-jump--prev")]'\
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+    post_date_xpath = '//div/a/time[@data-time]/@data-time'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
@@ -55,18 +57,41 @@ class SkyNetZoneSpider(SitemapSpider):
     pagination_pattern = re.compile(r'.*page-(\d+)', re.IGNORECASE)
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "VIP"
+    use_cloudflare_v2_bypass = True
     download_delay = 0.3
     download_thread = 10
 
     def start_requests(self):
         self._try_to_log_in_count = 0
+        yield Request(
+            url=self.temp_url,
+            headers=self.headers,
+            callback=self.pass_cloudflare
+        )
+
+    def pass_cloudflare(self, response):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.base_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip,
+            "cf_cookies": cookies
+        }
 
         yield Request(
             url=self.login_url,
             dont_filter=True,
             headers=self.headers,
             callback=self.parse_login,
+            meta=meta,
+            cookies=cookies
         )
 
     def parse_login(self, response):
@@ -94,6 +119,7 @@ class SkyNetZoneSpider(SitemapSpider):
             dont_click=True,
             dont_filter=True,
             headers=self.headers,
+            cookies=response.meta.get('cf_cookies'),
             callback=self.check_if_logged_in,
             meta=meta
         )
@@ -130,6 +156,34 @@ class SkyNetZoneSpider(SitemapSpider):
         # Parse generic avatar
         yield from super().parse_avatars(response)
 
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        try:
+            return datetime.fromtimestamp(float(thread_date))
+        except Exception:
+            return datetime.strptime(
+                thread_date.strip(),
+                self.sitemap_datetime_format
+            )
+
+    def parse_post_date(self, post_date):
+        """
+        :param post_date: str => post date as string
+        :return: datetime => post date as datetime converted from string,
+                            using class post_datetime_format
+        """
+        try:
+            return datetime.fromtimestamp(float(post_date))
+        except Exception:
+            return datetime.strptime(
+                post_date.strip(),
+                self.post_datetime_format
+            )
+
 
 class SkyNetZoneScrapper(SiteMapScrapper):
 
@@ -140,7 +194,6 @@ class SkyNetZoneScrapper(SiteMapScrapper):
     def load_settings(self):
         settings = super().load_settings()
         settings.update({
-            'RETRY_HTTP_CODES': [403, 406, 408, 429, 500, 502, 503, 504, 522, 524],
-            # 'CLOSESPIDER_ERRORCOUNT': 1
+            'RETRY_HTTP_CODES': [406, 408, 429, 500, 502, 503, 504, 522, 524],
         })
         return settings
