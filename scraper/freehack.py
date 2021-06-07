@@ -1,21 +1,14 @@
-import time
-import requests
 import os
-import json
 import re
-import scrapy
-from math import ceil
-import configparser
-from urllib.parse import urlencode
-from lxml.html import fromstring
-from scrapy.http import Request, FormRequest
-from scrapy.crawler import CrawlerProcess
 from datetime import datetime
+
+import dateutil.parser as dparser
+from scrapy.http import Request
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36'
 
@@ -24,14 +17,14 @@ class FreeHackSpider(SitemapSpider):
     name = 'freehack_spider'
 
     # Xpaths
-    forum_xpath = '//div[@class="datacontainer"]'\
-                  '//h2[@class="forumtitle"]/a/@href|'\
+    forum_xpath = '//div[@class="datacontainer"]' \
+                  '//h2[@class="forumtitle"]/a/@href|' \
                   '//li[@class="subforum"]/a/@href'
     thread_xpath = '//li[contains(@class, "threadbit ")]'
     thread_first_page_xpath = './/a[contains(@id,"thread_title_")]/@href'
-    thread_last_page_xpath = './/dl[@class="pagination"]/dd'\
+    thread_last_page_xpath = './/dl[@class="pagination"]/dd' \
                              '/span[last()]/a/@href'
-    thread_date_xpath = './/dl[@class="threadlastpost td"]'\
+    thread_date_xpath = './/dl[@class="threadlastpost td"]' \
                         '//dd[last()]/text()[1]'
     pagination_xpath = '//a[@rel="next"]/@href'
     thread_pagination_xpath = '//a[@rel="prev"]/@href'
@@ -90,6 +83,20 @@ class FreeHackSpider(SitemapSpider):
         # Save avatars
         yield from super().parse_avatars(response)
 
+    def parse_thread_date(self, thread_date):
+        """
+        :param thread_date: str => thread date as string
+        :return: datetime => thread date as datetime converted from string,
+                            using class sitemap_datetime_format
+        """
+        try:
+            return datetime.strptime(
+                thread_date.strip(),
+                self.sitemap_datetime_format
+            )
+        except:
+            return dparser.parse(thread_date, dayfirst=True).replace(tzinfo=None)
+
     def get_avatar_file(self, url=None):
         try:
             file_name = os.path.join(
@@ -102,7 +109,6 @@ class FreeHackSpider(SitemapSpider):
 
 
 class FreeHackScrapper(SiteMapScrapper):
-
     spider_class = FreeHackSpider
     site_name = 'free-hack.com'
     site_type = 'forum'
