@@ -11,38 +11,31 @@ class ProbivParser(BaseTemplate):
         super().__init__(*args, **kwargs)
         # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "probiv.one"
-        self.thread_name_pattern = re.compile(
-            r'(\d+).*html$'
-        )
-        self.pagination_pattern = re.compile(
-            r'.*-(\d+)\.html$'
-        )
-        self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
-        self.files = self.get_filtered_files(kwargs.get('files'))
-        self.comments_xpath = '//div[@class="message-inner"]'
-        self.header_xpath = '//div[@class="message-inner"]'
-        self.date_pattern = "%Y-%m-%dT%H:%M:%SZ"
-        self.date_xpath = './/div[contains(@class,"message-attribution-main")]//time/@title|'\
-            './/ul[contains(@class,"message-attribution-main")]//time/@title'
-        self.author_xpath = './/span[contains(@class,"username")]/text()'
-        self.title_xpath = '//h1[@class="p-title-value"]//text()'
-        self.post_text_xpath = './/article[contains(@class,"message-body js-selectToQuote")]/descendant::text()[not(ancestor::blockquote)]'
-        self.avatar_xpath = './/a[contains(@class, "avatar")]/img/@src'
-        self.comment_block_xpath = './/ul[@class="message-attribution-opposite message-attribution-opposite--list"]/li[last()]/a/text()'
+        self.avatar_name_pattern = re.compile(r"/(\d+\.\w+)")
+        self.comments_xpath = '//article[contains(@class,"message--post")]'
+        self.header_xpath = '//article[contains(@class,"message--post")]'
+        self.date_xpath = './/*[contains(@class,"message-attribution-main")]//time/@data-time|' \
+                          './/ul[contains(@class,"message-attribution-main")]//time/@data-time'
+        self.author_xpath = './/h4[contains(@class,"message-name")]//span/text()|' \
+                            './/h4[contains(@class,"message-name")]//text()'
+        self.post_text_xpath = './/div[contains(@class,"message-content")]//article/descendant::text()[not(ancestor::div[contains(@class,"bbCodeQuote")])]'
+        self.title_xpath = '//div[contains(@class,"p-title")]/h1/text()'
+        self.comment_block_xpath = './/ul[contains(@class,"message-attribution-opposite--list")]//a[contains(text(),"#")]/text()'
+        self.avatar_xpath = './/a[contains(@class, "avatar")]//img/@src'
 
         # main function
         self.main()
 
-    def get_filtered_files(self, files):
-        filtered_files = list(
-            filter(
-                lambda x: self.thread_name_pattern.search(x) is not None,
-                files
-            )
-        )
-        sorted_files = sorted(
-            filtered_files,
-            key=lambda x: (self.thread_name_pattern.search(x).group(1),
-                           self.pagination_pattern.search(x).group(1)))
+    def get_comment_id(self, tag):
+        comment_id = ""
+        comment_block = tag.xpath(self.comment_block_xpath)
+        if comment_block:
+            comment_id = comment_block[-1].strip().split('#')[-1]
 
-        return sorted_files
+        return comment_id.replace(',', '').replace('.', '')
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date_string = date_block[0].strip() if date_block else None
+        date = self.parse_date_string(date_string)
+        return date
