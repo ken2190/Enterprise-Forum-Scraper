@@ -158,7 +158,7 @@ from scraper.ifud import IfudScrapper
 from scraper.gerki import GerkiScrapper
 from scraper.proxybase import ProxyBaseScrapper
 from scraper.shadowcarders import ShadowCardersScrapper
-from scraper.provib import ProvibScrapper
+from scraper.probiv import ProbivScrapper
 from scraper.offensive_community import OffensiveCommunityScrapper
 from scraper.digitalpoint import DigitalPointScrapper
 from scraper.boveda import BovedaScrapper
@@ -309,7 +309,7 @@ SCRAPER_MAP = {
     'phienbanmoi': PhienbanmoiScrapper,
     'phreaker': PhreakerScrapper,
     'primeforums': PrimeForumsScrapper,
-    'probiv': ProvibScrapper,
+    'probiv': ProbivScrapper,
     'procrd': ProcrdScrapper,
     'prologic': ProLogicScrapper,
     'proxybase': ProxyBaseScrapper,
