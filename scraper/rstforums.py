@@ -1,10 +1,5 @@
-import uuid
 import re
 
-from scrapy import (
-    Request,
-    FormRequest
-)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -29,7 +24,7 @@ class RSTForumsSpider(SitemapSpider):
     thread_pagination_xpath = "//li[@class='ipsPagination_prev']/a/@href"
     thread_page_xpath = "//li[contains(@class,'ipsPagination_active')]/a/text()"
     post_date_xpath = "//div[contains(@class,'ipsType_reset')]/a/time/@datetime"
-
+    post_datetime_format = "%Y-%m-%dT%H:%M:%SZ"
     avatar_xpath = "//li[@class='cAuthorPane_photo']/a/img/@src"
 
     # Regex stuffs
