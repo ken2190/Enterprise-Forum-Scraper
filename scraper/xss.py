@@ -9,7 +9,7 @@ from scraper.base_scrapper import SitemapSpiderWithDelay, SiteMapScrapperWithDel
 LOGINS = [
     {"USER": "Firefly13", "PASS": "X$$-Fl71hf7jsos"},
     {"USER": "kidicarus", "PASS": "X33-IcP19f!"},
-    {"USER": "BashScripts", "PASS": "Bash#XSS0010"},
+    {"USER": "BashScripts", "PASS": "Ba$h-X$s!81881"},
     # {"USER": "WorldWideTech", "PASS": "XWWtTttTttT115"} needs email verification.
 ]
 
