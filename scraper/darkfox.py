@@ -12,8 +12,8 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-MIN_DELAY = 2
-MAX_DELAY = 3
+MIN_DELAY = 1.5
+MAX_DELAY = 2
 DAILY_LIMIT = 10000
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
