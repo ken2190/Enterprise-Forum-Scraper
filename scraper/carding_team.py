@@ -1,21 +1,12 @@
 import os
 import re
-import time
-import uuid
-import json
 
-from datetime import datetime
-from scrapy.utils.gz import gunzip
-
-from seleniumwire.webdriver import (
-    Chrome,
-    ChromeOptions
-)
 from scrapy import (
     Request,
-    FormRequest,
-    Selector
+    FormRequest
 )
+from scrapy.exceptions import CloseSpider
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -38,8 +29,12 @@ class CardingTeamSpider(SitemapSpider):
     pagination_xpath = '//div[@class="pagination"]' \
                        '/a[@class="pagination_next"]/@href'
     thread_xpath = '//tr[@class="inline_row"]'
+    thread_first_page_xpath = './/span[contains(@id,"tid_")]/a/@href'
+    thread_last_page_xpath = './/td[contains(@class,"forumdisplay_")]/div' \
+                             '/span/span[contains(@class,"smalltext")]' \
+                             '/a[last()]/@href'
     thread_pagination_xpath = '//div[@class="pagination"]' \
-                              '//a[@class="pagination_next"]/@href'
+                              '//a[@class="pagination_previous"]/@href'
     thread_page_xpath = '//span[@class="pagination_current"]/text()'
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
 
@@ -63,13 +58,26 @@ class CardingTeamSpider(SitemapSpider):
         if not os.path.exists(self.master_list_dir):
             os.mkdir(self.master_list_dir)
 
-    @staticmethod
-    def get_thread_info(thread_element):
+    def get_thread_info(self, thread_element):
         """
         Extract the thread URL and ID from the given thread_element.
         """
-        subject_element = thread_element.xpath(".//span[contains(@class, 'subject_old')]")
-        thread_url = subject_element.xpath('.//a/@href').extract_first()
+        thread_first_page_url = thread_element.xpath(
+            self.thread_first_page_xpath
+        ).extract_first()
+
+        thread_last_page_url = thread_element.xpath(
+            self.thread_last_page_xpath
+        ).extract_first()
+
+        if thread_last_page_url:
+            thread_url = thread_last_page_url
+        elif thread_first_page_url:
+            thread_url = thread_first_page_url
+        else:
+            thread_url = None
+
+        subject_element = thread_element.xpath(".//span[contains(@class, 'subject_')]")
         thread_id = subject_element.xpath('@id').extract_first()
         thread_id = thread_id.replace('tid_', '').strip()
 
@@ -85,17 +93,17 @@ class CardingTeamSpider(SitemapSpider):
 
         return post_ids
 
-    def check_parse_topic(self, topic_id, post_ids):
+    def check_parse_topic(self, topic_id, current_page, post_ids):
         """
         Check discrepancies between a list of current posts and the old posts
         obtained from a txt file named with topic_id. And then determine whether or not
         we need to parse the topic.
 
         :param topic_id: indicates the ID of the topic
+        :param current_page: indicates the page of the topic being scraped
         :param post_ids: a list of Post IDs.
         """
-        topic_txt_file = f'{self.master_list_dir}/{topic_id}.txt'
-
+        topic_txt_file = f'{self.master_list_dir}/{topic_id}-{current_page}.txt'
         if not os.path.exists(topic_txt_file):
             # This means the topic is completely new.
             with open(topic_txt_file, 'w') as file:
@@ -190,9 +198,9 @@ class CardingTeamSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         topic_id = response.meta['topic_id']
-
+        current_page = self.get_thread_current_page(response)
         post_ids = self.get_post_ids(response)
-        parse_topic = self.check_parse_topic(topic_id, post_ids)
+        parse_topic = self.check_parse_topic(topic_id, current_page, post_ids)
 
         if not parse_topic:
             # This topic doesn't have new comments, so, skipping...
