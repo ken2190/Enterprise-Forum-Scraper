@@ -1,8 +1,4 @@
-# -- coding: utf-8 --
 import re
-# import locale
-import datetime
-import dateparser
 
 from .base_template import BaseTemplate
 
@@ -11,7 +7,6 @@ class CardingTeamParser(BaseTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
         self.parser_name = "cardingteam.cc"
         self.avatar_name_pattern = re.compile(r'.*/(\S+\.\w+)')
         self.comments_xpath = '//div[@class="newposts"]'
