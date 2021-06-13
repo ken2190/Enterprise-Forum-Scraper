@@ -207,6 +207,7 @@ class CardingTeamSpider(SitemapSpider):
             self.logger.info(f'Already parsed this thread: {response.url} so, skipping...!')
             self.crawler.stats.inc_value('mainlist/detail_already_scraped_count')
             self.crawler.stats.set_value('mainlist/detail_count', len(self.topics))
+            return
 
         if topic_id not in self.topics:
             self.topics.add(topic_id)
