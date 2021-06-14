@@ -1,7 +1,9 @@
 import os
-import scrapy
+import re
 
+from scrapy.exceptions import CloseSpider
 from scrapy.http import Request, FormRequest
+
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
 USERNAME = 'kylelopz'
@@ -24,8 +26,12 @@ class HeliumSpider(SitemapSpider):
     pagination_xpath = "//a[@rel='next']/@href"
     thread_xpath = "//div[@id='recent_topics']//tbody/tr[not(@class='clearfix')]"
     post_action_xpath = "//div[contains(@class, 'thread-row')]//form[@action]/@action"
-    thread_page_xpath = "//span[contains(@class,'pagination_current')]/text()"
-
+    thread_page_xpath = "//ul[@class='pagination']/li[@class='active']/span/text()"
+    thread_pagination_xpath = "//a[@rel='next']/@href"
+    topic_pattern = re.compile(
+        r'/topic/(\d+)',
+        re.IGNORECASE
+    )
     # Login Failed Message
     login_failed_xpath = "//div[contains(@class,'alert-danger')]//li"
 
@@ -97,17 +103,18 @@ class HeliumSpider(SitemapSpider):
             meta=self.synchronize_meta(response)
         )
 
-    def check_parse_topic(self, topic_id, post_ids):
+    def check_parse_topic(self, topic_id, current_page, post_ids):
         """
         Check discrepancies between a list of current posts and the old posts
         obtained from a txt file named with topic_id. And then determine whether or not
         we need to parse the topic.
 
         :param topic_id: indicates the ID of the topic
+        :param current_page: indicates the page of the topic being scraped
         :param post_ids: a list of Post IDs.
         """
         post_ids = [i.strip() for i in post_ids]
-        topic_txt_file = f'{self.master_list_dir}/{topic_id}.txt'
+        topic_txt_file = f'{self.master_list_dir}/{topic_id}-{current_page}.txt'
 
         if not os.path.exists(topic_txt_file):
             # This means the topic is completely new.
@@ -161,25 +168,29 @@ class HeliumSpider(SitemapSpider):
                 cb_kwargs={'is_first_page': False}
             )
 
+    def get_topic_id(self, url=None):
+        try:
+            return self.topic_pattern.findall(url)[0]
+        except:
+            return ""
+
     def parse_thread(self, response):
         # Get topic id
-        try:
-            topic_id = str(int(response.url.split('/')[-1]))
-        except Exception as err:
+        topic_id = self.get_topic_id(response.url)
+        if not topic_id:
             self.crawler.stats.inc_value('mainlist/detail_no_topic_id_count')
             self.logger.warning(f'Unable to find topic ID of this topic: {response.url}')
             return
-
+        current_page = self.get_thread_current_page(response)
         post_actions = response.xpath(self.post_action_xpath).extract()
         post_ids = [i.split('/')[-1].strip() for i in post_actions if i]
-        parse_topic = self.check_parse_topic(topic_id, post_ids)
+        parse_topic = self.check_parse_topic(topic_id, current_page, post_ids)
 
         if not parse_topic:
             # This topic doesn't have new comments, so, skipping...
             self.logger.info(f'Already parsed this topic: {response.url} so, skipping...')
             self.crawler.stats.inc_value('mainlist/detail_already_scraped_count')
             self.crawler.stats.set_value('mainlist/detail_count', len(self.topics))
-            return
 
         if topic_id not in self.topics:
             self.topics.add(topic_id)
@@ -187,14 +198,11 @@ class HeliumSpider(SitemapSpider):
 
         # Save thread content
         if not self.useronly:
-            current_page = self.get_thread_current_page(response)
-
             with open(file=os.path.join(self.output_path,
                                         f"{topic_id}-{current_page}.html"),
                       mode="w+",
                       encoding="utf-8") as file:
                 file.write(response.text)
-
             self.logger.info(f'{topic_id}-{current_page} done..!')
             self.topic_pages_saved += 1
 
@@ -206,6 +214,21 @@ class HeliumSpider(SitemapSpider):
             # Kill task if kill count met
             if self.kill and self.topic_pages_saved >= self.kill:
                 raise CloseSpider(reason='Kill count met, shut down.')
+
+        next_page = self.get_thread_next_page(response)
+
+        if next_page:
+            self.crawler.stats.inc_value('mainlist/detail_next_page_count')
+
+            meta = self.synchronize_meta(response)
+            meta['topic_id'] = topic_id
+
+            yield Request(
+                url=next_page,
+                headers=self.headers,
+                callback=self.parse_thread,
+                meta=meta
+            )
 
 
 class HeliumScrapper(SiteMapScrapper):
