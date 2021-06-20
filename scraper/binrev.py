@@ -1,19 +1,15 @@
-import os
 import re
-import scrapy
 import uuid
-
-from datetime import datetime
 
 from scrapy import (
     Request,
     FormRequest
 )
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
-
 
 USERNAME = "vrx9"
 PASSWORD = "4hr63yh38a"
@@ -62,6 +58,8 @@ class BinRevSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "VIP"
+    sitemap_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
+    post_datetime_format = '%Y-%m-%dT%H:%M:%SZ'
 
     def start_requests(self):
         yield Request(
