@@ -11,6 +11,7 @@ input
 output
 log
 .env
+captcha
 
 *.py[cod]
 .DS_Store
