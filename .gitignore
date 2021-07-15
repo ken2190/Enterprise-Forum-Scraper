@@ -12,7 +12,7 @@ output
 log
 .env
 captcha
-
+master-list
 *.py[cod]
 .DS_Store
 
