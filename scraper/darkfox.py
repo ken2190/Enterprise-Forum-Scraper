@@ -12,8 +12,8 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
-MIN_DELAY = 1.5
-MAX_DELAY = 2
+MIN_DELAY = 0.75
+MAX_DELAY = 1.5
 DAILY_LIMIT = 10000
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0'
@@ -327,7 +327,8 @@ class DarkFoxScrapper(SiteMapScrapper):
                 "AUTOTHROTTLE_ENABLED": True,
                 "AUTOTHROTTLE_START_DELAY": MIN_DELAY,
                 "AUTOTHROTTLE_MAX_DELAY": MAX_DELAY,
-                "CLOSESPIDER_PAGECOUNT": DAILY_LIMIT
+                "CLOSESPIDER_PAGECOUNT": DAILY_LIMIT,
+                "CLOSESPIDER_TIMEOUT": 3000
             }
         )
         return settings
