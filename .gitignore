@@ -18,7 +18,6 @@ master-list
 
 
 # C extensions
-*.so
 
 # Packages
 *.egg
