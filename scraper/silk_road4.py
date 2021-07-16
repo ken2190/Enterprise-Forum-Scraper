@@ -20,7 +20,7 @@ class SilkRoad4Spider(MarketPlaceSpider):
     name = "silkroad4_spider"
 
     # Url stuffs
-    login_url = base_url = "http://silkroadxjzvoyxh.onion/"
+    login_url = base_url = "http://silkroad22gtemddxbbfxe57xmb4mxgcwnbwbvarpbghsseluxwdnvyd.onion/"
 
     # xpath stuffs
     login_form_xpath = captcha_form_xpath = '//form[@method="POST"]'
