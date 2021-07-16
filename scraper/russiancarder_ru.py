@@ -19,7 +19,7 @@ class RussiancarderRuSpider(SitemapSpider):
     name = "russiancarder_ru_spider"
 
     # Url stuffs
-    base_url = "https://russiancarder.ru/"
+    base_url = "https://russiancarders.ru/"
 
     # Xpath stuffs
 
