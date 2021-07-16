@@ -17,8 +17,8 @@ from scraper.base_scrapper import (
 
 
 USERNAME = "darkcylon"
-PASSWORD = "Night#Omerta"
-MD5PASS = "8956fb126e264fcf3da8a553e271a0c9"
+PASSWORD = "Night#Omerta1"
+MD5PASS = "a2a5c997a9669caf5a548593d487c521"
 
 
 class OmertaSpider(SitemapSpider):
