@@ -22,7 +22,7 @@ class DarkMarketCmSpider(SitemapSpider):
     name = 'DarkMarketCm_spider'
 
     # Url stuffs
-    base_url = "http://darkmarket.cm"
+    base_url = "https://darkmarket.at/"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
