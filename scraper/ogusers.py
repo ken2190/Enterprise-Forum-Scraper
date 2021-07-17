@@ -16,13 +16,13 @@ PASS = 'Gal#Og0001-1'
 MIN_DELAY = 1
 MAX_DELAY = 3
 
-class OgUsersSpider(SitemapSpider):
 
+class OgUsersSpider(SitemapSpider):
     name = 'ogusers_spider'
 
     # Url stuffs
     base_url = "https://ogusers.com/"
-    login_url = "https://ogusers.com/member.php?action=login"
+    login_url = "https://ogusers.com/login"
 
     # Css stuffs
     login_form_xpath = "//form[@action='member.php']"
@@ -37,7 +37,7 @@ class OgUsersSpider(SitemapSpider):
 
     thread_last_page_xpath = ".//tr[contains(@class, 'thread_row')]//td[2]//a/@href"
 
-    thread_date_xpath = ".//span[contains(@class,'lastpost')]/a/span/@title|"\
+    thread_date_xpath = ".//span[contains(@class,'lastpost')]/a/span/@title|" \
                         ".//span[contains(@class,'lastpost')]/a/text()"
 
     thread_pagination_xpath = "//a[@class='pagination_previous']/@href"
@@ -64,7 +64,7 @@ class OgUsersSpider(SitemapSpider):
     # Login Failed Message
     login_failed_xpath = '//div[@class="error"]'
 
-    #captcha stuffs
+    # captcha stuffs
     bypass_success_xpath = '//a[@class="guestnav" and text()="Login"]'
 
     # Other settings
@@ -116,16 +116,23 @@ class OgUsersSpider(SitemapSpider):
         # Synchronize user agent in cloudfare middleware
         self.synchronize_headers(response)
 
+        my_post_key = response.xpath(
+            '//input[@name="my_post_key"]/@value').extract_first()
+
         yield FormRequest.from_response(
             response,
             formxpath=self.login_form_xpath,
             formdata={
-                "username": USER,
-                "password": PASS
+                'action': 'do_login',
+                'url': 'https://ogusers.com/index.php',
+                'my_post_key': my_post_key,
+                'remember': 'yes',
+                'username': USER,
+                'password': PASS,
+                '2facode': ''
             },
             headers=self.headers,
             dont_filter=True,
-            # callback=self.parse_start,
             meta=self.synchronize_meta(response)
         )
 
@@ -162,7 +169,6 @@ class OgUsersSpider(SitemapSpider):
 
         # Parse avatar thread
         yield from super().parse_avatars(response)
-
 
         if self.get_users:
 
@@ -257,7 +263,6 @@ class OgUsersSpider(SitemapSpider):
 
 
 class OgUsersScrapper(SiteMapScrapper):
-
     spider_class = OgUsersSpider
     site_name = 'ogusers.com'
     site_type = 'forum'
