@@ -20,13 +20,15 @@ class YouHackParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//ol[@class="messageList"]/li[contains(@id, "post-")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@id, "post-")]'
-        self.date_xpath = 'div//span[@class="DateTime"]/@title'
+        self.date_xpath = './/*[@class="DateTime"]/@data-time|' \
+                          './/*[@class="DateTime"]/@title'
         self.date_pattern = "%d.%m.%Y в %H:%M"
         self.author_xpath = '@data-author'
         self.title_xpath = '//div[@class="titleBar"]/h1/text()'
         self.post_text_xpath = 'div//div[@class="messageContent"]/article/blockquote/descendant::text()[not(ancestor::div[@class="bbCodeBlock bbCodeQuote"])]'
         self.avatar_xpath = 'div//div[@class="avatarHolder"]/a/img/@src'
         self.comment_block_xpath = 'div//div[@class="publicControls"]/a/text()'
+        self.offset_hours = -3
 
         # main function
         self.main()
@@ -52,3 +54,9 @@ class YouHackParser(BaseTemplate):
                 )
 
         return post_text.strip()
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date_string = date_block[0].strip() if date_block else None
+        date = self.parse_date_string(date_string)
+        return date
