@@ -35,12 +35,12 @@ class YouHackSpider(SitemapSpider):
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]' \
                         '/text()'
     post_date_xpath = '//div[@class="privateControls"]' \
-                      '//abbr[@class="DateTime"]/@data-time|'\
+                      '//abbr[@class="DateTime"]/@data-time|' \
                       '//div[@class="privateControls"]' \
                       '//span[@class="DateTime"]/@title'
 
     avatar_xpath = '//div[@class="avatarHolder"]/a/img/@src'
-    
+
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
     # Regex stuffs
     topic_pattern = re.compile(
@@ -108,19 +108,19 @@ class YouHackSpider(SitemapSpider):
             )
         else:
             yield Request(
-            url=self.base_url,
-            headers=self.headers,
-            callback=self.parse,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            },
-            dont_filter=True,
-        )
+                url=self.base_url,
+                headers=self.headers,
+                callback=self.parse,
+                meta={
+                    "cookiejar": uuid.uuid1().hex
+                },
+                dont_filter=True,
+            )
 
     def parse(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
-        
+
         if response.xpath(self.recaptcha_site_key_xpath):
             yield Request(
                 url=self.base_url,
@@ -160,11 +160,6 @@ class YouHackSpider(SitemapSpider):
         yield from super().parse_avatars(response)
 
     def parse_thread_date(self, thread_date):
-        """
-        :param thread_date: str => thread date as string
-        :return: datetime => thread date as datetime converted from string,
-                            using class sitemap_datetime_format
-        """
         if not thread_date:
             return
         try:
@@ -179,6 +174,7 @@ class YouHackSpider(SitemapSpider):
             return datetime.fromtimestamp(float(post_date))
         except:
             return dateparser.parse(post_date.strip(), [self.post_datetime_format])
+
 
 class YouHackScrapper(SiteMapScrapper):
     spider_class = YouHackSpider
