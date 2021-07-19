@@ -50,7 +50,7 @@ from unicaps.exceptions import (
 )
 from unicaps.proxy import ProxyServer
 
-from helheim import helheim, isChallenge
+from helheim_dist import helheim
 from middlewares.utils import IpHandler
 
 # Vip Proxy
@@ -269,7 +269,6 @@ class SiteMapScrapper:
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.retry.RetryMiddleware": 90,
             # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-            # 'flat.middlewares.TooManyRequestsRetryMiddleware': 543,
         },
         "RETRY_TIMES": 5,
         "LOG_ENABLED": True,
@@ -494,7 +493,6 @@ class BypassCloudfareSpider(scrapy.Spider):
                 downloader_middlewares.update(
                     {
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
-                        # "middlewares.middlewares.BypassCloudfareMiddleware": 200
                     }
                 )
             if cls.use_cloudflare_v2_bypass:
@@ -503,12 +501,6 @@ class BypassCloudfareSpider(scrapy.Spider):
                         "middlewares.middlewares.CloudflareV2BypassMiddleware": 200
                     }
                 )
-            # else:
-            # downloader_middlewares.update(
-            # {
-            # "middlewares.middlewares.BypassCloudfareMiddleware": 200
-            # }
-            # )
 
             # Default settings
             crawler.settings.set(
@@ -563,12 +555,13 @@ class BypassCloudfareSpider(scrapy.Spider):
             super_proxy = PROXY
 
         def injection(session, response):
-            if isChallenge(response):
+            if helheim.isChallenge(session, response):
                 print(f"INFO: helheim injection used for ({self.name}).")
-                return helheim('52455eed-754b-4220-a070-c913698954b2', session, response)
+                return helheim.solve(session, response)
             else:
                 return response
 
+        helheim.auth('52455eed-754b-4220-a070-c913698954b2')
         cf_bypasser = cloudscraper.create_scraper(
             browser={
                 # 'custom': self.default_useragent
@@ -584,7 +577,7 @@ class BypassCloudfareSpider(scrapy.Spider):
             debug=False,
             # delay=5
         )
-
+        helheim.wokou(cf_bypasser)
         bypass_cookies = {}
         try_num = 0
         # Loop create cookies
