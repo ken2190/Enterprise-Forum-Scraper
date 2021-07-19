@@ -23,10 +23,8 @@ class DevilTeamSpider(SitemapSpider):
 
     # xpaths
     login_form_xpath = '//form[@id="login"]'
-    forum_xpath = '//a[contains(@class, "forumtitle")]/@href'
-
+    forum_xpath = '//a[contains(@href, "viewforum.php?f=") and not(ancestor::div[@id="recent-topics-box"])]/@href'
     pagination_xpath = '//li[@class="arrow next"]/a/@href'
-
     thread_xpath = '//ul[@class="topiclist topics"]/li'
     thread_first_page_xpath = './/a[contains(@class, "topictitle")]/@href'
     thread_last_page_xpath = './/div[@class="pagination"]'\
