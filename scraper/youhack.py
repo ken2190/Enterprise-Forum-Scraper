@@ -1,16 +1,13 @@
-import os
 import re
 import uuid
-import dateparser
-
 from datetime import datetime
-from scrapy.utils.gz import gunzip
 
+import dateparser
 from scrapy import (
     Request,
-    FormRequest,
-    Selector
+    FormRequest
 )
+
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
@@ -18,34 +15,32 @@ from scraper.base_scrapper import (
 
 
 class YouHackSpider(SitemapSpider):
-
     name = 'youhack_spider'
 
     base_url = "https://youhack.xyz/"
 
     # Xpath stuffs
     captcha_form_css = "form[action]"
-    forum_xpath = '//h3[@class="nodeTitle"]/a[contains(@href, "forums/")]/@href|'\
-                    '//ol[@class="subForumList"]//h4[@class="nodeTitle"]/a/@href'
+    forum_xpath = '//h3[@class="nodeTitle"]/a[contains(@href, "forums/")]/@href|' \
+                  '//ol[@class="subForumList"]//h4[@class="nodeTitle"]/a/@href'
     thread_xpath = '//li[contains(@id, "thread-")]'
-    thread_first_page_xpath = './/h3[@class="title"]'\
+    thread_first_page_xpath = './/h3[@class="title"]' \
                               '/a[contains(@href,"threads/")]/@href'
-    thread_last_page_xpath = './/span[@class="itemPageNav"]'\
+    thread_last_page_xpath = './/span[@class="itemPageNav"]' \
                              '/a[last()]/@href'
-    thread_date_xpath = './/span[@class="lastThreadMeta"]'\
-                        '//*[contains(@class, "DateTime")]/*/@title|'\
+    thread_date_xpath = './/dl[@class="lastPostInfo"]//*[@class="DateTime"]/@data-time|' \
                         './/dl[@class="lastPostInfo"]//*[@class="DateTime"]/@title'
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
-    thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
+    thread_page_xpath = '//nav//a[contains(@class, "currentPage")]' \
                         '/text()'
-    post_date_xpath = '//div[@class="privateControls"]'\
-                      '//span[@class="DateTime"]/@title|'\
-                      '//div[@class="privateControls"]'\
-                      '//abbr[@class="DateTime"]/@data-datestring'
+    post_date_xpath = '//div[@class="privateControls"]' \
+                      '//abbr[@class="DateTime"]/@data-time|' \
+                      '//div[@class="privateControls"]' \
+                      '//span[@class="DateTime"]/@title'
 
     avatar_xpath = '//div[@class="avatarHolder"]/a/img/@src'
-    
+
     recaptcha_site_key_xpath = '//div[@class="g-recaptcha"]/@data-sitekey'
     # Regex stuffs
     topic_pattern = re.compile(
@@ -63,28 +58,33 @@ class YouHackSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "On"
-    sitemap_datetime_format = "%d/%m/%y"
-    post_datetime_format = "%d/%m/%y"
+    sitemap_datetime_format = "%d.%m.%Y в %H:%M"
+    post_datetime_format = "%d.%m.%Y в %H:%M"
+    get_cookies_delay = 5
 
-    def parse_thread_date(self, thread_date):
-        if not thread_date:
-            return
-        return dateparser.parse(thread_date.strip())
+    def start_requests(self, ):
+        cookies, ip = self.get_cookies(
+            base_url=self.base_url,
+            proxy=self.use_proxy,
+            fraud_check=True,
+        )
 
-    def parse_post_date(self, post_date):
-        if not post_date:
-            return
-        return dateparser.parse(post_date.strip())
+        self.logger.info(f'COOKIES: {cookies}')
 
-    def start_requests(self,):
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+
         yield Request(
             url=self.base_url,
             headers=self.headers,
             callback=self.parse_captcha,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            },
+            errback=self.check_site_error,
             dont_filter=True,
+            cookies=cookies,
+            meta=meta
         )
 
     def parse_captcha(self, response):
@@ -108,19 +108,19 @@ class YouHackSpider(SitemapSpider):
             )
         else:
             yield Request(
-            url=self.base_url,
-            headers=self.headers,
-            callback=self.parse,
-            meta={
-                "cookiejar": uuid.uuid1().hex
-            },
-            dont_filter=True,
-        )
+                url=self.base_url,
+                headers=self.headers,
+                callback=self.parse,
+                meta={
+                    "cookiejar": uuid.uuid1().hex
+                },
+                dont_filter=True,
+            )
 
     def parse(self, response):
         # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
-        
+
         if response.xpath(self.recaptcha_site_key_xpath):
             yield Request(
                 url=self.base_url,
@@ -158,10 +158,25 @@ class YouHackSpider(SitemapSpider):
 
         # Save avatars
         yield from super().parse_avatars(response)
-        
+
+    def parse_thread_date(self, thread_date):
+        if not thread_date:
+            return
+        try:
+            return datetime.fromtimestamp(float(thread_date))
+        except:
+            return dateparser.parse(thread_date.strip(), [self.sitemap_datetime_format])
+
+    def parse_post_date(self, post_date):
+        if not post_date:
+            return
+        try:
+            return datetime.fromtimestamp(float(post_date))
+        except:
+            return dateparser.parse(post_date.strip(), [self.post_datetime_format])
+
 
 class YouHackScrapper(SiteMapScrapper):
-
     spider_class = YouHackSpider
     site_name = 'youhack.ru'
     site_type = 'forum'
