@@ -20,9 +20,9 @@ class YouHackParser(BaseTemplate):
         self.files = self.get_filtered_files(kwargs.get('files'))
         self.comments_xpath = '//ol[@class="messageList"]/li[contains(@id, "post-")]'
         self.header_xpath = '//ol[@class="messageList"]/li[contains(@id, "post-")]'
-        self.date_xpath = './/*[@class="DateTime"]/@data-time|' \
-                          './/*[@class="DateTime"]/@title'
-        self.date_pattern = "%d.%m.%Y в %H:%M"
+        self.date_xpath = './/*[contains(@class,"DateTime")]/@data-time|' \
+                          './/*[contains(@class,"DateTime")]/@title'
+        self.date_pattern = '%d.%m.%Y at %I:%M %p'
         self.author_xpath = '@data-author'
         self.title_xpath = '//div[@class="titleBar"]/h1/text()'
         self.post_text_xpath = 'div//div[@class="messageContent"]/article/blockquote/descendant::text()[not(ancestor::div[@class="bbCodeBlock bbCodeQuote"])]'

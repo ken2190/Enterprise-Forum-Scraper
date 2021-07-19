@@ -18,6 +18,7 @@ class YouHackSpider(SitemapSpider):
     name = 'youhack_spider'
 
     base_url = "https://youhack.xyz/"
+    change_language_url = f"{base_url}misc/language?language_id=1&redirect={base_url}"
 
     # Xpath stuffs
     captcha_form_css = "form[action]"
@@ -29,7 +30,9 @@ class YouHackSpider(SitemapSpider):
     thread_last_page_xpath = './/span[@class="itemPageNav"]' \
                              '/a[last()]/@href'
     thread_date_xpath = './/dl[@class="lastPostInfo"]//*[@class="DateTime"]/@data-time|' \
-                        './/dl[@class="lastPostInfo"]//*[@class="DateTime"]/@title'
+                        './/dl[@class="lastPostInfo"]//*[@class="DateTime"]/@title|' \
+                        './/dl[@class="lastPostInfo"]//a[@class="dateTime"]/*/@title|' \
+                        './/dl[@class="lastPostInfo"]//a[@class="dateTime"]/*/text()'
     pagination_xpath = '//nav/a[last()]/@href'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]' \
@@ -57,10 +60,11 @@ class YouHackSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "On"
-    sitemap_datetime_format = "%d.%m.%Y в %H:%M"
-    post_datetime_format = "%d.%m.%Y в %H:%M"
+    use_proxy = "VIP"
+    sitemap_datetime_format = "%d.%m.%Y at %I:%M %p"
+    post_datetime_format = "%d.%m.%Y at %I:%M %p"
     get_cookies_delay = 5
+    get_cookies_retry = 1
 
     def start_requests(self, ):
         cookies, ip = self.get_cookies(
@@ -110,12 +114,20 @@ class YouHackSpider(SitemapSpider):
             yield Request(
                 url=self.base_url,
                 headers=self.headers,
-                callback=self.parse,
-                meta={
-                    "cookiejar": uuid.uuid1().hex
-                },
+                callback=self.set_language_to_english,
+                meta=self.synchronize_meta(response),
                 dont_filter=True,
             )
+
+    def set_language_to_english(self, response):
+        yield Request(
+            url=self.change_language_url,
+            headers=self.headers,
+            errback=self.check_site_error,
+            dont_filter=True,
+            meta=self.synchronize_meta(response),
+            callback=self.parse
+        )
 
     def parse(self, response):
         # Synchronize user agent for cloudfare middleware
