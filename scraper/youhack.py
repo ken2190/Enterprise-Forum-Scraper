@@ -192,3 +192,12 @@ class YouHackScrapper(SiteMapScrapper):
     spider_class = YouHackSpider
     site_name = 'youhack.ru'
     site_type = 'forum'
+
+    def load_settings(self):
+        settings = super().load_settings()
+        settings.update(
+            {
+                "RETRY_HTTP_CODES": [403, 429, 500, 503],
+            }
+        )
+        return settings
