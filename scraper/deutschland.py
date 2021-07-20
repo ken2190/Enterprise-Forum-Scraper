@@ -8,7 +8,7 @@ PROXY = 'http://127.0.0.1:8118'
 
 class DeutschLandSpider(SitemapSpider):
     name = 'deutschland_spider'
-    base_url = 'http://germanyruvvy2tcw.onion/'
+    base_url = 'http://germany2igel45jbmjdipfbzdswjcpjqzqozxt4l33452kzrrda2rbid.onion/'
 
     # Xpaths
     forum_xpath = '//a[contains(@href, "forum-")]/@href'
@@ -35,8 +35,8 @@ class DeutschLandSpider(SitemapSpider):
 
     # Other settings
     use_proxy = "Tor"
-    sitemap_datetime_format = '%d-%m-%Y'
-    post_datetime_format = '%d-%m-%Y'
+    sitemap_datetime_format = '%d-%m-%Y, %H:%M'
+    post_datetime_format = '%d-%m-%Y, %H:%M'
 
     def synchronize_meta(self, response, default_meta={}):
         meta = {
@@ -63,15 +63,17 @@ class DeutschLandSpider(SitemapSpider):
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-        base_forum_url = "http://germanyruvvy2tcw.onion/forum-{}.html"
-        for i in range(1, 100):
-            forum_url = base_forum_url.format(i)
-            yield Request(
+        all_forums = set(response.xpath(self.forum_xpath).extract())
+        self.forums.update(all_forums)
+        # update stats
+        self.crawler.stats.set_value("mainlist/mainlist_count", len(self.forums))
+
+        for forum_url in all_forums:
+            yield response.follow(
                 url=forum_url,
                 headers=self.headers,
                 callback=self.parse_forum,
                 meta=self.synchronize_meta(response),
-                dont_filter=True
             )
 
     def parse_thread(self, response):
