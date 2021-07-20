@@ -44,7 +44,8 @@ class OgUsersSpider(SitemapSpider):
 
     thread_page_xpath = "//span[contains(@class,'pagination_current')]/text()"
 
-    post_date_xpath = "//div//div[contains(@class,'pb_date')]/text()"
+    post_date_xpath = "//div//div[contains(@class,'pb_date')]/span/@title|" \
+                      "//div//div[contains(@class,'pb_date')]/text()"
 
     avatar_xpath = "//td[1]//a/img/@src|//img[@class='profileshow']/@src"
 
