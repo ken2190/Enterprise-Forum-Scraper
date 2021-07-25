@@ -22,7 +22,7 @@ class OgUsersSpider(SitemapSpider):
 
     # Url stuffs
     base_url = "https://ogusers.com/"
-    login_url = "https://ogusers.com/login"
+    login_url = "https://ogusers.com/member.php?action=login"
 
     # Css stuffs
     login_form_xpath = "//form[@action='member.php']"
@@ -35,12 +35,12 @@ class OgUsersSpider(SitemapSpider):
 
     thread_first_page_xpath = ".//span[contains(@class,'subject')]/a[contains(@href,'Thread-')]/@href"
 
-    thread_last_page_xpath = ".//tr[contains(@class, 'thread_row')]//td[2]//a/@href"
+    thread_last_page_xpath = ".//span[contains(@class,'lastpost')]/a[contains(@href,'action=lastpost')]/@href"
 
     thread_date_xpath = ".//span[contains(@class,'lastpost')]/a/span/@title|" \
                         ".//span[contains(@class,'lastpost')]/a/text()"
 
-    thread_pagination_xpath = "//a[@class='pagination_previous']/@href"
+    thread_pagination_xpath = "//a[@class='pagination_previous' and starts-with(@href,'Thread-')]/@href"
 
     thread_page_xpath = "//span[contains(@class,'pagination_current')]/text()"
 
@@ -72,7 +72,7 @@ class OgUsersSpider(SitemapSpider):
     use_proxy = "VIP"
     use_cloudflare_v2_bypass = True
     sitemap_datetime_format = "%m-%d-%Y"
-    handle_httpstatus_list = [403]
+    handle_httpstatus_list = [403, 404]
     get_cookies_retry = 10
     fraudulent_threshold = 10
 
@@ -143,29 +143,6 @@ class OgUsersSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         # Load topic_id
-        topic_id = response.meta.get("topic_id")
-
-        # Check current page to scrape from last page
-        current_page = response.xpath(self.thread_page_xpath).extract_first()
-        last_page = response.xpath(self.thread_last_page_xpath).extract_first()
-        if current_page == "1" and last_page:
-
-            if self.base_url not in last_page:
-                last_page = self.base_url + last_page
-
-            yield Request(
-                url=last_page,
-                headers=self.headers,
-                callback=super().parse_thread,
-                meta=self.synchronize_meta(
-                    response,
-                    default_meta={
-                        "topic_id": topic_id
-                    }
-                )
-            )
-
-        # Parse main thread
         yield from super().parse_thread(response)
 
         # Parse avatar thread
