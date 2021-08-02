@@ -607,6 +607,12 @@ class BypassCloudfareSpider(scrapy.Spider):
                 # cf_bypasser.adapters['https://'].ssl_context.set_ecdh_curve('secp521r1')
                 cf_bypasser.proxies = proxies
                 response = cf_bypasser.get(base_url)
+            except requests.exceptions.ProxyError as e:
+                if "Could not resolve host" in str(e):
+                    self.logger.exception("ProxyError: could not resolve host.")
+                    raise CloseSpider(reason='site_is_down')
+                self.logger.exception('Try #%s to bypass CloudFlare failed due to ProxyError', try_num)
+                continue
             except Exception:
                 self.logger.exception('Try #%s to bypass CloudFlare failed', try_num)
                 continue
