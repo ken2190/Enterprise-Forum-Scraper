@@ -15,6 +15,8 @@ LOGINS = [
 MIN_DELAY = 1
 MAX_DELAY = 3
 
+PROXY = 'http://127.0.0.1:8118'
+
 
 class XSSSpider(SitemapSpiderWithDelay):
     name = "xss_spider"
@@ -27,13 +29,17 @@ class XSSSpider(SitemapSpiderWithDelay):
     DELAY_FOR_THREAD_PAGE_AVATARS = 1
 
     # Url stuffs
-    base_url = "https://xss.is"
-    login_url = "https://xss.is/login/login"
+    base_url = "http://xssforumv3isucukbxhdhwz67hoa5e2voakcfkuieq4ch257vsburuid.onion/"
+    login_url = f"{base_url}login/login"
 
     # Selectors
     login_form_xpath = "//form[@action='/login/login']"
     forum_xpath = '//h3[@class="node-title"]/a/@href|' \
                   '//a[contains(@class,"subNodeLink--forum")]/@href'
+    forum_block_xpath = '//div[@data-node-id]//div[child::div[@class="node-body"]]'
+    forum_block_date_xpath = './/time/@data-time'
+    forum_block_url_xpath = './/h3[@class="node-title"]/a[starts-with(@href,"/forum")]/@href|' \
+                            './/a[contains(@class,"subNodeLink--forum") and starts-with(@href,"/forum")]/@href'
     thread_xpath = '//div[contains(@class, "structItem structItem--thread")]'
     thread_first_page_xpath = './/div[@class="structItem-title"]' \
                               '/a[contains(@href,"threads/")]/@href'
@@ -58,7 +64,7 @@ class XSSSpider(SitemapSpiderWithDelay):
     pagination_pattern = re.compile(r".*page-(\d+)$", re.IGNORECASE)
 
     # Other settings
-    use_proxy = "VIP"
+    use_proxy = "Tor"
 
     # Login Failed Message
     login_failed_xpath = '//div[contains(@class, "blockMessage")]'
@@ -67,7 +73,10 @@ class XSSSpider(SitemapSpiderWithDelay):
         yield Request(
             url=self.login_url,
             headers=self.headers,
-            callback=self.parse_start
+            callback=self.parse_start,
+            meta={
+                'proxy': PROXY,
+            }
         )
 
     def parse_start(self, response):
@@ -141,6 +150,21 @@ class XSSSpider(SitemapSpiderWithDelay):
                 )
             except:
                 return dateparser.parse(post_date).replace(tzinfo=None)
+
+    def extract_all_forums(self, response):
+        all_forum_blocks = response.xpath(self.forum_block_xpath)
+        all_forum_urls = []
+        for forum_block in all_forum_blocks:
+            forum_block_date = forum_block.xpath(self.forum_block_date_xpath).extract_first()
+            forum_lastmod = self.parse_thread_date(forum_block_date)
+            forum_urls = forum_block.xpath(self.forum_block_url_xpath).extract()
+            if self.start_date and forum_lastmod < self.start_date:
+                self.logger.info(
+                    f"Forum {forum_urls} last updated is {forum_lastmod} "
+                    f"before start date {self.start_date}. Ignored.")
+                continue
+            all_forum_urls.extend(forum_urls)
+        return set(all_forum_urls)
 
 
 class XSSScrapper(SiteMapScrapperWithDelay):
