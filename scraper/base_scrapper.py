@@ -1704,6 +1704,9 @@ class SitemapSpider(BypassCloudfareSpider):
         else:
             raise CloseSpider(reason='site_is_down')
 
+    def extract_all_forums(self, response):
+        return set(response.xpath(self.forum_xpath).extract())
+
     def parse(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
@@ -1711,7 +1714,7 @@ class SitemapSpider(BypassCloudfareSpider):
         # Check if login success
         self.check_if_logged_in(response)
 
-        all_forums = set(response.xpath(self.forum_xpath).extract())
+        all_forums = self.extract_all_forums(response)
         self.forums.update(all_forums)
 
         # update stats
@@ -2337,7 +2340,7 @@ class SitemapSpiderWithDelay(SitemapSpider):
         # Check if login success
         self.check_if_logged_in(response)
 
-        all_forums = set(response.xpath(self.forum_xpath).extract())
+        all_forums = self.extract_all_forums(response)
         self.forums.update(all_forums)
 
         # update stats
