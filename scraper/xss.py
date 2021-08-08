@@ -7,8 +7,8 @@ from scrapy import Request, FormRequest
 from scraper.base_scrapper import SitemapSpiderWithDelay, SiteMapScrapperWithDelay
 
 LOGINS = [
-    {"USER": "Firefly13", "PASS": "X$$-Fl71hf7jsos"},
-    {"USER": "BashScripts", "PASS": "Ba$h-X$s!81883"},
+    {"USER": "Firefly13", "PASS": "X$$-Fl71hf7jsos1"},
+    {"USER": "BashScripts", "PASS": "Ba$h-X$s!81884"},
     # {"USER": "kidicarus", "PASS": "X33-IcP19f!"}, requires admin verification
 ]
 
