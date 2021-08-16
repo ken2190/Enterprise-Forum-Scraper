@@ -53,7 +53,7 @@ class PsbdmpParser(BaseTemplate):
             '_source': {
                 'source': 'pastebin',
                 'date': ts,
-                'paste_id': paste_id
+                'pasteid': paste_id
             }
         }
 
