@@ -8,7 +8,6 @@ from scraper.base_scrapper import SitemapSpiderWithDelay, SiteMapScrapperWithDel
 
 LOGINS = [
     {"USER": "Firefly13", "PASS": "X$$-Fl71hf7jsos1"},
-    {"USER": "BashScripts", "PASS": "Ba$h-X$s!81884"},
     # {"USER": "kidicarus", "PASS": "X33-IcP19f!"}, requires admin verification
 ]
 
@@ -100,6 +99,15 @@ class XSSSpider(SitemapSpiderWithDelay):
 
     def check_if_logged_in(self, response):
         # check if logged in successfully
+        if not self.base_url in response.url:
+            yield Request(
+                url=self.base_url,
+                headers=self.headers,
+                callback=self.parse_start,
+                meta={
+                    'proxy': PROXY,
+                }
+            )
         if response.xpath(self.forum_xpath):
             # start forum scraping
             yield from self.parse(response)
