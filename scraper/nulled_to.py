@@ -50,17 +50,7 @@ class NulledSpider(SitemapSpider):
     post_datetime_format = "%Y-%m-%dT%H:%M:%S+00:00"
 
     use_proxy = "On"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.headers.update(
-            {
-                "Referer": "https://www.nulled.to/",
-                "Sec-fetch-mode": "navigate",
-                "Sec-fetch-site": "none",
-                "Sec-fetch-user": "?1",
-            }
-        )
+    use_cloudflare_v2_bypass = True
 
     def start_requests(self, cookiejar=None, ip=None):
         # Bypassing cloudflare
@@ -172,7 +162,7 @@ class NulledToScrapper(SiteMapScrapper):
         settings = super().load_settings()
         settings.update(
             {
-                'RETRY_HTTP_CODES': [403, 429, 500, 503, 504],
+                'RETRY_HTTP_CODES': [429, 500, 503, 504],
             }
         )
         return settings
