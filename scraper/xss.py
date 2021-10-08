@@ -113,14 +113,14 @@ class XSSSpider(SitemapSpiderWithDelay):
             # start forum scraping
             yield from self.parse(response)
             return
+        err_msg = response.css('div.blockMessage--error::text').get() or 'Unknown error'
+        self.logger.error('Unable to log in: %s', err_msg)
         if self.retry_count < 3:
+            self.retry_count += 1
             self.logger.error(f"Retry #{self.retry_count+1}: Error logging in. Retrying...")
             yield from self.retry_request(response)
             return
         super().check_if_logged_in(response)
-
-        err_msg = response.css('div.blockMessage--error::text').get() or 'Unknown error'
-        self.logger.error('Unable to log in: %s', err_msg)
 
     def retry_request(self, response):
         yield Request(
