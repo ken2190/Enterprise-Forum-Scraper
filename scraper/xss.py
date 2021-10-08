@@ -127,7 +127,8 @@ class XSSSpider(SitemapSpiderWithDelay):
             url=self.base_url,
             headers=self.synchronize_headers(response),
             callback=self.check_if_logged_in,
-            meta=self.synchronize_meta(response)
+            meta=self.synchronize_meta(response),
+            dont_filter=True,
         )
 
     def parse_thread(self, response):
