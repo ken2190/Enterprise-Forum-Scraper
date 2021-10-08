@@ -67,6 +67,7 @@ class XSSSpider(SitemapSpiderWithDelay):
 
     # Login Failed Message
     login_failed_xpath = '//div[contains(@class, "blockMessage")]'
+    retry_count = 0
 
     def start_requests(self):
         yield Request(
@@ -112,11 +113,22 @@ class XSSSpider(SitemapSpiderWithDelay):
             # start forum scraping
             yield from self.parse(response)
             return
-
+        if self.retry_count < 3:
+            self.logger.error(f"Retry #{self.retry_count+1}: Error logging in. Retrying...")
+            yield from self.retry_request(response)
+            return
         super().check_if_logged_in(response)
 
         err_msg = response.css('div.blockMessage--error::text').get() or 'Unknown error'
         self.logger.error('Unable to log in: %s', err_msg)
+
+    def retry_request(self, response):
+        yield Request(
+            url=self.base_url,
+            headers=self.synchronize_headers(response),
+            callback=self.check_if_logged_in,
+            meta=self.synchronize_meta(response)
+        )
 
     def parse_thread(self, response):
         # Parse generic thread
