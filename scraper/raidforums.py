@@ -54,7 +54,8 @@ class RaidForumsSpider(SitemapSpider):
                       '//span[@class="post_date"]/span[@title]/@title'
     avatar_xpath = '//div[@class="post__user"]/a/img/@src'
 
-    use_proxy = 'On'
+    use_proxy = "VIP"
+    use_cloudflare_v2_bypass = True
 
     # Other settings
     sitemap_datetime_format = "%B %d, %Y at %I:%M %p"
