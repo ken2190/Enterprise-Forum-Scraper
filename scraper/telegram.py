@@ -1,32 +1,28 @@
-import re
-import os
-import json
 import asyncio
-import time
+import json
+import os
+import re
+from datetime import (
+    datetime
+)
 
+from pydispatch import dispatcher
+from scrapy import (
+    Request
+)
 from scrapy.signals import spider_closed
 from telethon import TelegramClient
-from pydispatch import dispatcher
 
-from datetime import (
-    datetime,
-    timedelta
-)
-from scrapy import (
-    Request,
-    Selector
-)
 from scraper.base_scrapper import (
     SitemapSpider,
     SiteMapScrapper
 )
 
+api_id = "13722063"
+api_hash = "9a3a3479661523ed348ffdc463ef33a1"
 
-api_id = "1366434"
-api_hash = "1a4bc8ae740923572b1d7bd9bc9dbe08"
 
 class TelegramChannelSpider(SitemapSpider):
-
     name = "telegramss"
 
     # Url stuffs
@@ -34,11 +30,9 @@ class TelegramChannelSpider(SitemapSpider):
 
     # Other settings
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
-    chunk = 10  # Change this to change number of messages per request
-    delay = 1  # Change the delay between each request
 
     def spider_closed(self, spider):
-        self.stop_write()
+        self.logger.info("Spider closed successfully.")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -74,96 +68,72 @@ class TelegramChannelSpider(SitemapSpider):
             json_file
         )
 
-        # Init file
-        self.start_write()
-
     def start_requests(self):
         yield Request(
             url=self.channel_url % self.channel
         )
 
-
     def parse(self, response):
-        yield from self.parse_message()
+        self.parse_message()
+        return
 
-    def parse_message(self, max_id=None):
+    async def process_new_messages(self):
+        async for msg_object in self.client.iter_messages(self.channel):
+            if msg_object.message is None:
+                continue
+            if msg_object.date.timestamp() < self.start_date.timestamp():
+                self.logger.info(f'Stopping as date of message is {msg_object.date}')
+                break
 
-        # Init queue
-        if not max_id:
-            messages_queue = self.client.get_messages(self.channel, limit=self.chunk)
-        else:
-            messages_queue = self.client.get_messages(self.channel, limit=self.chunk, max_id=max_id)
+            # Init item
+            self.process_message(msg_object)
 
-        # Execute queue
-        messages = self.loop.run_until_complete(messages_queue)
+    def parse_message(self):
+        self.loop.run_until_complete(self.process_new_messages())
+        return
 
-        # Yield message
-        for message in messages:
-            # Check date
-            if self.start_date and message.date.replace(tzinfo=None) < self.start_date:
-                self.logger.info(
-                    "Find no more message later than %s, ignoring." % self.start_date
-                )
-                return
-
-            yield from self.process_message(message.__dict__)
-
-        # Load max id
-        if messages:
-            max_id = messages[-1].id
-
-            # Delay before next request
-            time.sleep(self.delay)
-
-            yield from self.parse_message(max_id=max_id)
-
-    def process_message(self, message):
-
+    def process_message(self, msg_object):
+        sender = msg_object.sender
         # Init item
-        item = {
-            "date": message.get("date").timestamp()*1000
-        }
-
+        message = msg_object.message
+        item = {"channel": self.channel, "type": "telegram", "date": msg_object.date.timestamp() * 1000,
+                "author": sender.username, "message": message, "urls": self.extract_urls(message),
+                "usernames": self.extract_usernames(message)}
+        doc = {"_source": item}
         # Update item
-        item.update(
-            {
-                key: value for key, value in message.items()
-                if type(value) in [str, int]
-            }
-        )
-        item.update({
-            "author": message['_sender'].username
-        })
-        yield from self.write_item(item)
+        self.write_item(doc)
 
     def write_item(self, item):
         with open(
-            file=self.json_file,
-            mode="a+",
-            encoding="utf-8"
+                file=self.json_file,
+                mode="a+"
         ) as file:
-            if not self.first_write:
-                self.first_write = True
-            else:
-                file.write(",")
-            file.write(json.dumps(item))
-        yield item
+            file.write(json.dumps(item, indent=4, ensure_ascii=False) + "\n")
+        self.crawler.stats.inc_value("mainlist/detail_saved_count")
+        self.logger.info(item)
 
     def start_write(self):
         with open(
-            file=self.json_file,
-            mode="w+",
-            encoding="utf-8"
-        ) as file:
-            file.write("[")
-
-    def stop_write(self):
-        with open(
                 file=self.json_file,
-                mode="a+",
-                encoding="utf-8"
+                mode="w+"
         ) as file:
-            file.write("]")
+            file.write("")
+
+    def extract_urls(self, message):
+        url_pattern = r"\b((?:https?://)?(?:(?:www\.)?(?:[\da-z\.-]+)\.(?:[a-z]{2,6})|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])))(?::[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])?(?:/[\w\.-]*)*/?)\b"
+        res = re.findall(url_pattern, message)
+        if res:
+            return res
+        else:
+            return []
+
+    def extract_usernames(self, message):
+        username_pattern = r"@([^\s:,\.]+)"
+        res = re.findall(username_pattern, message)
+        if res:
+            return res
+        else:
+            return []
 
 
 class TelegramChannelScrapper(SiteMapScrapper):
