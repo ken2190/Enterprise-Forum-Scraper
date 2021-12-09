@@ -152,7 +152,7 @@ def run(kwargs=None):
         exit_func(2, RuntimeError(err_msg))
 
     # prepare paths
-    if site_type == "shadownet":
+    if site_type in ("shadownet", "telegram"):
         html_dir = os.path.join(output_folder, site_type, site)
         parse_dir = os.path.join(parse_folder, site_type, site)
     else:

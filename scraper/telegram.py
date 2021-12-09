@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import re
 from datetime import (
     datetime
 )
@@ -21,8 +20,17 @@ from scraper.base_scrapper import (
 api_id = "13722063"
 api_hash = "9a3a3479661523ed348ffdc463ef33a1"
 
+def date_format(message):
+    """
+    :param message:
+    :return:
+    """
+    if type(message) is datetime:
+        return message.timestamp()
+
 
 class TelegramChannelSpider(SitemapSpider):
+    use_proxy = "Off"
     name = "telegramss"
 
     # Url stuffs
@@ -37,7 +45,7 @@ class TelegramChannelSpider(SitemapSpider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         dispatcher.connect(self.spider_closed, spider_closed)
-        self.channel = kwargs.get("channel")
+        self.channel = kwargs['channel']
         self.first_write = False
 
         # Init client
@@ -63,6 +71,8 @@ class TelegramChannelSpider(SitemapSpider):
             start_date,
             end_date
         )
+        if not os.path.exists(self.output_path):
+            os.makedirs(self.output_path)
         self.json_file = os.path.join(
             self.output_path,
             json_file
@@ -86,29 +96,23 @@ class TelegramChannelSpider(SitemapSpider):
                 break
 
             # Init item
-            self.process_message(msg_object)
+            self.write_message(msg_object)
 
     def parse_message(self):
         self.loop.run_until_complete(self.process_new_messages())
         return
 
-    def process_message(self, msg_object):
-        sender = msg_object.sender
-        # Init item
-        message = msg_object.message
-        item = {"channel": self.channel, "type": "telegram", "date": msg_object.date.timestamp() * 1000,
-                "author": sender.username, "message": message, "urls": self.extract_urls(message),
-                "usernames": self.extract_usernames(message)}
-        doc = {"_source": item}
-        # Update item
-        self.write_item(doc)
+    def write_message(self, msg_object):
+        msg_dict = msg_object.to_dict()
+        msg_dict["sender"] = msg_object.sender.to_dict()
+        self.write_item(msg_dict)
 
     def write_item(self, item):
         with open(
                 file=self.json_file,
                 mode="a+"
         ) as file:
-            file.write(json.dumps(item, indent=4, ensure_ascii=False) + "\n")
+            file.write(json.dumps(item, ensure_ascii=False, default=date_format) + "\n")
         self.crawler.stats.inc_value("mainlist/detail_saved_count")
         self.logger.info(item)
 
@@ -119,22 +123,6 @@ class TelegramChannelSpider(SitemapSpider):
         ) as file:
             file.write("")
 
-    def extract_urls(self, message):
-        url_pattern = r"\b((?:https?://)?(?:(?:www\.)?(?:[\da-z\.-]+)\.(?:[a-z]{2,6})|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])))(?::[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])?(?:/[\w\.-]*)*/?)\b"
-        res = re.findall(url_pattern, message)
-        if res:
-            return res
-        else:
-            return []
-
-    def extract_usernames(self, message):
-        username_pattern = r"@([^\s:,\.]+)"
-        res = re.findall(username_pattern, message)
-        if res:
-            return res
-        else:
-            return []
-
 
 class TelegramChannelScrapper(SiteMapScrapper):
     spider_class = TelegramChannelSpider
@@ -142,7 +130,7 @@ class TelegramChannelScrapper(SiteMapScrapper):
 
     def __init__(self, kwargs):
         super().__init__(kwargs)
-        self.channel = kwargs.get("channel")
+        self.channel = kwargs.get("sitename")
         if self.channel is None:
             raise ValueError("Channel is required for telegram scraper.")
 
