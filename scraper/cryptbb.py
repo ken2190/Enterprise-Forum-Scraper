@@ -16,7 +16,7 @@ DAILY_LIMIT = 100000
 
 class CryptBBSpider(SitemapSpider):
     name = 'cryptbb_spider'
-    base_url = 'http://cryptbb2gezhohku.onion/'
+    base_url = 'http://cryptbbtg65gibadeeo2awe3j7s6evg7eklserehqr4w4e2bis5tebid.onion/'
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'
