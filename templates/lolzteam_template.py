@@ -21,6 +21,13 @@ class LolzTeamParser(BaseTemplate):
         self.avatar_xpath = 'div//div[@class="avatarHolder"]/a/span/@style'
 
         self.index = 1
-
+        self.offset_hours = -3
+        self.date_pattern = '%b %d, %Y at %I:%M %p'
         # main function
         self.main()
+
+    def get_date(self, tag):
+        date_block = tag.xpath(self.date_xpath)
+        date_string = date_block[0].strip() if date_block else None
+        date = self.parse_date_string(date_string)
+        return date

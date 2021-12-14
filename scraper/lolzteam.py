@@ -21,18 +21,17 @@ class LolzSpider(SitemapSpider):
     thread_xpath = '//div[@class="discussionListItem--Wrapper"]'
     thread_first_page_xpath = './/a[contains(@href,"threads/")]/@href'
     thread_last_page_xpath = './/nav/a[last()]/@href'
-    thread_date_xpath = './/a[@class="dateTime lastPostInfo"]'\
+    thread_date_xpath = './/a[contains(@class,"dateTime lastPostInfo")]'\
                         '/abbr/@data-datestring|'\
-                        './/a[@class="dateTime lastPostInfo"]'\
-                        '/span[@class="DateTime"]/text()'
+                        './/a[contains(@class,"dateTime lastPostInfo")]/text()'
     pagination_xpath = '//nav//a[contains(@class, "currentPage")]/text()'
     thread_pagination_xpath = '//nav/a[@class="text"]/@href'
     thread_page_xpath = '//nav//a[contains(@class, "currentPage")]'\
                         '/text()'
-    post_date_xpath = '//div[@class="privateControls"]'\
-                      '//span[@class="DateTime"]/text()|'\
-                      '//div[@class="privateControls"]'\
-                      '//abbr[@class="DateTime"]/@data-datestring'
+    post_date_xpath = '//div[@class="privateControls"]' \
+                      '//abbr[@class="DateTime"]/@data-time|'\
+                      '//div[@class="privateControls"]' \
+                      '//span[@class="DateTime"]/@title'
 
     avatar_xpath = '//div[@class="avatarHolder"]/a'
     forum_last_page_xpath = '//div[@class="PageNav"]/@data-last'
@@ -50,7 +49,7 @@ class LolzSpider(SitemapSpider):
     # Other settings
     use_proxy = "On"
     sitemap_datetime_format = '%b %d, %Y'
-    post_datetime_format = '%b %d, %Y'
+    post_datetime_format = "%b %d, %Y at %I:%M %p"
 
     def get_forum_next_page(self, response):
         current_page = response.xpath(self.pagination_xpath).extract_first()
