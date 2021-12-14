@@ -19,7 +19,7 @@ CLEANUP_AFTER_IMPORT = True
 ELASTIC_IMPORT_INDEXES = {
     'forum': 'dv-f002',
     'marketplace': 'dv-f002',
-    'telegram': 'dv-f002',
+    'telegram': 'dv-tg01',
     'paste': 'dv-paste01',
     'nosql': 'dv-meta01',
     'shadownet': 'dv-shadownet01'
