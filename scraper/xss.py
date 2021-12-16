@@ -70,7 +70,7 @@ class XSSSpider(SitemapSpiderWithDelay):
     retry_count = 0
     handle_httpstatus_list = [403, 501, 503]
 
-    def start_requests(self):
+    def start_requests(self, cookiejar=None, ip=None):
         yield Request(
             url=self.login_url,
             headers=self.headers,
@@ -84,7 +84,15 @@ class XSSSpider(SitemapSpiderWithDelay):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-
+        if not response.xpath(self.login_form_xpath):
+            yield response.follow(
+                url=self.base_url,
+                headers=self.headers,
+                callback=self.check_if_logged_in,
+                meta=self.synchronize_meta(response),
+                dont_filter=True,
+            )
+            return
         login = self.get_login(LOGINS)
         print(login)
         yield FormRequest.from_response(
@@ -102,16 +110,9 @@ class XSSSpider(SitemapSpiderWithDelay):
 
     def check_if_logged_in(self, response):
         # check if logged in successfully
-        if not self.base_url in response.url:
-            yield Request(
-                url=self.base_url,
-                headers=self.headers,
-                callback=self.parse_start,
-                meta={
-                    'proxy': PROXY,
-                },
-                dont_filter=True
-            )
+        if not self.base_url in response.url or not response.text:
+            yield from self.start_requests()
+            return
         if response.xpath(self.forum_xpath):
             # start forum scraping
             yield from self.parse(response)
