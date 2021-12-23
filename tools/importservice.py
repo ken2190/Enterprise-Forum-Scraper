@@ -11,7 +11,7 @@ IMPORT_DIR = "/data/processing/import/2021/{site_type}/"
 BACKUP_DIR = "/data/processing/backup/{site_type}"
 ORIGIN_DIR = "/data/processing/import/2021/{site_type}/"
 
-RSYNC_SERVER = "root@144.217.69.205"
+RSYNC_SERVER = "root@142.44.214.143"
 KEY_PATH = "~/.ssh/nodeimport.pem"
 
 CLEANUP_AFTER_IMPORT = True
@@ -129,7 +129,7 @@ def main():
           "--input={filepath} "\
           f"--output={ELASTIC_OUT.format(elastic_index=index)} "\
           f"--noRefresh "\
-          "--limit=10000".split()
+          "--limit=1000".split()
     log_file = "/var/log/elasticimport.log"
 
     with open(log_file, 'a', encoding='utf-8') as f:
