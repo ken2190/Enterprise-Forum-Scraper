@@ -1,4 +1,5 @@
 import re
+import uuid
 from datetime import datetime
 
 from scrapy.http import Request, FormRequest
@@ -15,8 +16,8 @@ PASS = 'Nightlion#123'
 
 class Dark2WebSpider(SitemapSpider):
     name = 'dark2web_spider'
-    base_url = 'https://dark2web.net'
-    login_url = 'https://dark2web.net/login/login'
+    base_url = 'https://mesto.dark2web.biz/'
+    login_url = 'https://mesto.dark2web.biz/login/login'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href|' \
@@ -55,6 +56,7 @@ class Dark2WebSpider(SitemapSpider):
     # Other settings
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
+    use_cloudflare_v2_bypass = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,24 +68,60 @@ class Dark2WebSpider(SitemapSpider):
         )
 
     def start_requests(self):
+        # Temporary action to start spider
         yield Request(
-            url=self.login_url,
+            url=self.temp_url,
             headers=self.headers,
-            callback=self.proceed_for_login
+            callback=self.pass_cloudflare
         )
 
+    def pass_cloudflare(self, cookies=None, ip=None):
+        # Load cookies and ip
+        cookies, ip = self.get_cloudflare_cookies(
+            base_url=self.login_url,
+            proxy=True,
+            fraud_check=True
+        )
+
+        if "cf_clearance" not in cookies:
+            yield Request(
+                url=self.temp_url,
+                headers=self.headers,
+                callback=self.pass_cloudflare
+            )
+
+        # Init request kwargs and meta
+        meta = {
+            "cookiejar": uuid.uuid1().hex,
+            "ip": ip
+        }
+        request_kwargs = {
+            "url": self.login_url,
+            "headers": self.headers,
+            "callback": self.proceed_for_login,
+            "dont_filter": True,
+            "cookies": cookies,
+            "meta": meta
+        }
+
+        yield Request(**request_kwargs)
+
     def proceed_for_login(self, response):
+        # Synchronize user agent for cloudfare middleware
         self.synchronize_headers(response)
 
-        # Extract csrf token
+        # captcha_response = self.solve_recaptcha(response, proxyless=True).solution.token
+
+        # Exact token
         token = response.xpath(
             '//input[@name="_xfToken"]/@value').extract_first()
         params = {
             'login': USER,
             'password': PASS,
             "remember": '1',
-            '_xfRedirect': '/',
+            '_xfRedirect': self.base_url,
             '_xfToken': token,
+            # 'g-recaptcha-response': captcha_response
         }
 
         yield FormRequest(

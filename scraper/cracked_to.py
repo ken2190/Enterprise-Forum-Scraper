@@ -18,8 +18,8 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36
 class CrackedToSpider(SitemapSpider):
     name = 'cracked_spider'
 
-    base_url = "https://cracked.to/"
-    login_url = "https://cracked.to/member.php?action=login"
+    base_url = "https://cracked.io/"
+    login_url = f"{base_url}member.php?action=login"
 
     # Css stuffs
     login_form_xpath = "//form[@action='member.php']"
@@ -64,7 +64,8 @@ class CrackedToSpider(SitemapSpider):
     bypass_success_xpath = '//a[@class="guestnav" and text()="Login"]'
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = "VIP"
+    use_cloudflare_v2_bypass = True
     sitemap_datetime_format = "%m-%d-%Y"
     handle_httpstatus_list = [403]
     get_cookies_retry = 10
@@ -122,7 +123,7 @@ class CrackedToSpider(SitemapSpider):
                 "submit": "Login",
                 "action": "do_login",
                 "url": f'{self.base_url}index.php',
-                "g-recaptcha-response": self.solve_recaptcha(response).solution.token,
+                "g-recaptcha-response": self.solve_recaptcha(response, proxyless=True).solution.token,
                 'my_post_key': my_post_key
             },
             headers=self.headers,

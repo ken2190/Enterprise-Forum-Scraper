@@ -22,7 +22,7 @@ class IfudSpider(SitemapSpider):
     name = 'ifud_spider'
 
     # Url stuffs
-    base_url = "http://ifud.ws"
+    base_url = "https://ifud.cx/"
 
     # Xpaths
     login_form_xpath = '//form[@method="post"]'

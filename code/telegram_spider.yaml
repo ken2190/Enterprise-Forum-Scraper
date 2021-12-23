@@ -1,0 +1,14 @@
+channels:
+  default:
+    account: telegramss
+accounts:
+  default:
+    name: telegramss
+    username: telegramss
+    api_id: "13722063"
+    api_hash: "9a3a3479661523ed348ffdc463ef33a1"
+  old_account:
+    name: old_account
+    username: old_account
+    api_id: "1366434"
+    api_hash: "1a4bc8ae740923572b1d7bd9bc9dbe08"

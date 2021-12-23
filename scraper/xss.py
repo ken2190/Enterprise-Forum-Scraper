@@ -68,21 +68,31 @@ class XSSSpider(SitemapSpiderWithDelay):
     # Login Failed Message
     login_failed_xpath = '//div[contains(@class, "blockMessage")]'
     retry_count = 0
+    handle_httpstatus_list = [403, 501, 503]
 
-    def start_requests(self):
+    def start_requests(self, cookiejar=None, ip=None):
         yield Request(
             url=self.login_url,
             headers=self.headers,
             callback=self.parse_start,
             meta={
                 'proxy': PROXY,
-            }
+            },
+            dont_filter=True,
         )
 
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
-
+        if not response.xpath(self.login_form_xpath):
+            yield response.follow(
+                url=self.base_url,
+                headers=self.headers,
+                callback=self.check_if_logged_in,
+                meta=self.synchronize_meta(response),
+                dont_filter=True,
+            )
+            return
         login = self.get_login(LOGINS)
         print(login)
         yield FormRequest.from_response(
@@ -100,15 +110,9 @@ class XSSSpider(SitemapSpiderWithDelay):
 
     def check_if_logged_in(self, response):
         # check if logged in successfully
-        if not self.base_url in response.url:
-            yield Request(
-                url=self.base_url,
-                headers=self.headers,
-                callback=self.parse_start,
-                meta={
-                    'proxy': PROXY,
-                }
-            )
+        if not self.base_url in response.url or not response.text:
+            yield from self.start_requests()
+            return
         if response.xpath(self.forum_xpath):
             # start forum scraping
             yield from self.parse(response)
@@ -144,6 +148,8 @@ class XSSSpider(SitemapSpiderWithDelay):
         :return: datetime => thread date as datetime converted from string,
                             using class sitemap_datetime_format
         """
+        if thread_date is None:
+            return None
         try:
             return datetime.fromtimestamp(float(thread_date))
         except:
@@ -161,6 +167,8 @@ class XSSSpider(SitemapSpiderWithDelay):
         :return: datetime => post date as datetime converted from string,
                             using class post_datetime_format
         """
+        if post_date is None:
+            return None
         try:
             return datetime.fromtimestamp(float(post_date))
         except:
@@ -179,7 +187,7 @@ class XSSSpider(SitemapSpiderWithDelay):
             forum_block_date = forum_block.xpath(self.forum_block_date_xpath).extract_first()
             forum_lastmod = self.parse_thread_date(forum_block_date)
             forum_urls = forum_block.xpath(self.forum_block_url_xpath).extract()
-            if self.start_date and forum_lastmod < self.start_date:
+            if self.start_date and forum_lastmod and forum_lastmod < self.start_date:
                 self.logger.info(
                     f"Forum {forum_urls} last updated is {forum_lastmod} "
                     f"before start date {self.start_date}. Ignored.")

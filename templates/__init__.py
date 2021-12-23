@@ -3,6 +3,7 @@ from templates.oday_template import OdayParser
 from templates.bmr_template import BMRParser
 from templates.evolution_template import EvolutionParser
 from templates.agora_template import AgoraParser
+from templates.telegram_template import TelegramParser
 from templates.therealdeal_template import TheRealDealParser
 from templates.abraxas_template import AbraxasParser
 from templates.kiss_template import KissParser
@@ -413,6 +414,7 @@ PARSER_MAP = {
     'dedicatet': DedicatetParser,
     'darkmarket_cm': DarkMarketCmParser,
     'ifud': IfudParser,
+    'telegram': TelegramParser,
     'gerki': GerkiParser,
     'proxybase': ProxyBaseParser,
     'shadowcarders': ShadowCardersParser,

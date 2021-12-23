@@ -17,6 +17,12 @@ class Parser:
                  'Everything else will be removed.',
             required=False)
         self.parser.add_argument(
+            '-r', '--remove_empty_fields',
+            help='remove fields that are empty.',
+            default=False,
+            action='store_true',
+            required=False)
+        self.parser.add_argument(
             '-d', '--domain',
             help='add domain field from email',
             action='store_true')
@@ -92,8 +98,12 @@ def process_line(out_file, single_json, args):
         data = json_response.items()
     for key, value in data:
         if key in ['email', 'e'] and args.domain:
-            domain = value.split('@')[-1]
-            final_data.update({'domain': domain})
+            value = value.replace("@@", "@")
+            email_parts = value.split('@')
+            if len(email_parts) == 2:
+                domain = email_parts[-1]
+                if domain and domain.strip():
+                    final_data.update({'domain': domain})
         if key in ['address', 'city', 'state', 'zip'] and args.address_merge:
             address = address.replace(key, value)
             final_data.update({'address': address})
@@ -110,11 +120,20 @@ def process_line(out_file, single_json, args):
         final_data['importdate'] = args.importdate
     if args.breach:
         final_data['breach'] = args.breach
+    if args.remove_empty_fields:
+        remove_empty_fields(final_data)
     if args.format:
         filtered_json = {'_source': final_data}
     else:
         filtered_json = final_data
     out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
+
+
+def remove_empty_fields(data_dict):
+    for key in list(data_dict):
+        value = data_dict[key]
+        if not value or (type(value) == str and len(value.strip()) == 0):
+            del data_dict[key]
 
 
 def main():

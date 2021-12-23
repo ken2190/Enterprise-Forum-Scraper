@@ -86,13 +86,12 @@ def process_scraper(scraper):
     # the master_list dir for saving post ids in txt files
     master_list_dir = os.path.join(MASTER_LIST_DIR, subfolder)
 
-    if scraper['template'] == 'shadownet':
+    if template == 'shadownet' or template == 'telegram':
         scraper_output_dir = os.path.join(OUTPUT_DIR, template, subfolder)
         parse_output_dir = os.path.join(PARSE_DIR, template, subfolder)
     else:
         scraper_output_dir = os.path.join(OUTPUT_DIR, subfolder)
         parse_output_dir = os.path.join(PARSE_DIR, subfolder)
-
     try:
         ############################
         # Run scraper for template

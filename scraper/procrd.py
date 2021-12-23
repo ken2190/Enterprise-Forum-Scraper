@@ -11,7 +11,7 @@ class ProcrdSpider(SitemapSpider):
     name = "procrd"
 
     # Url stuffs
-    base_url = "https://procrd.biz"
+    base_url = "https://procrd.cn"
 
     # Xpath stuffs
     forum_xpath = '//a[re:test(@href, "/forums/[a-zA-Z0-9-]+\.\d+/?$")]/@href'
