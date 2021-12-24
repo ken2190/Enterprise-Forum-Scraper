@@ -210,7 +210,7 @@ def main():
             -d           | --domain:                 Add domain field from email
             -r           | --remove_empty_fields:    Remove fields that are empty
             -x           | --remove_x_fields:        Remove fields that start with x
-            -d           | --expand_abbreviations:   Expand the abbreviations and replace with full forms
+            -ea          | --expand_abbreviations:   Expand the abbreviations and replace with full forms
             -am          | --address_merge:          Merge Addresses
             -nm          | --name_merge              Merge Names
             -f           | --format                  Insert formatting for elasticsearch
