@@ -225,6 +225,7 @@ from templates.mctrades_template import MctradesParser
 from templates.russiancarderru_template import RussiancarderRuParser
 from templates.darkteam_template import DarkteamParser
 from templates.helium_template import HeliumParser
+from templates.neadekvat import NeadekvatParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -452,5 +453,6 @@ PARSER_MAP = {
     'russiancarder_ru': RussiancarderRuParser,
     'eleaks': EleaksParser,
     'darkteam': DarkteamParser,
-    'helium': HeliumParser
+    'helium': HeliumParser,
+    'neadekvat': NeadekvatParser,
 }
