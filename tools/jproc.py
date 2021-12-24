@@ -49,6 +49,12 @@ class Parser:
             action='store_true',
             required=False)
         self.parser.add_argument(
+            '-x', '--remove_x_fields',
+            help='remove fields that start with x.',
+            default=False,
+            action='store_true',
+            required=False)
+        self.parser.add_argument(
             '-ea', '--expand_abbreviations',
             help='expand the abbreviations and replace them with their full forms present in MAPPER.',
             default=False,
@@ -117,6 +123,13 @@ def remove_empty_fields(data_dict):
             del data_dict[key]
 
 
+def remove_x_fields(data_dict):
+    temp_data = deepcopy(data_dict)
+    for key, value in temp_data.items():
+        if key.startswith("x"):
+            del data_dict[key]
+
+
 def process_line(out_file, single_json, args):
     # while True:
     #     try:
@@ -171,6 +184,8 @@ def process_line(out_file, single_json, args):
         final_data['breach'] = args.breach
     if args.remove_empty_fields:
         remove_empty_fields(final_data)
+    if args.remove_x_fields:
+        remove_x_fields(final_data)
     if args.expand_abbreviations:
         expand_abbreviations(final_data)
     if args.format:
@@ -194,6 +209,7 @@ def main():
             -s           | --keep KEEP_LIST:         List of fields to keep (comma separated).
             -d           | --domain:                 Add domain field from email
             -r           | --remove_empty_fields:    Remove fields that are empty
+            -x           | --remove_x_fields:        Remove fields that start with x
             -d           | --expand_abbreviations:   Expand the abbreviations and replace with full forms
             -am          | --address_merge:          Merge Addresses
             -nm          | --name_merge              Merge Names
