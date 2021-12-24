@@ -2,6 +2,32 @@ import json
 import traceback
 import argparse
 import re
+from copy import deepcopy
+
+MAPPER = {
+    "a": "address",
+    "n": "name",
+    "s": "salt",
+    "h": "hash",
+    "p": "password",
+    "m": "mobile",
+    "u": "username",
+    "e": "email",
+    "i": "ip",
+    "de": "device",
+    "lat": "latitude",
+    "long": "longitude",
+    "did": "device_id",
+    "fb": "fb_user",
+    "telegramid": "tgid",
+    "d": "domain",
+    "r": "breach",
+    "t": "phone",
+    "c": "company",
+    "o": "other",
+    "url1": "linkedin",
+    "liid": "linkedin"
+}
 
 class Parser:
     def __init__(self):
@@ -19,6 +45,12 @@ class Parser:
         self.parser.add_argument(
             '-r', '--remove_empty_fields',
             help='remove fields that are empty.',
+            default=False,
+            action='store_true',
+            required=False)
+        self.parser.add_argument(
+            '-ea', '--expand_abbreviations',
+            help='expand the abbreviations and replace them with their full forms present in MAPPER.',
             default=False,
             action='store_true',
             required=False)
@@ -67,6 +99,23 @@ def filter_json(data, parent_key, filter_fields):
                                 pass
                             else:
                                 filter_json(val, parent_key + "/" + key, filter_fields)
+
+
+def expand_abbreviations(data_dict):
+    temp_data = deepcopy(data_dict)
+    for key, value in temp_data.items():
+        if key in MAPPER:
+            new_key = MAPPER.get(key)
+            data_dict.pop(key)
+            data_dict[new_key] = value
+
+
+def remove_empty_fields(data_dict):
+    temp_data = deepcopy(data_dict)
+    for key, value in temp_data.items():
+        if not value or (type(value) == str and len(value.strip()) == 0):
+            del data_dict[key]
+
 
 def process_line(out_file, single_json, args):
     # while True:
@@ -122,18 +171,13 @@ def process_line(out_file, single_json, args):
         final_data['breach'] = args.breach
     if args.remove_empty_fields:
         remove_empty_fields(final_data)
+    if args.expand_abbreviations:
+        expand_abbreviations(final_data)
     if args.format:
         filtered_json = {'_source': final_data}
     else:
         filtered_json = final_data
     out_file.write(json.dumps(filtered_json, ensure_ascii=False) + '\n')
-
-
-def remove_empty_fields(data_dict):
-    for key in list(data_dict):
-        value = data_dict[key]
-        if not value or (type(value) == str and len(value.strip()) == 0):
-            del data_dict[key]
 
 
 def main():
@@ -149,6 +193,8 @@ def main():
             Optional:
             -s           | --keep KEEP_LIST:         List of fields to keep (comma separated).
             -d           | --domain:                 Add domain field from email
+            -r           | --remove_empty_fields:    Remove fields that are empty
+            -d           | --expand_abbreviations:   Expand the abbreviations and replace with full forms
             -am          | --address_merge:          Merge Addresses
             -nm          | --name_merge              Merge Names
             -f           | --format                  Insert formatting for elasticsearch
