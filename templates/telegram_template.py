@@ -50,7 +50,8 @@ class TelegramParser(BaseTemplate):
                 if line:
                     item = json.loads(line)
                     data = self.process_message(item)
-                    utils.write_json(output_file_pointer, data)
+                    if data:
+                        utils.write_json(output_file_pointer, data)
         print('\nJson written in {}'.format(output_file_pointer.name))
         print('----------------------------------------\n')
 
@@ -58,6 +59,8 @@ class TelegramParser(BaseTemplate):
         sender = msg_object.get("sender", dict())
         # Init item
         message = msg_object["message"]
+        if not message:
+            return
         item = {"channel": self.channel, "type": "telegram", "date": msg_object["date"] * 1000,
                 "author": sender.get("username", self.channel) if sender else self.channel, "message": message}
         self.populate_urls(item, message)
