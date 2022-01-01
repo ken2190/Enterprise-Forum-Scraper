@@ -37,3 +37,6 @@ echo "processing Markets"
 
 echo processing "shadownet"
 /usr/bin/env python3 "$SCRIPT_PATH" -type shadownet >> "$LOGPATH" 2>&1
+
+echo processing "telegram"
+/usr/bin/env python3 "$SCRIPT_PATH" -type telegram >> "$LOGPATH" 2>&1

@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 
-IMPORT_DIR = "/data/processing/import/2021/{site_type}/"
+IMPORT_DIR = "/data/processing/import/2022/{site_type}/"
 BACKUP_DIR = "/data/processing/backup/{site_type}"
 ORIGIN_DIR = "/data/processing/import/2021/{site_type}/"
 
