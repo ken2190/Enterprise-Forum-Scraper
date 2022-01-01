@@ -9,7 +9,7 @@ import sys
 
 IMPORT_DIR = "/data/processing/import/2022/{site_type}/"
 BACKUP_DIR = "/data/processing/backup/{site_type}"
-ORIGIN_DIR = "/data/processing/import/2021/{site_type}/"
+ORIGIN_DIR = "/data/processing/import/2022/{site_type}/"
 
 RSYNC_SERVER = "root@142.44.214.143"
 KEY_PATH = "~/.ssh/nodeimport.pem"
