@@ -1,13 +1,11 @@
 # -- coding: utf-8 --
+import json
 import os
 import re
 import traceback
 from datetime import datetime
 
 import utils
-import dateutil.parser as dparser
-import json
-
 from .base_template import BaseTemplate
 
 
@@ -33,6 +31,8 @@ class TelegramParser(BaseTemplate):
     def main(self):
         for file in self.files:
             filename = os.path.basename(file)
+            print('----------------------------------------\n')
+            print(f"Parsing {file}...")
             output_file_path = os.path.join(self.output_folder, filename)
             try:
                 file_pointer = open(output_file_path, 'w', encoding='utf-8')
@@ -43,21 +43,26 @@ class TelegramParser(BaseTemplate):
                 traceback.print_exc()
                 continue
 
-    def process_file(self, input_file_path, file_pointer):
+    def process_file(self, input_file_path, output_file_pointer):
         with open(input_file_path, 'r') as fp:
             content = fp.read()
             for line in content.split("\n"):
                 if line:
                     item = json.loads(line)
                     data = self.process_message(item)
-                    utils.write_json(file_pointer, data)
+                    if data:
+                        utils.write_json(output_file_pointer, data)
+        print('\nJson written in {}'.format(output_file_pointer.name))
+        print('----------------------------------------\n')
 
     def process_message(self, msg_object):
-        sender = msg_object["sender"]
+        sender = msg_object.get("sender", dict())
         # Init item
         message = msg_object["message"]
+        if not message:
+            return
         item = {"channel": self.channel, "type": "telegram", "date": msg_object["date"] * 1000,
-                "author": sender["username"], "message": message}
+                "author": sender.get("username", self.channel) if sender else self.channel, "message": message}
         self.populate_urls(item, message)
         self.populate_usernames(item, message)
         doc = {"_source": item}

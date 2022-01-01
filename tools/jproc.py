@@ -2,6 +2,32 @@ import json
 import traceback
 import argparse
 import re
+from copy import deepcopy
+
+MAPPER = {
+    "a": "address",
+    "n": "name",
+    "s": "salt",
+    "h": "hash",
+    "p": "password",
+    "m": "mobile",
+    "u": "username",
+    "e": "email",
+    "i": "ip",
+    "de": "device",
+    "lat": "latitude",
+    "long": "longitude",
+    "did": "device_id",
+    "fb": "fb_user",
+    "telegramid": "tgid",
+    "d": "domain",
+    "r": "breach",
+    "t": "phone",
+    "c": "company",
+    "o": "other",
+    "url1": "linkedin",
+    "liid": "linkedin"
+}
 
 class Parser:
     def __init__(self):
@@ -15,6 +41,24 @@ class Parser:
             '-k', '--keep',
             help='list of fields to keep (comma separated). '
                  'Everything else will be removed.',
+            required=False)
+        self.parser.add_argument(
+            '-r', '--remove_empty_fields',
+            help='remove fields that are empty.',
+            default=False,
+            action='store_true',
+            required=False)
+        self.parser.add_argument(
+            '-x', '--remove_x_fields',
+            help='remove fields that start with x.',
+            default=False,
+            action='store_true',
+            required=False)
+        self.parser.add_argument(
+            '-ea', '--expand_abbreviations',
+            help='expand the abbreviations and replace them with their full forms present in MAPPER.',
+            default=False,
+            action='store_true',
             required=False)
         self.parser.add_argument(
             '-d', '--domain',
@@ -62,6 +106,30 @@ def filter_json(data, parent_key, filter_fields):
                             else:
                                 filter_json(val, parent_key + "/" + key, filter_fields)
 
+
+def expand_abbreviations(data_dict):
+    temp_data = deepcopy(data_dict)
+    for key, value in temp_data.items():
+        if key in MAPPER:
+            new_key = MAPPER.get(key)
+            data_dict.pop(key)
+            data_dict[new_key] = value
+
+
+def remove_empty_fields(data_dict):
+    temp_data = deepcopy(data_dict)
+    for key, value in temp_data.items():
+        if not value or (type(value) == str and len(value.strip()) == 0):
+            del data_dict[key]
+
+
+def remove_x_fields(data_dict):
+    temp_data = deepcopy(data_dict)
+    for key, value in temp_data.items():
+        if key.startswith("x"):
+            del data_dict[key]
+
+
 def process_line(out_file, single_json, args):
     # while True:
     #     try:
@@ -92,8 +160,12 @@ def process_line(out_file, single_json, args):
         data = json_response.items()
     for key, value in data:
         if key in ['email', 'e'] and args.domain:
-            domain = value.split('@')[-1]
-            final_data.update({'domain': domain})
+            value = value.replace("@@", "@")
+            email_parts = value.split('@')
+            if len(email_parts) == 2:
+                domain = email_parts[-1]
+                if domain and domain.strip():
+                    final_data.update({'domain': domain})
         if key in ['address', 'city', 'state', 'zip'] and args.address_merge:
             address = address.replace(key, value)
             final_data.update({'address': address})
@@ -110,6 +182,12 @@ def process_line(out_file, single_json, args):
         final_data['importdate'] = args.importdate
     if args.breach:
         final_data['breach'] = args.breach
+    if args.remove_empty_fields:
+        remove_empty_fields(final_data)
+    if args.remove_x_fields:
+        remove_x_fields(final_data)
+    if args.expand_abbreviations:
+        expand_abbreviations(final_data)
     if args.format:
         filtered_json = {'_source': final_data}
     else:
@@ -130,6 +208,9 @@ def main():
             Optional:
             -s           | --keep KEEP_LIST:         List of fields to keep (comma separated).
             -d           | --domain:                 Add domain field from email
+            -r           | --remove_empty_fields:    Remove fields that are empty
+            -x           | --remove_x_fields:        Remove fields that start with x
+            -ea          | --expand_abbreviations:   Expand the abbreviations and replace with full forms
             -am          | --address_merge:          Merge Addresses
             -nm          | --name_merge              Merge Names
             -f           | --format                  Insert formatting for elasticsearch
