@@ -1,5 +1,5 @@
 #!/bin/bash
-YEAR="2021"
+YEAR="2022"
 
 rclone copy /data/processing/offsite/2021/paste/ b2:/ViperStorage/pastes/$YEAR/ -v >> /var/log/aria-backup.log
 rclone copy /data/processing/offsite/2021/shadownet/ b2:/ViperStorage/shadownet/$YEAR/ -v >> /var/log/aria-backup.log
