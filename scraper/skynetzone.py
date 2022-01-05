@@ -100,7 +100,7 @@ class SkyNetZoneSpider(SitemapSpider):
         self.synchronize_headers(response)
 
         # Solve reCAPTCHA
-        solved_captcha = self.solve_recaptcha(response) # , proxyless=True)
+        solved_captcha = self.solve_recaptcha(response, proxyless=True)
         self.logger.debug(f'reCAPTCHA token: {solved_captcha.solution.token}')
 
         formdata = {
