@@ -9,7 +9,7 @@ from scrapy import Selector
 
 class IpHandler(object):
 
-    ip_api = "https://api.ipify.org/?format=json"
+    ip_api = "http://api.ipify.org/?format=json"
     fraudulent_api = "https://scamalytics.com/ip/%s"
 
     def __init__(self, **kwargs):
@@ -85,7 +85,7 @@ class IpHandler(object):
         # Close session
         await session.close()
 
-        return text
+        return response
 
     async def get_fraud_score(self, ip):
         
@@ -94,7 +94,7 @@ class IpHandler(object):
             response = await self.fetch(self.fraudulent_api % ip)
 
             # Load selector
-            selector = Selector(text=response)
+            selector = Selector(text=await response.text())
 
             # Load score
             score = selector.xpath(
@@ -132,17 +132,17 @@ class IpHandler(object):
                 session_id = uuid.uuid1().hex
                 continue
         
-        ip = None
         # Load ip
         try:
-            ip = json.loads(response).get("ip")
+            ip = json.loads(await response.text()).get("ip")
+            x_lum_ip = response.headers.get('x-luminati-ip', None)
         except:
-            return '10.10.10.10', self.fraudulent_threshold + 1
+            return '10.10.10.10', self.fraudulent_threshold + 1, None
 
         # Load score
         score = await self.get_fraud_score(ip)
 
-        return ip, score
+        return ip, score, x_lum_ip
 
     def loop_good_ip(self):
         request_pool = []
@@ -170,7 +170,7 @@ class IpHandler(object):
     def get_good_ip(self):
 
         while True:
-            ip, score = self.loop_good_ip()
+            ip, score, lum_ip = self.loop_good_ip()
             if score >= self.fraudulent_threshold:
                 self.logger.info(
                     "Ip %s has fraudulent score of %s, "
@@ -181,11 +181,19 @@ class IpHandler(object):
                 continue
 
             # Report good ip
-            self.logger.info(
-                "Find out good ip %s with fraudulent score of %s, "
-                "below threshold %s, continue." % (
-                    ip, score, self.fraudulent_threshold
+            if lum_ip:
+                self.logger.info(
+                    "Find out good ip %s (%s) with fraudulent score of %s, "
+                    "below threshold %s, continue." % (
+                        ip, lum_ip, score, self.fraudulent_threshold
+                    )
                 )
-            )
-
+                return lum_ip
+            else:
+                self.logger.info(
+                    "Find out good ip %s with fraudulent score of %s, "
+                    "below threshold %s, continue." % (
+                        ip, score, self.fraudulent_threshold
+                    )
+                )
             return ip
