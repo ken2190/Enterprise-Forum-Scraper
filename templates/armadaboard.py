@@ -1,6 +1,8 @@
 # -- coding: utf-8 --
 import re
 # import locale
+from lxml.html import fromstring
+from lxml.etree import ParserError
 import dateutil.parser as dparser
 
 from .base_template import BaseTemplate
@@ -28,6 +30,8 @@ class ArmadaboardParser(BaseTemplate):
         self.avatar_xpath = './/td[contains(@class, "avatar")]//table[2]//td//img/@src'
         self.author_xpath = './/td[contains(@class, "avatar")]//span[@class="name"]//text()'
         self.index = 1
+        self.mode = 'r'
+        self.encoding = "ISO-8859-1"
 
         # main function
         self.main()
@@ -63,3 +67,13 @@ class ArmadaboardParser(BaseTemplate):
             return ""
 
         return ""
+
+    def get_html_response(self, template, pattern=None, encoding=None, mode='rb'):
+        encoding = encoding if encoding else 'utf-8'
+        with open(template, mode, encoding=encoding) as f:
+            content = f.read()
+            try:
+                html_response = fromstring(content)
+            except ParserError as ex:
+                return
+            return html_response
