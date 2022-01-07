@@ -1,9 +1,11 @@
 # -- coding: utf-8 --
 import re
+import codecs
+import dateparser
 # import locale
 from lxml.html import fromstring
 from lxml.etree import ParserError
-import dateutil.parser as dparser
+from datetime import timedelta
 
 from .base_template import BaseTemplate
 
@@ -31,7 +33,8 @@ class ArmadaboardParser(BaseTemplate):
         self.author_xpath = './/td[contains(@class, "avatar")]//span[@class="name"]//text()'
         self.index = 1
         self.mode = 'r'
-        self.encoding = "ISO-8859-1"
+        self.encoding = "utf-8"
+        self.offset_hours = 3
 
         # main function
         self.main()
@@ -61,7 +64,7 @@ class ArmadaboardParser(BaseTemplate):
             return None
 
         try:
-            date = dparser.parse(date).timestamp()
+            date = (dateparser.parse(date) - timedelta(hours=self.offset_hours)).timestamp()
             return str(date)
         except Exception:
             return ""
@@ -70,7 +73,8 @@ class ArmadaboardParser(BaseTemplate):
 
     def get_html_response(self, template, pattern=None, encoding=None, mode='rb'):
         encoding = encoding if encoding else 'utf-8'
-        with open(template, mode, encoding=encoding) as f:
+
+        with codecs.open(template, mode, encoding=encoding) as f:
             content = f.read()
             try:
                 html_response = fromstring(content)
