@@ -227,12 +227,14 @@ from templates.darkteam_template import DarkteamParser
 from templates.helium_template import HeliumParser
 from templates.neadekvat import NeadekvatParser
 from templates.ghostmarket import GhostmarketParser
+from templates.armadaboard import ArmadaboardParser
 
 PARSER_MAP = {
     '0day': OdayParser,
     'bmr': BMRParser,
     'evolution': EvolutionParser,
     'agora': AgoraParser,
+    'armadaboard': ArmadaboardParser,
     'therealdeal': TheRealDealParser,
     'abraxas': AbraxasParser,
     'kiss': KissParser,
