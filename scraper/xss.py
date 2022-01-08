@@ -84,6 +84,9 @@ class XSSSpider(SitemapSpiderWithDelay):
     def parse_start(self, response):
         # Synchronize cloudfare user agent
         self.synchronize_headers(response)
+        if not self.base_url in response.url or not response.text:
+            yield from self.start_requests()
+            return
         if not response.xpath(self.login_form_xpath):
             yield response.follow(
                 url=self.base_url,
