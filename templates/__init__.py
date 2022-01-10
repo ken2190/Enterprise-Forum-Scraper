@@ -229,6 +229,7 @@ from templates.neadekvat import NeadekvatParser
 from templates.ghostmarket import GhostmarketParser
 from templates.armadaboard import ArmadaboardParser
 from templates.carderuk import CarderUKParser
+from templates.ramp_template import RampParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -303,6 +304,7 @@ PARSER_MAP = {
     'lcpcc': LCPCCParser,
     'runion': RUnionParser,
     'raidforums_users': RaidForumsUserParser,
+    'ramp': RampParser,
     'xss': XSSParser,
     'rstforums': RSTForumsParser,
     'bhfio': BHFIOParser,
