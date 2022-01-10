@@ -190,6 +190,8 @@ from scraper.darkteam import DarkteamScrapper
 from scraper.kickass import KickAssScrapper
 from scraper.eleaks import EleaksScrapper
 from scraper.helium import HeliumScrapper
+from scraper.carder_uk import CarderUKScrapper
+from scraper.armadaboard import ArmadaboardScrapper
 from scraper.ramp import RampScrapper
 
 SCRAPER_MAP = {
@@ -199,6 +201,7 @@ SCRAPER_MAP = {
     'antichat': AntichatScrapper,
     'antionline': AntiOnlineScrapper,
     'apollon': ApollonScrapper,
+    'armadaboard': ArmadaboardScrapper,
     'bbs2cto': Bbs2ctoScrapper,
     'bhfio': BHFIOScrapper,
     'bigmmo': BigmmoScrapper,
@@ -212,6 +215,7 @@ SCRAPER_MAP = {
     'breachforums': BreachForumsScrapper,
     'breakingin': BreakinginScrapper, 
     'brute': BruteScrapper,
+    'carder_uk': CarderUKScrapper,
     'canadahq': CanadaHQScrapper,
     'carderhub': CarderHubScrapper,
     'carding_school': CardingSchoolScrapper,

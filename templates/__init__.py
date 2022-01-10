@@ -227,6 +227,8 @@ from templates.darkteam_template import DarkteamParser
 from templates.helium_template import HeliumParser
 from templates.neadekvat import NeadekvatParser
 from templates.ghostmarket import GhostmarketParser
+from templates.armadaboard import ArmadaboardParser
+from templates.carderuk import CarderUKParser
 from templates.ramp_template import RampParser
 
 PARSER_MAP = {
@@ -234,8 +236,10 @@ PARSER_MAP = {
     'bmr': BMRParser,
     'evolution': EvolutionParser,
     'agora': AgoraParser,
+    'armadaboard': ArmadaboardParser,
     'therealdeal': TheRealDealParser,
     'abraxas': AbraxasParser,
+    'carderuk': CarderUKParser,
     'kiss': KissParser,
     'andromeda': AndromedaParser,
     'darknetheroes': DarkNetHeroesParser,
