@@ -192,6 +192,7 @@ from scraper.eleaks import EleaksScrapper
 from scraper.helium import HeliumScrapper
 from scraper.carder_uk import CarderUKScrapper
 from scraper.armadaboard import ArmadaboardScrapper
+from scraper.cardvillacc import CardVillaCCScrapper
 from scraper.ramp import RampScrapper
 
 SCRAPER_MAP = {
@@ -215,6 +216,7 @@ SCRAPER_MAP = {
     'breachforums': BreachForumsScrapper,
     'breakingin': BreakinginScrapper, 
     'brute': BruteScrapper,
+    'cardvillacc': CardVillaCCScrapper,
     'carder_uk': CarderUKScrapper,
     'canadahq': CanadaHQScrapper,
     'carderhub': CarderHubScrapper,
