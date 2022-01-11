@@ -8,7 +8,8 @@ from scraper.base_scrapper import SitemapSpiderWithDelay, SiteMapScrapperWithDel
 
 LOGINS = [
     {"USER": "Firefly13", "PASS": "X$$-Fl71hf7jsos2"},
-    # {"USER": "kidicarus", "PASS": "X33-IcP19f!"}, requires admin verification
+    {"USER": "blackchain", "PASS": "BlackX$$19P1781jh"},
+    {"USER": "SilverData", "PASS": "NewX$$_P127ds7"}
 ]
 
 MIN_DELAY = 1
