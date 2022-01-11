@@ -229,6 +229,7 @@ from templates.neadekvat import NeadekvatParser
 from templates.ghostmarket import GhostmarketParser
 from templates.armadaboard import ArmadaboardParser
 from templates.carderuk import CarderUKParser
+from templates.cardvillacc import CardvillaCCParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -239,6 +240,7 @@ PARSER_MAP = {
     'therealdeal': TheRealDealParser,
     'abraxas': AbraxasParser,
     'carderuk': CarderUKParser,
+    'cardvillacc': CardvillaCCParser,
     'kiss': KissParser,
     'andromeda': AndromedaParser,
     'darknetheroes': DarkNetHeroesParser,
