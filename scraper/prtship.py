@@ -8,7 +8,7 @@ class PrtShipSpider(SitemapSpider):
     # base_url = 'https://prtship.com'
 
     # domain name changed to prtship.cc
-    base_url = 'https://prtship.cc'
+    base_url = 'https://prtship.pro/'
 
     # Xpaths
     forum_xpath = '//h3[@class="node-title"]/a/@href|'\
@@ -25,7 +25,7 @@ class PrtShipSpider(SitemapSpider):
                               '/@href'
     thread_page_xpath = '//li[contains(@class, "pageNav-page--current")]'\
                         '/a/text()'
-    post_date_xpath = '//div/a/time[@datetime]/@datetime'
+    post_date_xpath = '//div[@class="message-inner"]/div//a/time/@datetime'
 
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
     

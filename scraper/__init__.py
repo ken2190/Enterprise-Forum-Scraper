@@ -193,6 +193,7 @@ from scraper.helium import HeliumScrapper
 from scraper.carder_uk import CarderUKScrapper
 from scraper.armadaboard import ArmadaboardScrapper
 from scraper.cardvillacc import CardVillaCCScrapper
+from scraper.ramp import RampScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -325,6 +326,7 @@ SCRAPER_MAP = {
     'r0bforums': R0bForumsScrapper,
     'raidforums': RaidForumsScrapper,
     'raidforums_shoutbox': RaidforumsShoutboxScrapper,
+    'ramp': RampScrapper,
     'rosanegra': RosaNegraScrapper,
     'rstforums': RSTForumsScrapper,
     'runion': RUnionScrapper,
