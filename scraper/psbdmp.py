@@ -15,8 +15,8 @@ from scraper.base_scrapper import (
 from scraper.base_scrapper import PROXY_USERNAME, PROXY_PASSWORD, PROXY
 
 MIN_DELAY=0.3
-MAX_DELAY=0.5
-API_KEY = 'b15b2a61fe195e6b1cedab735cd13674'
+MAX_DELAY=0.6
+API_KEY = '90f95ac404308e553c1fa65bdec5388c'
 NO_OF_THREADS = 13
 
 class PsbdmpSpider(SitemapSpider):
