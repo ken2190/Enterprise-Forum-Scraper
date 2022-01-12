@@ -194,6 +194,8 @@ from scraper.carder_uk import CarderUKScrapper
 from scraper.armadaboard import ArmadaboardScrapper
 from scraper.cardvillacc import CardVillaCCScrapper
 from scraper.ramp import RampScrapper
+from scraper.ccrackingorg import CCrackingOrgScrapper
+from scraper.ajanlar import AjanlarScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -203,6 +205,7 @@ SCRAPER_MAP = {
     'antionline': AntiOnlineScrapper,
     'apollon': ApollonScrapper,
     'armadaboard': ArmadaboardScrapper,
+    'ajanlar': AjanlarScrapper,
     'bbs2cto': Bbs2ctoScrapper,
     'bhfio': BHFIOScrapper,
     'bigmmo': BigmmoScrapper,
@@ -237,6 +240,7 @@ SCRAPER_MAP = {
     'crackingking': CrackingKingScrapper,
     'crackingpro': CrackingProScrapper,
     'crackingsoul': CrackingSoulScrapper,
+    'ccrackingorg': CCrackingOrgScrapper,
     'crackx': CrackXScrapper,
     'crdclub': CrdClubScrapper,
     'crimemarket': CrimeMarketScrapper,

@@ -231,17 +231,21 @@ from templates.armadaboard import ArmadaboardParser
 from templates.carderuk import CarderUKParser
 from templates.cardvillacc import CardvillaCCParser
 from templates.ramp_template import RampParser
+from templates.ccrackingorg import CCrackingOrgParser
+from templates.ajanlar import AjanlarParser
 
 PARSER_MAP = {
     '0day': OdayParser,
     'bmr': BMRParser,
     'evolution': EvolutionParser,
     'agora': AgoraParser,
+    'ajanlar': AjanlarParser,
     'armadaboard': ArmadaboardParser,
     'therealdeal': TheRealDealParser,
     'abraxas': AbraxasParser,
     'carderuk': CarderUKParser,
     'cardvillacc': CardvillaCCParser,
+    'ccrackingorg': CCrackingOrgParser,
     'kiss': KissParser,
     'andromeda': AndromedaParser,
     'darknetheroes': DarkNetHeroesParser,
