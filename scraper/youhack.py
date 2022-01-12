@@ -13,6 +13,11 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
+LOGINS = [
+    {"USER": "Firefly13", "PASS": "X$$-Fl71hf7jsos2"},
+    {"USER": "blackchain", "PASS": "BlackX$$19P1781jh"},
+    {"USER": "SilverData", "PASS": "NewX$$_P127ds7"}
+]
 
 class YouHackSpider(SitemapSpider):
     name = 'youhack_spider'

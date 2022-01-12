@@ -6,6 +6,7 @@ from random import choice
 from scrapy.downloadermiddlewares.retry import RetryMiddleware
 from scrapy.utils.response import response_status_message
 
+from middlewares.utils import IpHandler
 from helheim_dist import helheim
 from scraper.base_scrapper import (
     VIP_PROXY_USERNAME,

@@ -453,6 +453,8 @@ class FromDateScrapper(BaseScrapper, SiteMapScrapper):
 class BypassCloudfareSpider(scrapy.Spider):
     use_proxy = "On"
     use_cloudflare_v2_bypass = None
+    use_rotating_ip = None
+    use_too_many_request = None
     proxy = None
     download_delay = 0.3
     download_thread = 10
@@ -495,12 +497,19 @@ class BypassCloudfareSpider(scrapy.Spider):
                         "middlewares.middlewares.LuminatyProxyMiddleware": 100,
                     }
                 )
+            if cls.use_too_many_request:
+                downloader_middlewares.update(
+                    {
+                        "middlewares.middlewares.TooManyRequestsRetryMiddleware": 10,
+                    }
+                )
             if cls.use_cloudflare_v2_bypass:
                 downloader_middlewares.update(
                     {
-                        "middlewares.middlewares.CloudflareV2BypassMiddleware": 200
+                        "middlewares.middlewares.CloudflareV2BypassMiddleware": 200,
                     }
                 )
+
 
             # Default settings
             crawler.settings.set(
