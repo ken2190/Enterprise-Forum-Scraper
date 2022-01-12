@@ -1261,7 +1261,7 @@ class SitemapSpider(BypassCloudfareSpider):
     # Main method to solve all kind of captcha: recaptcha #
 
     def solve_hcaptcha(self, response, proxy=None, site_url=None, site_key=None, user_agent=None,
-                       cookies=None):
+                       cookies=None, proxyless=True):
         """
         :param response: scrapy response => response that contains regular recaptcha
         :return: str => recaptcha solved token to submit login
@@ -1269,13 +1269,13 @@ class SitemapSpider(BypassCloudfareSpider):
         solver = hCaptchaProxyless()
 
         # Load proxy
-        if proxy is None:
+        if proxy is None and not proxyless:
             try:
                 proxy = self.load_proxies(response)
             except Exception as err:
                 proxy = None
 
-        if proxy:
+        if proxy and not proxyless:
             # Trim prototal
             proxy = proxy.replace(
                 "https://", ""
