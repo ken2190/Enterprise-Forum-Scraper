@@ -196,6 +196,7 @@ from scraper.cardvillacc import CardVillaCCScrapper
 from scraper.ramp import RampScrapper
 from scraper.ccrackingorg import CCrackingOrgScrapper
 from scraper.ajanlar import AjanlarScrapper
+from scraper.crdcrew import CrdcrewScrapper
 from scraper.darknetpro import DarknetProScrapper
 
 SCRAPER_MAP = {
@@ -221,6 +222,7 @@ SCRAPER_MAP = {
     'breakingin': BreakinginScrapper, 
     'brute': BruteScrapper,
     'cardvillacc': CardVillaCCScrapper,
+    'crdcrew': CrdcrewScrapper,
     'carder_uk': CarderUKScrapper,
     'canadahq': CanadaHQScrapper,
     'carderhub': CarderHubScrapper,
