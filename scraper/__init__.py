@@ -197,6 +197,7 @@ from scraper.ramp import RampScrapper
 from scraper.ccrackingorg import CCrackingOrgScrapper
 from scraper.ajanlar import AjanlarScrapper
 from scraper.crdcrew import CrdcrewScrapper
+from scraper.darknetpro import DarknetProScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -254,6 +255,7 @@ SCRAPER_MAP = {
     'darkmarket': DarkmarketScrapper,
     'darkmarket_cm': DarkMarketCmScrapper,
     'darkmoney': DarkMoneyScrapper,
+    'darknetpro': DarknetProScrapper,
     'darktime': DarkTimeScrapper,
     'darkway': DarkWayScrapper,
     'dedicatet': DedicatetScrapper,
