@@ -13,9 +13,15 @@ from scraper.base_scrapper import (
     SiteMapScrapper
 )
 
+LOGINS = [
+    {"USER": "Firefly13", "PASS": "X$$-Fl71hf7jsos2"},
+    {"USER": "blackchain", "PASS": "BlackX$$19P1781jh"},
+    {"USER": "SilverData", "PASS": "NewX$$_P127ds7"}
+]
 
 class YouHackSpider(SitemapSpider):
     name = 'youhack_spider'
+    
 
     base_url = "https://youhack.xyz/"
     change_language_url = f"{base_url}misc/language?language_id=1&redirect={base_url}"
@@ -60,25 +66,29 @@ class YouHackSpider(SitemapSpider):
     )
 
     # Other settings
-    use_proxy = "VIP"
+    fraudulent_threshold = 10
+    use_proxy = "On"
     sitemap_datetime_format = "%d.%m.%Y at %I:%M %p"
     post_datetime_format = "%d.%m.%Y at %I:%M %p"
     get_cookies_delay = 5
     get_cookies_retry = 1
 
-    def start_requests(self, ):
-        cookies, ip = self.get_cookies(
-            base_url=self.base_url,
-            proxy=self.use_proxy,
-            fraud_check=True,
-        )
+    def start_requests(self):
+       
+        # cookies, ip = self.get_cookies(
+        #     base_url=self.base_url,
+        #     proxy=self.use_proxy,
+        #     fraud_check=True,
+        # )
+       
+        # self.logger.info(f'COOKIES: {cookies}')
 
-        self.logger.info(f'COOKIES: {cookies}')
+  
 
         # Init request kwargs and meta
         meta = {
             "cookiejar": uuid.uuid1().hex,
-            "ip": ip
+           #  "ip": ip
         }
 
         yield Request(
@@ -87,7 +97,7 @@ class YouHackSpider(SitemapSpider):
             callback=self.parse_captcha,
             errback=self.check_site_error,
             dont_filter=True,
-            cookies=cookies,
+            # cookies=cookies,
             meta=meta
         )
 
@@ -190,7 +200,7 @@ class YouHackSpider(SitemapSpider):
 
 class YouHackScrapper(SiteMapScrapper):
     spider_class = YouHackSpider
-    site_name = 'youhack.ru'
+    site_name = 'youhack.xyz'
     site_type = 'forum'
 
     def load_settings(self):

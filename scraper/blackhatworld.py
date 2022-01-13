@@ -29,7 +29,8 @@ class BlackHatWorldSpider(SitemapSpider):
     avatar_xpath = '//div[@class="message-avatar-wrapper"]/a/img/@src'
 
     # Other settings
-    use_proxy = "On"
+    use_proxy = 'On'
+    use_too_many_request = True
     handle_httpstatus_list = [403]
     sitemap_datetime_format = "%Y-%m-%dT%H:%M:%S"
     post_datetime_format = "%Y-%m-%dT%H:%M:%S"
