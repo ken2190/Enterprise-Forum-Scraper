@@ -233,6 +233,7 @@ from templates.cardvillacc import CardvillaCCParser
 from templates.ramp_template import RampParser
 from templates.ccrackingorg import CCrackingOrgParser
 from templates.ajanlar import AjanlarParser
+from templates.darknetpro import DarknetProParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -248,6 +249,7 @@ PARSER_MAP = {
     'ccrackingorg': CCrackingOrgParser,
     'kiss': KissParser,
     'andromeda': AndromedaParser,
+    'darknetpro': DarknetProParser,
     'darknetheroes': DarkNetHeroesParser,
     'diabolus': DarkNetHeroesParser,
     'exploit': ExploitParser,
