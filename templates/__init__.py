@@ -233,6 +233,7 @@ from templates.cardvillacc import CardvillaCCParser
 from templates.ramp_template import RampParser
 from templates.ccrackingorg import CCrackingOrgParser
 from templates.ajanlar import AjanlarParser
+from templates.crdcrew import CrdcrewParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -244,6 +245,7 @@ PARSER_MAP = {
     'therealdeal': TheRealDealParser,
     'abraxas': AbraxasParser,
     'carderuk': CarderUKParser,
+    'crdcrew': CrdcrewParser,
     'cardvillacc': CardvillaCCParser,
     'ccrackingorg': CCrackingOrgParser,
     'kiss': KissParser,
