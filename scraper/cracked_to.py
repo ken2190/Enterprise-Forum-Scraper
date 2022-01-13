@@ -10,10 +10,13 @@ from scrapy.http import Request, FormRequest
 from scrapy.crawler import CrawlerProcess
 from scraper.base_scrapper import SitemapSpider, SiteMapScrapper
 
-USER='gordon418'
-PASS='Nightlion#123'
+LOGINS = [
+    {"USER": "MrBashMan", "PASS": "Reg-Crack!pass2"},
+    {"USER": "avalanche1337", "PASS": "Crack_Lanch718@2"},
+]
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
+
 
 class CrackedToSpider(SitemapSpider):
     name = 'cracked_spider'
@@ -60,7 +63,7 @@ class CrackedToSpider(SitemapSpider):
     # Login Failed Message
     login_failed_xpath = '//ul[@class="error_message"]'
 
-    #captcha stuffs
+    # captcha stuffs
     bypass_success_xpath = '//a[@class="guestnav" and text()="Login"]'
 
     # Other settings
@@ -112,15 +115,14 @@ class CrackedToSpider(SitemapSpider):
             '//input[@name="my_post_key"]/@value').extract_first()
         if not my_post_key:
             return
-
+        login = self.get_login(LOGINS)
         yield FormRequest.from_response(
             response,
             formxpath=self.login_form_xpath,
-            formdata = {
-                "username": USER,
-                "password": PASS,
+            formdata={
+                "username": login["USER"],
+                "password": login["PASS"],
                 "remember": "yes",
-                "submit": "Login",
                 "action": "do_login",
                 "url": f'{self.base_url}index.php',
                 "g-recaptcha-response": self.solve_recaptcha(response, proxyless=True).solution.token,
@@ -135,7 +137,7 @@ class CrackedToSpider(SitemapSpider):
 
         # Check if login success
         self.check_if_logged_in(response)
-        
+
         # Load sub forums
         if is_first_page:
             yield from self.parse(response)
@@ -158,8 +160,8 @@ class CrackedToSpider(SitemapSpider):
         # Parse avatar
         yield from super().parse_avatars(response)
 
-class CrackedToScrapper(SiteMapScrapper):
 
+class CrackedToScrapper(SiteMapScrapper):
     spider_class = CrackedToSpider
     site_name = 'cracked.to'
     site_type = 'forum'
