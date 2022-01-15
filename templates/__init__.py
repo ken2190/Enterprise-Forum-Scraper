@@ -235,6 +235,7 @@ from templates.ccrackingorg import CCrackingOrgParser
 from templates.ajanlar import AjanlarParser
 from templates.crdcrew import CrdcrewParser
 from templates.darknetpro import DarknetProParser
+from templates.imhatimi import ImhatimiParser
 
 PARSER_MAP = {
     '0day': OdayParser,
@@ -411,6 +412,7 @@ PARSER_MAP = {
     'r0bforums': R0bforumsParser,
     'cardingsite': CardingSiteParser,
     'altenens': AltenensParser,
+    'imhatimi': ImhatimiParser,
     'dsslegends': DssLegendsParser,
     'exelab': ExelabParser,
     'crackingsoul': CrackingSoulParser,
