@@ -198,6 +198,7 @@ from scraper.ccrackingorg import CCrackingOrgScrapper
 from scraper.ajanlar import AjanlarScrapper
 from scraper.crdcrew import CrdcrewScrapper
 from scraper.darknetpro import DarknetProScrapper
+from scraper.imhatimi import ImhatimiScrapper
 
 SCRAPER_MAP = {
     '0day': OdayScrapper,
@@ -293,6 +294,7 @@ SCRAPER_MAP = {
     'hoxforum': HoxForumScrapper,
     'hydra': HydraScrapper,
     'ifud': IfudScrapper,
+    'imhatimi': ImhatimiScrapper,
     'italiandeepweb': ItalianDeepWebScrapper,
     'itshqip': ItshqipScrapper,
     'jstash_bazar': JstashBazarScrapper,
