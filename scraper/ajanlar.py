@@ -38,6 +38,9 @@ class AjanlarSpider(SitemapSpider):
     avatar_xpath = '//div[@class="author_avatar"]/a/img/@src'
     post_key_xpath = '//input[@name="my_post_key"]/@value'
 
+    sitemap_datetime_format = "%d.%m.%Y, %H:%M"
+    post_datetime_format = "%d.%m.%Y, %H:%M"
+
     # Login Failed Message
     login_failed_xpath = '//div[contains(@class, "blockMessage blockMessage--error")]'
 
